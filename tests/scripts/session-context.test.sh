@@ -14,6 +14,7 @@ assert_exit_code() {
   local actual_code="$3"
 
   if [[ "$actual_code" -eq "$expected_code" ]]; then
+    echo "  PASS  $description"
     PASSED=$((PASSED + 1))
   else
     echo "  FAIL  $description (expected exit $expected_code, got $actual_code)"
@@ -69,7 +70,6 @@ EOF
 EXIT_CODE=0
 OUTPUT=$(echo '{}' | CLAUDE_PROJECT_DIR="$PROJECT_DIR" "$HOOK" 2>/dev/null) || EXIT_CODE=$?
 assert_exit_code "exits cleanly with empty tracker" 0 "$EXIT_CODE"
-echo "  PASS  exits cleanly with empty tracker"
 
 # Test 2: reports features in progress
 cat > "$TRACKER" << 'EOF'
@@ -102,8 +102,7 @@ BACKUP_TRACKER=$(cat "$TRACKER")
 rm -f "$TRACKER"
 EXIT_CODE=0
 echo '{}' | CLAUDE_PROJECT_DIR="$PROJECT_DIR" "$HOOK" > /dev/null 2>&1 || EXIT_CODE=$?
-assert_exit_code "handles missing tracker" 0 "$EXIT_CODE"
-echo "  PASS  handles missing tracker file"
+assert_exit_code "handles missing tracker file" 0 "$EXIT_CODE"
 echo "$BACKUP_TRACKER" > "$TRACKER"
 
 echo "---"

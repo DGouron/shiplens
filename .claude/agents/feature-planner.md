@@ -54,14 +54,11 @@ Pour une feature dans un BC existant, le walking skeleton n'est pas necessaire â
 
 ## Contraintes
 
+- Toutes les regles de `.claude/rules/coding-standards.md` s'appliquent
 - Ordre inside-out : Entity -> Use Cases -> Interface Adapters (Gateways, Presenters, Controllers) -> Module Wiring
 - Chaque fichier a son test miroir dans `tests/` (meme chemin relatif)
 - Builder pour chaque nouvelle entite dans `tests/builders/`
 - Stub gateways dans `src/modules/<bc>/testing/good-path/` et `testing/bad-path/`
-- JAMAIS de barrel exports (index.ts)
-- JAMAIS de type assertions (`as`, `!`, `any`)
-- Tests en anglais, messages d'erreur en francais
-- Mots complets, pas d'abreviations
 
 ## Format de sortie
 
