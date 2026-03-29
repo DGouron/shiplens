@@ -167,10 +167,37 @@ export class SomethingModule {}
 - Pas de Factory pour la création simple d'objets
 - La logique métier doit dépasser le boilerplate — si le ratio est inversé, simplifier
 
+## Spec-Driven Development (SDD)
+
+### Pipeline de feature
+
+1. `/product-manager` — Spec DSL custom dans `docs/specs/`
+2. `/implement-feature` — Orchestre planner + implementer TDD
+3. `/ship` — Commit + push
+
+### Double boucle
+
+- **Boucle externe (SDD)** : Spec (Rules + Scenarios) -> tests d'acceptance (restent RED pendant l'impl)
+- **Boucle interne (TDD)** : RED-GREEN-REFACTOR par incrément, fait passer la boucle externe au vert
+
+### Artefacts
+
+- `docs/specs/` — Specs DSL (source de vérité)
+- `docs/ddd/` — Event Storming, Context Maps
+- `docs/business-rules/` — Règles métier extraites du code
+
 ## Skills disponibles
 
 | Skill | Quand l'utiliser |
 |-------|------------------|
-| `/tdd` | Écrire ou modifier du code |
+| `/product-manager` | Définir une feature, rédiger specs INVEST + DSL custom |
+| `/implement-feature` | Implémenter une feature complète (orchestre planner + implementer) |
+| `/tdd` | Écrire ou modifier du code (RED-GREEN-REFACTOR) |
 | `/architecture` | Créer module, entité, use case, presenter, gateway... |
 | `/ddd` | Découper le domaine, définir l'ubiquitous language |
+| `/event-storming` | Session Event Storming Big Picture sur un bounded context |
+| `/business-rules-extractor` | Extraire les règles métier d'un module |
+| `/debug-workflow` | Investigation progressive de bugs + plan de branches |
+| `/ship` | Commit + push (vérifie les tests avant) |
+| `/worktree` | Gérer les worktrees Git pour branches parallèles |
+| `/skill-creator` | Créer ou modifier un skill |
