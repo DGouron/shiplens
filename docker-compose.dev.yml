@@ -1,0 +1,15 @@
+services:
+  shiplens:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deps
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=file:./dev.db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: pnpm start:dev

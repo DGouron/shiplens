@@ -1,0 +1,16 @@
+services:
+  shiplens:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:./data/shiplens.db
+    volumes:
+      - shiplens-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  shiplens-data:
