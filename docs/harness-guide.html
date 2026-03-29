@@ -679,6 +679,11 @@ L'expéditeur doit pouvoir créer un envoi avec un destinataire et un colis.
     <td>Documenter les règles métier d'un module</td>
   </tr>
   <tr>
+    <td><code>/refactor</code></td>
+    <td>Refactoring structuré</td>
+    <td>Mikado, Strangler Fig, Parallel Change, Extract</td>
+  </tr>
+  <tr>
     <td><code>/debug-workflow</code></td>
     <td>Investigation</td>
     <td>Bug discovery → classification → plan de branches</td>
@@ -775,6 +780,12 @@ L'expéditeur doit pouvoir créer un envoi avec un destinataire et un colis.
     <td>Bloque et redirige vers <code>/worktree</code></td>
   </tr>
   <tr>
+    <td><code>protect-main-push.sh</code></td>
+    <td>PreToolUse</td>
+    <td><code>git push</code> vers main/master</td>
+    <td>Bloque le push vers les branches protégées</td>
+  </tr>
+  <tr>
     <td><code>session-context.sh</code></td>
     <td>SessionStart</td>
     <td>Début de session</td>
@@ -820,6 +831,9 @@ bash tests/scripts/require-spec.test.sh
 bash tests/scripts/session-context.test.sh
 bash tests/scripts/verify-spec-coverage.test.sh
 bash tests/scripts/protect-main-branch.test.sh
+bash tests/scripts/protect-main-push.test.sh
+bash tests/scripts/parse-json.test.sh
+bash tests/scripts/pre-commit-gate.test.sh
 
 # Tests applicatifs (Vitest)
 pnpm test</code></pre>
@@ -885,6 +899,7 @@ pnpm test</code></pre>
 │   ├── <span class="dir">ddd/</span>SKILL.md
 │   ├── <span class="dir">event-storming/</span>SKILL.md
 │   ├── <span class="dir">business-rules-extractor/</span>SKILL.md
+│   ├── <span class="dir">refactor/</span>SKILL.md
 │   ├── <span class="dir">debug-workflow/</span>SKILL.md
 │   ├── <span class="dir">ship/</span>SKILL.md
 │   ├── <span class="dir">worktree/</span>SKILL.md
@@ -915,6 +930,7 @@ pnpm test</code></pre>
     ├── <span class="file">no-barrel-exports.sh</span>       <span class="comment">← Bloque index.ts</span>
     ├── <span class="file">require-spec.sh</span>            <span class="comment">← Bloque impl sans spec</span>
     ├── <span class="file">protect-main-branch.sh</span>     <span class="comment">← Bloque commit sur main/master</span>
+    ├── <span class="file">protect-main-push.sh</span>       <span class="comment">← Bloque push vers main/master</span>
     └── <span class="file">session-context.sh</span>         <span class="comment">← Injecte tracker au démarrage</span>
 
 <span class="dir">tests/</span>
@@ -927,7 +943,10 @@ pnpm test</code></pre>
     ├── <span class="file">require-spec.test.sh</span>
     ├── <span class="file">session-context.test.sh</span>
     ├── <span class="file">verify-spec-coverage.test.sh</span>
-    └── <span class="file">protect-main-branch.test.sh</span>
+    ├── <span class="file">protect-main-branch.test.sh</span>
+    ├── <span class="file">protect-main-push.test.sh</span>
+    ├── <span class="file">parse-json.test.sh</span>
+    └── <span class="file">pre-commit-gate.test.sh</span>
 </div>
 
 <!-- ============================================================ -->

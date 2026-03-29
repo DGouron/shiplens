@@ -20,31 +20,9 @@ Etant allergique aux commentaires technique dans le code, tu n'en mettra uniquem
 - **Lisible comme de la prose** : Si tu dois relire une ligne deux fois, réécris-la. (Clean Code, Uncle Bob)
 - **Pas de sur-abstraction** : 3 lignes claires > 1 abstraction maline. YAGNI prime.
 
-## Conventions de nommage
+## Standards techniques
 
-- **Mots complets** : Toujours utiliser des mots entiers pour les variables, fonctions, classes, etc. Jamais d'abréviations, de sigles ou d'acronymes.
-  - ✅ `quest`, `existing`, `index`, `CentralIntelligenceAgency`
-  - ❌ `q`, `ex`, `i`, `idx`, `CIA`, `NASA`
-
-## Imports
-
-- **Barrel exports interdits** : Pas de fichiers `index.ts` pour réexporter. Imports directs uniquement.
-  - ✅ `import { createGuard } from '@shared/foundation/guard/guard.js'`
-  - ❌ `import { createGuard } from '@shared/foundation'`
-
-## TypeScript
-
-- **Jamais** de type assertions (`as Type`, `as unknown as T`)
-- **Jamais** de non-null assertions (`!`)
-- **Jamais** de `any` — utiliser `unknown` + type guards
-- Préférer les utility types : `Partial<T>`, `Pick<T, K>`, `Omit<T, K>`
-- Zod schemas pour validation runtime aux frontières (guards)
-- Dériver les types depuis Zod : `type X = z.infer<typeof xSchema>`
-
-## Règles de langue
-
-- **Français** : Messages d'erreur et textes UI (vus par les utilisateurs finaux)
-- **Anglais** : Tests, logs techniques, erreurs de développement, commentaires code
+Voir `.claude/rules/coding-standards.md` pour les règles détaillées : naming, imports, TypeScript, testing, architecture, langue, anti-overengineering.
 
 ## Commits
 
@@ -157,16 +135,6 @@ export class SomethingModule {}
 
 **Règle d'or** : Pas de backup, pas de migration. Pas d'exception.
 
-## Anti-Overengineering
-
-- **KISS** : solution la plus simple qui marche
-- **YAGNI** : pas de patterns pour des besoins futurs imaginaires
-- 3 lignes claires > 1 abstraction maline
-- Pas de Value Objects pour des `{ name: string }` simples
-- Pas de Repository quand Gateway suffit
-- Pas de Factory pour la création simple d'objets
-- La logique métier doit dépasser le boilerplate — si le ratio est inversé, simplifier
-
 ## Spec-Driven Development (SDD)
 
 ### Pipeline de feature
@@ -197,6 +165,7 @@ export class SomethingModule {}
 | `/ddd` | Découper le domaine, définir l'ubiquitous language |
 | `/event-storming` | Session Event Storming Big Picture sur un bounded context |
 | `/business-rules-extractor` | Extraire les règles métier d'un module |
+| `/refactor` | Refactoring structuré (Mikado, Strangler Fig, Parallel Change) |
 | `/debug-workflow` | Investigation progressive de bugs + plan de branches |
 | `/ship` | Commit + push (vérifie les tests avant) |
 | `/worktree` | Gérer les worktrees Git pour branches parallèles |

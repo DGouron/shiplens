@@ -3,7 +3,7 @@ name: feature-implementer
 description: Use this agent to implement features via TDD inside-out. Receives a validated plan and spec, creates all files with RED-GREEN-REFACTOR cycles, runs tests at each step, then self-reviews and fixes autonomously before reporting.
 tools: Read, Write, Edit, Bash, Glob, Grep, LS
 model: opus
-maxTurns: 100
+maxTurns: 50
 skills:
   - tdd
   - architecture
@@ -21,13 +21,7 @@ Lire `.claude/CLAUDE.md` et `.claude/rules/coding-standards.md` AVANT de coder. 
 
 - Stack : NestJS 11, TypeScript, Zod, Prisma (SQLite), Vitest
 - Test runner : `pnpm test` (Vitest)
-- Tests dans `tests/` en miroir de `src/`
-- Builders dans `tests/builders/`
-- Tests en anglais, messages d'erreur en francais
-- Mots complets uniquement (pas d'abreviations)
-- Zero commentaire dans le code sauf si vital
-- Zero `any`, `as`, `!` (type assertions interdites)
-- Zero barrel exports (index.ts)
+- Toutes les regles de `.claude/rules/coding-standards.md` s'appliquent
 
 ---
 
