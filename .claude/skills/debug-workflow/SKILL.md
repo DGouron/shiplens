@@ -29,15 +29,43 @@ Consult this skill whenever the user signals something is broken or needs a fix 
 
 Investigate in concentric rings. Stop expanding as soon as the root cause is explained.
 
-**Ring 0 — Symptom location**: entity/usecase/controller where the bug manifests. Check: wrong conditions, missing validation, incorrect guard, entity invariant violation.
+**Ring 0 — Symptom location**: entity/usecase/controller where the bug manifests.
+- Wrong conditions in entity logic
+- Missing validation in guard
+- Entity invariant violation
+- Incorrect `static create()` logic
 
-**Ring 1 — Direct dependencies**: callers and callees. Check: gateway contract mismatch, usecase parameter error, presenter transformation bug.
+**Ring 1 — Direct dependencies**: callers and callees.
+- Gateway contract mismatch (abstract class vs implementation)
+- Usecase parameter error
+- Presenter transformation bug
+- Controller routing or DTO parsing error
 
-**Ring 2 — Data flow**: Prisma queries, gateway implementations, entity state management. Check: wrong query conditions, missing data mapping, stale entity state.
+**Ring 2 — Data & Persistence**: Prisma queries, gateway implementations, entity state.
+- Wrong Prisma query conditions (`where`, `include`, `select`)
+- Missing or incorrect data mapping between Prisma model and domain entity
+- N+1 queries (multiple `findMany` inside a loop)
+- Transaction failures or partial writes
+- Unique constraint violations at runtime
+- Migration drift: `prisma/schema.prisma` differs from actual database state
+- Diagnostic: `npx prisma db pull` to compare schema vs DB
 
-**Ring 3 — Infrastructure**: NestJS module wiring, Prisma schema, environment config. Only reach here if Rings 0-2 don't explain the bug.
+**Ring 3 — NestJS Infrastructure**: module wiring, DI, lifecycle.
+- Circular dependency injection (`forwardRef` needed or module restructuring)
+- Module wiring incorrect (missing import, missing provider, missing export)
+- Abstract class not properly provided as DI token (`{ provide: Abstract, useClass: Concrete }`)
+- Guard/interceptor/pipe execution order (NestJS pipeline)
+- Lifecycle hooks (`onModuleInit`, `onApplicationBootstrap`) not firing
+- Diagnostic: `DEBUG=* pnpm start:dev` for verbose NestJS logs
+
+**Ring 4 — Environment**: config, external dependencies. Only reach here if Rings 0-3 don't explain the bug.
+- Environment variables missing or malformed
+- SQLite file permissions or path issues
+- Node.js version incompatibility
 
 **Side-list**: while investigating, note other bugs/smells you spot. Don't chase them now — feed them into Phase 2.
+
+**Spec check**: if the buggy file belongs to a BC with a spec in `docs/specs/`, read the spec to compare expected vs observed behavior.
 
 **Deliverable**: for each issue -> `file:line-range`, root cause, user impact.
 
@@ -45,14 +73,21 @@ Investigate in concentric rings. Stop expanding as soon as the root cause is exp
 
 ## Phase 2 — Prioritized Classification
 
-| Tier | Criteria |
-|------|----------|
-| P0 | App crashes, data loss, security hole, blocks core flow |
-| P1 | Feature broken, workaround exists, significant degradation |
-| P2 | Edge-case failures, minor issues, non-critical perf |
-| P3 | Code smell, tech debt, zero user-facing impact |
+| Tier | Criteria | Effort |
+|------|----------|--------|
+| P0 | App crashes, data loss, security hole, blocks core flow | S/M/L |
+| P1 | Feature broken, workaround exists, significant degradation | S/M/L |
+| P2 | Edge-case failures, minor issues, non-critical perf | S/M/L |
+| P3 | Code smell, tech debt, zero user-facing impact | S/M/L |
+
+Effort estimation:
+- **S** : one-liner or single-file fix
+- **M** : 2-5 files, contained change
+- **L** : cross-layer change or redesign needed
 
 Present a prioritized table grouped by tier. **Pause and ask the user to validate** before proceeding.
+
+For P3 items, suggest `/refactor` skill if the fix involves structural changes (Mikado, Strangler Fig).
 
 ---
 
@@ -71,7 +106,7 @@ When true independence is impossible, extract a prerequisite base branch.
 | Strategy | When |
 |----------|------|
 | **A — 1 bug = 1 branch** | Bugs touch different files, no shared refactor |
-| **B — grouped branch** | Shared root cause or preparatory refactor needed |
+| **B — grouped branch** | Shared root cause or preparatory refactor needed (-> `/refactor`) |
 | **C — hybrid** | Mix; explain each group's rationale |
 
 Present all three options, recommend one, let the user decide.
@@ -86,11 +121,35 @@ Order by: P0 first -> biggest user impact -> conflict minimization -> low-risk q
 
 ## Phase 4 — Regression Safeguards
 
-For each branch, before handing off to `/tdd`, provide:
+For each branch, provide a handoff to `/tdd` :
 
-- **Target behavior**: one-sentence description of what the fix should guarantee.
-- **Boundary conditions**: edge cases around the changed code that tests must cover.
-- **`pnpm test` gate**: confirm the branch passes all tests before merge.
+```
+HANDOFF:
+  target_behavior: [one-sentence what the fix guarantees]
+  file: [main file to fix]
+  boundary_conditions:
+    - [edge case 1]
+    - [edge case 2]
+  repro_test: [sketch of a test that reproduces the bug — becomes the RED test]
+```
+
+Then apply `/tdd` with this context. The repro test is the RED test. The fix makes it GREEN.
+
+Gate: `pnpm test` must pass on the branch before merge.
+
+---
+
+## Diagnostic commands reference
+
+| Situation | Command |
+|-----------|---------|
+| Test failure details | `pnpm test -- --reporter=verbose` |
+| Specific test file | `pnpm test -- tests/path/to/test.spec.ts` |
+| Prisma schema vs DB | `npx prisma db pull --print` |
+| Prisma data inspection | `npx prisma studio` |
+| NestJS verbose logs | `DEBUG=* pnpm start:dev` |
+| Migration status | `pnpm db:status` |
+| Type checking | `npx tsc --noEmit` |
 
 ---
 
@@ -108,4 +167,5 @@ For each branch, before handing off to `/tdd`, provide:
 | Shared domain | `src/shared/domain/` |
 | Prisma | `prisma/schema.prisma` |
 | Tests | `tests/` (mirror structure) |
+| Specs | `docs/specs/` |
 | Test command | `pnpm test` |
