@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shiplens — Harness SDD Guide</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --bg-surface: #1a1d27;
+      --bg-elevated: #232733;
+      --border: #2e3345;
+      --text: #e1e4ed;
+      --text-muted: #8b90a0;
+      --accent: #6c8aff;
+      --accent-dim: #4a62c4;
+      --green: #4ade80;
+      --green-dim: #166534;
+      --red: #f87171;
+      --red-dim: #7f1d1d;
+      --orange: #fb923c;
+      --orange-dim: #7c2d12;
+      --purple: #a78bfa;
+      --yellow: #fbbf24;
+      --cyan: #22d3ee;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* --- SIDEBAR --- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100vh;
+      overflow-y: auto;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      z-index: 10;
+    }
+
+    nav .logo {
+      padding: 0 24px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    nav .logo h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .logo p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    nav .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 16px 24px 8px;
+    }
+
+    nav a {
+      display: block;
+      padding: 6px 24px 6px 32px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.15s;
+      border-left: 2px solid transparent;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--text);
+      background: var(--bg-elevated);
+      border-left-color: var(--accent);
+    }
+
+    /* --- MAIN --- */
+    main {
+      margin-left: 280px;
+      flex: 1;
+      max-width: 860px;
+      padding: 48px 56px 120px;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 56px 0 20px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h2:first-of-type { border-top: none; margin-top: 0; }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 32px 0 12px;
+      color: var(--accent);
+    }
+
+    h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 20px 0 8px;
+    }
+
+    p { margin: 0 0 16px; color: var(--text); }
+
+    ul, ol {
+      margin: 0 0 16px;
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-elevated);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    pre {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 0 0 20px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    /* --- COMPONENTS --- */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-done { background: var(--green-dim); color: var(--green); }
+    .badge-todo { background: var(--orange-dim); color: var(--orange); }
+    .badge-hook { background: #1e1b4b; color: var(--purple); }
+    .badge-skill { background: #1e3a5f; color: var(--cyan); }
+    .badge-agent { background: #3b1a1a; color: var(--red); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 24px;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:hover td { background: var(--bg-elevated); }
+
+    .callout {
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 0 0 20px;
+      border-left: 3px solid;
+    }
+
+    .callout-info { background: #0f1d3a; border-color: var(--accent); }
+    .callout-warn { background: #1f1505; border-color: var(--orange); }
+    .callout-tip { background: #071f12; border-color: var(--green); }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .callout-info strong { color: var(--accent); }
+    .callout-warn strong { color: var(--orange); }
+    .callout-tip strong { color: var(--green); }
+
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .flow-step {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .flow-step .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .flow-step .command {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .flow-arrow {
+      font-size: 20px;
+      color: var(--text-muted);
+      padding: 0 8px;
+    }
+
+    .file-tree {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.8;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 0 0 20px;
+    }
+
+    .file-tree .dir { color: var(--accent); }
+    .file-tree .file { color: var(--text); }
+    .file-tree .comment { color: var(--text-muted); }
+
+    .playbook-step {
+      counter-increment: playbook;
+      position: relative;
+      padding-left: 48px;
+      margin-bottom: 28px;
+    }
+
+    .playbook-step::before {
+      content: counter(playbook);
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .playbook { counter-reset: playbook; }
+
+    @media (max-width: 900px) {
+      nav { display: none; }
+      main { margin-left: 0; padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <h1><span>Ship</span>lens</h1>
+    <p>Harness SDD Guide</p>
+  </div>
+
+  <div class="section-title">Vue d'ensemble</div>
+  <a href="#overview">Architecture du harness</a>
+  <a href="#pipeline">Pipeline SDD</a>
+  <a href="#double-loop">Double boucle</a>
+
+  <div class="section-title">Playbooks</div>
+  <a href="#playbook-feature">Implémenter une feature</a>
+  <a href="#playbook-spec">Écrire une spec</a>
+  <a href="#playbook-debug">Investiguer un bug</a>
+  <a href="#playbook-domain">Explorer le domaine</a>
+
+  <div class="section-title">Référence</div>
+  <a href="#skills">Skills (slash commands)</a>
+  <a href="#agents">Agents</a>
+  <a href="#hooks">Hooks</a>
+  <a href="#scripts">Scripts</a>
+  <a href="#dsl">DSL de Spec</a>
+  <a href="#file-structure">Arborescence</a>
+
+  <div class="section-title">Avancement</div>
+  <a href="#status">État du harness</a>
+</nav>
+
+<main>
+
+<!-- ============================================================ -->
+<h2 id="overview">Architecture du harness</h2>
+
+<p>Le harness Shiplens est l'infrastructure qui entoure le modèle IA pour garantir que le code produit est conforme aux specs, testé, et architecturalement correct. Il repose sur trois piliers :</p>
+
+<table>
+  <tr>
+    <th>Pilier</th>
+    <th>Quoi</th>
+    <th>Exemples</th>
+  </tr>
+  <tr>
+    <td><span class="badge badge-skill">Skills</span></td>
+    <td>Prompts spécialisés qui guident le raisonnement</td>
+    <td><code>/product-manager</code>, <code>/tdd</code>, <code>/architecture</code></td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-agent">Agents</span></td>
+    <td>Sous-processus autonomes pour des tâches complexes</td>
+    <td><code>feature-planner</code>, <code>feature-implementer</code></td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-hook">Hooks</span></td>
+    <td>Scripts déterministes qui bloquent ou enrichissent</td>
+    <td>Pre-commit gate, no barrel exports, require-spec</td>
+  </tr>
+</table>
+
+<div class="callout callout-info">
+  <strong>Principe directeur</strong>
+  Ce qui est scriptable et déterministe → hooks + scripts bash.<br>
+  Ce qui nécessite du raisonnement → skills + agents.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="pipeline">Pipeline SDD</h2>
+
+<p>Chaque feature traverse un pipeline en 3 étapes. Chaque étape produit un artefact persisté sur le filesystem.</p>
+
+<div class="flow-diagram">
+  <div class="flow-step">
+    <div class="label">Étape 1</div>
+    <div class="command">/product-manager</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <div class="label">Étape 2</div>
+    <div class="command">/implement-feature</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <div class="label">Étape 3</div>
+    <div class="command">/ship</div>
+  </div>
+</div>
+
+<table>
+  <tr>
+    <th>Étape</th>
+    <th>Entrée</th>
+    <th>Sortie</th>
+    <th>Artefact</th>
+  </tr>
+  <tr>
+    <td><code>/product-manager</code></td>
+    <td>Description fonctionnelle</td>
+    <td>Spec DSL validée</td>
+    <td><code>docs/specs/&lt;feature&gt;.md</code></td>
+  </tr>
+  <tr>
+    <td><code>/implement-feature</code></td>
+    <td>Chemin vers la spec</td>
+    <td>Code + tests verts</td>
+    <td><code>docs/plans/</code> + <code>docs/reports/</code></td>
+  </tr>
+  <tr>
+    <td><code>/ship</code></td>
+    <td>Code prêt</td>
+    <td>Commit + push</td>
+    <td>Git history</td>
+  </tr>
+</table>
+
+<p>Le statut de chaque feature est tracké dans <code>docs/feature-tracker.md</code>.</p>
+
+<!-- ============================================================ -->
+<h2 id="double-loop">Double boucle Spec/TDD</h2>
+
+<p>Le cœur du SDD. Deux boucles imbriquées qui garantissent la conformité spec → code.</p>
+
+<h3>Boucle externe (SDD)</h3>
+<p>Un <strong>test d'acceptance</strong> est écrit depuis la spec DSL <em>avant toute implémentation</em>. Il reste <span style="color: var(--red);">RED</span> pendant tout le développement et passe <span style="color: var(--green);">GREEN</span> à la fin. C'est la preuve que la spec est satisfaite.</p>
+
+<pre><code>tests/acceptance/&lt;feature-name&gt;.acceptance.spec.ts
+
+describe('Create Shipment (acceptance)', () =&gt; {
+  it('valid: creates with pending status', async () =&gt; {
+    // arrange → act → assert
+  })
+
+  it('no recipient: rejects', async () =&gt; {
+    // arrange → act → assert
+  })
+})</code></pre>
+
+<h3>Boucle interne (TDD)</h3>
+<p>Pour chaque fichier du plan, le cycle classique <span style="color: var(--red);">RED</span> → <span style="color: var(--green);">GREEN</span> → <span style="color: var(--accent);">REFACTOR</span>. Inside-out : Entity → Use Case → Interface Adapters → Module Wiring.</p>
+
+<div class="callout callout-tip">
+  <strong>Deux modes TDD</strong>
+  <strong>Interactif</strong> (<code>/tdd</code>) : tu codes, Claude guide. Validation humaine entre chaque phase.<br>
+  <strong>Autonome</strong> (<code>feature-implementer</code>) : l'agent code seul. Les acceptance criteria de la spec servent de validation.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="playbook-feature">Playbook : Implémenter une feature</h2>
+
+<div class="playbook">
+
+<div class="playbook-step">
+  <h4>Écrire la spec</h4>
+  <pre><code>/product-manager</code></pre>
+  <p>Le PM challenge ta demande, identifie les edge cases, produit une spec DSL dans <code>docs/specs/</code>. Il évalue INVEST, vérifie le DoR, et attend ta validation.</p>
+</div>
+
+<div class="playbook-step">
+  <h4>Lancer l'implémentation</h4>
+  <pre><code>/implement-feature docs/specs/ma-feature.md</code></pre>
+  <p>L'orchestrateur :</p>
+  <ol>
+    <li>Charge la spec</li>
+    <li>Lance le <code>feature-planner</code> → produit un plan structuré</li>
+    <li>Te présente le plan et attend ta validation</li>
+    <li>Lance le <code>feature-implementer</code> qui :
+      <ul>
+        <li>Écrit le test d'acceptance (boucle externe, RED)</li>
+        <li>Implémente en TDD inside-out (boucle interne)</li>
+        <li>Vérifie que le test d'acceptance passe (GREEN)</li>
+        <li>Self-review + fix loop</li>
+      </ul>
+    </li>
+    <li>Produit un rapport final</li>
+  </ol>
+</div>
+
+<div class="playbook-step">
+  <h4>Vérifier la couverture spec</h4>
+  <pre><code>./scripts/verify-spec-coverage.sh docs/specs/ma-feature.md</code></pre>
+  <p>Vérifie que chaque scenario de la spec a un test correspondant dans le test d'acceptance.</p>
+</div>
+
+<div class="playbook-step">
+  <h4>Ship</h4>
+  <pre><code>/ship</code></pre>
+  <p>Lance les tests, stage les fichiers, commit avec message conventionnel, push. Le hook pre-commit bloque si les tests échouent.</p>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2 id="playbook-spec">Playbook : Écrire une spec</h2>
+
+<div class="playbook">
+
+<div class="playbook-step">
+  <h4>Décrire le besoin</h4>
+  <p>Lance <code>/product-manager</code> avec ta description. Sois aussi vague ou précis que tu veux — le PM va challenger.</p>
+  <pre><code>/product-manager "Je veux pouvoir créer un envoi avec un destinataire"</code></pre>
+</div>
+
+<div class="playbook-step">
+  <h4>Répondre aux questions</h4>
+  <p>Le PM va poser des questions sur les edge cases, les contraintes, les utilisateurs concernés. Réponds honnêtement — c'est là que la qualité de la spec se joue.</p>
+</div>
+
+<div class="playbook-step">
+  <h4>Valider la spec</h4>
+  <p>Le PM produit un fichier dans <code>docs/specs/</code> au format DSL. Relis-le. Si un scenario manque ou est faux, dis-le. La spec est modifiable tant qu'elle n'est pas implémentée.</p>
+</div>
+
+</div>
+
+<h3>Format DSL (au lieu de Gherkin)</h3>
+<p>Le projet utilise un DSL custom plus compact que Gherkin (~40% moins de tokens, pas besoin de Cucumber) :</p>
+<pre><code># Créer un envoi
+
+## Contexte
+L'expéditeur doit pouvoir créer un envoi avec un destinataire et un colis.
+
+## Rules
+- envoi requires: adresse expéditeur, adresse destinataire, poids colis
+- nouvel envoi status: "pending"
+- numéro de suivi format: "SL-XXXXXXXX"
+- destinataire est obligatoire
+- poids max: 30kg
+
+## Scenarios
+- valid: {expéditeur: "123 Rue A", destinataire: "456 Rue B", poids: 2.5kg}
+    → status "pending" + tracking "SL-*"
+- no recipient: {expéditeur: "123 Rue A"}
+    → reject "Le destinataire est obligatoire"
+- overweight: {expéditeur: "123 Rue A", destinataire: "456 Rue B", poids: 35kg}
+    → reject "Le poids ne peut pas dépasser 30kg"
+
+## Hors scope
+- Calcul du prix de l'envoi
+- Choix du transporteur</code></pre>
+
+<div class="callout callout-info">
+  <strong>Mapping DSL → Tests</strong>
+  Chaque <strong>Rule</strong> devient un <code>describe</code> block dans les tests.<br>
+  Chaque <strong>Scenario</strong> devient un <code>it</code> block. La spec SE LIT comme le test.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="playbook-debug">Playbook : Investiguer un bug</h2>
+
+<div class="playbook">
+
+<div class="playbook-step">
+  <h4>Décrire le symptôme</h4>
+  <pre><code>/debug-workflow "Le endpoint POST /shipments retourne 500 quand le poids est décimal"</code></pre>
+</div>
+
+<div class="playbook-step">
+  <h4>Analyse progressive</h4>
+  <p>Le debug-workflow analyse en cercles concentriques :</p>
+  <ul>
+    <li><strong>Ring 0</strong> — Symptôme : entity/usecase/controller où le bug se manifeste</li>
+    <li><strong>Ring 1</strong> — Dépendances directes : gateway, usecase, presenter</li>
+    <li><strong>Ring 2</strong> — Data flow : Prisma queries, entity state</li>
+    <li><strong>Ring 3</strong> — Infra : NestJS wiring, Prisma schema, env</li>
+  </ul>
+</div>
+
+<div class="playbook-step">
+  <h4>Classifier et prioriser</h4>
+  <p>Les bugs trouvés sont classés P0 → P3. Toi seul valides la priorisation — tu as le contexte business.</p>
+</div>
+
+<div class="playbook-step">
+  <h4>Plan de branches</h4>
+  <p>Un plan de branches indépendantes est proposé. Chaque branche : compile seule, tests verts seule, pas de conflit.</p>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2 id="playbook-domain">Playbook : Explorer le domaine</h2>
+
+<div class="playbook">
+
+<div class="playbook-step">
+  <h4>Event Storming sur un bounded context</h4>
+  <pre><code>/event-storming shipping</code></pre>
+  <p>Analyse le code du module, découvre les domain events, commands, entities, business rules. Produit un document dans <code>docs/ddd/event-storming/</code> et enrichit le glossaire <code>docs/ddd/ubiquitous-language.md</code>.</p>
+</div>
+
+<div class="playbook-step">
+  <h4>Explorer avant de coder (mode exploration)</h4>
+  <pre><code>/event-storming explore "Le système doit permettre de suivre des colis en temps réel"</code></pre>
+  <p>Pas de code existant nécessaire. Le mode exploration propose des bounded contexts, entités, events et commands depuis un brief fonctionnel. Alimente directement <code>/product-manager</code> pour écrire les specs.</p>
+</div>
+
+<div class="playbook-step">
+  <h4>Extraire les règles métier</h4>
+  <pre><code>/business-rules-extractor shipping</code></pre>
+  <p>Scan le module, produit deux tableaux :</p>
+  <ul>
+    <li><strong>Vue Product</strong> — langage naturel, zéro jargon technique</li>
+    <li><strong>Vue Dev</strong> — type de règle + source exacte (fichier:ligne) + couverture test</li>
+  </ul>
+</div>
+
+<div class="playbook-step">
+  <h4>Audit global</h4>
+  <pre><code>/event-storming audit</code></pre>
+  <p>Analyse tous les bounded contexts, produit un Context Map global avec les patterns de Vaughn Vernon (Partnership, Customer-Supplier, etc.).</p>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2 id="skills">Référence : Skills</h2>
+
+<table>
+  <tr>
+    <th>Commande</th>
+    <th>Rôle</th>
+    <th>Quand l'utiliser</th>
+  </tr>
+  <tr>
+    <td><code>/product-manager</code></td>
+    <td>Spec writer</td>
+    <td>Définir une feature, rédiger specs INVEST + DSL</td>
+  </tr>
+  <tr>
+    <td><code>/implement-feature</code></td>
+    <td>Orchestrateur SDD</td>
+    <td>Implémenter une feature complète depuis une spec</td>
+  </tr>
+  <tr>
+    <td><code>/tdd</code></td>
+    <td>TDD interactif</td>
+    <td>Écrire ou modifier du code manuellement (RED-GREEN-REFACTOR)</td>
+  </tr>
+  <tr>
+    <td><code>/architecture</code></td>
+    <td>Clean Architecture</td>
+    <td>Créer module, entité, use case, presenter, gateway</td>
+  </tr>
+  <tr>
+    <td><code>/ddd</code></td>
+    <td>DDD stratégique</td>
+    <td>Découper le domaine, définir l'ubiquitous language</td>
+  </tr>
+  <tr>
+    <td><code>/event-storming</code></td>
+    <td>Event Storming</td>
+    <td>Session Big Picture sur un bounded context</td>
+  </tr>
+  <tr>
+    <td><code>/business-rules-extractor</code></td>
+    <td>Extracteur de règles</td>
+    <td>Documenter les règles métier d'un module</td>
+  </tr>
+  <tr>
+    <td><code>/debug-workflow</code></td>
+    <td>Investigation</td>
+    <td>Bug discovery → classification → plan de branches</td>
+  </tr>
+  <tr>
+    <td><code>/ship</code></td>
+    <td>Commit &amp; push</td>
+    <td>Commit conventionnel + push (tests vérifiés)</td>
+  </tr>
+  <tr>
+    <td><code>/worktree</code></td>
+    <td>Worktrees Git</td>
+    <td>Gérer les branches parallèles avec isolation</td>
+  </tr>
+  <tr>
+    <td><code>/skill-creator</code></td>
+    <td>Créateur de skills</td>
+    <td>Créer ou modifier un skill pour le harness</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="agents">Référence : Agents</h2>
+
+<p>Les agents sont des sous-processus autonomes lancés par les skills. Tu n'as pas besoin de les appeler directement — les skills s'en chargent.</p>
+
+<table>
+  <tr>
+    <th>Agent</th>
+    <th>Lancé par</th>
+    <th>Permissions</th>
+    <th>Modèle</th>
+  </tr>
+  <tr>
+    <td><code>feature-planner</code></td>
+    <td><code>/implement-feature</code></td>
+    <td>Read-only (Read, Glob, Grep, LS)</td>
+    <td>Opus</td>
+  </tr>
+  <tr>
+    <td><code>feature-implementer</code></td>
+    <td><code>/implement-feature</code></td>
+    <td>Full (Read, Write, Edit, Bash, Glob, Grep, LS)</td>
+    <td>Opus</td>
+  </tr>
+  <tr>
+    <td><code>event-storming</code></td>
+    <td><code>/event-storming</code></td>
+    <td>Read + Bash (Read, Glob, Grep, LS, Bash)</td>
+    <td>Opus</td>
+  </tr>
+  <tr>
+    <td><code>business-rules-extractor</code></td>
+    <td><code>/business-rules-extractor</code></td>
+    <td>Read-only (Read, Glob, Grep, LS)</td>
+    <td>Sonnet</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="hooks">Référence : Hooks</h2>
+
+<p>Les hooks sont des scripts bash déterministes configurés dans <code>.claude/settings.json</code>. Ils bloquent ou enrichissent les actions de Claude.</p>
+
+<table>
+  <tr>
+    <th>Hook</th>
+    <th>Event</th>
+    <th>Trigger</th>
+    <th>Effet</th>
+  </tr>
+  <tr>
+    <td><code>pre-commit-gate.sh</code></td>
+    <td>PreToolUse</td>
+    <td><code>git commit</code></td>
+    <td>Bloque le commit si <code>pnpm test</code> échoue</td>
+  </tr>
+  <tr>
+    <td><code>no-barrel-exports.sh</code></td>
+    <td>PreToolUse</td>
+    <td>Write/Edit sur <code>index.ts</code></td>
+    <td>Bloque la création de barrel exports</td>
+  </tr>
+  <tr>
+    <td><code>require-spec.sh</code></td>
+    <td>PreToolUse</td>
+    <td>Lancement de <code>feature-implementer</code></td>
+    <td>Bloque si la spec n'existe pas ou est incomplète</td>
+  </tr>
+  <tr>
+    <td><code>protect-main-branch.sh</code></td>
+    <td>PreToolUse</td>
+    <td><code>git commit</code> sur main/master</td>
+    <td>Bloque et redirige vers <code>/worktree</code></td>
+  </tr>
+  <tr>
+    <td><code>session-context.sh</code></td>
+    <td>SessionStart</td>
+    <td>Début de session</td>
+    <td>Injecte le statut des features en contexte</td>
+  </tr>
+</table>
+
+<div class="callout callout-warn">
+  <strong>Dépendance unique</strong>
+  Tous les hooks utilisent <code>parse-json.sh</code> (python3 inline) pour parser le JSON stdin. Aucune dépendance externe (pas de jq).
+</div>
+
+<!-- ============================================================ -->
+<h2 id="scripts">Référence : Scripts</h2>
+
+<table>
+  <tr>
+    <th>Script</th>
+    <th>Usage</th>
+    <th>Test</th>
+  </tr>
+  <tr>
+    <td><code>scripts/verify-spec-coverage.sh</code></td>
+    <td><code>./scripts/verify-spec-coverage.sh docs/specs/ma-feature.md</code></td>
+    <td><code>tests/scripts/verify-spec-coverage.test.sh</code></td>
+  </tr>
+  <tr>
+    <td><code>scripts/backup-database.sh</code></td>
+    <td><code>pnpm db:backup</code></td>
+    <td>—</td>
+  </tr>
+  <tr>
+    <td><code>scripts/hooks/parse-json.sh</code></td>
+    <td>Helper interne pour les hooks</td>
+    <td>Testé via les tests des hooks</td>
+  </tr>
+</table>
+
+<h3>Lancer les tests des scripts</h3>
+<pre><code># Tous les tests de hooks
+bash tests/scripts/no-barrel-exports.test.sh
+bash tests/scripts/require-spec.test.sh
+bash tests/scripts/session-context.test.sh
+bash tests/scripts/verify-spec-coverage.test.sh
+bash tests/scripts/protect-main-branch.test.sh
+
+# Tests applicatifs (Vitest)
+pnpm test</code></pre>
+
+<!-- ============================================================ -->
+<h2 id="dsl">Référence : DSL de Spec</h2>
+
+<h3>Pourquoi pas Gherkin ?</h3>
+<ul>
+  <li>~40% plus compact (meilleur ratio signal/tokens)</li>
+  <li>Pas de binding layer (Cucumber) nécessaire</li>
+  <li>Directement traduisible en test sans ambiguïté</li>
+</ul>
+
+<h3>Structure</h3>
+<pre><code># [Titre — verbe d'action + objet]
+
+## Contexte
+[Pourquoi cette feature existe, 2-3 phrases max]
+
+## Rules
+- [invariant métier 1]
+- [invariant métier 2]
+
+## Scenarios
+- [label]: {inputs} → outputs
+- [label]: {inputs} → reject "message d'erreur"
+
+## Hors scope
+- [ce qu'on ne fait PAS]
+
+## Glossaire
+| Terme | Définition |
+|-------|------------|
+| [mot] | [sens précis] |</code></pre>
+
+<h3>Conventions de syntaxe</h3>
+<table>
+  <tr><th>Syntaxe</th><th>Signification</th></tr>
+  <tr><td><code>→ reject "message"</code></td><td>Le système refuse avec ce message (français)</td></tr>
+  <tr><td><code>→ status "value"</code></td><td>L'entité résultante a ce statut</td></tr>
+  <tr><td><code>→ property "value"</code></td><td>L'entité a cette propriété</td></tr>
+  <tr><td><code>+</code></td><td>Combiner plusieurs sorties</td></tr>
+  <tr><td><code>*</code></td><td>Wildcard dans les valeurs</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="file-structure">Arborescence</h2>
+
+<div class="file-tree">
+<span class="dir">.claude/</span>
+├── <span class="file">CLAUDE.md</span>                     <span class="comment">← Règles projet (chargé au boot)</span>
+├── <span class="file">settings.json</span>                 <span class="comment">← Config hooks</span>
+├── <span class="dir">rules/</span>
+│   └── <span class="file">coding-standards.md</span>       <span class="comment">← Standards de code</span>
+├── <span class="dir">skills/</span>
+│   ├── <span class="dir">product-manager/</span>
+│   │   ├── <span class="file">SKILL.md</span>
+│   │   └── <span class="dir">rules/</span>                  <span class="comment">← spec-dsl, spec-format, invest, dor, dod</span>
+│   ├── <span class="dir">implement-feature/</span>SKILL.md
+│   ├── <span class="dir">tdd/</span>SKILL.md
+│   ├── <span class="dir">architecture/</span>SKILL.md
+│   ├── <span class="dir">ddd/</span>SKILL.md
+│   ├── <span class="dir">event-storming/</span>SKILL.md
+│   ├── <span class="dir">business-rules-extractor/</span>SKILL.md
+│   ├── <span class="dir">debug-workflow/</span>SKILL.md
+│   ├── <span class="dir">ship/</span>SKILL.md
+│   ├── <span class="dir">worktree/</span>SKILL.md
+│   └── <span class="dir">skill-creator/</span>SKILL.md
+└── <span class="dir">agents/</span>
+    ├── <span class="file">feature-planner.md</span>
+    ├── <span class="file">feature-implementer.md</span>
+    ├── <span class="file">event-storming.md</span>
+    └── <span class="file">business-rules-extractor.md</span>
+
+<span class="dir">docs/</span>
+├── <span class="file">feature-tracker.md</span>            <span class="comment">← Statut de chaque feature</span>
+├── <span class="file">harness-guide.html</span>            <span class="comment">← Ce document</span>
+├── <span class="dir">specs/</span>                          <span class="comment">← Specs DSL (source de vérité)</span>
+├── <span class="dir">plans/</span>                          <span class="comment">← Plans d'implémentation persistés</span>
+├── <span class="dir">reports/</span>                        <span class="comment">← Rapports d'implémentation</span>
+├── <span class="dir">ddd/</span>
+│   ├── <span class="file">ubiquitous-language.md</span>     <span class="comment">← Glossaire métier unique</span>
+│   └── <span class="dir">event-storming/</span>             <span class="comment">← Documents ES par BC</span>
+└── <span class="dir">business-rules/</span>                 <span class="comment">← Règles métier extraites</span>
+
+<span class="dir">scripts/</span>
+├── <span class="file">backup-database.sh</span>
+├── <span class="file">verify-spec-coverage.sh</span>
+└── <span class="dir">hooks/</span>
+    ├── <span class="file">parse-json.sh</span>              <span class="comment">← Helper JSON (python3, zero dépendance)</span>
+    ├── <span class="file">pre-commit-gate.sh</span>         <span class="comment">← Bloque commit si tests échouent</span>
+    ├── <span class="file">no-barrel-exports.sh</span>       <span class="comment">← Bloque index.ts</span>
+    ├── <span class="file">require-spec.sh</span>            <span class="comment">← Bloque impl sans spec</span>
+    ├── <span class="file">protect-main-branch.sh</span>     <span class="comment">← Bloque commit sur main/master</span>
+    └── <span class="file">session-context.sh</span>         <span class="comment">← Injecte tracker au démarrage</span>
+
+<span class="dir">tests/</span>
+├── <span class="dir">acceptance/</span>                     <span class="comment">← Tests d'acceptance (boucle externe)</span>
+├── <span class="dir">builders/</span>                       <span class="comment">← Test data builders</span>
+├── <span class="dir">modules/</span>                        <span class="comment">← Tests unitaires (miroir de src/)</span>
+├── <span class="dir">shared/</span>                         <span class="comment">← Tests fondations</span>
+└── <span class="dir">scripts/</span>                        <span class="comment">← Tests des hooks et scripts</span>
+    ├── <span class="file">no-barrel-exports.test.sh</span>
+    ├── <span class="file">require-spec.test.sh</span>
+    ├── <span class="file">session-context.test.sh</span>
+    ├── <span class="file">verify-spec-coverage.test.sh</span>
+    └── <span class="file">protect-main-branch.test.sh</span>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="status">État du harness</h2>
+
+<table>
+  <tr>
+    <th>Item</th>
+    <th>Description</th>
+    <th>Statut</th>
+  </tr>
+  <tr>
+    <td>B1</td>
+    <td>Boucle externe exécutable (test d'acceptance)</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>B2</td>
+    <td>Vérification spec-code alignment</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>B3</td>
+    <td>State persistence (plans + rapports)</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>B4</td>
+    <td>Feature tracker</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>H1</td>
+    <td>Hook pre-commit : tests verts obligatoires</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>H2</td>
+    <td>Hook no barrel exports</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>H3</td>
+    <td>Hook require spec avant implémentation</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>H4</td>
+    <td>Hook session start : contexte features</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>B5</td>
+    <td>Connexion Event Storming → Specs</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>I2</td>
+    <td>Ubiquitous language centralisé</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>I3</td>
+    <td>TDD dual-mode explicite dans les skills</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>I4</td>
+    <td>Walking skeleton dans le planner</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>I5</td>
+    <td>Mode exploration Event Storming</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+  <tr>
+    <td>I6</td>
+    <td>Worktree intégré au pipeline</td>
+    <td><span class="badge badge-done">fait</span></td>
+  </tr>
+</table>
+
+<div class="callout callout-tip">
+  <strong>Maturité SDD</strong>
+  Le harness est au niveau <strong>Spec-First</strong> sur l'échelle Böckeler. Les specs existent avant le code, la double boucle est exécutable, les gates sont déterministes, le domaine alimente les specs via l'ubiquitous language. Pour atteindre <strong>Spec-Anchored</strong>, il reste les métriques de harness (first-try success rate, iterations/feature).
+</div>
+
+</main>
+
+<script>
+document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelectorAll('nav a').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+  });
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('nav a').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+document.querySelectorAll('h2[id]').forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

@@ -178,6 +178,26 @@ Le cycle RED-GREEN-REFACTOR fait émerger le design. Le ticket décrit le QUOI (
 
 ---
 
+## Deux modes de fonctionnement
+
+Le TDD a deux modes qui coexistent selon le contexte :
+
+### Mode interactif (ce skill)
+
+Quand **toi** tu codes. Claude guide, propose, et attend ta validation entre chaque phase RED/GREEN/REFACTOR. Tu gardes le controle sur chaque decision.
+
+Declenchement : `/tdd` ou quand tu demandes de coder directement.
+
+### Mode autonome (feature-implementer agent)
+
+Quand **l'agent** code. Il utilise les memes principes TDD mais sans validation humaine entre chaque phase. Les acceptance criteria de la spec servent de validation a la place de l'humain. L'agent boucle seul, se relit, et produit un rapport.
+
+Declenchement : `/implement-feature` qui lance l'agent `feature-implementer`.
+
+Les deux modes respectent les memes regles : baby steps, code minimal en GREEN, tests d'etat (Detroit School), mocks uniquement pour les I/O.
+
+---
+
 ## Anti-patterns à bloquer
 
 - ❌ Code prod sans test rouge
