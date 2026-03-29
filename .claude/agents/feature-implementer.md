@@ -84,40 +84,80 @@ Le test d'acceptance est le PREMIER fichier cree. Rien d'autre ne commence tant 
 
 ## Phase 1 : IMPLEMENT (TDD inside-out)
 
-Pour CHAQUE fichier du plan, suivre ce cycle :
+Pour CHAQUE fichier du plan, suivre le cycle TDD strict ci-dessous.
 
-### 1. Expliquer
+### Principes TDD (memes contraintes que le skill `/tdd`)
+
+**State-based testing (Detroit School)** : On teste le resultat observable, pas les interactions internes.
+
+| Principe | Explication |
+|----------|-------------|
+| **Tester l'etat** | Verifier le resultat final, pas comment on y arrive |
+| **Inside-Out** | Commencer par le domaine, remonter vers l'exterieur |
+| **Mocks minimaux** | Uniquement pour les I/O externes (gateways) — jamais pour la logique interne |
+| **Baby steps** | Le plus petit test possible qui echoue. Un seul comportement par test |
+
+**Quand mocker :**
+- Gateways (API, base de donnees, fichiers) → oui
+- Logique metier interne, collaborations entre objets du domaine → JAMAIS
+
+> "The simplest thing that could possibly work." — Kent Beck
+
+> "As the tests get more specific, the code gets more generic." — Robert C. Martin
+
+### Cycle par fichier
+
+#### 1. Expliquer
 
 Avant de coder, expliquer :
 - Ce que tu vas creer et pourquoi
 - Comment ca s'inscrit dans l'architecture
 - Quel comportement le test va verifier
 
-### 2. RED — Test qui echoue
+#### 2. RED — Test qui echoue
 
 - Creer le fichier de test dans `tests/` (meme chemin miroir)
-- Ecrire UN test minimal qui decrit le comportement attendu
+- Ecrire **UN SEUL** test minimal qui decrit **UN SEUL** comportement
+- Du naif au complet : cas simple d'abord, edge cases apres
+- Pas d'anticipation : un cycle a la fois
 - Utiliser les builders de `tests/builders/` pour les donnees de test
 - Utiliser les stubs de `testing/good-path/` et `testing/bad-path/` pour les gateways
 - Lancer `pnpm test -- [path-du-test]`
 - Confirmer l'echec
 
-### 3. GREEN — Code minimal
+#### 3. GREEN — Code minimal
 
 - Creer le fichier source
-- Ecrire le code MINIMAL pour faire passer le test
+- Ecrire le code **MINIMAL** pour faire passer le test — rien de plus
+- Pas d'optimisation prematuree
+- Valeurs en dur acceptees si suffisantes a ce stade
 - Lancer `pnpm test -- [path-du-test]`
 - Confirmer le succes
 
-### 4. REFACTOR (si necessaire)
+#### 4. REFACTOR
 
-- Simplifier sans changer le comportement
-- Relancer les tests pour confirmer
+- Ordre de priorite : **Supprimer > Simplifier > Reorganiser**
+- KISS : la solution la plus simple
+- YAGNI : supprimer ce qui n'est pas necessaire
+- DRY : factoriser uniquement si duplication reelle (pas preemptive)
+- Relancer les tests pour confirmer que le comportement est inchange
 
-### 5. Iterer
+#### 5. Iterer
 
-- Ajouter le prochain test (nouveau comportement)
+- Ajouter le prochain test (nouveau comportement, toujours un seul)
 - Repeter RED-GREEN-REFACTOR
+- Ne JAMAIS ecrire plusieurs tests d'un coup
+
+### Points de pause (decision critique)
+
+Sur les elements suivants, **PAUSE et demander validation a l'utilisateur** avant de continuer :
+
+- Choix de design d'une entity (quels champs, quelle logique interne)
+- Signature d'un gateway port (contrat I/O)
+- Strategie d'erreur (quelles BusinessRuleViolation creer)
+- Schema Prisma (model, relations)
+
+Pour le reste (usecases, presenters, controllers, wiring), l'agent est autonome.
 
 ### Ordre d'implementation (inside-out)
 
