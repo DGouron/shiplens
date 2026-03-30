@@ -38,5 +38,6 @@ import { TokenEncryptionInCryptoGateway } from './interface-adapters/gateways/to
         new TokenEncryptionInCryptoGateway(process.env.ENCRYPTION_KEY ?? ''),
     },
   ],
+  exports: [LinearWorkspaceConnectionGateway, TokenEncryptionGateway],
 })
 export class IdentityModule {}

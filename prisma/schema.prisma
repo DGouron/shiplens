@@ -17,3 +17,16 @@ model LinearWorkspaceConnection {
   connectedAt           DateTime
   updatedAt             DateTime @updatedAt
 }
+
+model SelectedTeam {
+  id       String @id @default(uuid())
+  teamId   String @unique
+  teamName String
+}
+
+model SelectedProject {
+  id          String @id @default(uuid())
+  projectId   String @unique
+  projectName String
+  teamId      String
+}
