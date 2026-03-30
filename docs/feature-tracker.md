@@ -2,7 +2,7 @@
 
 | Feature | Spec | BC | Status | Date |
 |---------|------|----|--------|------|
-| Connecter son workspace Linear | [connect-linear-workspace](specs/connect-linear-workspace.md) | Identity | drafted | 2026-03-29 |
+| Connecter son workspace Linear | [connect-linear-workspace](specs/connect-linear-workspace.md) | Identity | implemented | 2026-03-30 |
 | Selectionner les equipes a synchroniser | [select-teams-to-sync](specs/select-teams-to-sync.md) | Identity | drafted | 2026-03-29 |
 | Synchroniser les donnees de reference | [sync-linear-reference-data](specs/sync-linear-reference-data.md) | Sync | drafted | 2026-03-29 |
 | Synchroniser les issues et cycles | [sync-linear-data](specs/sync-linear-data.md) | Sync | drafted | 2026-03-29 |

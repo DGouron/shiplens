@@ -5,3 +5,15 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+model LinearWorkspaceConnection {
+  id                    String   @id @default(uuid())
+  workspaceId           String   @unique
+  workspaceName         String
+  encryptedAccessToken  String
+  encryptedRefreshToken String
+  grantedScopes         String
+  status                String
+  connectedAt           DateTime
+  updatedAt             DateTime @updatedAt
+}
