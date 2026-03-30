@@ -125,11 +125,29 @@ CRITERES D'ACCEPTANCE :
   [rule] -> couvert par [test]
   [scenario] -> couvert par [test]
   ...
-
-PROCHAINES ETAPES :
-  - [ ] /ship pour commit + push
-  - [ ] Migration Prisma si schema modifie
 ```
+
+### Etape 5 : MISE A JOUR SPEC ET TRACKER (OBLIGATOIRE)
+
+**Cette etape est NON-NEGOCIABLE. Elle doit etre executee avant tout commit.**
+
+1. **Mettre a jour la spec** (`docs/specs/<feature>.md`) :
+   - Ajouter `## Status: implemented` apres le titre
+   - Ajouter une section `## Implementation` avec :
+     - Bounded Context
+     - Artefacts (entity, use cases, controller, gateways, migration)
+     - Endpoints (methode, route, use case)
+     - Decisions architecturales prises
+
+2. **Mettre a jour le feature tracker** (`docs/feature-tracker.md`) :
+   - Changer le status de `drafted` ou `planned` vers `implemented`
+   - Mettre a jour la date
+
+### Etape 6 : SHIP (OBLIGATOIRE)
+
+Utiliser le skill `/ship` pour commit + push. Ne JAMAIS committer manuellement.
+
+Le workflow complet est : implement -> update spec -> update tracker -> /ship.
 
 ---
 
@@ -138,7 +156,8 @@ PROCHAINES ETAPES :
 - TOUJOURS presenter le plan avant d'implementer
 - JAMAIS coder sans validation utilisateur du plan
 - Si la spec est vague, REFUSER et rediriger vers `/product-manager`
-- Ne PAS commiter — l'utilisateur decide quand via `/ship`
+- TOUJOURS mettre a jour la spec et le tracker AVANT de committer
+- TOUJOURS utiliser `/ship` pour le commit — JAMAIS de commit manuel
 
 ---
 
@@ -150,3 +169,5 @@ PROCHAINES ETAPES :
 | Plan trop large (> 20 fichiers) | Proposer un decoupage en iterations |
 | Tests echouent apres 3 fix loops | Remonter les issues non resolues dans le rapport |
 | Fichier existant en conflit | Demander a l'utilisateur : modifier ou creer nouveau module |
+| Spec non mise a jour avant commit | Hook bloque le commit — mettre a jour d'abord |
+| Tracker non mis a jour avant commit | Hook bloque le commit — mettre a jour d'abord |
