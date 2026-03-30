@@ -20,6 +20,10 @@ Etant allergique aux commentaires technique dans le code, tu n'en mettra uniquem
 - **Lisible comme de la prose** : Si tu dois relire une ligne deux fois, réécris-la. (Clean Code, Uncle Bob)
 - **Pas de sur-abstraction** : 3 lignes claires > 1 abstraction maline. YAGNI prime.
 
+## Quality Gates
+
+- **Zéro erreur TypeScript** : `npx tsc --noEmit` doit passer sans aucune erreur avant tout commit. Si des erreurs pré-existantes sont détectées, les corriger dans le même commit ou un commit dédié.
+
 ## Standards techniques
 
 Voir `.claude/rules/coding-standards.md` pour les règles détaillées : naming, imports, TypeScript, testing, architecture, langue, anti-overengineering.

@@ -7,6 +7,12 @@ import {
   type WorkspaceInfo,
 } from '../../entities/linear-workspace-connection/linear-api.gateway.js';
 
+interface LinearTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  scope?: string;
+}
+
 @Injectable()
 export class LinearApiInHttpGateway extends LinearApiGateway {
   private readonly clientId: string;
@@ -19,7 +25,7 @@ export class LinearApiInHttpGateway extends LinearApiGateway {
   }
 
   async exchangeCode(code: string, redirectUri: string): Promise<ExchangeCodeResult> {
-    const response = await this.postForm('https://api.linear.app/oauth/token', {
+    const response = await this.postForm<LinearTokenResponse>('https://api.linear.app/oauth/token', {
       grant_type: 'authorization_code',
       code,
       redirect_uri: redirectUri,
@@ -35,7 +41,7 @@ export class LinearApiInHttpGateway extends LinearApiGateway {
   }
 
   async refreshToken(refreshToken: string): Promise<RefreshTokenResult> {
-    const response = await this.postForm('https://api.linear.app/oauth/token', {
+    const response = await this.postForm<LinearTokenResponse>('https://api.linear.app/oauth/token', {
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
       client_id: this.clientId,
@@ -87,7 +93,7 @@ export class LinearApiInHttpGateway extends LinearApiGateway {
     };
   }
 
-  private async postForm(url: string, params: Record<string, string>): Promise<Record<string, unknown>> {
+  private async postForm<T>(url: string, params: Record<string, string>): Promise<T> {
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -100,6 +106,6 @@ export class LinearApiInHttpGateway extends LinearApiGateway {
       });
     }
 
-    return response.json() as Promise<Record<string, unknown>>;
+    return response.json() as Promise<T>;
   }
 }
