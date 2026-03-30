@@ -1,5 +1,7 @@
 # Synchroniser les données de référence Linear
 
+## Status: implemented
+
 ## Contexte
 Avant d'importer les issues et cycles, Shiplens doit disposer des données de référence du workspace : labels, statuts du workflow, membres des équipes et projets. Ces données structurent et contextualisent les issues importées ensuite.
 
@@ -36,3 +38,21 @@ Avant d'importer les issues et cycles, Shiplens doit disposer des données de r�
 | Membre | Personne appartenant à une équipe Linear |
 | Projet | Regroupement d'issues autour d'un objectif dans Linear |
 | Milestone | Jalon d'avancement au sein d'un projet |
+
+## Implementation
+
+- **Bounded Context** : Synchronization (`src/modules/synchronization/`)
+- **Artefacts** :
+  - Schemas Zod : `entities/reference-data/reference-data.schema.ts`
+  - Gateway ports : `entities/reference-data/linear-reference-data.gateway.ts`, `entities/reference-data/reference-data.gateway.ts`
+  - Errors : `entities/reference-data/reference-data.errors.ts`
+  - Use case : `usecases/sync-reference-data.usecase.ts`
+  - Controller : `interface-adapters/controllers/sync-reference-data.controller.ts`
+  - Gateways infra : `interface-adapters/gateways/reference-data.in-prisma.gateway.ts`, `interface-adapters/gateways/linear-reference-data.in-http.gateway.ts`
+  - Migration Prisma : `prisma/migrations/20260330222204_add_reference_data_models/`
+- **Endpoints** :
+  - `POST /sync/reference-data` → `SyncReferenceDataUsecase`
+- **Décisions** :
+  - Pas d'Entity classes pour les données de référence (records typés Zod, zéro behavior)
+  - Upsert via deleteMany + createMany par équipe dans une transaction Prisma
+  - Milestone appartient à Project, pas directement à Team
