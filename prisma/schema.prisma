@@ -30,3 +30,54 @@ model SelectedProject {
   projectName String
   teamId      String
 }
+
+model Label {
+  id         String @id @default(uuid())
+  externalId String
+  teamId     String
+  name       String
+  color      String
+
+  @@unique([externalId, teamId])
+}
+
+model WorkflowStatus {
+  id         String @id @default(uuid())
+  externalId String
+  teamId     String
+  name       String
+  position   Int
+
+  @@unique([externalId, teamId])
+}
+
+model TeamMember {
+  id         String @id @default(uuid())
+  externalId String
+  teamId     String
+  name       String
+  role       String
+
+  @@unique([externalId, teamId])
+}
+
+model Project {
+  id         String      @id @default(uuid())
+  externalId String
+  teamId     String
+  name       String
+  milestones Milestone[]
+
+  @@unique([externalId, teamId])
+}
+
+model Milestone {
+  id                String  @id @default(uuid())
+  externalId        String
+  projectExternalId String
+  name              String
+  project           Project @relation(fields: [projectExternalId, projectTeamId], references: [externalId, teamId])
+  projectTeamId     String
+
+  @@unique([externalId, projectExternalId])
+}
