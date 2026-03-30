@@ -1,98 +1,153 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Shiplens
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Shiplens connects to your [Linear](https://linear.app) workspace and turns raw project data into actionable insights: cycle metrics, bottleneck detection, AI-generated sprint reports, and team health dashboards.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Stack
 
-## Description
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Node.js 22 + NestJS 11 |
+| Language | TypeScript (strict, zero `any`) |
+| Database | SQLite via Prisma ORM |
+| Validation | Zod |
+| Unit tests | Vitest |
+| E2E tests | Playwright |
+| Package manager | pnpm |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Architecture
 
-## Project setup
+**Screaming Architecture + Clean Architecture** (Uncle Bob), organized as bounded contexts.
 
-```bash
-$ pnpm install
+```
+src/
+  modules/
+    identity/             # Linear OAuth, workspace connection, token management
+    synchronization/      # Team selection, reference data & issue sync
+  shared/
+    foundation/           # Cross-BC abstractions (usecase, guard, presenter, errors)
+    domain/               # Shared Kernel (cross-BC business concepts)
+    infrastructure/       # PrismaService, PrismaModule
+  main/                   # App bootstrap
 ```
 
-## Compile and run the project
+Each module follows Clean Architecture layers:
 
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+```
+modules/<context>/
+  entities/               # Domain types, Zod schemas, gateway ports, errors
+  usecases/               # @Injectable use cases with execute()
+  interface-adapters/
+    controllers/          # HTTP endpoints (zero business logic)
+    gateways/             # Prisma & HTTP gateway implementations
+    presenters/           # Domain -> DTO transformation
+  testing/
+    good-path/            # Stubs for nominal scenarios
+    bad-path/             # Stubs for error scenarios
 ```
 
-## Run tests
+**Dependency rule**: dependencies point inward only. Domain never imports infrastructure.
+
+## Prerequisites
+
+- Node.js >= 22
+- pnpm
+
+## Setup
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm install
 ```
 
-## Deployment
+Create a `.env` file at the root:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```env
+DATABASE_URL="file:./dev.db"
+PORT=3000
+LINEAR_CLIENT_ID=your-linear-oauth-client-id
+LINEAR_CLIENT_SECRET=your-linear-oauth-client-secret
+ENCRYPTION_KEY=your-32-char-encryption-key
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Run migrations:
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm db:migrate
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Development
 
-## Resources
+```bash
+pnpm start:dev           # watch mode with hot reload
+pnpm start:debug         # debug mode (--inspect)
+pnpm start:prod          # production build
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## Testing
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+pnpm test                # unit tests
+pnpm test:watch          # unit tests in watch mode
+pnpm test:cov            # unit tests with coverage
+pnpm test:e2e            # end-to-end tests (Playwright)
+npx tsc --noEmit         # type check (must pass before any commit)
+```
 
-## Support
+## Database
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+pnpm db:backup                         # always backup first
+pnpm db:migrate --name <description>   # create + apply migration
+pnpm db:deploy                         # apply pending migrations (production)
+pnpm db:status                         # check migration status
+pnpm prisma:studio                     # visual DB browser
+```
 
-## Stay in touch
+## API Endpoints
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Identity
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/linear/status` | Connection status |
+| POST | `/linear/connect` | Connect Linear workspace (OAuth) |
+| POST | `/linear/disconnect` | Disconnect workspace |
+| POST | `/linear/refresh` | Refresh OAuth session |
+
+### Synchronization
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/sync/teams` | List available Linear teams |
+| POST | `/sync/selection` | Save team selection |
+| GET | `/sync/selection` | Get current team selection |
+| POST | `/sync/reference-data` | Sync labels, statuses, members, projects |
+
+## Feature Roadmap
+
+| Feature | Status |
+|---------|--------|
+| Connect Linear workspace | implemented |
+| Select teams to sync | implemented |
+| Sync reference data (labels, statuses, members, projects) | implemented |
+| Sync issues & cycles | drafted |
+| Calculate cycle metrics | drafted |
+| Detect blocked issues | drafted |
+| Generate AI sprint report | drafted |
+| Analyze bottlenecks by status | drafted |
+| Workspace dashboard | drafted |
+| Real-time sync (webhooks) | drafted |
+| Slack notifications | drafted |
+| Custom audit rules | drafted |
+
+Full tracker with specs: [`docs/feature-tracker.md`](docs/feature-tracker.md)
+
+## Project Methodology
+
+- **Spec-Driven Development**: features start as specs in [`docs/specs/`](docs/specs/) with Rules, Scenarios, and Glossary
+- **TDD Detroit School**: inside-out, state-based, RED-GREEN-REFACTOR
+- **DDD Strategic**: bounded contexts, ubiquitous language (no tactical over-engineering)
+- **Conventional Commits**: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+UNLICENSED
