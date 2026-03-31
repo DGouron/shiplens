@@ -1,5 +1,7 @@
 # Consulter le tableau de bord du workspace
 
+## Status: implemented
+
 ## Contexte
 Le tech lead ouvre Shiplens pour avoir une vue d'ensemble instantanée de son workspace. Aujourd'hui, il doit naviguer dans Linear équipe par équipe pour reconstituer mentalement l'état global. Shiplens affiche un dashboard centralisé avec les indicateurs clés de chaque équipe et un accès rapide aux rapports.
 
@@ -39,3 +41,18 @@ Le tech lead ouvre Shiplens pour avoir une vue d'ensemble instantanée de son wo
 | Taux de complétion | Pourcentage d'issues terminées sur le total d'issues du cycle |
 | Issues bloquées | Issues du cycle marquées comme bloquées dans Linear |
 | Statut de synchronisation | Indicateur montrant quand la dernière synchronisation a eu lieu et quand la prochaine est prévue |
+
+## Implementation
+
+- **Bounded Context** : Analytics
+- **Use Case** : `GetWorkspaceDashboardUsecase` — agrège KPIs par équipe (complétion, vélocité, issues bloquées)
+- **Presenter** : `WorkspaceDashboardPresenter` — formate les données brutes en DTO affichable
+- **Controller** : `WorkspaceDashboardController` — `GET /dashboard` (HTML SSR) + `GET /dashboard/data` (JSON API)
+- **Gateway** : `WorkspaceDashboardDataGateway` (port) / `WorkspaceDashboardDataInPrismaGateway` (adapter)
+- **Migration** : `add-updated-at-to-sync-progress` — ajout `updatedAt` sur `SyncProgress`
+
+### Decisions architecturales
+- Tendance vélocité : seuil 10% — comparaison cycle actif vs moyenne des 3 derniers cycles terminés
+- Issues bloquées : statusName contenant "blocked" (case-insensitive)
+- Lien rapport : redirige vers `/cycle-report?teamId=xxx` (rapports générés à la volée)
+- Prochaine synchronisation : affiche "Synchronisation manuelle" (pas de scheduler)

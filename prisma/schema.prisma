@@ -148,10 +148,11 @@ model Comment {
 }
 
 model SyncProgress {
-  id           String  @id @default(uuid())
-  teamId       String  @unique
+  id           String   @id @default(uuid())
+  teamId       String   @unique
   totalIssues  Int
   syncedIssues Int
   status       String
   cursor       String?
+  updatedAt    DateTime @updatedAt
 }
