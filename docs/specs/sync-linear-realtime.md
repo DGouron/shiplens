@@ -1,5 +1,7 @@
 # Maintenir les données Linear à jour en temps réel
 
+## Status: implemented
+
 ## Contexte
 Après l'import initial, les données évoluent dans Linear en continu. Shiplens doit recevoir et intégrer ces changements en temps réel pour que les analyses restent fiables et à jour.
 
@@ -23,6 +25,31 @@ Après l'import initial, les données évoluent dans Linear en continu. Shiplens
 - échec répété de traitement: {événement échoue après plusieurs tentatives} → événement isolé pour analyse + alerte générée
 - événement reçu en doublon: {même événement reçu deux fois} → une seule modification appliquée
 - type d'événement non supporté: {événement Linear d'un type non géré} → événement ignoré silencieusement
+
+## Implementation
+
+### Bounded Context
+Synchronization
+
+### Artefacts
+- **Entity** : `WebhookEvent` — vérification signature HMAC SHA-256, classification event, state machine (pending → processed/failed)
+- **Use Case** : `ProcessWebhookEventUsecase` — orchestration complète (verify → filter team → route → retry → persist)
+- **Controller** : `WebhookController` — `POST /webhooks/linear`
+- **Gateway ports** : `WebhookEventGateway` (hasBeenProcessed, save)
+- **Gateway infra** : `WebhookEventInPrismaGateway`, extensions `IssueDataInPrismaGateway` (upsertIssue, softDeleteIssue, upsertCycle, createComment, upsertTransition)
+- **Migration** : `add-webhook-event-and-comment` (models WebhookEvent, Comment, deletedAt sur Issue)
+
+### Endpoints
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| POST | `/webhooks/linear` | ProcessWebhookEventUsecase |
+
+### Décisions architecturales
+- Signature HMAC dans l'entité (règle métier, pas middleware)
+- Idempotence via deliveryId unique en table WebhookEvent
+- Retry synchrone (3 tentatives), controller retourne toujours 200 sauf signature invalide (401)
+- Soft delete d'issue via champ deletedAt
+- Secret webhook via env var `LINEAR_WEBHOOK_SIGNING_SECRET`
 
 ## Hors scope
 - Import initial de l'historique (couvert par la spec sync initiale)
