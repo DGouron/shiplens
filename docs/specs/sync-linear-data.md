@@ -1,5 +1,7 @@
 # Synchroniser les issues et cycles depuis Linear
 
+## Status: implemented
+
 ## Contexte
 Shiplens analyse la donnée Linear pour produire des insights. Avant toute analyse, le système doit importer les issues, cycles et leurs transitions d'état pour les équipes sélectionnées. Ce sont les données volumineuses et critiques pour les analytics.
 
@@ -38,3 +40,31 @@ Shiplens analyse la donnée Linear pour produire des insights. Avant toute analy
 | Cycle | Période de travail itérative (sprint) dans Linear, avec date de début et de fin |
 | Transition d'état | Changement de statut d'une issue (ex: "En cours" → "Terminé"), horodaté |
 | Synchronisation initiale | Import complet de l'historique des données Linear pour les équipes sélectionnées |
+
+## Implementation
+
+**Bounded Context** : Synchronization
+
+**Artefacts** :
+- Entity : `SyncProgress` (progression, curseur, complétion)
+- Schemas Zod : `IssueData`, `CycleData`, `StateTransitionData`, `PaginatedIssues`
+- Use Cases : `SyncIssueDataUsecase`, `GetSyncProgressUsecase`
+- Controller : `SyncIssueDataController`
+- Presenter : `SyncProgressPresenter`
+- Gateways : `IssueDataGateway` (port), `LinearIssueDataGateway` (port), `SyncProgressGateway` (port)
+- Gateways concrets : `IssueDataInPrismaGateway`, `SyncProgressInPrismaGateway`, `LinearIssueDataInHttpGateway`
+- Migration : `add-issues-cycles-transitions-sync-progress` (4 modèles Prisma)
+
+**Endpoints** :
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| POST | `/sync/issue-data` | SyncIssueDataUsecase |
+| GET | `/sync/issue-data/progress` | GetSyncProgressUsecase |
+
+**Décisions architecturales** :
+- Issue/Cycle/StateTransition : pas de classes Entity, schemas Zod + types dérivés (même pattern que reference-data)
+- SyncProgress : vraie Entity avec logique (progression %, curseur, reprise)
+- Pagination par curseurs Linear avec persistance du curseur pour reprise après interruption
+- Rate limiting : retry avec backoff exponentiel sur HTTP 429 dans le gateway HTTP
+- labelIds et issueExternalIds stockés en JSON string (contrainte SQLite)
+- Sync synchrone en V1
