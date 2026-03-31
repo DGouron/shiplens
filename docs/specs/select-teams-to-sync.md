@@ -1,5 +1,7 @@
 # Sélectionner les équipes à synchroniser
 
+## Status: implemented
+
 ## Contexte
 Une fois connecté à Linear, l'utilisateur doit choisir quelles équipes et projets il souhaite suivre dans Shiplens. Sans cette sélection, Shiplens ne sait pas quelles données importer.
 
