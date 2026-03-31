@@ -1,5 +1,7 @@
 # Calculer les métriques d'un cycle terminé
 
+## Status: implemented
+
 ## Contexte
 À la fin d'un cycle, le tech lead a besoin d'un bilan chiffré pour comprendre ce qui s'est réellement passé. Sans métriques fiables, les rétrospectives restent subjectives et les mêmes problèmes se répètent cycle après cycle.
 
@@ -39,3 +41,27 @@
 | Scope creep | Issues ajoutées au cycle après sa date de début |
 | Taux de complétion | Pourcentage d'issues terminées par rapport au périmètre initial du cycle |
 | Tendance | Évolution d'une métrique comparée aux 3 derniers cycles terminés |
+
+## Implementation
+
+### Bounded Context
+Analytics (nouveau module)
+
+### Artefacts
+- **Entity** : `CycleSnapshot` — logique pure de calcul des métriques (velocity, throughput, completion rate, scope creep, cycle time, lead time)
+- **Use Case** : `CalculateCycleMetricsUsecase` — orchestre la récupération des données et la création du snapshot
+- **Controller** : `CycleMetricsController` — expose l'endpoint HTTP
+- **Presenter** : `CycleMetricsPresenter` — transforme le domaine en DTO formaté
+- **Gateway Port** : `CycleMetricsDataGateway` — abstract class, lecture seule sur Issue/Cycle/StateTransition
+- **Gateway Impl** : `CycleMetricsDataInPrismaGateway` — implémentation Prisma
+
+### Endpoints
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| GET | `/analytics/cycles/:cycleId/metrics?teamId=xxx` | CalculateCycleMetricsUsecase |
+
+### Décisions architecturales
+- Cycle terminé = `endsAt < now()` (pas de champ status en base)
+- Périmètre initial = issues dont `createdAt <= cycle.startsAt`
+- Pas de migration Prisma (lecture des tables existantes)
+- Issue complétée = statusName contient "Done" ou "Completed"
