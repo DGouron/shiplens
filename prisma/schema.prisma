@@ -170,3 +170,22 @@ model SprintReport {
   risks            String
   recommendations  String
 }
+
+model StatusThreshold {
+  id             String @id @default(uuid())
+  statusName     String @unique
+  thresholdHours Int
+}
+
+model BlockedIssueAlert {
+  id              String  @id @default(uuid())
+  issueExternalId String
+  issueTitle      String
+  issueUuid       String
+  statusName      String
+  severity        String
+  durationHours   Int
+  detectedAt      String
+  active          Boolean
+  resolvedAt      String?
+}

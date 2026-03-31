@@ -10,7 +10,7 @@
 | Calculer les metriques d'un cycle | [calculate-cycle-metrics](specs/calculate-cycle-metrics.md) | Analytics | implemented | 2026-03-31 |
 | Generer un rapport de sprint AI | [generate-sprint-report](specs/generate-sprint-report.md) | Analytics | implemented | 2026-03-31 |
 | Exporter un rapport de sprint | [export-sprint-report](specs/export-sprint-report.md) | Analytics | implemented | 2026-03-31 |
-| Detecter les issues bloquees | [detect-blocked-issues](specs/detect-blocked-issues.md) | Analytics | drafted | 2026-03-29 |
+| Detecter les issues bloquees | [detect-blocked-issues](specs/detect-blocked-issues.md) | Analytics | implemented | 2026-03-31 |
 | Analyser les goulots par statut | [analyze-bottlenecks-by-status](specs/analyze-bottlenecks-by-status.md) | Analytics | implemented | 2026-03-31 |
 | Comparer estimations vs realite | [track-estimation-accuracy](specs/track-estimation-accuracy.md) | Analytics | drafted | 2026-03-29 |
 | Predire la duree d'une issue | [predict-issue-duration](specs/predict-issue-duration.md) | Analytics | drafted | 2026-03-29 |

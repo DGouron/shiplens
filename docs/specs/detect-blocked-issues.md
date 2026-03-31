@@ -1,5 +1,7 @@
 # Détecter les issues bloquées
 
+## Status: implemented
+
 ## Contexte
 Le tech lead a besoin de savoir quand une issue stagne trop longtemps dans un statut. Sans cette détection, les blocages passent inaperçus jusqu'au standup — voire jusqu'à la fin du cycle.
 
@@ -39,3 +41,31 @@ Le tech lead a besoin de savoir quand une issue stagne trop longtemps dans un st
 | Alerte | Signalement qu'une issue a dépassé le seuil dans son statut actuel |
 | Historique des alertes | Table de toutes les alertes générées, conservées même après résolution |
 | Statut | Étape du workflow d'une issue dans Linear (ex: Backlog, In Progress, In Review, Done) |
+
+## Implementation
+
+### Bounded Context
+Analytics (existant)
+
+### Artefacts
+- **Entities** : `StatusThreshold`, `BlockedIssueAlert`
+- **Use Cases** : `DetectBlockedIssuesUsecase`, `GetBlockedIssuesUsecase`, `GetAlertHistoryUsecase`, `SetStatusThresholdUsecase`
+- **Controller** : `BlockedIssuesController`
+- **Scheduler** : `BlockedIssueDetectionScheduler` (cron horaire via `@nestjs/schedule`)
+- **Presenters** : `BlockedIssuesPresenter`, `AlertHistoryPresenter`
+- **Gateways** : `StatusThresholdInPrismaGateway`, `BlockedIssueAlertInPrismaGateway`, `BlockedIssueDetectionDataInPrismaGateway`
+- **Migration** : `add-blocked-issue-detection` (tables `StatusThreshold`, `BlockedIssueAlert`)
+
+### Endpoints
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| GET | `/analytics/blocked-issues` | `GetBlockedIssuesUsecase` |
+| GET | `/analytics/blocked-issues/history` | `GetAlertHistoryUsecase` |
+| POST | `/analytics/blocked-issues/thresholds` | `SetStatusThresholdUsecase` |
+| POST | `/analytics/blocked-issues/detect` | `DetectBlockedIssuesUsecase` |
+
+### Décisions architecturales
+- Seuils par défaut hardcodés dans l'entité `StatusThreshold` (In Progress: 48h, In Review: 48h, Todo: 72h)
+- URL Linear construite via UUID : `https://linear.app/issue/{uuid}`
+- `@nestjs/schedule` ajouté pour le cron horaire
+- Alertes résolues conservées avec `active: false` et `resolvedAt`
