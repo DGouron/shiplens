@@ -1,0 +1,48 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { WorkspaceDashboardController } from '@modules/analytics/interface-adapters/controllers/workspace-dashboard.controller.js';
+import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import { WorkspaceDashboardPresenter } from '@modules/analytics/interface-adapters/presenters/workspace-dashboard.presenter.js';
+import { StubWorkspaceDashboardDataGateway } from '@modules/analytics/testing/good-path/stub.workspace-dashboard-data.gateway.js';
+
+describe('WorkspaceDashboardController', () => {
+  let gateway: StubWorkspaceDashboardDataGateway;
+  let controller: WorkspaceDashboardController;
+
+  beforeEach(() => {
+    gateway = new StubWorkspaceDashboardDataGateway();
+    const usecase = new GetWorkspaceDashboardUsecase(gateway);
+    const presenter = new WorkspaceDashboardPresenter();
+    controller = new WorkspaceDashboardController(usecase, presenter);
+  });
+
+  it('returns formatted dashboard data via JSON endpoint', async () => {
+    gateway.workspaceConnected = true;
+    gateway.teams = [{ teamId: 'team-1', teamName: 'Frontend' }];
+    gateway.activeCycles = {
+      'team-1': {
+        cycleId: 'cycle-1',
+        cycleName: 'Sprint 10',
+        totalIssues: 10,
+        completedIssues: 8,
+        blockedIssues: 1,
+        totalPoints: 25,
+        completedPoints: 20,
+      },
+    };
+    gateway.previousCycleVelocities = { 'team-1': [18, 20, 22] };
+    gateway.lastSyncDates = { 'team-1': new Date('2026-03-31T08:00:00Z') };
+
+    const result = await controller.getDashboardData();
+
+    expect(result.teams).toHaveLength(1);
+    expect(result.teams[0].teamName).toBe('Frontend');
+    expect(result.teams[0].completionRate).toBe('80%');
+  });
+
+  it('returns HTML page content', () => {
+    const result = controller.getDashboardPage();
+
+    expect(result).toContain('<!DOCTYPE html>');
+    expect(result).toContain('Dashboard');
+  });
+});
