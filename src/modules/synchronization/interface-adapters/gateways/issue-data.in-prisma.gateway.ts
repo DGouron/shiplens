@@ -5,6 +5,7 @@ import {
   type IssueData,
   type CycleData,
   type StateTransitionData,
+  type CommentData,
 } from '../../entities/issue-data/issue-data.schema.js';
 
 @Injectable()
@@ -79,6 +80,115 @@ export class IssueDataInPrismaGateway extends IssueDataGateway {
           },
         });
       }
+    });
+  }
+
+  async upsertIssue(issue: IssueData): Promise<void> {
+    await this.prisma.issue.upsert({
+      where: {
+        externalId_teamId: {
+          externalId: issue.externalId,
+          teamId: issue.teamId,
+        },
+      },
+      create: {
+        externalId: issue.externalId,
+        teamId: issue.teamId,
+        title: issue.title,
+        statusName: issue.statusName,
+        points: issue.points,
+        labelIds: issue.labelIds,
+        assigneeName: issue.assigneeName,
+        createdAt: issue.createdAt,
+        updatedAt: issue.updatedAt,
+      },
+      update: {
+        title: issue.title,
+        statusName: issue.statusName,
+        points: issue.points,
+        labelIds: issue.labelIds,
+        assigneeName: issue.assigneeName,
+        updatedAt: issue.updatedAt,
+        deletedAt: null,
+      },
+    });
+  }
+
+  async softDeleteIssue(externalId: string, teamId: string): Promise<void> {
+    await this.prisma.issue.updateMany({
+      where: { externalId, teamId },
+      data: { deletedAt: new Date().toISOString() },
+    });
+  }
+
+  async upsertCycle(cycle: CycleData): Promise<void> {
+    await this.prisma.cycle.upsert({
+      where: {
+        externalId_teamId: {
+          externalId: cycle.externalId,
+          teamId: cycle.teamId,
+        },
+      },
+      create: {
+        externalId: cycle.externalId,
+        teamId: cycle.teamId,
+        name: cycle.name,
+        startsAt: cycle.startsAt,
+        endsAt: cycle.endsAt,
+        issueExternalIds: cycle.issueExternalIds,
+      },
+      update: {
+        name: cycle.name,
+        startsAt: cycle.startsAt,
+        endsAt: cycle.endsAt,
+        issueExternalIds: cycle.issueExternalIds,
+      },
+    });
+  }
+
+  async createComment(comment: CommentData): Promise<void> {
+    await this.prisma.comment.upsert({
+      where: {
+        externalId_teamId: {
+          externalId: comment.externalId,
+          teamId: comment.teamId,
+        },
+      },
+      create: {
+        externalId: comment.externalId,
+        issueExternalId: comment.issueExternalId,
+        teamId: comment.teamId,
+        body: comment.body,
+        authorName: comment.authorName,
+        createdAt: comment.createdAt,
+      },
+      update: {
+        body: comment.body,
+      },
+    });
+  }
+
+  async upsertTransition(transition: StateTransitionData): Promise<void> {
+    await this.prisma.stateTransition.upsert({
+      where: {
+        externalId_teamId: {
+          externalId: transition.externalId,
+          teamId: transition.teamId,
+        },
+      },
+      create: {
+        externalId: transition.externalId,
+        issueExternalId: transition.issueExternalId,
+        teamId: transition.teamId,
+        fromStatusName: transition.fromStatusName,
+        toStatusName: transition.toStatusName,
+        occurredAt: transition.occurredAt,
+      },
+      update: {
+        fromStatusName: transition.fromStatusName,
+        toStatusName: transition.toStatusName,
+        occurredAt: transition.occurredAt,
+      },
     });
   }
 }

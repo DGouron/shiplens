@@ -93,6 +93,7 @@ model Issue {
   assigneeName String?
   createdAt    String
   updatedAt    String
+  deletedAt    String?
 
   @@unique([externalId, teamId])
 }
@@ -117,6 +118,31 @@ model StateTransition {
   fromStatusName  String?
   toStatusName    String
   occurredAt      String
+
+  @@unique([externalId, teamId])
+}
+
+model WebhookEvent {
+  id           String  @id @default(uuid())
+  deliveryId   String  @unique
+  action       String
+  type         String
+  teamId       String
+  status       String
+  attempts     Int     @default(0)
+  receivedAt   String
+  processedAt  String?
+  errorMessage String?
+}
+
+model Comment {
+  id              String @id @default(uuid())
+  externalId      String
+  issueExternalId String
+  teamId          String
+  body            String
+  authorName      String
+  createdAt       String
 
   @@unique([externalId, teamId])
 }
