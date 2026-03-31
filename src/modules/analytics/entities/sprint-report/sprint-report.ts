@@ -9,6 +9,10 @@ export class SprintReport {
     return new SprintReport(validatedProps);
   }
 
+  get id(): string {
+    return this.props.id;
+  }
+
   get cycleId(): string {
     return this.props.cycleId;
   }
@@ -23,6 +27,10 @@ export class SprintReport {
 
   get language(): string {
     return this.props.language;
+  }
+
+  get generatedAt(): string {
+    return this.props.generatedAt;
   }
 
   get executiveSummary(): string {

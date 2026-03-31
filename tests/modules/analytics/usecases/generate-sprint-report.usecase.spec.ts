@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
+import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 import { SprintNotSynchronizedError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { EmptySprintError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { UnsupportedLanguageError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
@@ -11,12 +12,14 @@ import { FailingAiTextGeneratorGateway } from '@modules/analytics/testing/bad-pa
 describe('GenerateSprintReportUsecase', () => {
   let dataGateway: StubSprintReportDataGateway;
   let aiGateway: StubAiTextGeneratorGateway;
+  let sprintReportGateway: StubSprintReportGateway;
   let usecase: GenerateSprintReportUsecase;
 
   beforeEach(() => {
     dataGateway = new StubSprintReportDataGateway();
     aiGateway = new StubAiTextGeneratorGateway();
-    usecase = new GenerateSprintReportUsecase(dataGateway, aiGateway);
+    sprintReportGateway = new StubSprintReportGateway();
+    usecase = new GenerateSprintReportUsecase(dataGateway, aiGateway, sprintReportGateway);
   });
 
   it('generates a report in french for a synchronized sprint', async () => {
@@ -111,6 +114,7 @@ describe('GenerateSprintReportUsecase', () => {
     const usecaseWithFailing = new GenerateSprintReportUsecase(
       dataGateway,
       failingAiGateway,
+      sprintReportGateway,
     );
 
     await expect(
@@ -155,6 +159,31 @@ describe('GenerateSprintReportUsecase', () => {
     });
 
     expect(report.trends).toBeTruthy();
+  });
+
+  it('persists the generated report', async () => {
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    const savedReports = await sprintReportGateway.findByTeamId('team-1');
+    expect(savedReports).toHaveLength(1);
+    expect(savedReports[0].id).toBe(report.id);
+  });
+
+  it('generates report with id and generatedAt', async () => {
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    expect(report.id).toBeTruthy();
+    expect(report.generatedAt).toBeTruthy();
   });
 
   it('includes sprint context in the prompt sent to AI', async () => {

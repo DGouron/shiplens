@@ -23,9 +23,16 @@ import { GetWorkspaceDashboardUsecase } from './usecases/get-workspace-dashboard
 import { WorkspaceDashboardPresenter } from './interface-adapters/presenters/workspace-dashboard.presenter.js';
 import { WorkspaceDashboardDataGateway } from './entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
 import { WorkspaceDashboardDataInPrismaGateway } from './interface-adapters/gateways/workspace-dashboard-data.in-prisma.gateway.js';
+import { ReportExportController } from './interface-adapters/controllers/report-export.controller.js';
+import { ListTeamReportsUsecase } from './usecases/list-team-reports.usecase.js';
+import { GetReportUsecase } from './usecases/get-report.usecase.js';
+import { ReportHistoryPresenter } from './interface-adapters/presenters/report-history.presenter.js';
+import { ReportDetailPresenter } from './interface-adapters/presenters/report-detail.presenter.js';
+import { SprintReportGateway } from './entities/sprint-report/sprint-report.gateway.js';
+import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprint-report.in-prisma.gateway.js';
 
 @Module({
-  controllers: [CycleMetricsController, SprintReportController, CycleReportPageController, WorkspaceDashboardController],
+  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -43,6 +50,14 @@ import { WorkspaceDashboardDataInPrismaGateway } from './interface-adapters/gate
       provide: AiTextGeneratorGateway,
       useClass: AiTextGeneratorWithProviderGateway,
     },
+    {
+      provide: SprintReportGateway,
+      useClass: SprintReportInPrismaGateway,
+    },
+    ListTeamReportsUsecase,
+    GetReportUsecase,
+    ReportHistoryPresenter,
+    ReportDetailPresenter,
     ListTeamCyclesUsecase,
     GetCycleIssuesUsecase,
     TeamCyclesPresenter,

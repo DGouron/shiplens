@@ -3,10 +3,12 @@ import { SprintReport } from '@modules/analytics/entities/sprint-report/sprint-r
 
 describe('SprintReport', () => {
   const validProps = {
+    id: 'a0000000-0000-4000-8000-000000000001',
     cycleId: 'cycle-1',
     teamId: 'team-1',
     cycleName: 'Sprint 10',
     language: 'FR',
+    generatedAt: '2026-01-15T10:00:00.000Z',
     sections: {
       executiveSummary: 'Le sprint s\'est bien déroulé avec une vélocité stable.',
       trends: 'La vélocité est en hausse de 10% par rapport aux 3 derniers sprints.',
@@ -23,6 +25,18 @@ describe('SprintReport', () => {
     expect(report.teamId).toBe('team-1');
     expect(report.cycleName).toBe('Sprint 10');
     expect(report.language).toBe('FR');
+  });
+
+  it('exposes id getter', () => {
+    const report = SprintReport.create(validProps);
+
+    expect(report.id).toBe('a0000000-0000-4000-8000-000000000001');
+  });
+
+  it('exposes generatedAt getter', () => {
+    const report = SprintReport.create(validProps);
+
+    expect(report.generatedAt).toBe('2026-01-15T10:00:00.000Z');
   });
 
   it('exposes all report sections', () => {
@@ -53,6 +67,12 @@ describe('SprintReport', () => {
   it('rejects invalid language', () => {
     expect(() =>
       SprintReport.create({ ...validProps, language: 'JP' }),
+    ).toThrow();
+  });
+
+  it('rejects invalid uuid', () => {
+    expect(() =>
+      SprintReport.create({ ...validProps, id: 'not-a-uuid' }),
     ).toThrow();
   });
 

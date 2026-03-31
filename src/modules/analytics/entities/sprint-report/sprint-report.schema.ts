@@ -11,10 +11,12 @@ export const sprintReportSectionSchema = z.object({
 export type SprintReportSection = z.infer<typeof sprintReportSectionSchema>;
 
 export const sprintReportPropsSchema = z.object({
+  id: z.string().uuid(),
   cycleId: z.string().min(1),
   teamId: z.string().min(1),
   cycleName: z.string().min(1),
   language: z.enum(['FR', 'EN']),
+  generatedAt: z.string().min(1),
   sections: sprintReportSectionSchema,
 });
 

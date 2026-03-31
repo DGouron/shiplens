@@ -1,0 +1,74 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { ReportExportController } from '@modules/analytics/interface-adapters/controllers/report-export.controller.js';
+import { ListTeamReportsUsecase } from '@modules/analytics/usecases/list-team-reports.usecase.js';
+import { GetReportUsecase } from '@modules/analytics/usecases/get-report.usecase.js';
+import { ReportHistoryPresenter } from '@modules/analytics/interface-adapters/presenters/report-history.presenter.js';
+import { ReportDetailPresenter } from '@modules/analytics/interface-adapters/presenters/report-detail.presenter.js';
+import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { SprintReportBuilder } from '../../../../builders/sprint-report.builder.js';
+import { ReportNotFoundError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
+
+describe('ReportExportController', () => {
+  let controller: ReportExportController;
+  let gateway: StubSprintReportGateway;
+
+  beforeEach(() => {
+    gateway = new StubSprintReportGateway();
+    const listTeamReports = new ListTeamReportsUsecase(gateway);
+    const getReport = new GetReportUsecase(gateway);
+    const reportHistoryPresenter = new ReportHistoryPresenter();
+    const reportDetailPresenter = new ReportDetailPresenter();
+    controller = new ReportExportController(
+      listTeamReports,
+      getReport,
+      reportHistoryPresenter,
+      reportDetailPresenter,
+    );
+  });
+
+  describe('listReports', () => {
+    it('returns report history for a team', async () => {
+      const report = new SprintReportBuilder()
+        .withCycleName('Sprint 12')
+        .build();
+      await gateway.save(report);
+
+      const result = await controller.listReports('team-1');
+
+      expect(result.reports).toHaveLength(1);
+      expect(result.reports[0].cycleName).toBe('Sprint 12');
+      expect(result.emptyMessage).toBeNull();
+    });
+
+    it('returns empty message when team has no reports', async () => {
+      const result = await controller.listReports('team-1');
+
+      expect(result.reports).toHaveLength(0);
+      expect(result.emptyMessage).toBe(
+        "Aucun rapport n'a encore été généré pour cette équipe.",
+      );
+    });
+  });
+
+  describe('getReportDetail', () => {
+    it('returns report detail with markdown and plain text', async () => {
+      const report = new SprintReportBuilder()
+        .withCycleName('Sprint 12')
+        .build();
+      await gateway.save(report);
+
+      const result = await controller.getReportDetail(report.id);
+
+      expect(result.id).toBe(report.id);
+      expect(result.cycleName).toBe('Sprint 12');
+      expect(result.markdown).toContain('# Sprint 12');
+      expect(result.plainText).toContain('Sprint 12');
+    });
+
+    it('throws ReportNotFoundError for unknown report', async () => {
+      await expect(
+        controller.getReportDetail('nonexistent-id'),
+      ).rejects.toThrow(ReportNotFoundError);
+    });
+  });
+});

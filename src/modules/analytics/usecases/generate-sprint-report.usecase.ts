@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { SprintReportDataGateway, type SprintContext, type TrendContext } from '../entities/sprint-report/sprint-report-data.gateway.js';
 import { AiTextGeneratorGateway, type AiProvider } from '../entities/sprint-report/ai-text-generator.gateway.js';
+import { SprintReportGateway } from '../entities/sprint-report/sprint-report.gateway.js';
 import { SprintReport } from '../entities/sprint-report/sprint-report.js';
 import { SprintNotSynchronizedError } from '../entities/sprint-report/sprint-report.errors.js';
 import { EmptySprintError } from '../entities/sprint-report/sprint-report.errors.js';
@@ -23,6 +25,7 @@ export class GenerateSprintReportUsecase
   constructor(
     private readonly sprintReportDataGateway: SprintReportDataGateway,
     private readonly aiTextGeneratorGateway: AiTextGeneratorGateway,
+    private readonly sprintReportGateway: SprintReportGateway,
   ) {}
 
   async execute(params: GenerateSprintReportParams): Promise<SprintReport> {
@@ -60,11 +63,13 @@ export class GenerateSprintReportUsecase
 
     const parsedSections = JSON.parse(generatedText) as Record<string, string | null>;
 
-    return SprintReport.create({
+    const report = SprintReport.create({
+      id: randomUUID(),
       cycleId: params.cycleId,
       teamId: params.teamId,
       cycleName: sprintContext.cycleName,
       language: params.language,
+      generatedAt: new Date().toISOString(),
       sections: {
         executiveSummary: parsedSections.executiveSummary,
         trends: trendContext ? parsedSections.trends : null,
@@ -73,6 +78,10 @@ export class GenerateSprintReportUsecase
         recommendations: parsedSections.recommendations,
       },
     });
+
+    await this.sprintReportGateway.save(report);
+
+    return report;
   }
 
   private buildPrompt(
