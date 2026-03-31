@@ -20,4 +20,4 @@
 | Notifier le rapport sur Slack | [notify-report-on-slack](specs/notify-report-on-slack.md) | Notification | drafted | 2026-03-29 |
 | Alerter sur les bottlenecks | [alert-bottleneck-realtime](specs/alert-bottleneck-realtime.md) | Notification | drafted | 2026-03-29 |
 | Consulter le dashboard workspace | [view-workspace-dashboard](specs/view-workspace-dashboard.md) | Dashboard | drafted | 2026-03-29 |
-| Voir le rapport de cycle detaille | [view-cycle-report-page](specs/view-cycle-report-page.md) | Dashboard | drafted | 2026-03-29 |
+| Voir le rapport de cycle detaille | [view-cycle-report-page](specs/view-cycle-report-page.md) | Analytics | implemented | 2026-03-31 |

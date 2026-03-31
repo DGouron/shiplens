@@ -1,0 +1,37 @@
+import { Controller, Get, Param, Query, Header } from '@nestjs/common';
+import { ListTeamCyclesUsecase } from '../../usecases/list-team-cycles.usecase.js';
+import { GetCycleIssuesUsecase } from '../../usecases/get-cycle-issues.usecase.js';
+import { TeamCyclesPresenter, type TeamCyclesDto } from '../presenters/team-cycles.presenter.js';
+import { CycleIssuesPresenter, type CycleIssuesDto } from '../presenters/cycle-issues.presenter.js';
+import { cycleReportPageHtml } from './cycle-report-page.html.js';
+
+@Controller()
+export class CycleReportPageController {
+  constructor(
+    private readonly listTeamCyclesUsecase: ListTeamCyclesUsecase,
+    private readonly getCycleIssuesUsecase: GetCycleIssuesUsecase,
+    private readonly teamCyclesPresenter: TeamCyclesPresenter,
+    private readonly cycleIssuesPresenter: CycleIssuesPresenter,
+  ) {}
+
+  @Get('analytics/teams/:teamId/cycles')
+  async listCycles(@Param('teamId') teamId: string): Promise<TeamCyclesDto> {
+    const result = await this.listTeamCyclesUsecase.execute({ teamId });
+    return this.teamCyclesPresenter.present(result);
+  }
+
+  @Get('analytics/cycles/:cycleId/issues')
+  async getCycleIssues(
+    @Param('cycleId') cycleId: string,
+    @Query('teamId') teamId: string,
+  ): Promise<CycleIssuesDto> {
+    const result = await this.getCycleIssuesUsecase.execute({ cycleId, teamId });
+    return this.cycleIssuesPresenter.present(result);
+  }
+
+  @Get('cycle-report')
+  @Header('Content-Type', 'text/html')
+  getPage(): string {
+    return cycleReportPageHtml;
+  }
+}
