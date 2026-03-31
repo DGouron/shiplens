@@ -1,5 +1,7 @@
 # Consulter la page rapport d'un cycle
 
+## Status: implemented
+
 ## Contexte
 Le tech lead veut plonger dans le détail d'un cycle précis pour comprendre ce qui s'est passé, partager les résultats avec ses stakeholders et identifier les axes d'amélioration. Aujourd'hui, ces informations sont éparpillées entre Linear, des tableurs et des notes manuelles. Shiplens centralise tout sur une page dédiée par cycle.
 

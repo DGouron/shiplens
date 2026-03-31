@@ -11,9 +11,16 @@ import { SprintReportDataGateway } from './entities/sprint-report/sprint-report-
 import { SprintReportDataInPrismaGateway } from './interface-adapters/gateways/sprint-report-data.in-prisma.gateway.js';
 import { AiTextGeneratorGateway } from './entities/sprint-report/ai-text-generator.gateway.js';
 import { AiTextGeneratorWithProviderGateway } from './interface-adapters/gateways/ai-text-generator.with-provider.gateway.js';
+import { CycleReportPageController } from './interface-adapters/controllers/cycle-report-page.controller.js';
+import { ListTeamCyclesUsecase } from './usecases/list-team-cycles.usecase.js';
+import { GetCycleIssuesUsecase } from './usecases/get-cycle-issues.usecase.js';
+import { TeamCyclesPresenter } from './interface-adapters/presenters/team-cycles.presenter.js';
+import { CycleIssuesPresenter } from './interface-adapters/presenters/cycle-issues.presenter.js';
+import { CycleReportPageDataGateway } from './entities/cycle-report-page/cycle-report-page-data.gateway.js';
+import { CycleReportPageDataInPrismaGateway } from './interface-adapters/gateways/cycle-report-page-data.in-prisma.gateway.js';
 
 @Module({
-  controllers: [CycleMetricsController, SprintReportController],
+  controllers: [CycleMetricsController, SprintReportController, CycleReportPageController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -30,6 +37,14 @@ import { AiTextGeneratorWithProviderGateway } from './interface-adapters/gateway
     {
       provide: AiTextGeneratorGateway,
       useClass: AiTextGeneratorWithProviderGateway,
+    },
+    ListTeamCyclesUsecase,
+    GetCycleIssuesUsecase,
+    TeamCyclesPresenter,
+    CycleIssuesPresenter,
+    {
+      provide: CycleReportPageDataGateway,
+      useClass: CycleReportPageDataInPrismaGateway,
     },
   ],
 })
