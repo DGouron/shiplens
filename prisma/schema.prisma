@@ -156,3 +156,17 @@ model SyncProgress {
   cursor       String?
   updatedAt    DateTime @updatedAt
 }
+
+model SprintReport {
+  id               String  @id @default(uuid())
+  cycleId          String
+  teamId           String
+  cycleName        String
+  language         String
+  generatedAt      String
+  executiveSummary String
+  trends           String?
+  highlights       String
+  risks            String
+  recommendations  String
+}

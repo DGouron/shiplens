@@ -1,5 +1,7 @@
 # Exporter et consulter les rapports de sprint
 
+## Status: implemented
+
 ## Contexte
 Une fois le rapport de sprint généré, le tech lead a besoin de le partager facilement avec ses stakeholders via Slack, Notion ou email. Il doit aussi pouvoir retrouver les rapports passés pour suivre l'évolution de son équipe dans le temps.
 
@@ -34,3 +36,29 @@ Une fois le rapport de sprint généré, le tech lead a besoin de le partager fa
 | Historique des rapports | Liste chronologique de tous les rapports générés pour une équipe |
 | Markdown | Format de texte enrichi utilisé dans des outils comme Notion, GitHub ou Slack |
 | Texte brut | Version du rapport sans aucun formatage, utilisable dans un email ou n'importe quel outil |
+
+## Implementation
+
+### Bounded Context
+Analytics (existant)
+
+### Artefacts
+- **Entity** : SprintReport (évolution — ajout id, generatedAt)
+- **Gateway port** : SprintReportGateway (save, findByTeamId, findById)
+- **Gateway impl** : SprintReportInPrismaGateway
+- **Use cases** : ListTeamReportsUsecase, GetReportUsecase, GenerateSprintReportUsecase (évolution — ajout save)
+- **Presenters** : ReportHistoryPresenter, ReportDetailPresenter
+- **Controller** : ReportExportController
+- **Migration** : add-sprint-report-model (modèle Prisma SprintReport)
+
+### Endpoints
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| GET | /analytics/teams/:teamId/reports | ListTeamReportsUsecase |
+| GET | /analytics/reports/:reportId | GetReportUsecase |
+
+### Décisions architecturales
+- Deux gateways distincts : SprintReportDataGateway (données pour générer) vs SprintReportGateway (persister/lire)
+- Markdown et plain text rendus dans le presenter (ReportDetailPresenter), pas dans le domaine
+- Scénarios clipboard = frontend pur — le backend fournit les deux formats via le DTO
+- Controller séparé (ReportExportController) pour les GET endpoints, distinct du SprintReportController existant

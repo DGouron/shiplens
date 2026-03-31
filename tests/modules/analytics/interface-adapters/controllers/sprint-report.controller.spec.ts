@@ -4,6 +4,7 @@ import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generat
 import { SprintReportPresenter } from '@modules/analytics/interface-adapters/presenters/sprint-report.presenter.js';
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
+import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 
 describe('SprintReportController', () => {
   let controller: SprintReportController;
@@ -11,7 +12,8 @@ describe('SprintReportController', () => {
   beforeEach(() => {
     const dataGateway = new StubSprintReportDataGateway();
     const aiGateway = new StubAiTextGeneratorGateway();
-    const usecase = new GenerateSprintReportUsecase(dataGateway, aiGateway);
+    const sprintReportGateway = new StubSprintReportGateway();
+    const usecase = new GenerateSprintReportUsecase(dataGateway, aiGateway, sprintReportGateway);
     const presenter = new SprintReportPresenter();
     controller = new SprintReportController(usecase, presenter);
   });

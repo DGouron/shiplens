@@ -3,10 +3,12 @@ import { SprintReport } from '@modules/analytics/entities/sprint-report/sprint-r
 import { type SprintReportProps } from '@modules/analytics/entities/sprint-report/sprint-report.schema.js';
 
 const defaultProps: SprintReportProps = {
+  id: 'a0000000-0000-4000-8000-000000000001',
   cycleId: 'cycle-1',
   teamId: 'team-1',
   cycleName: 'Sprint 10',
   language: 'FR',
+  generatedAt: '2026-01-15T10:00:00.000Z',
   sections: {
     executiveSummary: 'Le sprint s\'est bien déroulé avec une vélocité stable.',
     trends: 'La vélocité est en hausse de 10% par rapport aux 3 derniers sprints.',
@@ -22,6 +24,11 @@ export class SprintReportBuilder extends EntityBuilder<
 > {
   constructor() {
     super(defaultProps);
+  }
+
+  withId(id: string): this {
+    this.props.id = id;
+    return this;
   }
 
   withCycleId(cycleId: string): this {
@@ -41,6 +48,11 @@ export class SprintReportBuilder extends EntityBuilder<
 
   withLanguage(language: 'FR' | 'EN'): this {
     this.props.language = language;
+    return this;
+  }
+
+  withGeneratedAt(generatedAt: string): this {
+    this.props.generatedAt = generatedAt;
     return this;
   }
 

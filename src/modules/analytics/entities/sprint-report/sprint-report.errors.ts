@@ -31,3 +31,9 @@ export class AiProviderUnavailableError extends BusinessRuleViolation {
     );
   }
 }
+
+export class ReportNotFoundError extends BusinessRuleViolation {
+  constructor() {
+    super('Ce rapport est introuvable.');
+  }
+}
