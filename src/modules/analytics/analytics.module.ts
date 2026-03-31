@@ -24,6 +24,11 @@ import { WorkspaceDashboardPresenter } from './interface-adapters/presenters/wor
 import { WorkspaceDashboardDataGateway } from './entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
 import { WorkspaceDashboardDataInPrismaGateway } from './interface-adapters/gateways/workspace-dashboard-data.in-prisma.gateway.js';
 import { ReportExportController } from './interface-adapters/controllers/report-export.controller.js';
+import { BottleneckAnalysisController } from './interface-adapters/controllers/bottleneck-analysis.controller.js';
+import { AnalyzeBottlenecksByStatusUsecase } from './usecases/analyze-bottlenecks-by-status.usecase.js';
+import { BottleneckAnalysisPresenter } from './interface-adapters/presenters/bottleneck-analysis.presenter.js';
+import { BottleneckAnalysisDataGateway } from './entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
+import { BottleneckAnalysisDataInPrismaGateway } from './interface-adapters/gateways/bottleneck-analysis-data.in-prisma.gateway.js';
 import { ListTeamReportsUsecase } from './usecases/list-team-reports.usecase.js';
 import { GetReportUsecase } from './usecases/get-report.usecase.js';
 import { ReportHistoryPresenter } from './interface-adapters/presenters/report-history.presenter.js';
@@ -32,7 +37,7 @@ import { SprintReportGateway } from './entities/sprint-report/sprint-report.gate
 import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprint-report.in-prisma.gateway.js';
 
 @Module({
-  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController],
+  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -71,6 +76,12 @@ import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprin
     {
       provide: WorkspaceDashboardDataGateway,
       useClass: WorkspaceDashboardDataInPrismaGateway,
+    },
+    AnalyzeBottlenecksByStatusUsecase,
+    BottleneckAnalysisPresenter,
+    {
+      provide: BottleneckAnalysisDataGateway,
+      useClass: BottleneckAnalysisDataInPrismaGateway,
     },
   ],
 })
