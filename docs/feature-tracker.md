@@ -8,7 +8,7 @@
 | Synchroniser les issues et cycles | [sync-linear-data](specs/sync-linear-data.md) | Synchronization | implemented | 2026-03-31 |
 | Synchroniser en temps reel | [sync-linear-realtime](specs/sync-linear-realtime.md) | Sync | drafted | 2026-03-29 |
 | Calculer les metriques d'un cycle | [calculate-cycle-metrics](specs/calculate-cycle-metrics.md) | Analytics | implemented | 2026-03-31 |
-| Generer un rapport de sprint AI | [generate-sprint-report](specs/generate-sprint-report.md) | Analytics | drafted | 2026-03-29 |
+| Generer un rapport de sprint AI | [generate-sprint-report](specs/generate-sprint-report.md) | Analytics | implemented | 2026-03-31 |
 | Exporter un rapport de sprint | [export-sprint-report](specs/export-sprint-report.md) | Analytics | drafted | 2026-03-29 |
 | Detecter les issues bloquees | [detect-blocked-issues](specs/detect-blocked-issues.md) | Analytics | drafted | 2026-03-29 |
 | Analyser les goulots par statut | [analyze-bottlenecks-by-status](specs/analyze-bottlenecks-by-status.md) | Analytics | drafted | 2026-03-29 |
