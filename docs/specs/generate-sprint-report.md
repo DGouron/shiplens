@@ -1,5 +1,7 @@
 # Générer un rapport de sprint par IA
 
+## Status: implemented
+
 ## Contexte
 Le tech lead passe plus de 30 minutes à rédiger manuellement un bilan de sprint pour ses stakeholders. Shiplens génère automatiquement un rapport structuré et rédigé par IA à partir des métriques du sprint, des issues et des résultats d'audit, dans un ton professionnel accessible aux non-techniques.
 
@@ -40,3 +42,35 @@ Le tech lead passe plus de 30 minutes à rédiger manuellement un bilan de sprin
 | Recommandations | Suggestions concrètes d'amélioration pour les prochains sprints |
 | Fournisseur d'IA | Service externe utilisé pour la génération du texte (OpenAI, Anthropic, Ollama) |
 | Vélocité | Volume de travail accompli par l'équipe pendant un sprint |
+
+## Implementation
+
+### Bounded Context
+Analytics (`src/modules/analytics/`)
+
+### Artefacts
+| Type | Fichier |
+|------|---------|
+| Entity | `entities/sprint-report/sprint-report.ts` |
+| Schema | `entities/sprint-report/sprint-report.schema.ts` |
+| Guard | `entities/sprint-report/sprint-report.guard.ts` |
+| Errors | `entities/sprint-report/sprint-report.errors.ts` |
+| Gateway Port | `entities/sprint-report/sprint-report-data.gateway.ts` |
+| Gateway Port | `entities/sprint-report/ai-text-generator.gateway.ts` |
+| Use Case | `usecases/generate-sprint-report.usecase.ts` |
+| Presenter | `interface-adapters/presenters/sprint-report.presenter.ts` |
+| Controller | `interface-adapters/controllers/sprint-report.controller.ts` |
+| Gateway Prisma | `interface-adapters/gateways/sprint-report-data.in-prisma.gateway.ts` |
+| Gateway AI | `interface-adapters/gateways/ai-text-generator.with-provider.gateway.ts` |
+
+### Endpoints
+| Methode | Route | Use Case |
+|---------|-------|----------|
+| POST | `/analytics/cycles/:cycleId/report` | GenerateSprintReportUsecase |
+
+### Decisions architecturales
+- Rapport non persiste (genere a la demande) — pas de migration Prisma
+- Un seul AiTextGeneratorGateway qui dispatche vers OpenAI/Anthropic/Ollama via parametre runtime
+- SprintReportDataGateway separe de CycleMetricsDataGateway (donnees differentes : sync status + issues brutes)
+- Prompt construit dans le use case (orchestration domaine)
+- Langues supportees en liste simple (FR, EN) dans le use case
