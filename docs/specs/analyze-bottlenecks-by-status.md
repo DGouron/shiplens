@@ -1,5 +1,7 @@
 # Identifier les goulots d'étranglement par statut
 
+## Status: implemented
+
 ## Contexte
 Le tech lead veut comprendre quelles étapes du workflow ralentissent systématiquement la livraison. Sans cette visibilité, les améliorations de processus se font à l'aveugle — on optimise là où ça ne coince pas.
 
@@ -39,3 +41,20 @@ Le tech lead veut comprendre quelles étapes du workflow ralentissent systémati
 | Assignee | Personne assignée à une issue dans Linear |
 | Breakdown | Ventilation détaillée d'une métrique selon un axe (ici : par assignee) |
 | Statut | Étape du workflow d'une issue dans Linear (Backlog, Todo, In Progress, In Review, Done) |
+
+## Implementation
+
+| Aspect | Detail |
+|--------|--------|
+| Bounded Context | analytics |
+| Entity | `entities/bottleneck-analysis/bottleneck-analysis.ts` |
+| Use Case | `usecases/analyze-bottlenecks-by-status.usecase.ts` |
+| Controller | `interface-adapters/controllers/bottleneck-analysis.controller.ts` |
+| Presenter | `interface-adapters/presenters/bottleneck-analysis.presenter.ts` |
+| Gateway Port | `entities/bottleneck-analysis/bottleneck-analysis-data.gateway.ts` |
+| Gateway Impl | `interface-adapters/gateways/bottleneck-analysis-data.in-prisma.gateway.ts` |
+| Migration | Aucune (StateTransition, Issue, Cycle existants) |
+
+| Method | Route | Use Case |
+|--------|-------|----------|
+| GET | `/analytics/cycles/:cycleId/bottlenecks?teamId=X&includeComparison=true` | AnalyzeBottlenecksByStatusUsecase |
