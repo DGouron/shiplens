@@ -35,9 +35,23 @@ import { ReportHistoryPresenter } from './interface-adapters/presenters/report-h
 import { ReportDetailPresenter } from './interface-adapters/presenters/report-detail.presenter.js';
 import { SprintReportGateway } from './entities/sprint-report/sprint-report.gateway.js';
 import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprint-report.in-prisma.gateway.js';
+import { BlockedIssuesController } from './interface-adapters/controllers/blocked-issues.controller.js';
+import { BlockedIssueDetectionScheduler } from './interface-adapters/controllers/blocked-issue-detection.scheduler.js';
+import { DetectBlockedIssuesUsecase } from './usecases/detect-blocked-issues.usecase.js';
+import { GetBlockedIssuesUsecase } from './usecases/get-blocked-issues.usecase.js';
+import { GetAlertHistoryUsecase } from './usecases/get-alert-history.usecase.js';
+import { SetStatusThresholdUsecase } from './usecases/set-status-threshold.usecase.js';
+import { BlockedIssuesPresenter } from './interface-adapters/presenters/blocked-issues.presenter.js';
+import { AlertHistoryPresenter } from './interface-adapters/presenters/alert-history.presenter.js';
+import { StatusThresholdGateway } from './entities/status-threshold/status-threshold.gateway.js';
+import { StatusThresholdInPrismaGateway } from './interface-adapters/gateways/status-threshold.in-prisma.gateway.js';
+import { BlockedIssueAlertGateway } from './entities/blocked-issue-alert/blocked-issue-alert.gateway.js';
+import { BlockedIssueAlertInPrismaGateway } from './interface-adapters/gateways/blocked-issue-alert.in-prisma.gateway.js';
+import { BlockedIssueDetectionDataGateway } from './entities/blocked-issue-alert/blocked-issue-detection-data.gateway.js';
+import { BlockedIssueDetectionDataInPrismaGateway } from './interface-adapters/gateways/blocked-issue-detection-data.in-prisma.gateway.js';
 
 @Module({
-  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController],
+  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -82,6 +96,25 @@ import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprin
     {
       provide: BottleneckAnalysisDataGateway,
       useClass: BottleneckAnalysisDataInPrismaGateway,
+    },
+    DetectBlockedIssuesUsecase,
+    GetBlockedIssuesUsecase,
+    GetAlertHistoryUsecase,
+    SetStatusThresholdUsecase,
+    BlockedIssuesPresenter,
+    AlertHistoryPresenter,
+    BlockedIssueDetectionScheduler,
+    {
+      provide: StatusThresholdGateway,
+      useClass: StatusThresholdInPrismaGateway,
+    },
+    {
+      provide: BlockedIssueAlertGateway,
+      useClass: BlockedIssueAlertInPrismaGateway,
+    },
+    {
+      provide: BlockedIssueDetectionDataGateway,
+      useClass: BlockedIssueDetectionDataInPrismaGateway,
     },
   ],
 })
