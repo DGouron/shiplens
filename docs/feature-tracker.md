@@ -5,7 +5,7 @@
 | Connecter son workspace Linear | [connect-linear-workspace](specs/connect-linear-workspace.md) | Identity | implemented | 2026-03-30 |
 | Selectionner les equipes a synchroniser | [select-teams-to-sync](specs/select-teams-to-sync.md) | Synchronization | implemented | 2026-03-30 |
 | Synchroniser les donnees de reference | [sync-linear-reference-data](specs/sync-linear-reference-data.md) | Synchronization | implemented | 2026-03-30 |
-| Synchroniser les issues et cycles | [sync-linear-data](specs/sync-linear-data.md) | Sync | drafted | 2026-03-29 |
+| Synchroniser les issues et cycles | [sync-linear-data](specs/sync-linear-data.md) | Synchronization | implemented | 2026-03-31 |
 | Synchroniser en temps reel | [sync-linear-realtime](specs/sync-linear-realtime.md) | Sync | drafted | 2026-03-29 |
 | Calculer les metriques d'un cycle | [calculate-cycle-metrics](specs/calculate-cycle-metrics.md) | Analytics | drafted | 2026-03-29 |
 | Generer un rapport de sprint AI | [generate-sprint-report](specs/generate-sprint-report.md) | Analytics | drafted | 2026-03-29 |

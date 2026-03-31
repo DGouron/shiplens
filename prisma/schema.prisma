@@ -81,3 +81,51 @@ model Milestone {
 
   @@unique([externalId, projectExternalId])
 }
+
+model Issue {
+  id           String  @id @default(uuid())
+  externalId   String
+  teamId       String
+  title        String
+  statusName   String
+  points       Int?
+  labelIds     String
+  assigneeName String?
+  createdAt    String
+  updatedAt    String
+
+  @@unique([externalId, teamId])
+}
+
+model Cycle {
+  id               String @id @default(uuid())
+  externalId       String
+  teamId           String
+  name             String?
+  startsAt         String
+  endsAt           String
+  issueExternalIds String
+
+  @@unique([externalId, teamId])
+}
+
+model StateTransition {
+  id              String  @id @default(uuid())
+  externalId      String
+  issueExternalId String
+  teamId          String
+  fromStatusName  String?
+  toStatusName    String
+  occurredAt      String
+
+  @@unique([externalId, teamId])
+}
+
+model SyncProgress {
+  id           String  @id @default(uuid())
+  teamId       String  @unique
+  totalIssues  Int
+  syncedIssues Int
+  status       String
+  cursor       String?
+}
