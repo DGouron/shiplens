@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type Presenter } from '@shared/foundation/presenter/presenter.js';
 import { type SprintReport } from '../../entities/sprint-report/sprint-report.js';
+import { type AuditSection } from '../../entities/sprint-report/sprint-report.schema.js';
 
 export interface ReportDetailDto {
   id: string;
@@ -33,6 +34,12 @@ const SECTION_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
+const STATUS_EMOJI: Record<string, string> = {
+  pass: 'pass',
+  warn: 'warn',
+  fail: 'fail',
+};
+
 @Injectable()
 export class ReportDetailPresenter
   implements Presenter<SprintReport, ReportDetailDto>
@@ -42,7 +49,7 @@ export class ReportDetailPresenter
     const trendsContent =
       report.trends ?? NO_TREND_MESSAGE[report.language] ?? NO_TREND_MESSAGE['EN'];
 
-    const markdown = [
+    const markdownParts = [
       `# ${report.cycleName}`,
       '',
       `## ${labels.summary}`,
@@ -59,9 +66,15 @@ export class ReportDetailPresenter
       '',
       `## ${labels.recommendations}`,
       report.recommendations,
-    ].join('\n');
+    ];
 
-    const plainText = [
+    if (report.auditSection) {
+      markdownParts.push('', ...this.renderAuditSectionMarkdown(report.auditSection));
+    }
+
+    const markdown = markdownParts.join('\n');
+
+    const plainTextParts = [
       report.cycleName,
       '',
       `${labels.summary}:`,
@@ -78,7 +91,13 @@ export class ReportDetailPresenter
       '',
       `${labels.recommendations}:`,
       report.recommendations,
-    ].join('\n');
+    ];
+
+    if (report.auditSection) {
+      plainTextParts.push('', ...this.renderAuditSectionPlainText(report.auditSection));
+    }
+
+    const plainText = plainTextParts.join('\n');
 
     return {
       id: report.id,
@@ -88,5 +107,89 @@ export class ReportDetailPresenter
       markdown,
       plainText,
     };
+  }
+
+  private renderAuditSectionMarkdown(auditSection: AuditSection): string[] {
+    const lines: string[] = [];
+
+    lines.push(`## Audit des pratiques`);
+    lines.push('');
+    lines.push(`**Score d'adhérence : ${auditSection.adherenceScore}%**`);
+    lines.push('');
+
+    if (auditSection.trend) {
+      lines.push(`**Tendance : ${auditSection.trend.message}**`);
+    } else {
+      lines.push("Pas assez d'historique pour afficher la tendance.");
+    }
+    lines.push('');
+
+    lines.push('| Règle | Statut | Valeur mesurée |');
+    lines.push('|-------|--------|----------------|');
+    for (const rule of auditSection.evaluatedRules) {
+      lines.push(`| ${rule.ruleName} | ${rule.status} | ${rule.measuredValue} |`);
+    }
+
+    const failedRules = auditSection.evaluatedRules.filter(
+      (rule) => rule.recommendation !== null,
+    );
+    if (failedRules.length > 0) {
+      lines.push('');
+      lines.push('### Recommandations');
+      for (const rule of failedRules) {
+        lines.push(`- **${rule.ruleName}** : ${rule.recommendation}`);
+      }
+    }
+
+    if (auditSection.checklistItems.length > 0) {
+      lines.push('');
+      lines.push('### Checklist');
+      for (const item of auditSection.checklistItems) {
+        lines.push(`- [ ] ${item.name}`);
+      }
+    }
+
+    return lines;
+  }
+
+  private renderAuditSectionPlainText(auditSection: AuditSection): string[] {
+    const lines: string[] = [];
+
+    lines.push('Audit des pratiques:');
+    lines.push('');
+    lines.push(`Score d'adhérence : ${auditSection.adherenceScore}%`);
+    lines.push('');
+
+    if (auditSection.trend) {
+      lines.push(`Tendance : ${auditSection.trend.message}`);
+    } else {
+      lines.push("Pas assez d'historique pour afficher la tendance.");
+    }
+    lines.push('');
+
+    for (const rule of auditSection.evaluatedRules) {
+      lines.push(`${rule.ruleName} - ${rule.status} - ${rule.measuredValue}`);
+    }
+
+    const failedRules = auditSection.evaluatedRules.filter(
+      (rule) => rule.recommendation !== null,
+    );
+    if (failedRules.length > 0) {
+      lines.push('');
+      lines.push('Recommandations:');
+      for (const rule of failedRules) {
+        lines.push(`- ${rule.ruleName} : ${rule.recommendation}`);
+      }
+    }
+
+    if (auditSection.checklistItems.length > 0) {
+      lines.push('');
+      lines.push('Checklist:');
+      for (const item of auditSection.checklistItems) {
+        lines.push(`- ${item.name}`);
+      }
+    }
+
+    return lines;
   }
 }

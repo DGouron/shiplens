@@ -96,4 +96,77 @@ describe('ReportDetailPresenter', () => {
     expect(result.language).toBe('FR');
     expect(result.generatedAt).toBe('2026-02-01T10:00:00.000Z');
   });
+
+  it('renders audit section in markdown when present', () => {
+    const report = new SprintReportBuilder()
+      .withLanguage('FR')
+      .withAuditSection({
+        evaluatedRules: [
+          {
+            ruleName: 'Cycle time max',
+            status: 'pass',
+            measuredValue: 'Cycle time moyen : 3 jours',
+            threshold: 'Cycle time moyen : 3 jours',
+            recommendation: null,
+          },
+          {
+            ruleName: 'Throughput min',
+            status: 'fail',
+            measuredValue: 'Throughput : 2',
+            threshold: 'Throughput : 2',
+            recommendation: 'Augmenter le throughput.',
+          },
+        ],
+        checklistItems: [{ name: 'Code review' }],
+        adherenceScore: 50,
+        trend: {
+          scores: [60, 70],
+          message: '60% → 70% → 50%',
+        },
+      })
+      .build();
+
+    const result = presenter.present(report);
+
+    expect(result.markdown).toContain('## Audit des pratiques');
+    expect(result.markdown).toContain('50%');
+    expect(result.markdown).toContain('60% → 70% → 50%');
+    expect(result.markdown).toContain('Cycle time max');
+    expect(result.markdown).toContain('pass');
+    expect(result.markdown).toContain('fail');
+    expect(result.markdown).toContain('Augmenter le throughput.');
+    expect(result.markdown).toContain('Code review');
+  });
+
+  it('renders no trend message when trend is null', () => {
+    const report = new SprintReportBuilder()
+      .withLanguage('FR')
+      .withAuditSection({
+        evaluatedRules: [
+          {
+            ruleName: 'Rule 1',
+            status: 'pass',
+            measuredValue: 'Val',
+            threshold: 'Seuil',
+            recommendation: null,
+          },
+        ],
+        checklistItems: [],
+        adherenceScore: 100,
+        trend: null,
+      })
+      .build();
+
+    const result = presenter.present(report);
+
+    expect(result.markdown).toContain("Pas assez d'historique pour afficher la tendance.");
+  });
+
+  it('does not render audit section when null', () => {
+    const report = new SprintReportBuilder().build();
+
+    const result = presenter.present(report);
+
+    expect(result.markdown).not.toContain('Audit des pratiques');
+  });
 });

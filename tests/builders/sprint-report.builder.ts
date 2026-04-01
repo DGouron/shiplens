@@ -1,6 +1,6 @@
 import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { SprintReport } from '@modules/analytics/entities/sprint-report/sprint-report.js';
-import { type SprintReportProps } from '@modules/analytics/entities/sprint-report/sprint-report.schema.js';
+import { type SprintReportProps, type AuditSection } from '@modules/analytics/entities/sprint-report/sprint-report.schema.js';
 
 const defaultProps: SprintReportProps = {
   id: 'a0000000-0000-4000-8000-000000000001',
@@ -58,6 +58,11 @@ export class SprintReportBuilder extends EntityBuilder<
 
   withTrends(trends: string | null): this {
     this.props.sections = { ...this.props.sections, trends };
+    return this;
+  }
+
+  withAuditSection(auditSection: AuditSection | null): this {
+    this.props.auditSection = auditSection;
     return this;
   }
 

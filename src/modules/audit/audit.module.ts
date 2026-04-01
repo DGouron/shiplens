@@ -40,6 +40,6 @@ import { SyncPackmindRulesController } from './interface-adapters/controllers/sy
         ),
     },
   ],
-  exports: [AuditRuleGateway, CreateAuditRuleUsecase, EvaluateAuditRuleUsecase, SyncPackmindRulesUsecase],
+  exports: [AuditRuleGateway, ChecklistItemGateway, CreateAuditRuleUsecase, EvaluateAuditRuleUsecase, SyncPackmindRulesUsecase],
 })
 export class AuditModule {}

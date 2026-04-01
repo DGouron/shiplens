@@ -169,6 +169,7 @@ model SprintReport {
   highlights       String
   risks            String
   recommendations  String
+  auditSection     String?
 }
 
 model StatusThreshold {

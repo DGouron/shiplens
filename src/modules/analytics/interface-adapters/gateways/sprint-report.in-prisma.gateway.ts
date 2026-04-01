@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/prisma/prisma.service.js';
 import { SprintReportGateway } from '../../entities/sprint-report/sprint-report.gateway.js';
 import { SprintReport } from '../../entities/sprint-report/sprint-report.js';
+import { type AuditSection, auditSectionSchema } from '../../entities/sprint-report/sprint-report.schema.js';
 
 @Injectable()
 export class SprintReportInPrismaGateway extends SprintReportGateway {
@@ -23,6 +24,7 @@ export class SprintReportInPrismaGateway extends SprintReportGateway {
         highlights: report.highlights,
         risks: report.risks,
         recommendations: report.recommendations,
+        auditSection: report.auditSection ? JSON.stringify(report.auditSection) : null,
       },
     });
   }
@@ -48,6 +50,7 @@ export class SprintReportInPrismaGateway extends SprintReportGateway {
           risks: record.risks,
           recommendations: record.recommendations,
         },
+        auditSection: this.parseAuditSection(record.auditSection),
       }),
     );
   }
@@ -75,6 +78,15 @@ export class SprintReportInPrismaGateway extends SprintReportGateway {
         risks: record.risks,
         recommendations: record.recommendations,
       },
+      auditSection: this.parseAuditSection(record.auditSection),
     });
+  }
+
+  private parseAuditSection(raw: string | null): AuditSection | null {
+    if (!raw) {
+      return null;
+    }
+    const parsed: unknown = JSON.parse(raw);
+    return auditSectionSchema.parse(parsed);
   }
 }
