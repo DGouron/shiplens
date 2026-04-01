@@ -141,5 +141,6 @@ import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gate
       useClass: DurationPredictionDataInPrismaGateway,
     },
   ],
+  exports: [SprintReportGateway],
 })
 export class AnalyticsModule {}

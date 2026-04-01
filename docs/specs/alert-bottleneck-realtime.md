@@ -1,5 +1,7 @@
 # Alerter sur Slack quand une issue est bloquée
 
+## Status: drafted
+
 ## Contexte
 La détection des issues bloquées existe dans Shiplens (voir detect-blocked-issues), mais le tech lead ne consulte pas le dashboard en permanence. Il veut recevoir une alerte Slack dès qu'un blocage est détecté, pour réagir sans délai.
 

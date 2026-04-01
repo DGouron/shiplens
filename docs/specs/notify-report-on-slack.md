@@ -1,5 +1,7 @@
 # Envoyer le rapport de sprint sur Slack
 
+## Status: implemented
+
 ## Contexte
 Le tech lead veut recevoir automatiquement le rapport de sprint dans son canal Slack dédié, sans devoir aller le chercher manuellement dans le dashboard. Cela garantit que toute l'équipe et les stakeholders voient le bilan au bon moment, sans effort supplémentaire.
 
@@ -36,3 +38,15 @@ Le tech lead veut recevoir automatiquement le rapport de sprint dans son canal S
 | Cycle | Période de travail d'une équipe (sprint) dont le rapport résume l'activité |
 | Résumé formaté | Version condensée du rapport adaptée à la lecture dans Slack avec mise en forme enrichie |
 | Notification | Message automatique envoyé sur Slack à la clôture d'un cycle |
+
+## Implementation
+
+- **Bounded Context** : `notification` (nouveau BC)
+- **Entity** : `SlackNotificationConfig` (id, teamId, webhookUrl, enabled)
+- **Use Cases** : `ConfigureSlackWebhookUsecase`, `SendReportOnSlackUsecase`
+- **Controller** : `SlackNotificationController`
+- **Endpoints** : `POST /notifications/slack/configure`, `POST /notifications/slack/send`
+- **Gateways** : `SlackNotificationConfigInPrismaGateway`, `SlackMessengerInHttpGateway`
+- **Migration** : `20260401114500_add_slack_notification_config`
+- **Cross-BC** : Dépendance read-only sur `SprintReportGateway` (analytics BC)
+- **Décision** : L'envoi automatique à la clôture du cycle nécessite un event bus (hors scope). L'envoi se fait via endpoint explicite.
