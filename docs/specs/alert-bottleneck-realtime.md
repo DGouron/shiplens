@@ -1,6 +1,6 @@
 # Alerter sur Slack quand une issue est bloquée
 
-## Status: drafted
+## Status: implemented
 
 ## Contexte
 La détection des issues bloquées existe dans Shiplens (voir detect-blocked-issues), mais le tech lead ne consulte pas le dashboard en permanence. Il veut recevoir une alerte Slack dès qu'un blocage est détecté, pour réagir sans délai.
@@ -37,3 +37,29 @@ La détection des issues bloquées existe dans Shiplens (voir detect-blocked-iss
 |-------|------------|
 | Throttling | Limitation à une seule alerte par issue par jour pour éviter le bruit |
 | Canal Slack | Espace de discussion dans Slack où les alertes sont publiées |
+
+## Implementation
+
+### Bounded Context
+Notification (existant)
+
+### Artefacts
+- **Entity** : `TeamAlertChannel` (id, teamId, webhookUrl)
+- **Use Cases** : `ConfigureTeamAlertChannelUsecase`, `AlertBlockedIssuesOnSlackUsecase`
+- **Controller** : `SlackNotificationController` (endpoints ajoutés)
+- **Scheduler** : `BlockedIssueAlertScheduler` (cron horaire via `@nestjs/schedule`)
+- **Gateways** : `TeamAlertChannelInPrismaGateway`, `BlockedIssueAlertDataInPrismaGateway`, `SlackAlertLogInPrismaGateway`
+- **Migration** : `add-team-alert-channel-and-slack-alert-log` (tables `TeamAlertChannel`, `SlackAlertLog`)
+
+### Endpoints
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| POST | `/notifications/slack/alerts/configure` | `ConfigureTeamAlertChannelUsecase` |
+| POST | `/notifications/slack/alerts/send` | `AlertBlockedIssuesOnSlackUsecase` |
+
+### Décisions architecturales
+- Canal d'alerte séparé du webhook de rapport (deux webhooks distincts par équipe)
+- Throttling via table `SlackAlertLog` (issueExternalId + sentAt) — vérifie la date du jour
+- Données enrichies (teamId, assigneeName) obtenues par jointure BlockedIssueAlert + Issue via `BlockedIssueAlertDataGateway`
+- URL Linear construite côté use case : `https://linear.app/issue/{uuid}`
+- Le scheduler tourne toutes les heures indépendamment du scheduler de détection
