@@ -1,4 +1,4 @@
-import { type AuditRuleProps, severitySchema } from './audit-rule.schema.js';
+import { type AuditRuleProps, type Origin, severitySchema, originSchema } from './audit-rule.schema.js';
 import { type Condition } from './condition.schema.js';
 import { type CycleMetrics } from './cycle-metrics.js';
 import { parseCondition } from './parse-condition.js';
@@ -17,6 +17,7 @@ interface CreateAuditRuleInput {
   name: string;
   severity: string;
   conditionExpression: string;
+  origin?: string;
 }
 
 const METRIC_FIELD_MAP: Record<string, keyof CycleMetrics> = {
@@ -62,11 +63,16 @@ export class AuditRule {
 
     const condition = parseCondition(input.conditionExpression);
 
+    const origin: Origin = input.origin
+      ? originSchema.parse(input.origin)
+      : 'manual';
+
     return new AuditRule({
       identifier: input.identifier,
       name: input.name,
       severity: severityResult.data,
       condition,
+      origin,
     });
   }
 
@@ -84,6 +90,10 @@ export class AuditRule {
 
   get condition(): Condition {
     return this.props.condition;
+  }
+
+  get origin(): Origin {
+    return this.props.origin;
   }
 
   evaluate(metrics: CycleMetrics): EvaluationResult {

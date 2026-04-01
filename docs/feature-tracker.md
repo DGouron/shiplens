@@ -15,7 +15,7 @@
 | Comparer estimations vs realite | [track-estimation-accuracy](specs/track-estimation-accuracy.md) | Analytics | implemented | 2026-04-01 |
 | Predire la duree d'une issue | [predict-issue-duration](specs/predict-issue-duration.md) | Analytics | implemented | 2026-04-01 |
 | Definir des regles d'audit custom | [define-custom-audit-rules](specs/define-custom-audit-rules.md) | Audit | implemented | 2026-04-01 |
-| Importer des regles depuis Packmind | [import-packmind-rules](specs/import-packmind-rules.md) | Rules | drafted | 2026-03-29 |
+| Importer des regles depuis Packmind | [import-packmind-rules](specs/import-packmind-rules.md) | Audit | implemented | 2026-04-01 |
 | Evaluer les regles dans le rapport | [audit-rules-in-report](specs/audit-rules-in-report.md) | Rules | drafted | 2026-03-29 |
 | Notifier le rapport sur Slack | [notify-report-on-slack](specs/notify-report-on-slack.md) | Notification | drafted | 2026-03-29 |
 | Alerter sur les bottlenecks | [alert-bottleneck-realtime](specs/alert-bottleneck-realtime.md) | Notification | drafted | 2026-03-29 |

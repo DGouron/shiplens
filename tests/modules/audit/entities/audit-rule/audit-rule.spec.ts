@@ -33,6 +33,29 @@ describe('AuditRule', () => {
       expect(rule.severity).toBe('warning');
     });
 
+    it('defaults origin to manual when not specified', () => {
+      const rule = AuditRule.create({
+        identifier: 'CT-MAX-5',
+        name: 'Cycle time max 5 jours',
+        severity: 'warning',
+        conditionExpression: 'cycle time > 5 jours',
+      });
+
+      expect(rule.origin).toBe('manual');
+    });
+
+    it('accepts packmind origin when specified', () => {
+      const rule = AuditRule.create({
+        identifier: 'PM-1',
+        name: 'Packmind rule',
+        severity: 'warning',
+        conditionExpression: 'cycle time > 5 jours',
+        origin: 'packmind',
+      });
+
+      expect(rule.origin).toBe('packmind');
+    });
+
     it('throws MissingIdentifierError when identifier is empty', () => {
       expect(() =>
         AuditRule.create({

@@ -12,6 +12,7 @@ const storedRuleSchema = z.object({
   name: z.string(),
   severity: z.string(),
   conditionExpression: z.string(),
+  origin: z.string().optional(),
 });
 
 @Injectable()
@@ -29,6 +30,7 @@ export class AuditRuleInFilesystemGateway extends AuditRuleGateway {
       name: rule.name,
       severity: rule.severity,
       conditionExpression: this.serializeCondition(rule),
+      origin: rule.origin,
     };
 
     await writeFile(filePath, JSON.stringify(stored, null, 2), 'utf-8');
@@ -67,6 +69,11 @@ export class AuditRuleInFilesystemGateway extends AuditRuleGateway {
     return rules;
   }
 
+  async findAllByOrigin(origin: string): Promise<AuditRule[]> {
+    const allRules = await this.findAll();
+    return allRules.filter((rule) => rule.origin === origin);
+  }
+
   private ensureDirectoryExists(): void {
     if (!existsSync(this.rulesDirectory)) {
       throw new RulesDirectoryNotFoundError();
@@ -94,6 +101,7 @@ export class AuditRuleInFilesystemGateway extends AuditRuleGateway {
       name: data.name,
       severity: data.severity,
       conditionExpression: data.conditionExpression,
+      origin: data.origin,
     });
   }
 }

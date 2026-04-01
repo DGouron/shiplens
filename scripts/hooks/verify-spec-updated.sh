@@ -43,7 +43,15 @@ SPECS_DIR="$PROJECT_DIR/docs/specs"
 ERRORS=""
 
 for MODULE in $MODIFIED_MODULES; do
-  SPEC_FILES=$(find "$SPECS_DIR" -name "*.md" -exec grep -l "$MODULE" {} \; 2>/dev/null || true)
+  SPEC_FILES=""
+  if [[ -f "$TRACKER" ]]; then
+    SPEC_NAMES=$(grep -i "| $MODULE |" "$TRACKER" | grep -oP '\[.*?\]\(\Kspecs/[^)]+' | sed 's|^specs/||' || true)
+    for SPEC_NAME in $SPEC_NAMES; do
+      if [[ -f "$SPECS_DIR/$SPEC_NAME" ]]; then
+        SPEC_FILES="${SPEC_FILES} $SPECS_DIR/$SPEC_NAME"
+      fi
+    done
+  fi
 
   if [[ -z "$SPEC_FILES" ]]; then
     continue
