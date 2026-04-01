@@ -1,5 +1,7 @@
 # Afficher les résultats d'audit dans le sprint report
 
+## Status: drafted
+
 ## Contexte
 Le tech lead veut voir d'un coup d'oeil quelles pratiques de son équipe sont respectées et lesquelles dérivent. Sans cette visibilité intégrée au rapport de cycle, les règles d'audit seraient définies mais personne n'en verrait les résultats au bon moment.
 

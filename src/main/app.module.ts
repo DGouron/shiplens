@@ -4,8 +4,9 @@ import { PrismaModule } from '../shared/infrastructure/prisma/prisma.module.js';
 import { IdentityModule } from '../modules/identity/identity.module.js';
 import { SynchronizationModule } from '../modules/synchronization/synchronization.module.js';
 import { AnalyticsModule } from '../modules/analytics/analytics.module.js';
+import { AuditModule } from '../modules/audit/audit.module.js';
 
 @Module({
-  imports: [PrismaModule, ScheduleModule.forRoot(), IdentityModule, SynchronizationModule, AnalyticsModule],
+  imports: [PrismaModule, ScheduleModule.forRoot(), IdentityModule, SynchronizationModule, AnalyticsModule, AuditModule],
 })
 export class AppModule {}
