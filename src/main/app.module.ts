@@ -5,8 +5,9 @@ import { IdentityModule } from '../modules/identity/identity.module.js';
 import { SynchronizationModule } from '../modules/synchronization/synchronization.module.js';
 import { AnalyticsModule } from '../modules/analytics/analytics.module.js';
 import { AuditModule } from '../modules/audit/audit.module.js';
+import { NotificationModule } from '../modules/notification/notification.module.js';
 
 @Module({
-  imports: [PrismaModule, ScheduleModule.forRoot(), IdentityModule, SynchronizationModule, AnalyticsModule, AuditModule],
+  imports: [PrismaModule, ScheduleModule.forRoot(), IdentityModule, SynchronizationModule, AnalyticsModule, AuditModule, NotificationModule],
 })
 export class AppModule {}
