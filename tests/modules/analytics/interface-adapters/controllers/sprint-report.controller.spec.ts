@@ -5,6 +5,9 @@ import { SprintReportPresenter } from '@modules/analytics/interface-adapters/pre
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
+import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
+import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 
 describe('SprintReportController', () => {
   let controller: SprintReportController;
@@ -13,7 +16,17 @@ describe('SprintReportController', () => {
     const dataGateway = new StubSprintReportDataGateway();
     const aiGateway = new StubAiTextGeneratorGateway();
     const sprintReportGateway = new StubSprintReportGateway();
-    const usecase = new GenerateSprintReportUsecase(dataGateway, aiGateway, sprintReportGateway);
+    const auditRuleGateway = new StubAuditRuleGateway();
+    const checklistItemGateway = new StubChecklistItemGateway();
+    const cycleMetricsDataGateway = new StubCycleMetricsDataGateway();
+    const usecase = new GenerateSprintReportUsecase(
+      dataGateway,
+      aiGateway,
+      sprintReportGateway,
+      auditRuleGateway,
+      checklistItemGateway,
+      cycleMetricsDataGateway,
+    );
     const presenter = new SprintReportPresenter();
     controller = new SprintReportController(usecase, presenter);
   });

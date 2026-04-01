@@ -1,6 +1,6 @@
 # Afficher les résultats d'audit dans le sprint report
 
-## Status: drafted
+## Status: implemented
 
 ## Contexte
 Le tech lead veut voir d'un coup d'oeil quelles pratiques de son équipe sont respectées et lesquelles dérivent. Sans cette visibilité intégrée au rapport de cycle, les règles d'audit seraient définies mais personne n'en verrait les résultats au bon moment.
@@ -39,3 +39,27 @@ Le tech lead veut voir d'un coup d'oeil quelles pratiques de son équipe sont re
 | Tendance | Évolution du score d'adhérence sur les 3 derniers cycles terminés |
 | Recommandation | Analyse générée par l'IA pour expliquer un échec et proposer des pistes d'amélioration |
 | Checklist | Liste de pratiques qualitatives à vérifier manuellement, affichées sans statut automatique |
+
+## Implementation
+
+### Bounded Context
+Analytics (primary), Audit (dependency)
+
+### Artefacts
+- **Entity** : SprintReport étendu avec `auditSection` nullable (Zod schema)
+- **Use Case** : GenerateSprintReportUsecase étendu (évaluation des règles, score d'adhérence, tendance, recommandations IA)
+- **Presenters** : SprintReportPresenter (DTO), ReportDetailPresenter (markdown avec section audit)
+- **Gateway** : SprintReportInPrismaGateway (sérialisation JSON auditSection)
+- **Migration** : `add-audit-section-to-sprint-report` (colonne `auditSection String?`)
+
+### Endpoints
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| POST | /analytics/cycles/:cycleId/report | GenerateSprintReportUsecase (étendu) |
+
+### Décisions architecturales
+- Pas de nouvelle entité : auditSection est un champ nullable JSON dans SprintReport (projection, pas d'identité propre)
+- Extension du usecase existant plutôt qu'un nouveau usecase (l'audit fait partie du rapport)
+- Un seul appel IA pour toutes les recommandations (performance)
+- Tendance calculée depuis les rapports précédents via findByTeamId (YAGNI)
+- AnalyticsModule importe AuditModule pour accéder aux gateways d'audit

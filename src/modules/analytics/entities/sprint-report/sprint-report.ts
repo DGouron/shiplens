@@ -1,4 +1,4 @@
-import { type SprintReportProps } from './sprint-report.schema.js';
+import { type SprintReportProps, type AuditSection } from './sprint-report.schema.js';
 import { sprintReportGuard } from './sprint-report.guard.js';
 
 export class SprintReport {
@@ -51,5 +51,9 @@ export class SprintReport {
 
   get recommendations(): string {
     return this.props.sections.recommendations;
+  }
+
+  get auditSection(): AuditSection | null {
+    return this.props.auditSection ?? null;
   }
 }

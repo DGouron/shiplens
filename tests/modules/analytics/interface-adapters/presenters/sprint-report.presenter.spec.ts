@@ -43,4 +43,37 @@ describe('SprintReportPresenter', () => {
       'No historical data available to compare velocity',
     );
   });
+
+  it('presents audit section when present', () => {
+    const report = new SprintReportBuilder()
+      .withAuditSection({
+        evaluatedRules: [
+          {
+            ruleName: 'Cycle time max',
+            status: 'pass',
+            measuredValue: '3 jours',
+            threshold: '5 jours',
+            recommendation: null,
+          },
+        ],
+        checklistItems: [{ name: 'Code review' }],
+        adherenceScore: 100,
+        trend: null,
+      })
+      .build();
+
+    const dto = presenter.present(report);
+
+    expect(dto.auditSection).not.toBeNull();
+    expect(dto.auditSection?.adherenceScore).toBe(100);
+    expect(dto.auditSection?.evaluatedRules).toHaveLength(1);
+  });
+
+  it('presents null audit section when not present', () => {
+    const report = new SprintReportBuilder().build();
+
+    const dto = presenter.present(report);
+
+    expect(dto.auditSection).toBeNull();
+  });
 });

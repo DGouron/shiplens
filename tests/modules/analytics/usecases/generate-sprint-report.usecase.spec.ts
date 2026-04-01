@@ -3,23 +3,62 @@ import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generat
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
+import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
+import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 import { SprintNotSynchronizedError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { EmptySprintError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { UnsupportedLanguageError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { AiProviderUnavailableError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { FailingAiTextGeneratorGateway } from '@modules/analytics/testing/bad-path/failing.ai-text-generator.gateway.js';
+import { AuditRuleBuilder } from '../../../builders/audit-rule.builder.js';
+import { ChecklistItemBuilder } from '../../../builders/checklist-item.builder.js';
+import { SprintReportBuilder } from '../../../builders/sprint-report.builder.js';
 
 describe('GenerateSprintReportUsecase', () => {
   let dataGateway: StubSprintReportDataGateway;
   let aiGateway: StubAiTextGeneratorGateway;
   let sprintReportGateway: StubSprintReportGateway;
+  let auditRuleGateway: StubAuditRuleGateway;
+  let checklistItemGateway: StubChecklistItemGateway;
+  let cycleMetricsDataGateway: StubCycleMetricsDataGateway;
   let usecase: GenerateSprintReportUsecase;
 
   beforeEach(() => {
     dataGateway = new StubSprintReportDataGateway();
     aiGateway = new StubAiTextGeneratorGateway();
     sprintReportGateway = new StubSprintReportGateway();
-    usecase = new GenerateSprintReportUsecase(dataGateway, aiGateway, sprintReportGateway);
+    auditRuleGateway = new StubAuditRuleGateway();
+    checklistItemGateway = new StubChecklistItemGateway();
+    cycleMetricsDataGateway = new StubCycleMetricsDataGateway();
+
+    cycleMetricsDataGateway.snapshotData = {
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      cycleName: 'Sprint 10',
+      startsAt: '2025-01-01T00:00:00Z',
+      endsAt: '2025-01-14T00:00:00Z',
+      issues: [
+        {
+          externalId: 'issue-1',
+          title: 'Issue 1',
+          statusName: 'Done',
+          points: 3,
+          createdAt: '2025-01-01T00:00:00Z',
+          completedAt: '2025-01-10T00:00:00Z',
+          startedAt: '2025-01-05T00:00:00Z',
+        },
+      ],
+    };
+
+    usecase = new GenerateSprintReportUsecase(
+      dataGateway,
+      aiGateway,
+      sprintReportGateway,
+      auditRuleGateway,
+      checklistItemGateway,
+      cycleMetricsDataGateway,
+    );
   });
 
   it('generates a report in french for a synchronized sprint', async () => {
@@ -115,6 +154,9 @@ describe('GenerateSprintReportUsecase', () => {
       dataGateway,
       failingAiGateway,
       sprintReportGateway,
+      auditRuleGateway,
+      checklistItemGateway,
+      cycleMetricsDataGateway,
     );
 
     await expect(
@@ -196,5 +238,179 @@ describe('GenerateSprintReportUsecase', () => {
 
     expect(aiGateway.receivedPrompt).toContain('Sprint 10');
     expect(aiGateway.receivedPrompt).toContain('cycle-1');
+  });
+
+  it('returns null audit section when no audit rules are defined', async () => {
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    expect(report.auditSection).toBeNull();
+  });
+
+  it('evaluates audit rules and computes adherence score', async () => {
+    await auditRuleGateway.save(
+      new AuditRuleBuilder()
+        .withIdentifier('PASS-1')
+        .withSeverity('error')
+        .withConditionExpression('cycle time > 100 jours')
+        .build(),
+    );
+    await auditRuleGateway.save(
+      new AuditRuleBuilder()
+        .withIdentifier('FAIL-1')
+        .withSeverity('error')
+        .withConditionExpression('cycle time > 3 jours')
+        .build(),
+    );
+
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    expect(report.auditSection).not.toBeNull();
+    expect(report.auditSection?.evaluatedRules).toHaveLength(2);
+    expect(report.auditSection?.adherenceScore).toBe(50);
+  });
+
+  it('includes AI recommendations for failed rules', async () => {
+    await auditRuleGateway.save(
+      new AuditRuleBuilder()
+        .withIdentifier('FAIL-1')
+        .withName('Cycle time limit')
+        .withSeverity('error')
+        .withConditionExpression('cycle time > 3 jours')
+        .build(),
+    );
+
+    aiGateway.generatedText = JSON.stringify({
+      executiveSummary: 'Sprint ok.',
+      trends: null,
+      highlights: 'Rien.',
+      risks: 'Rien.',
+      recommendations: 'Rien.',
+      auditRecommendations: {
+        'FAIL-1': 'Reduire le cycle time.',
+      },
+    });
+
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    const failedRule = report.auditSection?.evaluatedRules.find(
+      (rule) => rule.status === 'fail',
+    );
+    expect(failedRule?.recommendation).toBe('Reduire le cycle time.');
+  });
+
+  it('includes checklist items in audit section', async () => {
+    await auditRuleGateway.save(
+      new AuditRuleBuilder()
+        .withIdentifier('PASS-1')
+        .withSeverity('error')
+        .withConditionExpression('cycle time > 100 jours')
+        .build(),
+    );
+
+    await checklistItemGateway.save(
+      new ChecklistItemBuilder()
+        .withIdentifier('CL-1')
+        .withName('Code review')
+        .build(),
+    );
+
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    expect(report.auditSection?.checklistItems).toHaveLength(1);
+    expect(report.auditSection?.checklistItems[0].name).toBe('Code review');
+  });
+
+  it('computes trend from previous reports with audit sections', async () => {
+    await auditRuleGateway.save(
+      new AuditRuleBuilder()
+        .withIdentifier('PASS-1')
+        .withSeverity('error')
+        .withConditionExpression('cycle time > 100 jours')
+        .build(),
+    );
+
+    for (const score of [60, 70, 75]) {
+      const previousReport = new SprintReportBuilder()
+        .withId(crypto.randomUUID())
+        .withCycleId(`prev-cycle-${score}`)
+        .withAuditSection({
+          evaluatedRules: [],
+          checklistItems: [],
+          adherenceScore: score,
+          trend: null,
+        })
+        .build();
+      await sprintReportGateway.save(previousReport);
+    }
+
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    expect(report.auditSection?.trend).not.toBeNull();
+    expect(report.auditSection?.trend?.scores).toEqual([60, 70, 75]);
+  });
+
+  it('returns null trend when less than 3 previous reports have audit sections', async () => {
+    await auditRuleGateway.save(
+      new AuditRuleBuilder()
+        .withIdentifier('PASS-1')
+        .withSeverity('error')
+        .withConditionExpression('cycle time > 100 jours')
+        .build(),
+    );
+
+    const report = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    expect(report.auditSection?.trend).toBeNull();
+  });
+
+  it('includes audit context in AI prompt when rules have failures', async () => {
+    await auditRuleGateway.save(
+      new AuditRuleBuilder()
+        .withIdentifier('FAIL-1')
+        .withName('Cycle time limit')
+        .withSeverity('error')
+        .withConditionExpression('cycle time > 3 jours')
+        .build(),
+    );
+
+    await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      language: 'FR',
+      provider: 'OpenAI',
+    });
+
+    expect(aiGateway.receivedPrompt).toContain('FAIL-1');
+    expect(aiGateway.receivedPrompt).toContain('auditRecommendations');
   });
 });

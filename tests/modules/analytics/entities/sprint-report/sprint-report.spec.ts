@@ -90,4 +90,55 @@ describe('SprintReport', () => {
       SprintReport.create({ ...validProps, sections: undefined }),
     ).toThrow();
   });
+
+  it('creates a report with null audit section when not provided', () => {
+    const report = SprintReport.create(validProps);
+
+    expect(report.auditSection).toBeNull();
+  });
+
+  it('creates a report with audit section when provided', () => {
+    const report = SprintReport.create({
+      ...validProps,
+      auditSection: {
+        evaluatedRules: [
+          {
+            ruleName: 'Cycle time max',
+            status: 'pass',
+            measuredValue: '3 jours',
+            threshold: '5 jours',
+            recommendation: null,
+          },
+        ],
+        checklistItems: [{ name: 'Code review' }],
+        adherenceScore: 100,
+        trend: null,
+      },
+    });
+
+    expect(report.auditSection).not.toBeNull();
+    expect(report.auditSection?.adherenceScore).toBe(100);
+    expect(report.auditSection?.evaluatedRules).toHaveLength(1);
+    expect(report.auditSection?.evaluatedRules[0].ruleName).toBe('Cycle time max');
+    expect(report.auditSection?.checklistItems).toHaveLength(1);
+    expect(report.auditSection?.trend).toBeNull();
+  });
+
+  it('creates a report with audit section including trend', () => {
+    const report = SprintReport.create({
+      ...validProps,
+      auditSection: {
+        evaluatedRules: [],
+        checklistItems: [],
+        adherenceScore: 80,
+        trend: {
+          scores: [60, 70, 75],
+          message: '60% → 70% → 75% → 80%',
+        },
+      },
+    });
+
+    expect(report.auditSection?.trend?.scores).toEqual([60, 70, 75]);
+    expect(report.auditSection?.trend?.message).toBe('60% → 70% → 75% → 80%');
+  });
 });

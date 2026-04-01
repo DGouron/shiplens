@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type Presenter } from '@shared/foundation/presenter/presenter.js';
 import { type SprintReport } from '../../entities/sprint-report/sprint-report.js';
+import { type AuditSection } from '../../entities/sprint-report/sprint-report.schema.js';
 
 export interface SprintReportDto {
   cycleName: string;
@@ -10,6 +11,7 @@ export interface SprintReportDto {
   highlights: string;
   risks: string;
   recommendations: string;
+  auditSection: AuditSection | null;
 }
 
 const NO_TREND_MESSAGE: Record<string, string> = {
@@ -30,6 +32,7 @@ export class SprintReportPresenter
       highlights: report.highlights,
       risks: report.risks,
       recommendations: report.recommendations,
+      auditSection: report.auditSection,
     };
   }
 }

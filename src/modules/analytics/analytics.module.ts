@@ -60,8 +60,10 @@ import { PredictIssueDurationUsecase } from './usecases/predict-issue-duration.u
 import { DurationPredictionPresenter } from './interface-adapters/presenters/duration-prediction.presenter.js';
 import { DurationPredictionDataGateway } from './entities/duration-prediction/duration-prediction-data.gateway.js';
 import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
+import { AuditModule } from '../audit/audit.module.js';
 
 @Module({
+  imports: [AuditModule],
   controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController, DurationPredictionController],
   providers: [
     CalculateCycleMetricsUsecase,
