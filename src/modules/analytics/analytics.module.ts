@@ -55,9 +55,14 @@ import { GetEstimationTrendUsecase } from './usecases/get-estimation-trend.useca
 import { EstimationAccuracyPresenter } from './interface-adapters/presenters/estimation-accuracy.presenter.js';
 import { EstimationAccuracyDataGateway } from './entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { EstimationAccuracyDataInPrismaGateway } from './interface-adapters/gateways/estimation-accuracy-data.in-prisma.gateway.js';
+import { DurationPredictionController } from './interface-adapters/controllers/duration-prediction.controller.js';
+import { PredictIssueDurationUsecase } from './usecases/predict-issue-duration.usecase.js';
+import { DurationPredictionPresenter } from './interface-adapters/presenters/duration-prediction.presenter.js';
+import { DurationPredictionDataGateway } from './entities/duration-prediction/duration-prediction-data.gateway.js';
+import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
 
 @Module({
-  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController],
+  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController, DurationPredictionController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -128,6 +133,12 @@ import { EstimationAccuracyDataInPrismaGateway } from './interface-adapters/gate
     {
       provide: EstimationAccuracyDataGateway,
       useClass: EstimationAccuracyDataInPrismaGateway,
+    },
+    PredictIssueDurationUsecase,
+    DurationPredictionPresenter,
+    {
+      provide: DurationPredictionDataGateway,
+      useClass: DurationPredictionDataInPrismaGateway,
     },
   ],
 })

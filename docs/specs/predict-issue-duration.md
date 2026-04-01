@@ -1,5 +1,7 @@
 # Prédire la durée probable d'une issue
 
+## Status: implemented
+
 ## Contexte
 Quand un PO priorise le backlog ou planifie un cycle, il n'a aucune visibilité sur le temps que prendra réellement chaque issue. Une prédiction basée sur l'historique de l'équipe lui permet de prendre des décisions de planification plus éclairées.
 
@@ -36,3 +38,26 @@ Quand un PO priorise le backlog ou planifie un cycle, il n'a aucune visibilité 
 | Issue similaire | Issue déjà complétée partageant des critères communs avec l'issue à prédire |
 | Confiance faible | Indication que la prédiction repose sur un échantillon réduit d'issues similaires |
 | Cycle time | Durée entre le passage en cours de traitement et la complétion d'une issue |
+
+## Implementation
+
+- **Bounded Context** : Analytics
+- **Entity** : `DurationPrediction` — logique statistique P25/P50/P75 pour optimiste/probable/pessimiste
+- **Use Case** : `PredictIssueDurationUsecase`
+- **Controller** : `DurationPredictionController`
+- **Gateway** : `DurationPredictionDataInPrismaGateway`
+- **Presenter** : `DurationPredictionPresenter`
+
+### Endpoints
+
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| GET | `/api/analytics/teams/:teamId/issues/:issueExternalId/duration-prediction` | PredictIssueDuration |
+
+### Décisions
+
+- Pas de migration Prisma — toutes les données existent déjà (Issue, Cycle, StateTransition, Label)
+- "Type" d'issue traité via les labels (pas de champ type dans le modèle Issue)
+- Prédiction stateless, calculée à la volée à chaque appel GET
+- Confiance binaire : < 5 issues similaires = low, >= 5 = high
+- Percentiles : P25 (optimiste), P50 (probable), P75 (pessimiste)
