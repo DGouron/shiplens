@@ -1,5 +1,7 @@
 # Définir des règles d'audit personnalisées
 
+## Status: implemented
+
 ## Contexte
 Le tech lead veut formaliser les pratiques de son équipe sous forme de règles vérifiables automatiquement. Sans ça, les bonnes pratiques restent orales, personne ne sait si elles sont réellement suivies, et les mêmes dérives reviennent à chaque cycle.
 
@@ -29,6 +31,24 @@ Le tech lead veut formaliser les pratiques de son équipe sous forme de règles 
 - Évaluation en temps réel pendant un cycle en cours
 - Règles portant sur des métriques individuelles par développeur
 - Interface graphique de création de règles (fichier texte uniquement)
+
+## Implementation
+
+### Bounded Context
+`audit` — nouveau module (`src/modules/audit/`)
+
+### Artefacts
+- **Entity** : `AuditRule` avec `create()` + `evaluate()` — logique d'evaluation pure dans le domaine
+- **Use Cases** : `CreateAuditRuleUsecase`, `EvaluateAuditRuleUsecase`
+- **Gateway** : `AuditRuleInFilesystemGateway` — stockage fichier JSON, un fichier par regle
+- **Module** : `AuditModule` wire dans `AppModule`
+
+### Decisions architecturales
+- Condition modelisee en discriminated union (threshold, ratio, pattern) parsee par `parseCondition()`
+- Stockage fichier (pas Prisma) — `<identifier>.json` dans dossier configurable via `AUDIT_RULES_DIRECTORY`
+- `CycleMetrics` defini dans le BC audit pour eviter le couplage avec analytics
+- `EvaluationResult` est un type retour simple, pas une entite
+- `evaluate()` vit sur l'entite AuditRule — logique pure testable
 
 ## Glossaire
 | Terme | Définition |

@@ -1,5 +1,7 @@
 # Importer des pratiques Packmind comme règles d'audit
 
+## Status: drafted
+
 ## Contexte
 Le tech lead qui utilise déjà Packmind pour documenter les pratiques de son équipe ne veut pas les ressaisir dans Shiplens. La synchronisation permet d'exploiter le travail existant dans Packmind et de le transformer en règles d'audit évaluables automatiquement.
 
