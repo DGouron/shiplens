@@ -6,6 +6,7 @@ interface AuditRuleBuilderProps {
   name: string;
   severity: string;
   conditionExpression: string;
+  origin: string;
 }
 
 const defaultProps: AuditRuleBuilderProps = {
@@ -13,6 +14,7 @@ const defaultProps: AuditRuleBuilderProps = {
   name: 'Cycle time max 5 jours',
   severity: 'warning',
   conditionExpression: 'cycle time > 5 jours',
+  origin: 'manual',
 };
 
 export class AuditRuleBuilder extends EntityBuilder<AuditRuleBuilderProps, AuditRule> {
@@ -37,6 +39,11 @@ export class AuditRuleBuilder extends EntityBuilder<AuditRuleBuilderProps, Audit
 
   withConditionExpression(conditionExpression: string): this {
     this.props.conditionExpression = conditionExpression;
+    return this;
+  }
+
+  withOrigin(origin: string): this {
+    this.props.origin = origin;
     return this;
   }
 

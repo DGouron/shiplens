@@ -15,4 +15,10 @@ export class StubAuditRuleGateway extends AuditRuleGateway {
   async findAll(): Promise<AuditRule[]> {
     return Array.from(this.rules.values());
   }
+
+  async findAllByOrigin(origin: string): Promise<AuditRule[]> {
+    return Array.from(this.rules.values()).filter(
+      (rule) => rule.origin === origin,
+    );
+  }
 }

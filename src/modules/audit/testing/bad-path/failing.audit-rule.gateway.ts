@@ -14,4 +14,8 @@ export class FailingAuditRuleGateway extends AuditRuleGateway {
   async findAll(): Promise<AuditRule[]> {
     throw new GatewayError('Le dossier de regles configure est introuvable.');
   }
+
+  async findAllByOrigin(_origin: string): Promise<AuditRule[]> {
+    throw new GatewayError('Le dossier de regles configure est introuvable.');
+  }
 }

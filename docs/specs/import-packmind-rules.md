@@ -1,6 +1,6 @@
 # Importer des pratiques Packmind comme règles d'audit
 
-## Status: drafted
+## Status: implemented
 
 ## Contexte
 Le tech lead qui utilise déjà Packmind pour documenter les pratiques de son équipe ne veut pas les ressaisir dans Shiplens. La synchronisation permet d'exploiter le travail existant dans Packmind et de le transformer en règles d'audit évaluables automatiquement.
@@ -30,6 +30,37 @@ Le tech lead qui utilise déjà Packmind pour documenter les pratiques de son é
 - Écriture vers Packmind (lecture seule)
 - Gestion des conflits entre une règle manuelle et une règle Packmind ayant le même identifiant
 - Configuration avancée du mapping de conversion
+
+## Implementation
+
+### Bounded Context
+`audit` — module existant (`src/modules/audit/`)
+
+### Artefacts
+- **Entity modifiee** : `AuditRule` — ajout champ `origin` (`'manual' | 'packmind'`, default `'manual'`)
+- **Nouvelle entity** : `ChecklistItem` — pratiques qualitatives avec `identifier`, `name`, `origin`
+- **Type** : `PackmindPractice` — representation des pratiques Packmind (plain type, pas une entity)
+- **Use Case** : `SyncPackmindRulesUsecase` — orchestre la synchronisation manuelle
+- **Gateway port** : `PackmindGateway` (abstract class) — fetchPractices(token)
+- **Gateway port** : `ChecklistItemGateway` (abstract class) — save, findAll
+- **Gateway impl** : `PackmindInHttpGateway` — appels HTTP vers l'API Packmind
+- **Gateway impl** : `ChecklistItemInFilesystemGateway` — stockage JSON fichier
+- **Gateway modifiee** : `AuditRuleInFilesystemGateway` — serialisation origin + findAllByOrigin
+- **Presenter** : `SyncPackmindRulesPresenter` — SyncResult vers ViewModel
+- **Controller** : `SyncPackmindRulesController` — `POST /audit/sync-packmind`
+
+### Endpoint
+| Methode | Route | Use Case |
+|---------|-------|----------|
+| POST | `/audit/sync-packmind` | `SyncPackmindRulesUsecase` |
+
+### Decisions architecturales
+- Origin ajoute comme champ optionnel sur AuditRule (backward compatible, default 'manual')
+- ChecklistItem est une entity separee (pas un AuditRule sans condition)
+- PackmindPractice est un plain type (pas d'invariants metier a proteger)
+- Token passe dans le body de la requete (pas d'env var)
+- Stockage fichier JSON (pas Prisma) — coherent avec le module audit existant
+- Cache = regles deja persistees sur le filesystem (pas de cache explicite)
 
 ## Glossaire
 | Terme | Définition |
