@@ -1,5 +1,7 @@
 # Suivre la précision des estimations
 
+## Status: implemented
+
 ## Contexte
 Les estimations en points sont rarement confrontées à la réalité. Le tech lead a besoin de mesurer l'écart entre ce qui était prévu et ce qui s'est passé, pour que l'équipe calibre progressivement ses estimations et gagne en prévisibilité.
 
@@ -39,3 +41,25 @@ Les estimations en points sont rarement confrontées à la réalité. Le tech le
 | Normalisation | Conversion des points et des durées sur une échelle commune pour les rendre comparables |
 | Sur-estimation | Issue dont le cycle time est significativement inférieur à ce que l'estimation laissait prévoir |
 | Sous-estimation | Issue dont le cycle time est significativement supérieur à ce que l'estimation laissait prévoir |
+
+## Implementation
+
+- **Bounded Context** : Analytics
+- **Entity** : `EstimationAccuracy` — logique de ratio, classification, agrégation par dev/label/équipe
+- **Use Cases** : `CalculateEstimationAccuracyUsecase`, `GetEstimationTrendUsecase`
+- **Controller** : `EstimationAccuracyController`
+- **Gateway** : `EstimationAccuracyDataInPrismaGateway`
+- **Presenter** : `EstimationAccuracyPresenter`
+
+### Endpoints
+
+| Méthode | Route | Use Case |
+|---------|-------|----------|
+| GET | `/api/analytics/teams/:teamId/cycles/:cycleId/estimation-accuracy` | CalculateEstimationAccuracy |
+| GET | `/api/analytics/teams/:teamId/estimation-trend` | GetEstimationTrend |
+
+### Décisions
+
+- Pas de migration Prisma — toutes les données existent déjà (Issue.points, StateTransition, Label)
+- Classification : ratio > 2.0 = sur-estimation, ratio < 0.5 = sous-estimation
+- Le gateway filtre les issues éligibles et retourne les compteurs d'exclues séparément
