@@ -13,7 +13,7 @@
 | Detecter les issues bloquees | [detect-blocked-issues](specs/detect-blocked-issues.md) | Analytics | implemented | 2026-03-31 |
 | Analyser les goulots par statut | [analyze-bottlenecks-by-status](specs/analyze-bottlenecks-by-status.md) | Analytics | implemented | 2026-03-31 |
 | Comparer estimations vs realite | [track-estimation-accuracy](specs/track-estimation-accuracy.md) | Analytics | implemented | 2026-04-01 |
-| Predire la duree d'une issue | [predict-issue-duration](specs/predict-issue-duration.md) | Analytics | drafted | 2026-03-29 |
+| Predire la duree d'une issue | [predict-issue-duration](specs/predict-issue-duration.md) | Analytics | implemented | 2026-04-01 |
 | Definir des regles d'audit custom | [define-custom-audit-rules](specs/define-custom-audit-rules.md) | Rules | drafted | 2026-03-29 |
 | Importer des regles depuis Packmind | [import-packmind-rules](specs/import-packmind-rules.md) | Rules | drafted | 2026-03-29 |
 | Evaluer les regles dans le rapport | [audit-rules-in-report](specs/audit-rules-in-report.md) | Rules | drafted | 2026-03-29 |
