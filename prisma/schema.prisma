@@ -197,3 +197,15 @@ model SlackNotificationConfig {
   webhookUrl String
   enabled    Boolean
 }
+
+model TeamAlertChannel {
+  id         String @id @default(uuid())
+  teamId     String @unique
+  webhookUrl String
+}
+
+model SlackAlertLog {
+  id              String @id @default(uuid())
+  issueExternalId String
+  sentAt          String
+}
