@@ -1,5 +1,7 @@
 # Envoyer le rapport de sprint sur Slack
 
+## Status: implemented
+
 ## Contexte
 Le tech lead veut recevoir automatiquement le rapport de sprint dans son canal Slack dédié, sans devoir aller le chercher manuellement dans le dashboard. Cela garantit que toute l'équipe et les stakeholders voient le bilan au bon moment, sans effort supplémentaire.
 
@@ -20,6 +22,32 @@ Le tech lead veut recevoir automatiquement le rapport de sprint dans son canal S
 - envoi échoué côté Slack: {cycle clôturé, rapport généré, webhook configuré, Slack injoignable} → reject "L'envoi vers Slack a échoué. Veuillez vérifier la configuration du webhook ou réessayer plus tard."
 - configuration du webhook: {utilisateur saisit une URL de webhook valide} → webhook enregistré + message de test envoyé sur le canal
 - modification du webhook: {webhook déjà configuré, nouvelle URL saisie} → ancien webhook remplacé + message de test envoyé sur le nouveau canal
+
+## Implementation
+
+### Bounded Context
+`notification` (nouveau BC)
+
+### Artefacts
+- **Entity**: `SlackNotificationConfig` (id, teamId, webhookUrl, enabled)
+- **Use Cases**: `ConfigureSlackWebhookUsecase`, `ToggleSlackNotificationUsecase`, `SendReportToSlackUsecase`
+- **Controller**: `SlackNotificationController`
+- **Presenter**: `SlackNotificationConfigPresenter`
+- **Gateways**: `SlackNotificationConfigGateway` (port) → `SlackNotificationConfigInPrismaGateway`, `SlackMessengerGateway` (port) → `SlackMessengerWithHttpGateway`, `SlackReportDataGateway` (port) → `SlackReportDataInPrismaGateway`
+- **Migration**: `add-slack-notification-config`
+
+### Endpoints
+| Methode | Route | Use Case |
+|---------|-------|----------|
+| POST | `/notifications/slack/configure` | ConfigureSlackWebhookUsecase |
+| PATCH | `/notifications/slack/toggle` | ToggleSlackNotificationUsecase |
+| POST | `/notifications/slack/send` | SendReportToSlackUsecase |
+
+### Decisions architecturales
+- Nouveau BC `notification` decoupled du BC `analytics` via `SlackReportDataGateway` (lit la table SprintReport sans importer de code Analytics)
+- `SlackMessengerGateway` isole l'I/O HTTP derriere un port abstrait
+- Validation webhook via Zod schema (`z.string().url().startsWith('https://hooks.slack.com/')`)
+- Envoi automatique a la cloture non implemente (le mecanisme de cycle closing n'existe pas encore) — use case appelable manuellement via endpoint
 
 ## Hors scope
 - Envoi vers autre chose que Slack (email, Teams, Discord)

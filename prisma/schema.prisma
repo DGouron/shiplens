@@ -189,3 +189,10 @@ model BlockedIssueAlert {
   active          Boolean
   resolvedAt      String?
 }
+
+model SlackNotificationConfig {
+  id         String  @id @default(uuid())
+  teamId     String  @unique
+  webhookUrl String
+  enabled    Boolean @default(true)
+}
