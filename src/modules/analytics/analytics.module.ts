@@ -49,9 +49,15 @@ import { BlockedIssueAlertGateway } from './entities/blocked-issue-alert/blocked
 import { BlockedIssueAlertInPrismaGateway } from './interface-adapters/gateways/blocked-issue-alert.in-prisma.gateway.js';
 import { BlockedIssueDetectionDataGateway } from './entities/blocked-issue-alert/blocked-issue-detection-data.gateway.js';
 import { BlockedIssueDetectionDataInPrismaGateway } from './interface-adapters/gateways/blocked-issue-detection-data.in-prisma.gateway.js';
+import { EstimationAccuracyController } from './interface-adapters/controllers/estimation-accuracy.controller.js';
+import { CalculateEstimationAccuracyUsecase } from './usecases/calculate-estimation-accuracy.usecase.js';
+import { GetEstimationTrendUsecase } from './usecases/get-estimation-trend.usecase.js';
+import { EstimationAccuracyPresenter } from './interface-adapters/presenters/estimation-accuracy.presenter.js';
+import { EstimationAccuracyDataGateway } from './entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
+import { EstimationAccuracyDataInPrismaGateway } from './interface-adapters/gateways/estimation-accuracy-data.in-prisma.gateway.js';
 
 @Module({
-  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController],
+  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -115,6 +121,13 @@ import { BlockedIssueDetectionDataInPrismaGateway } from './interface-adapters/g
     {
       provide: BlockedIssueDetectionDataGateway,
       useClass: BlockedIssueDetectionDataInPrismaGateway,
+    },
+    CalculateEstimationAccuracyUsecase,
+    GetEstimationTrendUsecase,
+    EstimationAccuracyPresenter,
+    {
+      provide: EstimationAccuracyDataGateway,
+      useClass: EstimationAccuracyDataInPrismaGateway,
     },
   ],
 })
