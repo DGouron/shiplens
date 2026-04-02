@@ -70,3 +70,4 @@ Source de verite unique pour le vocabulaire metier du projet. Enrichi par `/prod
 | Tendance velocite | Dashboard | Evolution de la velocite du cycle actif par rapport aux cycles precedents |
 | Graphique de progression | Dashboard | Visualisation de l'avancement du cycle au fil du temps |
 | Statut de synchronisation | Dashboard | Indicateur montrant quand la derniere sync a eu lieu et quand la prochaine est prevue |
+| Etat vide | Dashboard | Reponse du dashboard quand les prerequis ne sont pas remplis, contenant un statut et un message guide |

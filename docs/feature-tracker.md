@@ -21,3 +21,4 @@
 | Alerter sur les bottlenecks | [alert-bottleneck-realtime](specs/alert-bottleneck-realtime.md) | Notification | implemented | 2026-04-01 |
 | Consulter le dashboard workspace | [view-workspace-dashboard](specs/view-workspace-dashboard.md) | Analytics | implemented | 2026-03-31 |
 | Voir le rapport de cycle detaille | [view-cycle-report-page](specs/view-cycle-report-page.md) | Analytics | implemented | 2026-03-31 |
+| Afficher les etats vides du dashboard | [handle-dashboard-empty-states](specs/handle-dashboard-empty-states.md) | Analytics | implemented | 2026-04-02 |
