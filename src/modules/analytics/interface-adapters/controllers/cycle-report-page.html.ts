@@ -105,14 +105,14 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     function escapeHtml(text) {
-      var div = document.createElement('div');
+      const div = document.createElement('div');
       div.appendChild(document.createTextNode(text));
       return div.innerHTML;
     }
 
     function statusBadge(statusName) {
-      var lower = statusName.toLowerCase();
-      var cls = 'status-other';
+      const lower = statusName.toLowerCase();
+      let cls = 'status-other';
       if (lower === 'done' || lower === 'completed') cls = 'status-done';
       else if (lower === 'in progress' || lower === 'started') cls = 'status-progress';
       return '<span class="status-badge ' + cls + '">' + escapeHtml(statusName) + '</span>';
@@ -121,21 +121,21 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     document.getElementById('loadTeamBtn').addEventListener('click', loadTeam);
 
     async function loadTeam() {
-      var teamId = document.getElementById('teamId').value.trim();
+      const teamId = document.getElementById('teamId').value.trim();
       if (!teamId) return;
       clearError();
 
       try {
-        var response = await fetch(API + '/analytics/teams/' + encodeURIComponent(teamId) + '/cycles');
+        const response = await fetch(API + '/analytics/teams/' + encodeURIComponent(teamId) + '/cycles');
         if (!response.ok) {
-          var err = await response.json().catch(function() { return {}; });
+          const err = await response.json().catch(function() { return {}; });
           throw new Error(err.message || 'Erreur lors du chargement des cycles');
         }
-        var data = await response.json();
-        var selector = document.getElementById('cycleSelector');
+        const data = await response.json();
+        const selector = document.getElementById('cycleSelector');
         selector.innerHTML = '<option value="">Selectionnez un cycle...</option>';
         data.cycles.forEach(function(cycle) {
-          var option = document.createElement('option');
+          const option = document.createElement('option');
           option.value = cycle.externalId;
           option.textContent = cycle.name + ' (' + cycle.issueCount + ' issues) - ' + cycle.status;
           selector.appendChild(option);
@@ -147,9 +147,9 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     document.getElementById('cycleSelector').addEventListener('change', function() {
-      var cycleId = this.value;
+      const cycleId = this.value;
       if (!cycleId) return;
-      var teamId = document.getElementById('teamId').value.trim();
+      const teamId = document.getElementById('teamId').value.trim();
       clearError();
       currentReport = null;
       document.getElementById('exportBtn').disabled = true;
@@ -161,21 +161,21 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     });
 
     async function loadMetrics(cycleId, teamId) {
-      var container = document.getElementById('metricsContent');
+      const container = document.getElementById('metricsContent');
       container.innerHTML = '<div class="loading">Chargement...</div>';
 
       try {
-        var response = await fetch(
+        const response = await fetch(
           API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/metrics?teamId=' + encodeURIComponent(teamId)
         );
         if (!response.ok) {
-          var err = await response.json().catch(function() { return {}; });
+          const err = await response.json().catch(function() { return {}; });
           container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Metriques non disponibles') + '</div>';
           return;
         }
-        var data = await response.json();
-        var scopeCreepValue = parseInt(data.scopeCreep) || 0;
-        var scopeCreepClass = scopeCreepValue > 30 ? 'metric-card scope-creep-alert' : 'metric-card';
+        const data = await response.json();
+        const scopeCreepValue = parseInt(data.scopeCreep) || 0;
+        const scopeCreepClass = scopeCreepValue > 30 ? 'metric-card scope-creep-alert' : 'metric-card';
 
         container.innerHTML =
           '<div class="metrics-grid">' +
@@ -192,25 +192,25 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     async function loadIssues(cycleId, teamId) {
-      var container = document.getElementById('issuesContent');
+      const container = document.getElementById('issuesContent');
       container.innerHTML = '<div class="loading">Chargement...</div>';
 
       try {
-        var response = await fetch(
+        const response = await fetch(
           API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/issues?teamId=' + encodeURIComponent(teamId)
         );
         if (!response.ok) {
-          var err = await response.json().catch(function() { return {}; });
+          const err = await response.json().catch(function() { return {}; });
           throw new Error(err.message || 'Erreur lors du chargement des issues');
         }
-        var data = await response.json();
+        const data = await response.json();
 
         if (data.issues.length === 0) {
           container.innerHTML = '<div class="report-empty">Aucune issue dans ce cycle.</div>';
           return;
         }
 
-        var html = '<table><thead><tr><th>Titre</th><th>Statut</th><th>Points</th><th>Assignee</th></tr></thead><tbody>';
+        let html = '<table><thead><tr><th>Titre</th><th>Statut</th><th>Points</th><th>Assignee</th></tr></thead><tbody>';
         data.issues.forEach(function(issue) {
           html += '<tr>' +
             '<td>' + escapeHtml(issue.title) + '</td>' +
@@ -231,15 +231,15 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         showError('Aucun rapport a exporter. Veuillez d\\'abord generer un rapport pour ce cycle.');
         return;
       }
-      var markdown = '# ' + currentReport.cycleName + '\\n\\n' +
+      const markdown = '# ' + currentReport.cycleName + '\\n\\n' +
         '## Resume\\n' + currentReport.executiveSummary + '\\n\\n' +
         '## Tendances\\n' + currentReport.trends + '\\n\\n' +
         '## Points forts\\n' + currentReport.highlights + '\\n\\n' +
         '## Risques\\n' + currentReport.risks + '\\n\\n' +
         '## Recommandations\\n' + currentReport.recommendations + '\\n';
-      var blob = new Blob([markdown], { type: 'text/markdown' });
-      var url = URL.createObjectURL(blob);
-      var anchor = document.createElement('a');
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
       anchor.href = url;
       anchor.download = currentReport.cycleName.replace(/\\s+/g, '-').toLowerCase() + '-report.md';
       anchor.click();
@@ -251,7 +251,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         showError('Aucun rapport a exporter. Veuillez d\\'abord generer un rapport pour ce cycle.');
         return;
       }
-      var text = currentReport.executiveSummary + '\\n\\n' +
+      const text = currentReport.executiveSummary + '\\n\\n' +
         currentReport.trends + '\\n\\n' +
         currentReport.highlights + '\\n\\n' +
         currentReport.risks + '\\n\\n' +
