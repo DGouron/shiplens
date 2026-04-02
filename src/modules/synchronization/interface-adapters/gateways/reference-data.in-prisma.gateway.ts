@@ -65,8 +65,18 @@ export class ReferenceDataInPrismaGateway extends ReferenceDataGateway {
         });
 
         for (const milestone of project.milestones) {
-          await transaction.milestone.create({
-            data: {
+          await transaction.milestone.upsert({
+            where: {
+              externalId_projectExternalId: {
+                externalId: milestone.externalId,
+                projectExternalId: milestone.projectExternalId,
+              },
+            },
+            update: {
+              name: milestone.name,
+              projectTeamId: project.teamId,
+            },
+            create: {
               externalId: milestone.externalId,
               projectExternalId: milestone.projectExternalId,
               projectTeamId: project.teamId,

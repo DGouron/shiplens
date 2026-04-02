@@ -102,9 +102,17 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
         });
         if (!selectResponse.ok) throw new Error('Impossible de sélectionner les équipes');
 
-        btn.textContent = 'Synchronisation des données...';
+        btn.textContent = 'Synchronisation des données de référence...';
         await fetch('/sync/reference-data', { method: 'POST' });
-        await fetch('/sync/issue-data', { method: 'POST' });
+
+        btn.textContent = 'Synchronisation des issues...';
+        for (const team of selectedTeams) {
+          await fetch('/sync/issue-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId: team.teamId }),
+          });
+        }
 
         window.location.reload();
       } catch (error) {
