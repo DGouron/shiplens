@@ -128,6 +128,34 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
       }
     }
 
+    async function resync() {
+      const btn = document.querySelector('.sync-status .action-btn');
+      btn.disabled = true;
+      btn.textContent = 'Synchronisation...';
+      try {
+        const selectionResponse = await fetch('/sync/selection');
+        const selection = await selectionResponse.json();
+        if (!selection) throw new Error('Aucune sélection');
+
+        btn.textContent = 'Données de référence...';
+        await fetch('/sync/reference-data', { method: 'POST' });
+
+        btn.textContent = 'Issues...';
+        for (const team of selection.selectedTeams) {
+          await fetch('/sync/issue-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId: team.teamId }),
+          });
+        }
+
+        window.location.reload();
+      } catch (error) {
+        btn.textContent = error.message;
+        btn.disabled = false;
+      }
+    }
+
     function renderDashboard(data) {
       document.getElementById('loading').style.display = 'none';
 
@@ -148,6 +176,7 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
           ? '<span class="alert">' + data.synchronization.lateWarning + '</span>'
           : '',
         data.synchronization.nextSync,
+        '<button class="action-btn" onclick="resync()" style="margin-left:1rem;padding:0.4rem 1rem;font-size:0.85rem;">Resynchroniser</button>',
       ].filter(Boolean).join(' — ');
 
       const grid = document.getElementById('teams-grid');
