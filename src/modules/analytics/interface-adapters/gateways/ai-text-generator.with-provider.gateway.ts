@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AiTextGeneratorGateway, type AiProvider } from '../../entities/sprint-report/ai-text-generator.gateway.js';
+import {
+  type AiProvider,
+  AiTextGeneratorGateway,
+} from '../../entities/sprint-report/ai-text-generator.gateway.js';
 import { AiProviderUnavailableError } from '../../entities/sprint-report/sprint-report.errors.js';
 
 interface ProviderConfig {
@@ -53,7 +56,10 @@ export class AiTextGeneratorWithProviderGateway extends AiTextGeneratorGateway {
     }
   }
 
-  private async callOpenAi(prompt: string, config: ProviderConfig): Promise<string> {
+  private async callOpenAi(
+    prompt: string,
+    config: ProviderConfig,
+  ): Promise<string> {
     const apiKey = process.env[config.authEnvVariable];
     if (!apiKey) {
       throw new AiProviderUnavailableError();
@@ -76,11 +82,16 @@ export class AiTextGeneratorWithProviderGateway extends AiTextGeneratorGateway {
       throw new AiProviderUnavailableError();
     }
 
-    const data = (await response.json()) as { choices: Array<{ message: { content: string } }> };
+    const data = (await response.json()) as {
+      choices: Array<{ message: { content: string } }>;
+    };
     return data.choices[0].message.content;
   }
 
-  private async callAnthropic(prompt: string, config: ProviderConfig): Promise<string> {
+  private async callAnthropic(
+    prompt: string,
+    config: ProviderConfig,
+  ): Promise<string> {
     const apiKey = process.env[config.authEnvVariable];
     if (!apiKey) {
       throw new AiProviderUnavailableError();
@@ -104,12 +115,17 @@ export class AiTextGeneratorWithProviderGateway extends AiTextGeneratorGateway {
       throw new AiProviderUnavailableError();
     }
 
-    const data = (await response.json()) as { content: Array<{ text: string }> };
+    const data = (await response.json()) as {
+      content: Array<{ text: string }>;
+    };
     return data.content[0].text;
   }
 
-  private async callOllama(prompt: string, config: ProviderConfig): Promise<string> {
-    const ollamaUrl = process.env['OLLAMA_URL'] ?? config.url;
+  private async callOllama(
+    prompt: string,
+    config: ProviderConfig,
+  ): Promise<string> {
+    const ollamaUrl = process.env.OLLAMA_URL ?? config.url;
 
     const response = await fetch(ollamaUrl, {
       method: 'POST',

@@ -1,5 +1,5 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { DurationPrediction } from '@modules/analytics/entities/duration-prediction/duration-prediction.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 interface DurationPredictionBuilderProps {
   cycleTimes: number[];

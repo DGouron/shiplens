@@ -1,14 +1,14 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SyncIssueDataController } from '@modules/synchronization/interface-adapters/controllers/sync-issue-data.controller.js';
-import { SyncIssueDataUsecase } from '@modules/synchronization/usecases/sync-issue-data.usecase.js';
-import { GetSyncProgressUsecase } from '@modules/synchronization/usecases/get-sync-progress.usecase.js';
-import { SyncProgressPresenter } from '@modules/synchronization/interface-adapters/presenters/sync-progress.presenter.js';
 import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
-import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
-import { StubLinearIssueDataGateway } from '@modules/synchronization/testing/good-path/stub.linear-issue-data.gateway.js';
+import { SyncIssueDataController } from '@modules/synchronization/interface-adapters/controllers/sync-issue-data.controller.js';
+import { SyncProgressPresenter } from '@modules/synchronization/interface-adapters/presenters/sync-progress.presenter.js';
 import { StubIssueDataGateway } from '@modules/synchronization/testing/good-path/stub.issue-data.gateway.js';
+import { StubLinearIssueDataGateway } from '@modules/synchronization/testing/good-path/stub.linear-issue-data.gateway.js';
 import { StubSyncProgressGateway } from '@modules/synchronization/testing/good-path/stub.sync-progress.gateway.js';
+import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
+import { GetSyncProgressUsecase } from '@modules/synchronization/usecases/get-sync-progress.usecase.js';
+import { SyncIssueDataUsecase } from '@modules/synchronization/usecases/sync-issue-data.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../../builders/linear-workspace-connection.builder.js';
 import { TeamSelectionBuilder } from '../../../../builders/team-selection.builder.js';
 

@@ -15,7 +15,10 @@ export interface WorkspaceInfo {
 }
 
 export abstract class LinearApiGateway {
-  abstract exchangeCode(code: string, redirectUri: string): Promise<ExchangeCodeResult>;
+  abstract exchangeCode(
+    code: string,
+    redirectUri: string,
+  ): Promise<ExchangeCodeResult>;
   abstract refreshToken(refreshToken: string): Promise<RefreshTokenResult>;
   abstract revokeToken(accessToken: string): Promise<void>;
   abstract getWorkspaceInfo(accessToken: string): Promise<WorkspaceInfo>;

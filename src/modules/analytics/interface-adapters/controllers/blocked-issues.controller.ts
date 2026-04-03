@@ -1,10 +1,16 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { GetBlockedIssuesUsecase } from '../../usecases/get-blocked-issues.usecase.js';
-import { GetAlertHistoryUsecase } from '../../usecases/get-alert-history.usecase.js';
-import { SetStatusThresholdUsecase } from '../../usecases/set-status-threshold.usecase.js';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { DetectBlockedIssuesUsecase } from '../../usecases/detect-blocked-issues.usecase.js';
-import { BlockedIssuesPresenter, type BlockedIssueAlertDto } from '../presenters/blocked-issues.presenter.js';
-import { AlertHistoryPresenter, type AlertHistoryDto } from '../presenters/alert-history.presenter.js';
+import { GetAlertHistoryUsecase } from '../../usecases/get-alert-history.usecase.js';
+import { GetBlockedIssuesUsecase } from '../../usecases/get-blocked-issues.usecase.js';
+import { SetStatusThresholdUsecase } from '../../usecases/set-status-threshold.usecase.js';
+import {
+  type AlertHistoryDto,
+  AlertHistoryPresenter,
+} from '../presenters/alert-history.presenter.js';
+import {
+  type BlockedIssueAlertDto,
+  BlockedIssuesPresenter,
+} from '../presenters/blocked-issues.presenter.js';
 
 @Controller('analytics/blocked-issues')
 export class BlockedIssuesController {

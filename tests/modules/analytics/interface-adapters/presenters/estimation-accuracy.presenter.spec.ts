@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { EstimationAccuracyPresenter } from '@modules/analytics/interface-adapters/presenters/estimation-accuracy.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { EstimationAccuracyBuilder } from '../../../../builders/estimation-accuracy.builder.js';
 
 describe('EstimationAccuracyPresenter', () => {
@@ -8,8 +8,22 @@ describe('EstimationAccuracyPresenter', () => {
   it('presents estimation accuracy as formatted DTO', () => {
     const accuracy = new EstimationAccuracyBuilder()
       .withIssues([
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: ['frontend'] },
-        { externalId: 'issue-2', title: 'Task 2', points: 1, cycleTimeInDays: 5, assigneeName: 'Bob', labelNames: ['backend'] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: 'Alice',
+          labelNames: ['frontend'],
+        },
+        {
+          externalId: 'issue-2',
+          title: 'Task 2',
+          points: 1,
+          cycleTimeInDays: 5,
+          assigneeName: 'Bob',
+          labelNames: ['backend'],
+        },
       ])
       .withExcludedWithoutEstimation(3)
       .withExcludedWithoutCycleTime(2)
@@ -30,8 +44,22 @@ describe('EstimationAccuracyPresenter', () => {
   it('presents developer scores', () => {
     const accuracy = new EstimationAccuracyBuilder()
       .withIssues([
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] },
-        { externalId: 'issue-2', title: 'Task 2', points: 2, cycleTimeInDays: 2, assigneeName: 'Bob', labelNames: [] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: 'Alice',
+          labelNames: [],
+        },
+        {
+          externalId: 'issue-2',
+          title: 'Task 2',
+          points: 2,
+          cycleTimeInDays: 2,
+          assigneeName: 'Bob',
+          labelNames: [],
+        },
       ])
       .build();
 
@@ -45,7 +73,14 @@ describe('EstimationAccuracyPresenter', () => {
   it('presents label scores', () => {
     const accuracy = new EstimationAccuracyBuilder()
       .withIssues([
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: ['frontend'] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: 'Alice',
+          labelNames: ['frontend'],
+        },
       ])
       .build();
 

@@ -1,6 +1,6 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { LinearWorkspaceConnection } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.js';
 import { type LinearWorkspaceConnectionProps } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: LinearWorkspaceConnectionProps = {
   id: 'connection-1',

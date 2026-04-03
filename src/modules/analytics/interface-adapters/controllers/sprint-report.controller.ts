@@ -1,7 +1,10 @@
-import { Controller, Post, Param, Body } from '@nestjs/common';
-import { GenerateSprintReportUsecase } from '../../usecases/generate-sprint-report.usecase.js';
-import { SprintReportPresenter, type SprintReportDto } from '../presenters/sprint-report.presenter.js';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { type AiProvider } from '../../entities/sprint-report/ai-text-generator.gateway.js';
+import { GenerateSprintReportUsecase } from '../../usecases/generate-sprint-report.usecase.js';
+import {
+  type SprintReportDto,
+  SprintReportPresenter,
+} from '../presenters/sprint-report.presenter.js';
 
 interface GenerateSprintReportBody {
   teamId: string;

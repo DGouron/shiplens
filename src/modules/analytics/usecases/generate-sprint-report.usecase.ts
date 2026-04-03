@@ -1,20 +1,31 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { SprintReportDataGateway, type SprintContext, type TrendContext } from '../entities/sprint-report/sprint-report-data.gateway.js';
-import { AiTextGeneratorGateway, type AiProvider } from '../entities/sprint-report/ai-text-generator.gateway.js';
-import { SprintReportGateway } from '../entities/sprint-report/sprint-report.gateway.js';
-import { SprintReport } from '../entities/sprint-report/sprint-report.js';
-import { type AuditSection } from '../entities/sprint-report/sprint-report.schema.js';
-import { SprintNotSynchronizedError } from '../entities/sprint-report/sprint-report.errors.js';
-import { EmptySprintError } from '../entities/sprint-report/sprint-report.errors.js';
-import { UnsupportedLanguageError } from '../entities/sprint-report/sprint-report.errors.js';
 import { AuditRuleGateway } from '../../audit/entities/audit-rule/audit-rule.gateway.js';
-import { type AuditRule, type EvaluationResult } from '../../audit/entities/audit-rule/audit-rule.js';
+import {
+  type AuditRule,
+  type EvaluationResult,
+} from '../../audit/entities/audit-rule/audit-rule.js';
 import { type CycleMetrics } from '../../audit/entities/audit-rule/cycle-metrics.js';
 import { ChecklistItemGateway } from '../../audit/entities/checklist-item/checklist-item.gateway.js';
 import { CycleMetricsDataGateway } from '../entities/cycle-snapshot/cycle-metrics-data.gateway.js';
-import { CycleSnapshot } from '../entities/cycle-snapshot/cycle-snapshot.js';
+import {
+  type AiProvider,
+  AiTextGeneratorGateway,
+} from '../entities/sprint-report/ai-text-generator.gateway.js';
+import {
+  EmptySprintError,
+  SprintNotSynchronizedError,
+  UnsupportedLanguageError,
+} from '../entities/sprint-report/sprint-report.errors.js';
+import { SprintReportGateway } from '../entities/sprint-report/sprint-report.gateway.js';
+import { SprintReport } from '../entities/sprint-report/sprint-report.js';
+import { type AuditSection } from '../entities/sprint-report/sprint-report.schema.js';
+import {
+  type SprintContext,
+  SprintReportDataGateway,
+  type TrendContext,
+} from '../entities/sprint-report/sprint-report-data.gateway.js';
 
 interface GenerateSprintReportParams {
   cycleId: string;
@@ -48,7 +59,9 @@ export class GenerateSprintReportUsecase
   ) {}
 
   async execute(params: GenerateSprintReportParams): Promise<SprintReport> {
-    this.logger.log(`[${params.cycleId}] Report generation started — language: ${params.language}, provider: ${params.provider}`);
+    this.logger.log(
+      `[${params.cycleId}] Report generation started — language: ${params.language}, provider: ${params.provider}`,
+    );
 
     if (!SUPPORTED_LANGUAGES.includes(params.language)) {
       throw new UnsupportedLanguageError();
@@ -81,11 +94,22 @@ export class GenerateSprintReportUsecase
 
     let ruleEvaluations: RuleEvaluation[] = [];
     if (hasAuditRules) {
-      ruleEvaluations = await this.evaluateAuditRules(auditRules, params.cycleId, params.teamId);
+      ruleEvaluations = await this.evaluateAuditRules(
+        auditRules,
+        params.cycleId,
+        params.teamId,
+      );
     }
 
-    const prompt = this.buildPrompt(sprintContext, trendContext, params.language, ruleEvaluations);
-    this.logger.log(`[${params.cycleId}] Calling AI provider: ${params.provider}...`);
+    const prompt = this.buildPrompt(
+      sprintContext,
+      trendContext,
+      params.language,
+      ruleEvaluations,
+    );
+    this.logger.log(
+      `[${params.cycleId}] Calling AI provider: ${params.provider}...`,
+    );
     const generatedText = await this.aiTextGeneratorGateway.generate(
       prompt,
       params.provider,
@@ -94,7 +118,9 @@ export class GenerateSprintReportUsecase
 
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      this.logger.error(`[${params.cycleId}] No JSON found in AI response: ${generatedText.substring(0, 200)}`);
+      this.logger.error(
+        `[${params.cycleId}] No JSON found in AI response: ${generatedText.substring(0, 200)}`,
+      );
       throw new Error("La reponse de l'IA ne contient pas de JSON valide.");
     }
     const parsedSections = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
@@ -126,7 +152,9 @@ export class GenerateSprintReportUsecase
     });
 
     await this.sprintReportGateway.save(report);
-    this.logger.log(`[${params.cycleId}] Report generated and saved — ${sprintContext.cycleName}`);
+    this.logger.log(
+      `[${params.cycleId}] Report generated and saved — ${sprintContext.cycleName}`,
+    );
 
     return report;
   }
@@ -136,7 +164,10 @@ export class GenerateSprintReportUsecase
     cycleId: string,
     teamId: string,
   ): Promise<RuleEvaluation[]> {
-    const snapshotData = await this.cycleMetricsDataGateway.getSnapshotData(cycleId, teamId);
+    const snapshotData = await this.cycleMetricsDataGateway.getSnapshotData(
+      cycleId,
+      teamId,
+    );
     const cycleMetrics = this.buildCycleMetrics(snapshotData);
 
     return rules.map((rule) => ({
@@ -146,7 +177,16 @@ export class GenerateSprintReportUsecase
     }));
   }
 
-  private buildCycleMetrics(snapshotData: { issues: readonly { statusName: string; points: number | null; createdAt: string; completedAt: string | null; startedAt: string | null }[]; startsAt: string }): CycleMetrics {
+  private buildCycleMetrics(snapshotData: {
+    issues: readonly {
+      statusName: string;
+      points: number | null;
+      createdAt: string;
+      completedAt: string | null;
+      startedAt: string | null;
+    }[];
+    startsAt: string;
+  }): CycleMetrics {
     const completedIssues = snapshotData.issues.filter(
       (issue) => issue.completedAt !== null,
     );
@@ -170,9 +210,11 @@ export class GenerateSprintReportUsecase
       }
     }
 
-    const averageCycleTimeInDays = cycleTimesInDays.length > 0
-      ? cycleTimesInDays.reduce((sum, time) => sum + time, 0) / cycleTimesInDays.length
-      : 0;
+    const averageCycleTimeInDays =
+      cycleTimesInDays.length > 0
+        ? cycleTimesInDays.reduce((sum, time) => sum + time, 0) /
+          cycleTimesInDays.length
+        : 0;
 
     const leadTimesInDays: number[] = [];
     for (const issue of completedIssues) {
@@ -183,9 +225,11 @@ export class GenerateSprintReportUsecase
       }
     }
 
-    const averageLeadTimeInDays = leadTimesInDays.length > 0
-      ? leadTimesInDays.reduce((sum, time) => sum + time, 0) / leadTimesInDays.length
-      : 0;
+    const averageLeadTimeInDays =
+      leadTimesInDays.length > 0
+        ? leadTimesInDays.reduce((sum, time) => sum + time, 0) /
+          leadTimesInDays.length
+        : 0;
 
     const completedPoints = completedIssues.reduce(
       (sum, issue) => sum + (issue.points ?? 0),
@@ -196,13 +240,15 @@ export class GenerateSprintReportUsecase
       (issue) => issue.completedAt !== null,
     ).length;
 
-    const completionRate = initialIssues.length > 0
-      ? Math.round((completedInitial / initialIssues.length) * 100)
-      : 0;
+    const completionRate =
+      initialIssues.length > 0
+        ? Math.round((completedInitial / initialIssues.length) * 100)
+        : 0;
 
     const statusDistribution: Record<string, number> = {};
     for (const issue of snapshotData.issues) {
-      statusDistribution[issue.statusName] = (statusDistribution[issue.statusName] ?? 0) + 1;
+      statusDistribution[issue.statusName] =
+        (statusDistribution[issue.statusName] ?? 0) + 1;
     }
 
     return {
@@ -223,7 +269,8 @@ export class GenerateSprintReportUsecase
     parsedSections: Record<string, unknown>,
     teamId: string,
   ): Promise<AuditSection> {
-    const auditRecommendations = (parsedSections.auditRecommendations ?? {}) as Record<string, string>;
+    const auditRecommendations = (parsedSections.auditRecommendations ??
+      {}) as Record<string, string>;
 
     const passCount = evaluations.filter(
       (evaluation) => evaluation.result.outcome === 'pass',
@@ -235,31 +282,36 @@ export class GenerateSprintReportUsecase
       status: evaluation.result.outcome,
       measuredValue: evaluation.result.message,
       threshold: evaluation.result.message,
-      recommendation: evaluation.result.outcome === 'fail'
-        ? (auditRecommendations[evaluation.identifier] ?? null)
-        : null,
+      recommendation:
+        evaluation.result.outcome === 'fail'
+          ? (auditRecommendations[evaluation.identifier] ?? null)
+          : null,
     }));
 
     const checklistItems = await this.checklistItemGateway.findAll();
 
     const previousReports = await this.sprintReportGateway.findByTeamId(teamId);
-    const reportsWithAuditSection = previousReports
-      .filter((report) => report.auditSection !== null);
+    const reportsWithAuditSection = previousReports.filter(
+      (report) => report.auditSection !== null,
+    );
 
-    const previousScores = reportsWithAuditSection
-      .map((report) => {
-        const section = report.auditSection;
-        return section ? section.adherenceScore : 0;
-      });
+    const previousScores = reportsWithAuditSection.map((report) => {
+      const section = report.auditSection;
+      return section ? section.adherenceScore : 0;
+    });
 
-    const trend = previousScores.length >= MINIMUM_TREND_CYCLES
-      ? {
-          scores: previousScores.slice(0, MINIMUM_TREND_CYCLES),
-          message: [...previousScores.slice(0, MINIMUM_TREND_CYCLES), adherenceScore]
-            .map((score) => `${score}%`)
-            .join(' → '),
-        }
-      : null;
+    const trend =
+      previousScores.length >= MINIMUM_TREND_CYCLES
+        ? {
+            scores: previousScores.slice(0, MINIMUM_TREND_CYCLES),
+            message: [
+              ...previousScores.slice(0, MINIMUM_TREND_CYCLES),
+              adherenceScore,
+            ]
+              .map((score) => `${score}%`)
+              .join(' → '),
+          }
+        : null;
 
     return {
       evaluatedRules,
@@ -287,9 +339,10 @@ export class GenerateSprintReportUsecase
       0,
     );
 
-    const languageInstruction = language === 'FR'
-      ? 'Rédige le rapport en français.'
-      : 'Write the report in English.';
+    const languageInstruction =
+      language === 'FR'
+        ? 'Rédige le rapport en français.'
+        : 'Write the report in English.';
 
     let trendSection = '';
     if (trendContext) {
@@ -305,7 +358,10 @@ export class GenerateSprintReportUsecase
     let auditSection = '';
     if (failedRules.length > 0) {
       const failedDetails = failedRules
-        .map((evaluation) => `- ${evaluation.identifier}: ${evaluation.ruleName} — ${evaluation.result.message}`)
+        .map(
+          (evaluation) =>
+            `- ${evaluation.identifier}: ${evaluation.ruleName} — ${evaluation.result.message}`,
+        )
         .join('\n');
       auditSection = [
         'Audit rules that failed:',
@@ -326,8 +382,12 @@ export class GenerateSprintReportUsecase
       'Respond as JSON: {"executiveSummary": "...", "trends": "...", "highlights": "...", "risks": "...", "recommendations": "..."}.',
       'The executiveSummary must be 3-5 sentences about overall sprint health.',
       'Recommendations must be concrete and actionable, not vague generalities.',
-      trendContext ? '' : 'Set trends to null since no historical data is available.',
+      trendContext
+        ? ''
+        : 'Set trends to null since no historical data is available.',
       auditSection,
-    ].filter(Boolean).join('\n');
+    ]
+      .filter(Boolean)
+      .join('\n');
   }
 }

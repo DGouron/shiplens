@@ -9,8 +9,7 @@ export class StubSlackAlertLogGateway extends SlackAlertLogGateway {
   ): Promise<boolean> {
     return this.logs.some(
       (log) =>
-        log.issueExternalId === issueExternalId &&
-        log.sentAt.startsWith(today),
+        log.issueExternalId === issueExternalId && log.sentAt.startsWith(today),
     );
   }
 

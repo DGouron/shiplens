@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import {
+  NoTeamsSynchronizedError,
+  WorkspaceNotConnectedError,
+} from '@modules/analytics/entities/workspace-dashboard/workspace-dashboard.errors.js';
 import { StubWorkspaceDashboardDataGateway } from '@modules/analytics/testing/good-path/stub.workspace-dashboard-data.gateway.js';
-import { WorkspaceNotConnectedError } from '@modules/analytics/entities/workspace-dashboard/workspace-dashboard.errors.js';
-import { NoTeamsSynchronizedError } from '@modules/analytics/entities/workspace-dashboard/workspace-dashboard.errors.js';
+import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('GetWorkspaceDashboardUsecase', () => {
   let gateway: StubWorkspaceDashboardDataGateway;

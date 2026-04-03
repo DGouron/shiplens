@@ -1,5 +1,5 @@
-import { type TeamAlertChannelProps } from './team-alert-channel.schema.js';
 import { teamAlertChannelGuard } from './team-alert-channel.guard.js';
+import { type TeamAlertChannelProps } from './team-alert-channel.schema.js';
 
 export class TeamAlertChannel {
   private constructor(private readonly props: TeamAlertChannelProps) {}

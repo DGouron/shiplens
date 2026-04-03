@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
+import {
+  NoTeamsSynchronizedError,
+  WorkspaceNotConnectedError,
+} from '../entities/workspace-dashboard/workspace-dashboard.errors.js';
 import { WorkspaceDashboardDataGateway } from '../entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
-import { WorkspaceNotConnectedError, NoTeamsSynchronizedError } from '../entities/workspace-dashboard/workspace-dashboard.errors.js';
 
 type VelocityTrend = 'hausse' | 'baisse' | 'stable' | 'insuffisant';
 
@@ -57,9 +60,16 @@ export class GetWorkspaceDashboardUsecase
 
     const teamDataList = await Promise.all(
       teams.map(async (team) => {
-        const activeCycle = await this.dashboardDataGateway.getActiveCycle(team.teamId);
-        const previousVelocities = await this.dashboardDataGateway.getPreviousCycleVelocities(team.teamId);
-        const lastSyncDate = await this.dashboardDataGateway.getLastSyncDate(team.teamId);
+        const activeCycle = await this.dashboardDataGateway.getActiveCycle(
+          team.teamId,
+        );
+        const previousVelocities =
+          await this.dashboardDataGateway.getPreviousCycleVelocities(
+            team.teamId,
+          );
+        const lastSyncDate = await this.dashboardDataGateway.getLastSyncDate(
+          team.teamId,
+        );
         return { team, activeCycle, previousVelocities, lastSyncDate };
       }),
     );
@@ -91,11 +101,16 @@ export class GetWorkspaceDashboardUsecase
 
         const completionRate =
           activeCycle.totalIssues > 0
-            ? Math.round((activeCycle.completedIssues / activeCycle.totalIssues) * 100)
+            ? Math.round(
+                (activeCycle.completedIssues / activeCycle.totalIssues) * 100,
+              )
             : 0;
 
         const currentVelocity = activeCycle.completedPoints;
-        const velocityTrend = this.computeVelocityTrend(currentVelocity, previousVelocities);
+        const velocityTrend = this.computeVelocityTrend(
+          currentVelocity,
+          previousVelocities,
+        );
 
         return {
           teamId: team.teamId,
@@ -113,7 +128,9 @@ export class GetWorkspaceDashboardUsecase
 
     const isLate = this.isSynchronizationLate(mostRecentSyncDate);
 
-    this.logger.log(`Workspace dashboard generated — teams: ${teamDashboards.length}`);
+    this.logger.log(
+      `Workspace dashboard generated — teams: ${teamDashboards.length}`,
+    );
 
     return {
       teamDashboards,

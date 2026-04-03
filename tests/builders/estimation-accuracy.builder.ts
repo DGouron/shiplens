@@ -1,6 +1,9 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { EstimationAccuracy } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.js';
-import { type EstimationAccuracyProps, type EstimatedIssue } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.schema.js';
+import {
+  type EstimatedIssue,
+  type EstimationAccuracyProps,
+} from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: EstimationAccuracyProps = {
   cycleId: 'cycle-1',

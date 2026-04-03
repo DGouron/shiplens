@@ -1,7 +1,14 @@
-import { Controller, Post, Req, HttpCode, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { type Request } from 'express';
-import { ProcessWebhookEventUsecase } from '../../usecases/process-webhook-event.usecase.js';
 import { UnverifiedWebhookSignatureError } from '../../entities/webhook-event/webhook-event.errors.js';
+import { ProcessWebhookEventUsecase } from '../../usecases/process-webhook-event.usecase.js';
 
 @Controller('webhooks')
 export class WebhookController {
@@ -15,7 +22,7 @@ export class WebhookController {
     const rawBody = JSON.stringify(request.body);
     const signature = (request.headers['linear-signature'] as string) ?? '';
     const deliveryId = (request.headers['linear-delivery'] as string) ?? '';
-    const webhookSecret = process.env['LINEAR_WEBHOOK_SIGNING_SECRET'] ?? '';
+    const webhookSecret = process.env.LINEAR_WEBHOOK_SIGNING_SECRET ?? '';
     const body = request.body as Record<string, unknown>;
 
     try {
@@ -24,10 +31,10 @@ export class WebhookController {
         signature,
         webhookSecret,
         deliveryId,
-        action: (body['action'] as string) ?? '',
-        type: (body['type'] as string) ?? '',
+        action: (body.action as string) ?? '',
+        type: (body.type as string) ?? '',
         teamId: this.extractTeamId(body),
-        data: (body['data'] as Record<string, unknown>) ?? {},
+        data: (body.data as Record<string, unknown>) ?? {},
       });
     } catch (error) {
       if (error instanceof UnverifiedWebhookSignatureError) {
@@ -38,9 +45,9 @@ export class WebhookController {
   }
 
   private extractTeamId(body: Record<string, unknown>): string {
-    const data = body['data'] as Record<string, unknown> | undefined;
-    if (data && typeof data['teamId'] === 'string') {
-      return data['teamId'];
+    const data = body.data as Record<string, unknown> | undefined;
+    if (data && typeof data.teamId === 'string') {
+      return data.teamId;
     }
     return '';
   }

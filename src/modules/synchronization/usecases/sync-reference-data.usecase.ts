@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { LinearWorkspaceConnectionGateway } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
 import { TokenEncryptionGateway } from '@modules/identity/entities/linear-workspace-connection/token-encryption.gateway.js';
-import { TeamSelectionGateway } from '../entities/team-selection/team-selection.gateway.js';
+import { Injectable } from '@nestjs/common';
+import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { LinearReferenceDataGateway } from '../entities/reference-data/linear-reference-data.gateway.js';
+import { NoTeamSelectedForSyncError } from '../entities/reference-data/reference-data.errors.js';
 import { ReferenceDataGateway } from '../entities/reference-data/reference-data.gateway.js';
 import { WorkspaceNotConnectedError } from '../entities/team-selection/team-selection.errors.js';
-import { NoTeamSelectedForSyncError } from '../entities/reference-data/reference-data.errors.js';
+import { TeamSelectionGateway } from '../entities/team-selection/team-selection.gateway.js';
 
 interface SyncReferenceDataResult {
   syncedTeamCount: number;

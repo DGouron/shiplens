@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { AlertBlockedIssuesOnSlackUsecase } from '@modules/notification/usecases/alert-blocked-issues-on-slack.usecase.js';
-import { StubTeamAlertChannelGateway } from '@modules/notification/testing/good-path/stub.team-alert-channel.gateway.js';
-import { StubSlackMessengerGateway } from '@modules/notification/testing/good-path/stub.slack-messenger.gateway.js';
+import { type BlockedIssueForAlert } from '@modules/notification/entities/team-alert-channel/blocked-issue-alert-data.gateway.js';
+import { SlackAlertDeliveryFailedError } from '@modules/notification/entities/team-alert-channel/team-alert-channel.errors.js';
+import { FailingSlackMessengerGateway } from '@modules/notification/testing/bad-path/failing.slack-messenger.gateway.js';
 import { StubBlockedIssueAlertDataGateway } from '@modules/notification/testing/good-path/stub.blocked-issue-alert-data.gateway.js';
 import { StubSlackAlertLogGateway } from '@modules/notification/testing/good-path/stub.slack-alert-log.gateway.js';
-import { FailingSlackMessengerGateway } from '@modules/notification/testing/bad-path/failing.slack-messenger.gateway.js';
+import { StubSlackMessengerGateway } from '@modules/notification/testing/good-path/stub.slack-messenger.gateway.js';
+import { StubTeamAlertChannelGateway } from '@modules/notification/testing/good-path/stub.team-alert-channel.gateway.js';
+import { AlertBlockedIssuesOnSlackUsecase } from '@modules/notification/usecases/alert-blocked-issues-on-slack.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TeamAlertChannelBuilder } from '../../../builders/team-alert-channel.builder.js';
-import { SlackAlertDeliveryFailedError } from '@modules/notification/entities/team-alert-channel/team-alert-channel.errors.js';
-import { type BlockedIssueForAlert } from '@modules/notification/entities/team-alert-channel/blocked-issue-alert-data.gateway.js';
 
 function createBlockedIssue(
   overrides: Partial<BlockedIssueForAlert> = {},
@@ -46,9 +46,7 @@ describe('AlertBlockedIssuesOnSlackUsecase', () => {
   });
 
   it('sends alert for blocked issue with title, status, duration, assignee and link', async () => {
-    const channel = new TeamAlertChannelBuilder()
-      .withTeamId('team-1')
-      .build();
+    const channel = new TeamAlertChannelBuilder().withTeamId('team-1').build();
     await channelGateway.save(channel);
     alertDataGateway.issues = [
       createBlockedIssue({
@@ -73,16 +71,11 @@ describe('AlertBlockedIssuesOnSlackUsecase', () => {
   });
 
   it('does not send alert when already alerted today (throttling)', async () => {
-    const channel = new TeamAlertChannelBuilder()
-      .withTeamId('team-1')
-      .build();
+    const channel = new TeamAlertChannelBuilder().withTeamId('team-1').build();
     await channelGateway.save(channel);
     alertDataGateway.issues = [createBlockedIssue()];
 
-    await alertLogGateway.recordAlertSent(
-      'issue-1',
-      new Date().toISOString(),
-    );
+    await alertLogGateway.recordAlertSent('issue-1', new Date().toISOString());
 
     await usecase.execute();
 
@@ -90,9 +83,7 @@ describe('AlertBlockedIssuesOnSlackUsecase', () => {
   });
 
   it('sends alert on new day after previous throttling', async () => {
-    const channel = new TeamAlertChannelBuilder()
-      .withTeamId('team-1')
-      .build();
+    const channel = new TeamAlertChannelBuilder().withTeamId('team-1').build();
     await channelGateway.save(channel);
     alertDataGateway.issues = [createBlockedIssue()];
 
@@ -104,13 +95,9 @@ describe('AlertBlockedIssuesOnSlackUsecase', () => {
   });
 
   it('sends alert without assignee mention when no assignee', async () => {
-    const channel = new TeamAlertChannelBuilder()
-      .withTeamId('team-1')
-      .build();
+    const channel = new TeamAlertChannelBuilder().withTeamId('team-1').build();
     await channelGateway.save(channel);
-    alertDataGateway.issues = [
-      createBlockedIssue({ assigneeName: null }),
-    ];
+    alertDataGateway.issues = [createBlockedIssue({ assigneeName: null })];
 
     await usecase.execute();
 
@@ -127,9 +114,7 @@ describe('AlertBlockedIssuesOnSlackUsecase', () => {
   });
 
   it('rejects when Slack is unreachable', async () => {
-    const channel = new TeamAlertChannelBuilder()
-      .withTeamId('team-1')
-      .build();
+    const channel = new TeamAlertChannelBuilder().withTeamId('team-1').build();
     await channelGateway.save(channel);
     alertDataGateway.issues = [createBlockedIssue()];
 
@@ -175,9 +160,7 @@ describe('AlertBlockedIssuesOnSlackUsecase', () => {
   });
 
   it('records alert sent after successful delivery', async () => {
-    const channel = new TeamAlertChannelBuilder()
-      .withTeamId('team-1')
-      .build();
+    const channel = new TeamAlertChannelBuilder().withTeamId('team-1').build();
     await channelGateway.save(channel);
     alertDataGateway.issues = [createBlockedIssue()];
 

@@ -11,7 +11,9 @@ export interface SyncPackmindRulesViewModel {
 }
 
 @Injectable()
-export class SyncPackmindRulesPresenter implements Presenter<SyncResult, SyncPackmindRulesViewModel> {
+export class SyncPackmindRulesPresenter
+  implements Presenter<SyncResult, SyncPackmindRulesViewModel>
+{
   present(input: SyncResult): SyncPackmindRulesViewModel {
     return {
       createdRulesCount: input.createdRulesCount,

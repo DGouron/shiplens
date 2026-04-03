@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { GatewayError } from '@shared/foundation/gateway-error.js';
 import {
-  LinearApiGateway,
   type ExchangeCodeResult,
+  LinearApiGateway,
   type RefreshTokenResult,
   type WorkspaceInfo,
 } from '../../entities/linear-workspace-connection/linear-api.gateway.js';
@@ -24,29 +24,39 @@ export class LinearApiInHttpGateway extends LinearApiGateway {
     this.clientSecret = clientSecret;
   }
 
-  async exchangeCode(code: string, redirectUri: string): Promise<ExchangeCodeResult> {
-    const response = await this.postForm<LinearTokenResponse>('https://api.linear.app/oauth/token', {
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: redirectUri,
-      client_id: this.clientId,
-      client_secret: this.clientSecret,
-    });
+  async exchangeCode(
+    code: string,
+    redirectUri: string,
+  ): Promise<ExchangeCodeResult> {
+    const response = await this.postForm<LinearTokenResponse>(
+      'https://api.linear.app/oauth/token',
+      {
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: redirectUri,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+      },
+    );
 
     return {
       accessToken: response.access_token,
       refreshToken: response.refresh_token,
-      scopes: typeof response.scope === 'string' ? response.scope.split(',') : [],
+      scopes:
+        typeof response.scope === 'string' ? response.scope.split(',') : [],
     };
   }
 
   async refreshToken(refreshToken: string): Promise<RefreshTokenResult> {
-    const response = await this.postForm<LinearTokenResponse>('https://api.linear.app/oauth/token', {
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: this.clientId,
-      client_secret: this.clientSecret,
-    });
+    const response = await this.postForm<LinearTokenResponse>(
+      'https://api.linear.app/oauth/token',
+      {
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+      },
+    );
 
     return {
       accessToken: response.access_token,
@@ -81,19 +91,27 @@ export class LinearApiInHttpGateway extends LinearApiGateway {
     });
 
     if (!response.ok) {
-      throw new GatewayError('Échec de la récupération des informations workspace', {
-        status: response.status,
-      });
+      throw new GatewayError(
+        'Échec de la récupération des informations workspace',
+        {
+          status: response.status,
+        },
+      );
     }
 
-    const body = await response.json() as { data: { organization: { id: string; name: string } } };
+    const body = (await response.json()) as {
+      data: { organization: { id: string; name: string } };
+    };
     return {
       id: body.data.organization.id,
       name: body.data.organization.name,
     };
   }
 
-  private async postForm<T>(url: string, params: Record<string, string>): Promise<T> {
+  private async postForm<T>(
+    url: string,
+    params: Record<string, string>,
+  ): Promise<T> {
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

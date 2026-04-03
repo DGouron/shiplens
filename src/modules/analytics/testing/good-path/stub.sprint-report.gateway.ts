@@ -11,7 +11,9 @@ export class StubSprintReportGateway extends SprintReportGateway {
   async findByTeamId(teamId: string): Promise<SprintReport[]> {
     return this.reports
       .filter((report) => report.teamId === teamId)
-      .sort((first, second) => second.generatedAt.localeCompare(first.generatedAt));
+      .sort((first, second) =>
+        second.generatedAt.localeCompare(first.generatedAt),
+      );
   }
 
   async findById(reportId: string): Promise<SprintReport | null> {

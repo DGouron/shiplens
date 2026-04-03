@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { GatewayError } from '@shared/foundation/gateway-error.js';
-import { LinearIssueDataGateway } from '../../entities/issue-data/linear-issue-data.gateway.js';
 import {
-  type PaginatedIssues,
   type CycleData,
+  type PaginatedIssues,
   type StateTransitionData,
 } from '../../entities/issue-data/issue-data.schema.js';
+import { LinearIssueDataGateway } from '../../entities/issue-data/linear-issue-data.gateway.js';
 
 interface LinearGraphqlIssue {
   id: string;
@@ -136,10 +136,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
     };
   }
 
-  async getCycles(
-    accessToken: string,
-    teamId: string,
-  ): Promise<CycleData[]> {
+  async getCycles(accessToken: string, teamId: string): Promise<CycleData[]> {
     const body = await this.graphql<LinearGraphqlCyclesResponse>(
       accessToken,
       `query($teamId: String!) {
@@ -167,7 +164,11 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
       let cursor = cycle.issues.pageInfo.endCursor;
 
       while (hasNextPage && cursor) {
-        const page = await this.fetchCycleIssueIds(accessToken, cycle.id, cursor);
+        const page = await this.fetchCycleIssueIds(
+          accessToken,
+          cycle.id,
+          cursor,
+        );
         issueIds.push(...page.issueIds);
         hasNextPage = page.hasNextPage;
         cursor = page.endCursor;
@@ -191,7 +192,11 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
     accessToken: string,
     cycleId: string,
     cursor: string,
-  ): Promise<{ issueIds: string[]; hasNextPage: boolean; endCursor: string | null }> {
+  ): Promise<{
+    issueIds: string[];
+    hasNextPage: boolean;
+    endCursor: string | null;
+  }> {
     const body = await this.graphql<LinearGraphqlCycleIssuesResponse>(
       accessToken,
       `query($cycleId: String!, $after: String!) {
@@ -277,7 +282,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
     });
 
     if (response.status === 429 && attempt < MAX_RETRIES) {
-      const backoffMs = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
+      const backoffMs = INITIAL_BACKOFF_MS * 2 ** attempt;
       await new Promise((resolve) => setTimeout(resolve, backoffMs));
       return this.graphqlWithRetry<T>(
         accessToken,

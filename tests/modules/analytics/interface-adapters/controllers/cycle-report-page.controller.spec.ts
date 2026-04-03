@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { CycleReportPageController } from '@modules/analytics/interface-adapters/controllers/cycle-report-page.controller.js';
-import { ListTeamCyclesUsecase } from '@modules/analytics/usecases/list-team-cycles.usecase.js';
-import { GetCycleIssuesUsecase } from '@modules/analytics/usecases/get-cycle-issues.usecase.js';
-import { TeamCyclesPresenter } from '@modules/analytics/interface-adapters/presenters/team-cycles.presenter.js';
 import { CycleIssuesPresenter } from '@modules/analytics/interface-adapters/presenters/cycle-issues.presenter.js';
+import { TeamCyclesPresenter } from '@modules/analytics/interface-adapters/presenters/team-cycles.presenter.js';
 import { StubCycleReportPageDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-report-page-data.gateway.js';
+import { GetCycleIssuesUsecase } from '@modules/analytics/usecases/get-cycle-issues.usecase.js';
+import { ListTeamCyclesUsecase } from '@modules/analytics/usecases/list-team-cycles.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('CycleReportPageController', () => {
   let gateway: StubCycleReportPageDataGateway;

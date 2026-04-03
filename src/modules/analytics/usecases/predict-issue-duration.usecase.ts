@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { DurationPredictionDataGateway } from '../entities/duration-prediction/duration-prediction-data.gateway.js';
+import {
+  InsufficientHistoryError,
+  NoSimilarIssuesError,
+} from '../entities/duration-prediction/duration-prediction.errors.js';
 import { DurationPrediction } from '../entities/duration-prediction/duration-prediction.js';
-import { InsufficientHistoryError } from '../entities/duration-prediction/duration-prediction.errors.js';
-import { NoSimilarIssuesError } from '../entities/duration-prediction/duration-prediction.errors.js';
+import { DurationPredictionDataGateway } from '../entities/duration-prediction/duration-prediction-data.gateway.js';
 
 interface PredictIssueDurationParams {
   teamId: string;
@@ -22,21 +24,25 @@ export class PredictIssueDurationUsecase
     private readonly durationPredictionDataGateway: DurationPredictionDataGateway,
   ) {}
 
-  async execute(params: PredictIssueDurationParams): Promise<DurationPrediction> {
+  async execute(
+    params: PredictIssueDurationParams,
+  ): Promise<DurationPrediction> {
     this.logger.log(`[${params.issueExternalId}] Duration prediction started`);
 
-    const completedCycleCount = await this.durationPredictionDataGateway.getCompletedCycleCount(
-      params.teamId,
-    );
+    const completedCycleCount =
+      await this.durationPredictionDataGateway.getCompletedCycleCount(
+        params.teamId,
+      );
 
     if (completedCycleCount < MINIMUM_COMPLETED_CYCLES) {
       throw new InsufficientHistoryError();
     }
 
-    const cycleTimes = await this.durationPredictionDataGateway.getSimilarIssuesCycleTimes(
-      params.teamId,
-      params.issueExternalId,
-    );
+    const cycleTimes =
+      await this.durationPredictionDataGateway.getSimilarIssuesCycleTimes(
+        params.teamId,
+        params.issueExternalId,
+      );
 
     if (cycleTimes.length === 0) {
       throw new NoSimilarIssuesError();
@@ -44,7 +50,9 @@ export class PredictIssueDurationUsecase
 
     const prediction = DurationPrediction.fromCycleTimes(cycleTimes);
 
-    this.logger.log(`[${params.issueExternalId}] Duration predicted — probable: ${prediction.probable}d, confidence: ${prediction.confidence}, similar issues: ${prediction.similarIssueCount}`);
+    this.logger.log(
+      `[${params.issueExternalId}] Duration predicted — probable: ${prediction.probable}d, confidence: ${prediction.confidence}, similar issues: ${prediction.similarIssueCount}`,
+    );
 
     return prediction;
   }

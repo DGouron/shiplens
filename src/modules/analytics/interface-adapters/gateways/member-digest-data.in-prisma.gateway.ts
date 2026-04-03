@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/prisma/prisma.service.js';
 import {
-  MemberDigestDataGateway,
   type MemberCycleContext,
+  MemberDigestDataGateway,
 } from '../../entities/member-digest/member-digest-data.gateway.js';
 
 @Injectable()

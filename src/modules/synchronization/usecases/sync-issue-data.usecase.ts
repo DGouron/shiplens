@@ -1,22 +1,24 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { LinearWorkspaceConnectionGateway } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
 import { TokenEncryptionGateway } from '@modules/identity/entities/linear-workspace-connection/token-encryption.gateway.js';
-import { TeamSelectionGateway } from '../entities/team-selection/team-selection.gateway.js';
-import { LinearIssueDataGateway } from '../entities/issue-data/linear-issue-data.gateway.js';
+import { Injectable, Logger } from '@nestjs/common';
+import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { IssueDataGateway } from '../entities/issue-data/issue-data.gateway.js';
+import { type IssueData } from '../entities/issue-data/issue-data.schema.js';
+import { LinearIssueDataGateway } from '../entities/issue-data/linear-issue-data.gateway.js';
+import { NoTeamSelectedForSyncError } from '../entities/reference-data/reference-data.errors.js';
 import { SyncProgressGateway } from '../entities/sync-progress/sync-progress.gateway.js';
 import { SyncProgress } from '../entities/sync-progress/sync-progress.js';
-import { type IssueData } from '../entities/issue-data/issue-data.schema.js';
 import { WorkspaceNotConnectedError } from '../entities/team-selection/team-selection.errors.js';
-import { NoTeamSelectedForSyncError } from '../entities/reference-data/reference-data.errors.js';
+import { TeamSelectionGateway } from '../entities/team-selection/team-selection.gateway.js';
 
 interface SyncIssueDataParams {
   teamId: string;
 }
 
 @Injectable()
-export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> {
+export class SyncIssueDataUsecase
+  implements Usecase<SyncIssueDataParams, void>
+{
   private readonly logger = new Logger(SyncIssueDataUsecase.name);
 
   constructor(
@@ -59,13 +61,18 @@ export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> 
     await this.issueDataGateway.upsertIssuesForTeam(teamId, allIssues);
     this.logger.log(`[${teamId}] Issues stored`);
 
-    const cycles = await this.linearIssueDataGateway.getCycles(accessToken, teamId);
+    const cycles = await this.linearIssueDataGateway.getCycles(
+      accessToken,
+      teamId,
+    );
     this.logger.log(`[${teamId}] Cycles fetched: ${cycles.length}`);
 
     await this.issueDataGateway.upsertCyclesForTeam(teamId, cycles);
 
     const issueExternalIds = allIssues.map((issue) => issue.externalId);
-    this.logger.log(`[${teamId}] Fetching transitions for ${issueExternalIds.length} issues...`);
+    this.logger.log(
+      `[${teamId}] Fetching transitions for ${issueExternalIds.length} issues...`,
+    );
 
     const transitions = await this.linearIssueDataGateway.getIssueHistory(
       accessToken,
@@ -111,7 +118,9 @@ export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> 
       cursor = page.endCursor;
       hasNextPage = page.hasNextPage;
       pageNumber++;
-      this.logger.log(`[${teamId}] Issues page ${pageNumber}: +${page.issues.length} (total: ${allIssues.length})`);
+      this.logger.log(
+        `[${teamId}] Issues page ${pageNumber}: +${page.issues.length} (total: ${allIssues.length})`,
+      );
     }
 
     return allIssues;

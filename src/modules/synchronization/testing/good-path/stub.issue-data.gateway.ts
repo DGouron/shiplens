@@ -1,5 +1,10 @@
 import { IssueDataGateway } from '../../entities/issue-data/issue-data.gateway.js';
-import { type IssueData, type CycleData, type StateTransitionData, type CommentData } from '../../entities/issue-data/issue-data.schema.js';
+import {
+  type CommentData,
+  type CycleData,
+  type IssueData,
+  type StateTransitionData,
+} from '../../entities/issue-data/issue-data.schema.js';
 
 export class StubIssueDataGateway extends IssueDataGateway {
   issuesByTeamId: Map<string, IssueData[]> = new Map();
@@ -18,15 +23,24 @@ export class StubIssueDataGateway extends IssueDataGateway {
     this.upsertIssueFailuresRemaining = times;
   }
 
-  async upsertIssuesForTeam(teamId: string, issues: IssueData[]): Promise<void> {
+  async upsertIssuesForTeam(
+    teamId: string,
+    issues: IssueData[],
+  ): Promise<void> {
     this.issuesByTeamId.set(teamId, issues);
   }
 
-  async upsertCyclesForTeam(teamId: string, cycles: CycleData[]): Promise<void> {
+  async upsertCyclesForTeam(
+    teamId: string,
+    cycles: CycleData[],
+  ): Promise<void> {
     this.cyclesByTeamId.set(teamId, cycles);
   }
 
-  async upsertTransitionsForTeam(teamId: string, transitions: StateTransitionData[]): Promise<void> {
+  async upsertTransitionsForTeam(
+    teamId: string,
+    transitions: StateTransitionData[],
+  ): Promise<void> {
     this.transitionsByTeamId.set(teamId, transitions);
   }
 
@@ -36,7 +50,9 @@ export class StubIssueDataGateway extends IssueDataGateway {
       throw new Error('Temporary failure');
     }
     const existing = this.upsertedIssues.findIndex(
-      (existing) => existing.externalId === issue.externalId && existing.teamId === issue.teamId,
+      (existing) =>
+        existing.externalId === issue.externalId &&
+        existing.teamId === issue.teamId,
     );
     if (existing >= 0) {
       this.upsertedIssues[existing] = issue;
@@ -51,7 +67,9 @@ export class StubIssueDataGateway extends IssueDataGateway {
 
   async upsertCycle(cycle: CycleData): Promise<void> {
     const existing = this.upsertedCycles.findIndex(
-      (existing) => existing.externalId === cycle.externalId && existing.teamId === cycle.teamId,
+      (existing) =>
+        existing.externalId === cycle.externalId &&
+        existing.teamId === cycle.teamId,
     );
     if (existing >= 0) {
       this.upsertedCycles[existing] = cycle;

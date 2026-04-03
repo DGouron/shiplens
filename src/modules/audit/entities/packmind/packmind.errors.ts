@@ -2,13 +2,17 @@ import { ApplicationRuleViolation } from '@shared/foundation/application-rule-vi
 
 export class InvalidPackmindTokenError extends ApplicationRuleViolation {
   constructor() {
-    super('Le token Packmind est invalide. Veuillez verifier votre configuration.');
+    super(
+      'Le token Packmind est invalide. Veuillez verifier votre configuration.',
+    );
   }
 }
 
 export class MissingPackmindTokenError extends ApplicationRuleViolation {
   constructor() {
-    super("Aucun token Packmind configure. Veuillez renseigner votre token d'authentification.");
+    super(
+      "Aucun token Packmind configure. Veuillez renseigner votre token d'authentification.",
+    );
   }
 }
 
@@ -20,6 +24,8 @@ export class NoPracticesFoundError extends ApplicationRuleViolation {
 
 export class PackmindUnreachableWithoutCacheError extends ApplicationRuleViolation {
   constructor() {
-    super("Packmind est injoignable et aucune regle n'a ete synchronisee precedemment.");
+    super(
+      "Packmind est injoignable et aucune regle n'a ete synchronisee precedemment.",
+    );
   }
 }

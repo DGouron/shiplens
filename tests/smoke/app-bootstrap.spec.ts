@@ -1,14 +1,13 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import { AppModule } from '@main/app.module.js';
+import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 describe('App bootstrap', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    process.env.ENCRYPTION_KEY =
-      'a'.repeat(64);
+    process.env.ENCRYPTION_KEY = 'a'.repeat(64);
 
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],

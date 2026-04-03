@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
 import { StubWorkspaceDashboardDataGateway } from '@modules/analytics/testing/good-path/stub.workspace-dashboard-data.gateway.js';
+import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('View Workspace Dashboard (acceptance)', () => {
   let gateway: StubWorkspaceDashboardDataGateway;
@@ -63,13 +63,17 @@ describe('View Workspace Dashboard (acceptance)', () => {
 
       expect(result.teamDashboards).toHaveLength(3);
 
-      const frontend = result.teamDashboards.find((team) => team.teamId === 'team-1');
+      const frontend = result.teamDashboards.find(
+        (team) => team.teamId === 'team-1',
+      );
       expect(frontend).toBeDefined();
       expect(frontend?.completionRate).toBe(80);
       expect(frontend?.blockedIssuesCount).toBe(1);
       expect(frontend?.velocityTrend).toBe('stable');
 
-      const backend = result.teamDashboards.find((team) => team.teamId === 'team-2');
+      const backend = result.teamDashboards.find(
+        (team) => team.teamId === 'team-2',
+      );
       expect(backend).toBeDefined();
       expect(backend?.completionRate).toBe(50);
       expect(backend?.blockedIssuesCount).toBe(0);
@@ -118,7 +122,9 @@ describe('View Workspace Dashboard (acceptance)', () => {
 
       expect(result.teamDashboards).toHaveLength(3);
 
-      const mobile = result.teamDashboards.find((team) => team.teamId === 'team-3');
+      const mobile = result.teamDashboards.find(
+        (team) => team.teamId === 'team-3',
+      );
       expect(mobile).toBeDefined();
       expect(mobile?.hasActiveCycle).toBe(false);
     });
@@ -184,7 +190,7 @@ describe('View Workspace Dashboard (acceptance)', () => {
       gateway.teams = [];
 
       await expect(usecase.execute()).rejects.toThrow(
-        'Aucune équipe synchronisée. Veuillez d\'abord sélectionner des équipes à synchroniser.',
+        "Aucune équipe synchronisée. Veuillez d'abord sélectionner des équipes à synchroniser.",
       );
     });
 

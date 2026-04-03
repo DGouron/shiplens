@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GenerateMemberDigestUsecase } from '@modules/analytics/usecases/generate-member-digest.usecase.js';
-import { StubMemberDigestDataGateway } from '@modules/analytics/testing/good-path/stub.member-digest-data.gateway.js';
-import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
 import { FailingAiTextGeneratorGateway } from '@modules/analytics/testing/bad-path/failing.ai-text-generator.gateway.js';
+import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
+import { StubMemberDigestDataGateway } from '@modules/analytics/testing/good-path/stub.member-digest-data.gateway.js';
+import { GenerateMemberDigestUsecase } from '@modules/analytics/usecases/generate-member-digest.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('View Member Cycle Profile (acceptance)', () => {
   let memberDigestDataGateway: StubMemberDigestDataGateway;

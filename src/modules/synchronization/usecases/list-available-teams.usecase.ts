@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { LinearWorkspaceConnectionGateway } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
 import { TokenEncryptionGateway } from '@modules/identity/entities/linear-workspace-connection/token-encryption.gateway.js';
+import { Injectable } from '@nestjs/common';
+import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import {
-  LinearTeamGateway,
   type LinearTeam,
+  LinearTeamGateway,
 } from '../entities/team-selection/linear-team.gateway.js';
 import {
-  WorkspaceNotConnectedError,
   NoTeamsFoundError,
+  WorkspaceNotConnectedError,
 } from '../entities/team-selection/team-selection.errors.js';
 
 @Injectable()

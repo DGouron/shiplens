@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/prisma/prisma.service.js';
-import { EstimationAccuracyDataGateway } from '../../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { type EstimationAccuracyProps } from '../../entities/estimation-accuracy/estimation-accuracy.schema.js';
+import { EstimationAccuracyDataGateway } from '../../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 
 @Injectable()
 export class EstimationAccuracyDataInPrismaGateway extends EstimationAccuracyDataGateway {
@@ -9,7 +9,10 @@ export class EstimationAccuracyDataInPrismaGateway extends EstimationAccuracyDat
     super();
   }
 
-  async getEstimationData(cycleId: string, teamId: string): Promise<EstimationAccuracyProps> {
+  async getEstimationData(
+    cycleId: string,
+    teamId: string,
+  ): Promise<EstimationAccuracyProps> {
     const cycle = await this.prisma.cycle.findFirstOrThrow({
       where: { externalId: cycleId, teamId },
     });
@@ -32,14 +35,19 @@ export class EstimationAccuracyDataInPrismaGateway extends EstimationAccuracyDat
       },
     });
 
-    const labelIds = new Set(issues.flatMap((issue) => issue.labelIds.split(',').filter(Boolean)));
-    const labels = labelIds.size > 0
-      ? await this.prisma.label.findMany({
-          where: { externalId: { in: Array.from(labelIds) }, teamId },
-        })
-      : [];
+    const labelIds = new Set(
+      issues.flatMap((issue) => issue.labelIds.split(',').filter(Boolean)),
+    );
+    const labels =
+      labelIds.size > 0
+        ? await this.prisma.label.findMany({
+            where: { externalId: { in: Array.from(labelIds) }, teamId },
+          })
+        : [];
 
-    const labelNameById = new Map(labels.map((label) => [label.externalId, label.name]));
+    const labelNameById = new Map(
+      labels.map((label) => [label.externalId, label.name]),
+    );
 
     let excludedWithoutEstimation = 0;
     let excludedWithoutCycleTime = 0;
@@ -74,7 +82,8 @@ export class EstimationAccuracyDataInPrismaGateway extends EstimationAccuracyDat
 
       const startedAt = new Date(startedTransition.occurredAt);
       const completedAt = new Date(completedTransition.occurredAt);
-      const cycleTimeInDays = (completedAt.getTime() - startedAt.getTime()) / (1000 * 60 * 60 * 24);
+      const cycleTimeInDays =
+        (completedAt.getTime() - startedAt.getTime()) / (1000 * 60 * 60 * 24);
 
       if (cycleTimeInDays <= 0) {
         excludedWithoutCycleTime++;

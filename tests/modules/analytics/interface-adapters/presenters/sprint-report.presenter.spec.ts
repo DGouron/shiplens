@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SprintReportPresenter } from '@modules/analytics/interface-adapters/presenters/sprint-report.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { SprintReportBuilder } from '../../../../builders/sprint-report.builder.js';
 
 describe('SprintReportPresenter', () => {
@@ -20,9 +20,7 @@ describe('SprintReportPresenter', () => {
   });
 
   it('presents null trends as absence message in french', () => {
-    const report = new SprintReportBuilder()
-      .withTrends(null)
-      .build();
+    const report = new SprintReportBuilder().withTrends(null).build();
 
     const dto = presenter.present(report);
 
@@ -39,9 +37,7 @@ describe('SprintReportPresenter', () => {
 
     const dto = presenter.present(report);
 
-    expect(dto.trends).toBe(
-      'No historical data available to compare velocity',
-    );
+    expect(dto.trends).toBe('No historical data available to compare velocity');
   });
 
   it('presents audit section when present', () => {

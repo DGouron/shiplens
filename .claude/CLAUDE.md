@@ -23,6 +23,7 @@ Etant allergique aux commentaires technique dans le code, tu n'en mettra uniquem
 ## Quality Gates
 
 - **Zéro erreur TypeScript** : `npx tsc --noEmit` doit passer sans aucune erreur avant tout commit. Si des erreurs pré-existantes sont détectées, les corriger dans le même commit ou un commit dédié.
+- **Zéro erreur Biome** : `pnpm lint:ci` doit passer sans aucune erreur avant tout commit.
 
 ## Standards techniques
 

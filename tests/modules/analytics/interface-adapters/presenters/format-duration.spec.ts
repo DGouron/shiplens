@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { formatDuration } from '@modules/analytics/interface-adapters/presenters/format-duration.js';
+import { describe, expect, it } from 'vitest';
 
 describe('formatDuration', () => {
   it('formats zero hours', () => {

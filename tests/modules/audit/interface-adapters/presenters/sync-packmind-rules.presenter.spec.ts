@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SyncPackmindRulesPresenter } from '@modules/audit/interface-adapters/presenters/sync-packmind-rules.presenter.js';
+import { describe, expect, it } from 'vitest';
 
 describe('SyncPackmindRulesPresenter', () => {
   it('presents sync result as view model', () => {
@@ -32,6 +32,8 @@ describe('SyncPackmindRulesPresenter', () => {
     });
 
     expect(viewModel.fromCache).toBe(true);
-    expect(viewModel.warning).toBe('Packmind est injoignable. Les regles en cache sont utilisees.');
+    expect(viewModel.warning).toBe(
+      'Packmind est injoignable. Les regles en cache sont utilisees.',
+    );
   });
 });

@@ -1,6 +1,6 @@
+import { GatewayError } from '@shared/foundation/gateway-error.js';
 import { SlackNotificationConfigGateway } from '../../entities/slack-notification-config/slack-notification-config.gateway.js';
 import { type SlackNotificationConfig } from '../../entities/slack-notification-config/slack-notification-config.js';
-import { GatewayError } from '@shared/foundation/gateway-error.js';
 
 export class FailingSlackNotificationConfigGateway extends SlackNotificationConfigGateway {
   async findByTeamId(_teamId: string): Promise<SlackNotificationConfig | null> {

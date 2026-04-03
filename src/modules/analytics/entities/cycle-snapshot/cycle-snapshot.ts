@@ -1,12 +1,20 @@
-import { type CycleSnapshotProps, type CycleIssue } from './cycle-snapshot.schema.js';
+import {
+  CycleNotCompletedError,
+  NoCycleIssuesError,
+} from './cycle-snapshot.errors.js';
 import { cycleSnapshotGuard } from './cycle-snapshot.guard.js';
-import { CycleNotCompletedError } from './cycle-snapshot.errors.js';
-import { NoCycleIssuesError } from './cycle-snapshot.errors.js';
+import {
+  type CycleIssue,
+  type CycleSnapshotProps,
+} from './cycle-snapshot.schema.js';
 
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 function daysBetween(fromDate: string, toDate: string): number {
-  return (new Date(toDate).getTime() - new Date(fromDate).getTime()) / MILLISECONDS_PER_DAY;
+  return (
+    (new Date(toDate).getTime() - new Date(fromDate).getTime()) /
+    MILLISECONDS_PER_DAY
+  );
 }
 
 export class CycleSnapshot {
@@ -51,9 +59,7 @@ export class CycleSnapshot {
   }
 
   get completedIssues(): CycleIssue[] {
-    return this.props.issues.filter(
-      (issue) => issue.completedAt !== null,
-    );
+    return this.props.issues.filter((issue) => issue.completedAt !== null);
   }
 
   get initialIssues(): CycleIssue[] {
@@ -101,7 +107,9 @@ export class CycleSnapshot {
 
   get averageCycleTimeInDays(): number | null {
     const issuesWithCycleTime = this.completedIssues.filter(
-      (issue): issue is CycleIssue & { startedAt: string; completedAt: string } =>
+      (
+        issue,
+      ): issue is CycleIssue & { startedAt: string; completedAt: string } =>
         issue.startedAt !== null && issue.completedAt !== null,
     );
 

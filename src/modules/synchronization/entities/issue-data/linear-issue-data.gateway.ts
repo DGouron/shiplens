@@ -1,4 +1,8 @@
-import { type PaginatedIssues, type CycleData, type StateTransitionData } from './issue-data.schema.js';
+import {
+  type CycleData,
+  type PaginatedIssues,
+  type StateTransitionData,
+} from './issue-data.schema.js';
 
 export abstract class LinearIssueDataGateway {
   abstract getIssuesPage(
@@ -7,10 +11,7 @@ export abstract class LinearIssueDataGateway {
     cursor: string | null,
   ): Promise<PaginatedIssues>;
 
-  abstract getCycles(
-    accessToken: string,
-    teamId: string,
-  ): Promise<CycleData[]>;
+  abstract getCycles(accessToken: string, teamId: string): Promise<CycleData[]>;
 
   abstract getIssueHistory(
     accessToken: string,

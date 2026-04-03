@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/prisma/prisma.service.js';
+import {
+  type ActiveCycleData,
+  type TeamSummary,
+} from '../../entities/workspace-dashboard/workspace-dashboard.schema.js';
 import { WorkspaceDashboardDataGateway } from '../../entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
-import { type TeamSummary, type ActiveCycleData } from '../../entities/workspace-dashboard/workspace-dashboard.schema.js';
 
 @Injectable()
 export class WorkspaceDashboardDataInPrismaGateway extends WorkspaceDashboardDataGateway {
@@ -47,7 +50,11 @@ export class WorkspaceDashboardDataInPrismaGateway extends WorkspaceDashboardDat
     if (issueExternalIds.length === 0) {
       return {
         cycleId: activeCycle.externalId,
-        cycleName: activeCycle.name ?? (activeCycle.number ? `Cycle ${activeCycle.number}` : 'Cycle sans nom'),
+        cycleName:
+          activeCycle.name ??
+          (activeCycle.number
+            ? `Cycle ${activeCycle.number}`
+            : 'Cycle sans nom'),
         totalIssues: 0,
         completedIssues: 0,
         blockedIssues: 0,
@@ -81,7 +88,9 @@ export class WorkspaceDashboardDataInPrismaGateway extends WorkspaceDashboardDat
 
     return {
       cycleId: activeCycle.externalId,
-      cycleName: activeCycle.name ?? (activeCycle.number ? `Cycle ${activeCycle.number}` : 'Cycle sans nom'),
+      cycleName:
+        activeCycle.name ??
+        (activeCycle.number ? `Cycle ${activeCycle.number}` : 'Cycle sans nom'),
       totalIssues: issues.length,
       completedIssues: completedIssues.length,
       blockedIssues: blockedIssues.length,

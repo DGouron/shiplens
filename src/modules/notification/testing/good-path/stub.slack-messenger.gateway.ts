@@ -1,7 +1,7 @@
 import {
-  SlackMessengerGateway,
-  type SendReportParams,
   type SendAlertParams,
+  type SendReportParams,
+  SlackMessengerGateway,
 } from '../../entities/slack-notification-config/slack-messenger.gateway.js';
 
 export class StubSlackMessengerGateway extends SlackMessengerGateway {

@@ -1,8 +1,8 @@
-import {
-  LinearTeamGateway,
-  type LinearTeam,
-} from '../../entities/team-selection/linear-team.gateway.js';
 import { GatewayError } from '@shared/foundation/gateway-error.js';
+import {
+  type LinearTeam,
+  LinearTeamGateway,
+} from '../../entities/team-selection/linear-team.gateway.js';
 
 export class FailingLinearTeamGateway extends LinearTeamGateway {
   async getTeams(_accessToken: string): Promise<LinearTeam[]> {

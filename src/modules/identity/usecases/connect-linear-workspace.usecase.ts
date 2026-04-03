@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
+import {
+  type ExchangeCodeResult,
+  LinearApiGateway,
+} from '../entities/linear-workspace-connection/linear-api.gateway.js';
+import {
+  InsufficientLinearPermissionsError,
+  LinearConnectionRefusedError,
+} from '../entities/linear-workspace-connection/linear-workspace-connection.errors.js';
 import { LinearWorkspaceConnectionGateway } from '../entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
-import { LinearApiGateway } from '../entities/linear-workspace-connection/linear-api.gateway.js';
-import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
 import { LinearWorkspaceConnection } from '../entities/linear-workspace-connection/linear-workspace-connection.js';
-import { type ExchangeCodeResult } from '../entities/linear-workspace-connection/linear-api.gateway.js';
-import { LinearConnectionRefusedError, InsufficientLinearPermissionsError } from '../entities/linear-workspace-connection/linear-workspace-connection.errors.js';
+import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
 
 interface ConnectLinearWorkspaceParams {
   code: string;
@@ -15,7 +20,9 @@ interface ConnectLinearWorkspaceParams {
 export const REQUIRED_SCOPES = ['read', 'write', 'issues:create'];
 
 @Injectable()
-export class ConnectLinearWorkspaceUsecase implements Usecase<ConnectLinearWorkspaceParams, void> {
+export class ConnectLinearWorkspaceUsecase
+  implements Usecase<ConnectLinearWorkspaceParams, void>
+{
   constructor(
     private readonly connectionGateway: LinearWorkspaceConnectionGateway,
     private readonly linearApiGateway: LinearApiGateway,
@@ -25,7 +32,10 @@ export class ConnectLinearWorkspaceUsecase implements Usecase<ConnectLinearWorks
   async execute(params: ConnectLinearWorkspaceParams): Promise<void> {
     let exchangeResult: ExchangeCodeResult;
     try {
-      exchangeResult = await this.linearApiGateway.exchangeCode(params.code, params.redirectUri);
+      exchangeResult = await this.linearApiGateway.exchangeCode(
+        params.code,
+        params.redirectUri,
+      );
     } catch {
       throw new LinearConnectionRefusedError();
     }
@@ -37,7 +47,9 @@ export class ConnectLinearWorkspaceUsecase implements Usecase<ConnectLinearWorks
       throw new InsufficientLinearPermissionsError();
     }
 
-    const workspaceInfo = await this.linearApiGateway.getWorkspaceInfo(exchangeResult.accessToken);
+    const workspaceInfo = await this.linearApiGateway.getWorkspaceInfo(
+      exchangeResult.accessToken,
+    );
 
     const encryptedAccessToken = await this.tokenEncryptionGateway.encrypt(
       exchangeResult.accessToken,

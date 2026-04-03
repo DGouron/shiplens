@@ -1,7 +1,7 @@
-import { Controller, Get, Put, Param, Body } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { AvailableStatusesGateway } from '../../entities/team-settings/available-statuses.gateway.js';
 import { GetTeamExcludedStatusesUsecase } from '../../usecases/get-team-excluded-statuses.usecase.js';
 import { SetTeamExcludedStatusesUsecase } from '../../usecases/set-team-excluded-statuses.usecase.js';
-import { AvailableStatusesGateway } from '../../entities/team-settings/available-statuses.gateway.js';
 
 @Controller('settings')
 export class TeamSettingsController {

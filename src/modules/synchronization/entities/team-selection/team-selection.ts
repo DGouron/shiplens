@@ -1,9 +1,9 @@
-import {
-  type TeamSelectionProps,
-  type SelectedTeamProps,
-  type SelectedProjectProps,
-} from './team-selection.schema.js';
 import { teamSelectionGuard } from './team-selection.guard.js';
+import {
+  type SelectedProjectProps,
+  type SelectedTeamProps,
+  type TeamSelectionProps,
+} from './team-selection.schema.js';
 
 export class TeamSelection {
   private constructor(private readonly props: TeamSelectionProps) {}

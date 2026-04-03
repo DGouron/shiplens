@@ -1,8 +1,14 @@
-import { Controller, Get, Param, Query, Header } from '@nestjs/common';
-import { ListTeamCyclesUsecase } from '../../usecases/list-team-cycles.usecase.js';
+import { Controller, Get, Header, Param, Query } from '@nestjs/common';
 import { GetCycleIssuesUsecase } from '../../usecases/get-cycle-issues.usecase.js';
-import { TeamCyclesPresenter, type TeamCyclesDto } from '../presenters/team-cycles.presenter.js';
-import { CycleIssuesPresenter, type CycleIssuesDto } from '../presenters/cycle-issues.presenter.js';
+import { ListTeamCyclesUsecase } from '../../usecases/list-team-cycles.usecase.js';
+import {
+  type CycleIssuesDto,
+  CycleIssuesPresenter,
+} from '../presenters/cycle-issues.presenter.js';
+import {
+  type TeamCyclesDto,
+  TeamCyclesPresenter,
+} from '../presenters/team-cycles.presenter.js';
 import { cycleReportPageHtml } from './cycle-report-page.html.js';
 
 @Controller()
@@ -25,7 +31,10 @@ export class CycleReportPageController {
     @Param('cycleId') cycleId: string,
     @Query('teamId') teamId: string,
   ): Promise<CycleIssuesDto> {
-    const result = await this.getCycleIssuesUsecase.execute({ cycleId, teamId });
+    const result = await this.getCycleIssuesUsecase.execute({
+      cycleId,
+      teamId,
+    });
     return this.cycleIssuesPresenter.present(result);
   }
 

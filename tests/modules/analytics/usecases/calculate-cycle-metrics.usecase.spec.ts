@@ -1,9 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { CalculateCycleMetricsUsecase } from '@modules/analytics/usecases/calculate-cycle-metrics.usecase.js';
+import {
+  CycleNotCompletedError,
+  InsufficientHistoryError,
+  NoCycleIssuesError,
+} from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
 import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
-import { CycleNotCompletedError } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
-import { NoCycleIssuesError } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
-import { InsufficientHistoryError } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
+import { CalculateCycleMetricsUsecase } from '@modules/analytics/usecases/calculate-cycle-metrics.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('CalculateCycleMetricsUsecase', () => {
   let gateway: StubCycleMetricsDataGateway;
@@ -34,7 +36,10 @@ describe('CalculateCycleMetricsUsecase', () => {
       ],
     };
 
-    const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+    const result = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+    });
 
     expect(result.velocity.completedPoints).toBe(5);
     expect(result.velocity.plannedPoints).toBe(5);
@@ -128,7 +133,11 @@ describe('CalculateCycleMetricsUsecase', () => {
     gateway.previousVelocities = [18, 20];
 
     await expect(
-      usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1', includeTrend: true }),
+      usecase.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+        includeTrend: true,
+      }),
     ).rejects.toThrow(InsufficientHistoryError);
   });
 
@@ -152,7 +161,10 @@ describe('CalculateCycleMetricsUsecase', () => {
       ],
     };
 
-    const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+    const result = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+    });
 
     expect(result.trend).toBeUndefined();
   });

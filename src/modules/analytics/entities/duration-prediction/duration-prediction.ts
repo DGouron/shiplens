@@ -1,5 +1,5 @@
-import { type DurationPredictionProps } from './duration-prediction.schema.js';
 import { durationPredictionGuard } from './duration-prediction.guard.js';
+import { type DurationPredictionProps } from './duration-prediction.schema.js';
 
 type Confidence = 'high' | 'low';
 
@@ -15,7 +15,10 @@ function percentile(sortedValues: number[], percent: number): number {
   if (lowerIndex === upperIndex) return sortedValues[lowerIndex];
 
   const fraction = position - lowerIndex;
-  return sortedValues[lowerIndex] + fraction * (sortedValues[upperIndex] - sortedValues[lowerIndex]);
+  return (
+    sortedValues[lowerIndex] +
+    fraction * (sortedValues[upperIndex] - sortedValues[lowerIndex])
+  );
 }
 
 export class DurationPrediction {
@@ -52,6 +55,8 @@ export class DurationPrediction {
   }
 
   get confidence(): Confidence {
-    return this.props.similarIssueCount >= LOW_CONFIDENCE_THRESHOLD ? 'high' : 'low';
+    return this.props.similarIssueCount >= LOW_CONFIDENCE_THRESHOLD
+      ? 'high'
+      : 'low';
   }
 }

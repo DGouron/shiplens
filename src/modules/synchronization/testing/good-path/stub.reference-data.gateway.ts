@@ -4,10 +4,7 @@ import { type TeamReferenceData } from '../../entities/reference-data/reference-
 export class StubReferenceDataGateway extends ReferenceDataGateway {
   dataByTeamId: Map<string, TeamReferenceData> = new Map();
 
-  async upsertForTeam(
-    teamId: string,
-    data: TeamReferenceData,
-  ): Promise<void> {
+  async upsertForTeam(teamId: string, data: TeamReferenceData): Promise<void> {
     this.dataByTeamId.set(teamId, data);
   }
 }

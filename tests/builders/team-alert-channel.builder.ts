@@ -1,6 +1,6 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { TeamAlertChannel } from '@modules/notification/entities/team-alert-channel/team-alert-channel.js';
 import { type TeamAlertChannelProps } from '@modules/notification/entities/team-alert-channel/team-alert-channel.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: TeamAlertChannelProps = {
   id: 'a0000000-0000-4000-8000-000000000001',

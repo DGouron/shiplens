@@ -1,4 +1,7 @@
-import { CycleMetricsDataGateway, type TrendData } from '../../entities/cycle-snapshot/cycle-metrics-data.gateway.js';
+import {
+  CycleMetricsDataGateway,
+  type TrendData,
+} from '../../entities/cycle-snapshot/cycle-metrics-data.gateway.js';
 import { type CycleSnapshotProps } from '../../entities/cycle-snapshot/cycle-snapshot.schema.js';
 
 export class FailingCycleMetricsDataGateway extends CycleMetricsDataGateway {

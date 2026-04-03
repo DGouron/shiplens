@@ -1,7 +1,10 @@
-import { type EstimationAccuracyProps } from './estimation-accuracy.schema.js';
 import { estimationAccuracyGuard } from './estimation-accuracy.guard.js';
+import { type EstimationAccuracyProps } from './estimation-accuracy.schema.js';
 
-type EstimationClassification = 'over-estimated' | 'under-estimated' | 'well-estimated';
+type EstimationClassification =
+  | 'over-estimated'
+  | 'under-estimated'
+  | 'well-estimated';
 
 export interface IssueRatio {
   externalId: string;
@@ -38,9 +41,14 @@ function classify(ratio: number): EstimationClassification {
   return 'well-estimated';
 }
 
-function averageRatioFromIssues(issues: ReadonlyArray<{ points: number; cycleTimeInDays: number }>): number {
+function averageRatioFromIssues(
+  issues: ReadonlyArray<{ points: number; cycleTimeInDays: number }>,
+): number {
   if (issues.length === 0) return 0;
-  const totalRatio = issues.reduce((sum, issue) => sum + issue.points / issue.cycleTimeInDays, 0);
+  const totalRatio = issues.reduce(
+    (sum, issue) => sum + issue.points / issue.cycleTimeInDays,
+    0,
+  );
   return totalRatio / issues.length;
 }
 
@@ -79,7 +87,10 @@ export class EstimationAccuracy {
   }
 
   scoreByDeveloper(): DeveloperScore[] {
-    const grouped = new Map<string, Array<{ points: number; cycleTimeInDays: number }>>();
+    const grouped = new Map<
+      string,
+      Array<{ points: number; cycleTimeInDays: number }>
+    >();
 
     for (const issue of this.props.issues) {
       if (issue.assigneeName === null) continue;
@@ -100,7 +111,10 @@ export class EstimationAccuracy {
   }
 
   scoreByLabel(): LabelScore[] {
-    const grouped = new Map<string, Array<{ points: number; cycleTimeInDays: number }>>();
+    const grouped = new Map<
+      string,
+      Array<{ points: number; cycleTimeInDays: number }>
+    >();
 
     for (const issue of this.props.issues) {
       for (const labelName of issue.labelNames) {

@@ -1,6 +1,6 @@
-import { Controller, Post, Param, Body } from '@nestjs/common';
-import { GenerateMemberDigestUsecase } from '../../usecases/generate-member-digest.usecase.js';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { type AiProvider } from '../../entities/sprint-report/ai-text-generator.gateway.js';
+import { GenerateMemberDigestUsecase } from '../../usecases/generate-member-digest.usecase.js';
 
 interface GenerateMemberDigestBody {
   teamId: string;

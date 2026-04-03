@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SetStatusThresholdUsecase } from '@modules/analytics/usecases/set-status-threshold.usecase.js';
-import { StubStatusThresholdGateway } from '@modules/analytics/testing/good-path/stub.status-threshold.gateway.js';
 import { NegativeThresholdError } from '@modules/analytics/entities/status-threshold/status-threshold.errors.js';
+import { StubStatusThresholdGateway } from '@modules/analytics/testing/good-path/stub.status-threshold.gateway.js';
+import { SetStatusThresholdUsecase } from '@modules/analytics/usecases/set-status-threshold.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('SetStatusThresholdUsecase', () => {
   let usecase: SetStatusThresholdUsecase;

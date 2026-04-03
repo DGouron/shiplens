@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
 import { CalculateEstimationAccuracyUsecase } from '@modules/analytics/usecases/calculate-estimation-accuracy.usecase.js';
 import { GetEstimationTrendUsecase } from '@modules/analytics/usecases/get-estimation-trend.usecase.js';
-import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Track Estimation Accuracy (acceptance)', () => {
   let gateway: StubEstimationAccuracyDataGateway;
@@ -33,7 +33,10 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         excludedWithoutCycleTime: 0,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
       const ratios = result.ratioPerIssue();
 
       expect(ratios).toHaveLength(1);
@@ -46,17 +49,55 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         issues: [
-          { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] },
-          { externalId: 'issue-2', title: 'Task 2', points: 2, cycleTimeInDays: 3, assigneeName: 'Alice', labelNames: [] },
-          { externalId: 'issue-3', title: 'Task 3', points: 5, cycleTimeInDays: 4, assigneeName: 'Alice', labelNames: [] },
-          { externalId: 'issue-4', title: 'Task 4', points: 1, cycleTimeInDays: 1, assigneeName: 'Alice', labelNames: [] },
-          { externalId: 'issue-5', title: 'Task 5', points: 4, cycleTimeInDays: 3, assigneeName: 'Alice', labelNames: [] },
+          {
+            externalId: 'issue-1',
+            title: 'Task 1',
+            points: 3,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+          {
+            externalId: 'issue-2',
+            title: 'Task 2',
+            points: 2,
+            cycleTimeInDays: 3,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+          {
+            externalId: 'issue-3',
+            title: 'Task 3',
+            points: 5,
+            cycleTimeInDays: 4,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+          {
+            externalId: 'issue-4',
+            title: 'Task 4',
+            points: 1,
+            cycleTimeInDays: 1,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+          {
+            externalId: 'issue-5',
+            title: 'Task 5',
+            points: 4,
+            cycleTimeInDays: 3,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
         ],
         excludedWithoutEstimation: 0,
         excludedWithoutCycleTime: 0,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
       const developerScores = result.scoreByDeveloper();
 
       expect(developerScores).toHaveLength(1);
@@ -69,19 +110,47 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         issues: [
-          { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: ['frontend'] },
-          { externalId: 'issue-2', title: 'Task 2', points: 5, cycleTimeInDays: 4, assigneeName: 'Bob', labelNames: ['frontend'] },
-          { externalId: 'issue-3', title: 'Task 3', points: 2, cycleTimeInDays: 3, assigneeName: 'Alice', labelNames: ['backend'] },
+          {
+            externalId: 'issue-1',
+            title: 'Task 1',
+            points: 3,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: ['frontend'],
+          },
+          {
+            externalId: 'issue-2',
+            title: 'Task 2',
+            points: 5,
+            cycleTimeInDays: 4,
+            assigneeName: 'Bob',
+            labelNames: ['frontend'],
+          },
+          {
+            externalId: 'issue-3',
+            title: 'Task 3',
+            points: 2,
+            cycleTimeInDays: 3,
+            assigneeName: 'Alice',
+            labelNames: ['backend'],
+          },
         ],
         excludedWithoutEstimation: 0,
         excludedWithoutCycleTime: 0,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
       const labelScores = result.scoreByLabel();
 
-      const frontendScore = labelScores.find((score) => score.labelName === 'frontend');
-      const backendScore = labelScores.find((score) => score.labelName === 'backend');
+      const frontendScore = labelScores.find(
+        (score) => score.labelName === 'frontend',
+      );
+      const backendScore = labelScores.find(
+        (score) => score.labelName === 'backend',
+      );
 
       expect(frontendScore).toBeDefined();
       expect(frontendScore?.issueCount).toBe(2);
@@ -94,13 +163,23 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         issues: [
-          { externalId: 'issue-1', title: 'Quick fix', points: 8, cycleTimeInDays: 0.5, assigneeName: 'Alice', labelNames: [] },
+          {
+            externalId: 'issue-1',
+            title: 'Quick fix',
+            points: 8,
+            cycleTimeInDays: 0.5,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
         ],
         excludedWithoutEstimation: 0,
         excludedWithoutCycleTime: 0,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
       const ratios = result.ratioPerIssue();
 
       expect(ratios[0].ratio).toBe(16);
@@ -112,13 +191,23 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         issues: [
-          { externalId: 'issue-1', title: 'Complex task', points: 1, cycleTimeInDays: 5, assigneeName: 'Alice', labelNames: [] },
+          {
+            externalId: 'issue-1',
+            title: 'Complex task',
+            points: 1,
+            cycleTimeInDays: 5,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
         ],
         excludedWithoutEstimation: 0,
         excludedWithoutCycleTime: 0,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
       const ratios = result.ratioPerIssue();
 
       expect(ratios[0].ratio).toBe(0.2);
@@ -130,14 +219,31 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         issues: [
-          { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] },
-          { externalId: 'issue-2', title: 'Task 2', points: 2, cycleTimeInDays: 3, assigneeName: 'Bob', labelNames: [] },
+          {
+            externalId: 'issue-1',
+            title: 'Task 1',
+            points: 3,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+          {
+            externalId: 'issue-2',
+            title: 'Task 2',
+            points: 2,
+            cycleTimeInDays: 3,
+            assigneeName: 'Bob',
+            labelNames: [],
+          },
         ],
         excludedWithoutEstimation: 0,
         excludedWithoutCycleTime: 0,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
       const team = result.teamScore();
 
       expect(team.issueCount).toBe(2);
@@ -150,13 +256,23 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         issues: [
-          { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] },
+          {
+            externalId: 'issue-1',
+            title: 'Task 1',
+            points: 3,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
         ],
         excludedWithoutEstimation: 4,
         excludedWithoutCycleTime: 0,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
 
       expect(result.excludedWithoutEstimation).toBe(4);
     });
@@ -166,13 +282,23 @@ describe('Track Estimation Accuracy (acceptance)', () => {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         issues: [
-          { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] },
+          {
+            externalId: 'issue-1',
+            title: 'Task 1',
+            points: 3,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
         ],
         excludedWithoutEstimation: 0,
         excludedWithoutCycleTime: 3,
       };
 
-      const result = await calculateAccuracy.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await calculateAccuracy.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
 
       expect(result.excludedWithoutCycleTime).toBe(3);
     });
@@ -183,19 +309,52 @@ describe('Track Estimation Accuracy (acceptance)', () => {
       gateway.completedCycleIds = ['cycle-1', 'cycle-2', 'cycle-3'];
       gateway.estimationDataByCycle = {
         'cycle-1': {
-          cycleId: 'cycle-1', teamId: 'team-1',
-          issues: [{ externalId: 'i-1', title: 'T1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] }],
-          excludedWithoutEstimation: 0, excludedWithoutCycleTime: 0,
+          cycleId: 'cycle-1',
+          teamId: 'team-1',
+          issues: [
+            {
+              externalId: 'i-1',
+              title: 'T1',
+              points: 3,
+              cycleTimeInDays: 2,
+              assigneeName: 'Alice',
+              labelNames: [],
+            },
+          ],
+          excludedWithoutEstimation: 0,
+          excludedWithoutCycleTime: 0,
         },
         'cycle-2': {
-          cycleId: 'cycle-2', teamId: 'team-1',
-          issues: [{ externalId: 'i-2', title: 'T2', points: 2, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] }],
-          excludedWithoutEstimation: 0, excludedWithoutCycleTime: 0,
+          cycleId: 'cycle-2',
+          teamId: 'team-1',
+          issues: [
+            {
+              externalId: 'i-2',
+              title: 'T2',
+              points: 2,
+              cycleTimeInDays: 2,
+              assigneeName: 'Alice',
+              labelNames: [],
+            },
+          ],
+          excludedWithoutEstimation: 0,
+          excludedWithoutCycleTime: 0,
         },
         'cycle-3': {
-          cycleId: 'cycle-3', teamId: 'team-1',
-          issues: [{ externalId: 'i-3', title: 'T3', points: 4, cycleTimeInDays: 4, assigneeName: 'Alice', labelNames: [] }],
-          excludedWithoutEstimation: 0, excludedWithoutCycleTime: 0,
+          cycleId: 'cycle-3',
+          teamId: 'team-1',
+          issues: [
+            {
+              externalId: 'i-3',
+              title: 'T3',
+              points: 4,
+              cycleTimeInDays: 4,
+              assigneeName: 'Alice',
+              labelNames: [],
+            },
+          ],
+          excludedWithoutEstimation: 0,
+          excludedWithoutCycleTime: 0,
         },
       };
 
@@ -215,7 +374,9 @@ describe('Track Estimation Accuracy (acceptance)', () => {
 
       await expect(
         getEstimationTrend.execute({ teamId: 'team-1' }),
-      ).rejects.toThrow("Pas assez d'historique pour afficher la tendance. Minimum 2 cycles terminés requis.");
+      ).rejects.toThrow(
+        "Pas assez d'historique pour afficher la tendance. Minimum 2 cycles terminés requis.",
+      );
     });
   });
 });

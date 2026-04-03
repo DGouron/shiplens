@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { TeamSelection } from '@modules/synchronization/entities/team-selection/team-selection.js';
+import { describe, expect, it } from 'vitest';
 
 describe('TeamSelection', () => {
   it('creates a valid selection with teams and projects', () => {

@@ -1,8 +1,8 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ConfigureSlackWebhookUsecase } from '../../usecases/configure-slack-webhook.usecase.js';
-import { SendReportOnSlackUsecase } from '../../usecases/send-report-on-slack.usecase.js';
-import { ConfigureTeamAlertChannelUsecase } from '../../usecases/configure-team-alert-channel.usecase.js';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AlertBlockedIssuesOnSlackUsecase } from '../../usecases/alert-blocked-issues-on-slack.usecase.js';
+import { ConfigureSlackWebhookUsecase } from '../../usecases/configure-slack-webhook.usecase.js';
+import { ConfigureTeamAlertChannelUsecase } from '../../usecases/configure-team-alert-channel.usecase.js';
+import { SendReportOnSlackUsecase } from '../../usecases/send-report-on-slack.usecase.js';
 
 interface ConfigureSlackWebhookBody {
   teamId: string;

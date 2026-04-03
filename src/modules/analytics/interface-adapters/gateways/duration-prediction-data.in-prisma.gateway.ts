@@ -41,8 +41,9 @@ export class DurationPredictionDataInPrismaGateway extends DurationPredictionDat
       },
     });
 
-    const completedIssueExternalIds = completedCycles
-      .flatMap((cycle) => JSON.parse(cycle.issueExternalIds) as string[]);
+    const completedIssueExternalIds = completedCycles.flatMap(
+      (cycle) => JSON.parse(cycle.issueExternalIds) as string[],
+    );
 
     const uniqueIssueExternalIds = [...new Set(completedIssueExternalIds)];
 

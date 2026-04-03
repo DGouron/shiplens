@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SyncReferenceDataController } from '@modules/synchronization/interface-adapters/controllers/sync-reference-data.controller.js';
-import { SyncReferenceDataUsecase } from '@modules/synchronization/usecases/sync-reference-data.usecase.js';
 import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
-import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
+import { SyncReferenceDataController } from '@modules/synchronization/interface-adapters/controllers/sync-reference-data.controller.js';
 import { StubLinearReferenceDataGateway } from '@modules/synchronization/testing/good-path/stub.linear-reference-data.gateway.js';
 import { StubReferenceDataGateway } from '@modules/synchronization/testing/good-path/stub.reference-data.gateway.js';
+import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
+import { SyncReferenceDataUsecase } from '@modules/synchronization/usecases/sync-reference-data.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../../builders/linear-workspace-connection.builder.js';
 import { TeamSelectionBuilder } from '../../../../builders/team-selection.builder.js';
 

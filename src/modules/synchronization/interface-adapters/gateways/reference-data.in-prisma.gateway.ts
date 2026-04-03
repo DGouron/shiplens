@@ -9,10 +9,7 @@ export class ReferenceDataInPrismaGateway extends ReferenceDataGateway {
     super();
   }
 
-  async upsertForTeam(
-    teamId: string,
-    data: TeamReferenceData,
-  ): Promise<void> {
+  async upsertForTeam(teamId: string, data: TeamReferenceData): Promise<void> {
     await this.prisma.$transaction(async (transaction) => {
       await transaction.milestone.deleteMany({
         where: { projectTeamId: teamId },

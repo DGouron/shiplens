@@ -1,5 +1,5 @@
-import { type BlockedIssueAlertProps } from './blocked-issue-alert.schema.js';
 import { blockedIssueAlertGuard } from './blocked-issue-alert.guard.js';
+import { type BlockedIssueAlertProps } from './blocked-issue-alert.schema.js';
 
 export class BlockedIssueAlert {
   private constructor(private readonly props: BlockedIssueAlertProps) {}

@@ -16,9 +16,7 @@ interface SyncProgressResult {
 export class GetSyncProgressUsecase
   implements Usecase<GetSyncProgressParams, SyncProgressResult>
 {
-  constructor(
-    private readonly syncProgressGateway: SyncProgressGateway,
-  ) {}
+  constructor(private readonly syncProgressGateway: SyncProgressGateway) {}
 
   async execute(params: GetSyncProgressParams): Promise<SyncProgressResult> {
     const progress = await this.syncProgressGateway.getByTeamId(params.teamId);

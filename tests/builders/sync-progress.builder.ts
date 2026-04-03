@@ -1,6 +1,6 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { SyncProgress } from '@modules/synchronization/entities/sync-progress/sync-progress.js';
 import { type SyncProgressProps } from '@modules/synchronization/entities/sync-progress/sync-progress.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: SyncProgressProps = {
   teamId: 'team-1',

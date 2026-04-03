@@ -1,5 +1,5 @@
-import { BottleneckAnalysisDataGateway } from '../../entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
 import { type BottleneckAnalysisProps } from '../../entities/bottleneck-analysis/bottleneck-analysis.schema.js';
+import { BottleneckAnalysisDataGateway } from '../../entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
 
 export class FailingBottleneckAnalysisDataGateway extends BottleneckAnalysisDataGateway {
   async getBottleneckData(): Promise<BottleneckAnalysisProps> {

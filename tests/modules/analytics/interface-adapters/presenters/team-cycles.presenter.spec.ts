@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { TeamCyclesPresenter } from '@modules/analytics/interface-adapters/presenters/team-cycles.presenter.js';
+import { describe, expect, it } from 'vitest';
 
 describe('TeamCyclesPresenter', () => {
   const presenter = new TeamCyclesPresenter();

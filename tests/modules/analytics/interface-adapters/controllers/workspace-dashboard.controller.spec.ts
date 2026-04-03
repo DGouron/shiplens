@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { WorkspaceDashboardController } from '@modules/analytics/interface-adapters/controllers/workspace-dashboard.controller.js';
-import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
 import { WorkspaceDashboardPresenter } from '@modules/analytics/interface-adapters/presenters/workspace-dashboard.presenter.js';
 import { StubWorkspaceDashboardDataGateway } from '@modules/analytics/testing/good-path/stub.workspace-dashboard-data.gateway.js';
+import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('WorkspaceDashboardController', () => {
   let gateway: StubWorkspaceDashboardDataGateway;
@@ -48,7 +48,8 @@ describe('WorkspaceDashboardController', () => {
 
     expect(result).toEqual({
       status: 'not_connected',
-      message: 'Aucun workspace connecté. Veuillez connecter votre workspace Linear.',
+      message:
+        'Aucun workspace connecté. Veuillez connecter votre workspace Linear.',
     });
   });
 
@@ -60,7 +61,8 @@ describe('WorkspaceDashboardController', () => {
 
     expect(result).toEqual({
       status: 'no_teams',
-      message: 'Aucune équipe synchronisée. Veuillez d\'abord sélectionner des équipes à synchroniser.',
+      message:
+        "Aucune équipe synchronisée. Veuillez d'abord sélectionner des équipes à synchroniser.",
     });
   });
 

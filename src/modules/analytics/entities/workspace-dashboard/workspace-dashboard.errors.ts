@@ -2,14 +2,16 @@ import { BusinessRuleViolation } from '@shared/foundation/business-rule-violatio
 
 export class WorkspaceNotConnectedError extends BusinessRuleViolation {
   constructor() {
-    super('Aucun workspace connecté. Veuillez connecter votre workspace Linear.');
+    super(
+      'Aucun workspace connecté. Veuillez connecter votre workspace Linear.',
+    );
   }
 }
 
 export class NoTeamsSynchronizedError extends BusinessRuleViolation {
   constructor() {
     super(
-      'Aucune équipe synchronisée. Veuillez d\'abord sélectionner des équipes à synchroniser.',
+      "Aucune équipe synchronisée. Veuillez d'abord sélectionner des équipes à synchroniser.",
     );
   }
 }

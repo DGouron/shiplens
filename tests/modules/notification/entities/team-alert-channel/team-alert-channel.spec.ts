@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { TeamAlertChannel } from '@modules/notification/entities/team-alert-channel/team-alert-channel.js';
+import { describe, expect, it } from 'vitest';
 
 describe('TeamAlertChannel', () => {
   it('creates a valid alert channel', () => {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { GatewayError } from '@shared/foundation/gateway-error.js';
 import {
-  LinearTeamGateway,
   type LinearTeam,
+  LinearTeamGateway,
 } from '../../entities/team-selection/linear-team.gateway.js';
 
 interface LinearGraphqlTeam {
@@ -47,7 +47,10 @@ export class LinearTeamInHttpGateway extends LinearTeamGateway {
       teamId: team.id,
       teamName: team.name,
       projects: team.projects.nodes
-        .filter((project) => project.state === 'started' || project.state === 'planned')
+        .filter(
+          (project) =>
+            project.state === 'started' || project.state === 'planned',
+        )
         .map((project) => ({
           projectId: project.id,
           projectName: project.name,

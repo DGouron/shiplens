@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetReportUsecase } from '@modules/analytics/usecases/get-report.usecase.js';
-import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 import { ReportNotFoundError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
+import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { GetReportUsecase } from '@modules/analytics/usecases/get-report.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { SprintReportBuilder } from '../../../builders/sprint-report.builder.js';
 
 describe('GetReportUsecase', () => {
@@ -21,7 +21,9 @@ describe('GetReportUsecase', () => {
 
     await gateway.save(report);
 
-    const retrieved = await usecase.execute({ reportId: 'a0000000-0000-4000-8000-000000000001' });
+    const retrieved = await usecase.execute({
+      reportId: 'a0000000-0000-4000-8000-000000000001',
+    });
 
     expect(retrieved.id).toBe('a0000000-0000-4000-8000-000000000001');
     expect(retrieved.cycleName).toBe('Sprint 12');

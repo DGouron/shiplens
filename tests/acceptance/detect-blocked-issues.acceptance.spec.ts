@@ -1,13 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { DetectBlockedIssuesUsecase } from '@modules/analytics/usecases/detect-blocked-issues.usecase.js';
-import { SetStatusThresholdUsecase } from '@modules/analytics/usecases/set-status-threshold.usecase.js';
-import { GetBlockedIssuesUsecase } from '@modules/analytics/usecases/get-blocked-issues.usecase.js';
-import { GetAlertHistoryUsecase } from '@modules/analytics/usecases/get-alert-history.usecase.js';
-import { StubStatusThresholdGateway } from '@modules/analytics/testing/good-path/stub.status-threshold.gateway.js';
 import { StubBlockedIssueAlertGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-alert.gateway.js';
 import { StubBlockedIssueDetectionDataGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-detection-data.gateway.js';
+import { StubStatusThresholdGateway } from '@modules/analytics/testing/good-path/stub.status-threshold.gateway.js';
 import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
-import { StatusThresholdBuilder } from '../builders/status-threshold.builder.js';
+import { DetectBlockedIssuesUsecase } from '@modules/analytics/usecases/detect-blocked-issues.usecase.js';
+import { GetAlertHistoryUsecase } from '@modules/analytics/usecases/get-alert-history.usecase.js';
+import { GetBlockedIssuesUsecase } from '@modules/analytics/usecases/get-blocked-issues.usecase.js';
+import { SetStatusThresholdUsecase } from '@modules/analytics/usecases/set-status-threshold.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { BlockedIssueAlertBuilder } from '../builders/blocked-issue-alert.builder.js';
 
 describe('Detect Blocked Issues (acceptance)', () => {
@@ -45,7 +44,9 @@ describe('Detect Blocked Issues (acceptance)', () => {
           issueTitle: 'Fix login bug',
           issueUuid: 'uuid-1',
           statusName: 'In Review',
-          statusEnteredAt: new Date(Date.now() - 50 * 60 * 60 * 1000).toISOString(),
+          statusEnteredAt: new Date(
+            Date.now() - 50 * 60 * 60 * 1000,
+          ).toISOString(),
           teamId: 'team-1',
         },
       ];
@@ -67,7 +68,9 @@ describe('Detect Blocked Issues (acceptance)', () => {
           issueTitle: 'Fix login bug',
           issueUuid: 'uuid-1',
           statusName: 'In Review',
-          statusEnteredAt: new Date(Date.now() - 100 * 60 * 60 * 1000).toISOString(),
+          statusEnteredAt: new Date(
+            Date.now() - 100 * 60 * 60 * 1000,
+          ).toISOString(),
           teamId: 'team-1',
         },
       ];
@@ -88,7 +91,9 @@ describe('Detect Blocked Issues (acceptance)', () => {
           issueTitle: 'Fix login bug',
           issueUuid: 'uuid-1',
           statusName: 'In Review',
-          statusEnteredAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          statusEnteredAt: new Date(
+            Date.now() - 24 * 60 * 60 * 1000,
+          ).toISOString(),
           teamId: 'team-1',
         },
       ];
@@ -109,7 +114,9 @@ describe('Detect Blocked Issues (acceptance)', () => {
           issueTitle: 'Warning 1',
           issueUuid: 'uuid-1',
           statusName: 'In Review',
-          statusEnteredAt: new Date(Date.now() - 50 * 60 * 60 * 1000).toISOString(),
+          statusEnteredAt: new Date(
+            Date.now() - 50 * 60 * 60 * 1000,
+          ).toISOString(),
           teamId: 'team-1',
         },
         {
@@ -117,7 +124,9 @@ describe('Detect Blocked Issues (acceptance)', () => {
           issueTitle: 'Critical 1',
           issueUuid: 'uuid-2',
           statusName: 'In Review',
-          statusEnteredAt: new Date(Date.now() - 100 * 60 * 60 * 1000).toISOString(),
+          statusEnteredAt: new Date(
+            Date.now() - 100 * 60 * 60 * 1000,
+          ).toISOString(),
           teamId: 'team-1',
         },
         {
@@ -125,7 +134,9 @@ describe('Detect Blocked Issues (acceptance)', () => {
           issueTitle: 'Warning 2',
           issueUuid: 'uuid-3',
           statusName: 'In Progress',
-          statusEnteredAt: new Date(Date.now() - 50 * 60 * 60 * 1000).toISOString(),
+          statusEnteredAt: new Date(
+            Date.now() - 50 * 60 * 60 * 1000,
+          ).toISOString(),
           teamId: 'team-1',
         },
       ];
@@ -142,7 +153,10 @@ describe('Detect Blocked Issues (acceptance)', () => {
 
   describe('custom thresholds override defaults', () => {
     it('user sets In Progress threshold to 72h, issue at 80h triggers warning', async () => {
-      await setStatusThreshold.execute({ statusName: 'In Progress', thresholdHours: 72 });
+      await setStatusThreshold.execute({
+        statusName: 'In Progress',
+        thresholdHours: 72,
+      });
 
       detectionDataGateway.hasSyncData = true;
       detectionDataGateway.issuesWithCurrentStatus = [
@@ -151,7 +165,9 @@ describe('Detect Blocked Issues (acceptance)', () => {
           issueTitle: 'Slow task',
           issueUuid: 'uuid-1',
           statusName: 'In Progress',
-          statusEnteredAt: new Date(Date.now() - 80 * 60 * 60 * 1000).toISOString(),
+          statusEnteredAt: new Date(
+            Date.now() - 80 * 60 * 60 * 1000,
+          ).toISOString(),
           teamId: 'team-1',
         },
       ];
@@ -200,7 +216,10 @@ describe('Detect Blocked Issues (acceptance)', () => {
   describe('invalid threshold is rejected', () => {
     it('rejects negative threshold', async () => {
       await expect(
-        setStatusThreshold.execute({ statusName: 'In Progress', thresholdHours: -5 }),
+        setStatusThreshold.execute({
+          statusName: 'In Progress',
+          thresholdHours: -5,
+        }),
       ).rejects.toThrow('Le seuil doit être une durée positive.');
     });
   });

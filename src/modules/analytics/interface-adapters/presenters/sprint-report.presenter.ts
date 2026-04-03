@@ -28,7 +28,10 @@ export class SprintReportPresenter
       cycleName: report.cycleName,
       language: report.language,
       executiveSummary: report.executiveSummary,
-      trends: report.trends ?? NO_TREND_MESSAGE[report.language] ?? NO_TREND_MESSAGE['EN'],
+      trends:
+        report.trends ??
+        NO_TREND_MESSAGE[report.language] ??
+        NO_TREND_MESSAGE.EN,
       highlights: report.highlights,
       risks: report.risks,
       recommendations: report.recommendations,

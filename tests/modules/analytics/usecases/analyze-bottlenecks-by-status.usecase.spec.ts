@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { AnalyzeBottlenecksByStatusUsecase } from '@modules/analytics/usecases/analyze-bottlenecks-by-status.usecase.js';
+import {
+  NoCompletedIssuesError,
+  NoSynchronizedDataError,
+} from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.errors.js';
 import { StubBottleneckAnalysisDataGateway } from '@modules/analytics/testing/good-path/stub.bottleneck-analysis-data.gateway.js';
-import { NoCompletedIssuesError } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.errors.js';
-import { NoSynchronizedDataError } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.errors.js';
+import { AnalyzeBottlenecksByStatusUsecase } from '@modules/analytics/usecases/analyze-bottlenecks-by-status.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('AnalyzeBottlenecksByStatusUsecase', () => {
   let usecase: AnalyzeBottlenecksByStatusUsecase;

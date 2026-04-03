@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ListTeamReportsUsecase } from '@modules/analytics/usecases/list-team-reports.usecase.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { ListTeamReportsUsecase } from '@modules/analytics/usecases/list-team-reports.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { SprintReportBuilder } from '../../../builders/sprint-report.builder.js';
 
 describe('ListTeamReportsUsecase', () => {

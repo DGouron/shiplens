@@ -34,7 +34,7 @@ const SECTION_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
-const STATUS_EMOJI: Record<string, string> = {
+const _STATUS_EMOJI: Record<string, string> = {
   pass: 'pass',
   warn: 'warn',
   fail: 'fail',
@@ -45,9 +45,9 @@ export class ReportDetailPresenter
   implements Presenter<SprintReport, ReportDetailDto>
 {
   present(report: SprintReport): ReportDetailDto {
-    const labels = SECTION_LABELS[report.language] ?? SECTION_LABELS['EN'];
+    const labels = SECTION_LABELS[report.language] ?? SECTION_LABELS.EN;
     const trendsContent =
-      report.trends ?? NO_TREND_MESSAGE[report.language] ?? NO_TREND_MESSAGE['EN'];
+      report.trends ?? NO_TREND_MESSAGE[report.language] ?? NO_TREND_MESSAGE.EN;
 
     const markdownParts = [
       `# ${report.cycleName}`,
@@ -69,7 +69,10 @@ export class ReportDetailPresenter
     ];
 
     if (report.auditSection) {
-      markdownParts.push('', ...this.renderAuditSectionMarkdown(report.auditSection));
+      markdownParts.push(
+        '',
+        ...this.renderAuditSectionMarkdown(report.auditSection),
+      );
     }
 
     const markdown = markdownParts.join('\n');
@@ -94,7 +97,10 @@ export class ReportDetailPresenter
     ];
 
     if (report.auditSection) {
-      plainTextParts.push('', ...this.renderAuditSectionPlainText(report.auditSection));
+      plainTextParts.push(
+        '',
+        ...this.renderAuditSectionPlainText(report.auditSection),
+      );
     }
 
     const plainText = plainTextParts.join('\n');
@@ -127,7 +133,9 @@ export class ReportDetailPresenter
     lines.push('| Règle | Statut | Valeur mesurée |');
     lines.push('|-------|--------|----------------|');
     for (const rule of auditSection.evaluatedRules) {
-      lines.push(`| ${rule.ruleName} | ${rule.status} | ${rule.measuredValue} |`);
+      lines.push(
+        `| ${rule.ruleName} | ${rule.status} | ${rule.measuredValue} |`,
+      );
     }
 
     const failedRules = auditSection.evaluatedRules.filter(

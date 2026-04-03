@@ -19,4 +19,6 @@ export const estimationAccuracyPropsSchema = z.object({
   excludedWithoutCycleTime: z.number(),
 });
 
-export type EstimationAccuracyProps = z.infer<typeof estimationAccuracyPropsSchema>;
+export type EstimationAccuracyProps = z.infer<
+  typeof estimationAccuracyPropsSchema
+>;

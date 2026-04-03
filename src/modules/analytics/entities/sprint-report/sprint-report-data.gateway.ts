@@ -15,6 +15,12 @@ export interface TrendContext {
 
 export abstract class SprintReportDataGateway {
   abstract isSynchronized(teamId: string): Promise<boolean>;
-  abstract getSprintContext(cycleId: string, teamId: string): Promise<SprintContext>;
-  abstract getTrendContext(cycleId: string, teamId: string): Promise<TrendContext | null>;
+  abstract getSprintContext(
+    cycleId: string,
+    teamId: string,
+  ): Promise<SprintContext>;
+  abstract getTrendContext(
+    cycleId: string,
+    teamId: string,
+  ): Promise<TrendContext | null>;
 }

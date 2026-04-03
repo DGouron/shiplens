@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetEstimationTrendUsecase } from '@modules/analytics/usecases/get-estimation-trend.usecase.js';
-import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
 import { InsufficientHistoryForTrendError } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.errors.js';
+import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
+import { GetEstimationTrendUsecase } from '@modules/analytics/usecases/get-estimation-trend.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('GetEstimationTrendUsecase', () => {
   let gateway: StubEstimationAccuracyDataGateway;
@@ -16,14 +16,36 @@ describe('GetEstimationTrendUsecase', () => {
     gateway.completedCycleIds = ['cycle-1', 'cycle-2'];
     gateway.estimationDataByCycle = {
       'cycle-1': {
-        cycleId: 'cycle-1', teamId: 'team-1',
-        issues: [{ externalId: 'i-1', title: 'T1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] }],
-        excludedWithoutEstimation: 0, excludedWithoutCycleTime: 0,
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+        issues: [
+          {
+            externalId: 'i-1',
+            title: 'T1',
+            points: 3,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+        ],
+        excludedWithoutEstimation: 0,
+        excludedWithoutCycleTime: 0,
       },
       'cycle-2': {
-        cycleId: 'cycle-2', teamId: 'team-1',
-        issues: [{ externalId: 'i-2', title: 'T2', points: 2, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] }],
-        excludedWithoutEstimation: 0, excludedWithoutCycleTime: 0,
+        cycleId: 'cycle-2',
+        teamId: 'team-1',
+        issues: [
+          {
+            externalId: 'i-2',
+            title: 'T2',
+            points: 2,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+        ],
+        excludedWithoutEstimation: 0,
+        excludedWithoutCycleTime: 0,
       },
     };
 
@@ -39,16 +61,16 @@ describe('GetEstimationTrendUsecase', () => {
   it('throws InsufficientHistoryForTrendError when less than 2 cycles', async () => {
     gateway.completedCycleIds = ['cycle-1'];
 
-    await expect(
-      usecase.execute({ teamId: 'team-1' }),
-    ).rejects.toThrow(InsufficientHistoryForTrendError);
+    await expect(usecase.execute({ teamId: 'team-1' })).rejects.toThrow(
+      InsufficientHistoryForTrendError,
+    );
   });
 
   it('throws InsufficientHistoryForTrendError when no cycles', async () => {
     gateway.completedCycleIds = [];
 
-    await expect(
-      usecase.execute({ teamId: 'team-1' }),
-    ).rejects.toThrow(InsufficientHistoryForTrendError);
+    await expect(usecase.execute({ teamId: 'team-1' })).rejects.toThrow(
+      InsufficientHistoryForTrendError,
+    );
   });
 });

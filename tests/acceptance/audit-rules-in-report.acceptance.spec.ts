@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
-import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
+import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
+import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
-import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { AuditRuleBuilder } from '../builders/audit-rule.builder.js';
 import { ChecklistItemBuilder } from '../builders/checklist-item.builder.js';
 
@@ -46,7 +46,7 @@ describe('Audit Rules in Report (acceptance)', () => {
     };
 
     aiGateway.generatedText = JSON.stringify({
-      executiveSummary: 'Le sprint s\'est bien deroulé.',
+      executiveSummary: "Le sprint s'est bien deroulé.",
       trends: 'La velocite est en hausse.',
       highlights: 'Bonne progression.',
       risks: 'Aucun risque majeur.',
@@ -199,7 +199,11 @@ describe('Audit Rules in Report (acceptance)', () => {
       );
 
       for (const score of [60, 70, 75]) {
-        const previousReport = (await import('@modules/analytics/entities/sprint-report/sprint-report.js')).SprintReport.create({
+        const previousReport = (
+          await import(
+            '@modules/analytics/entities/sprint-report/sprint-report.js'
+          )
+        ).SprintReport.create({
           id: crypto.randomUUID(),
           cycleId: `prev-cycle-${score}`,
           teamId: 'team-1',
@@ -286,8 +290,12 @@ describe('Audit Rules in Report (acceptance)', () => {
       });
 
       expect(report.auditSection?.checklistItems).toHaveLength(2);
-      expect(report.auditSection?.checklistItems[0].name).toBe('Ecrire des messages de commit clairs');
-      expect(report.auditSection?.checklistItems[1].name).toBe('Faire des code reviews');
+      expect(report.auditSection?.checklistItems[0].name).toBe(
+        'Ecrire des messages de commit clairs',
+      );
+      expect(report.auditSection?.checklistItems[1].name).toBe(
+        'Faire des code reviews',
+      );
     });
   });
 });

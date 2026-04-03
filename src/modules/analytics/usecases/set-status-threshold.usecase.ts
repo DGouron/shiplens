@@ -31,6 +31,8 @@ export class SetStatusThresholdUsecase
 
     await this.statusThresholdGateway.save(threshold);
 
-    this.logger.log(`[${params.statusName}] Threshold updated — ${params.thresholdHours}h`);
+    this.logger.log(
+      `[${params.statusName}] Threshold updated — ${params.thresholdHours}h`,
+    );
   }
 }

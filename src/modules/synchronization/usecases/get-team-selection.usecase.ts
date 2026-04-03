@@ -7,9 +7,7 @@ import { type TeamSelection } from '../entities/team-selection/team-selection.js
 export class GetTeamSelectionUsecase
   implements Usecase<void, TeamSelection | null>
 {
-  constructor(
-    private readonly teamSelectionGateway: TeamSelectionGateway,
-  ) {}
+  constructor(private readonly teamSelectionGateway: TeamSelectionGateway) {}
 
   async execute(): Promise<TeamSelection | null> {
     return this.teamSelectionGateway.get();

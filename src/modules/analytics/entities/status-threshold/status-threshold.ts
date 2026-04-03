@@ -1,10 +1,13 @@
-import { type StatusThresholdProps } from './status-threshold.schema.js';
-import { statusThresholdGuard } from './status-threshold.guard.js';
 import { NegativeThresholdError } from './status-threshold.errors.js';
+import { statusThresholdGuard } from './status-threshold.guard.js';
+import { type StatusThresholdProps } from './status-threshold.schema.js';
 
 export type AlertSeverity = 'warning' | 'critical';
 
-const DEFAULT_THRESHOLDS: Array<{ statusName: string; thresholdHours: number }> = [
+const DEFAULT_THRESHOLDS: Array<{
+  statusName: string;
+  thresholdHours: number;
+}> = [
   { statusName: 'In Progress', thresholdHours: 48 },
   { statusName: 'In Review', thresholdHours: 48 },
   { statusName: 'Todo', thresholdHours: 72 },

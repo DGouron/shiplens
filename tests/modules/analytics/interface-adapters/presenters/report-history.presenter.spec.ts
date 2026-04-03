@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { ReportHistoryPresenter } from '@modules/analytics/interface-adapters/presenters/report-history.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { SprintReportBuilder } from '../../../../builders/sprint-report.builder.js';
 
 describe('ReportHistoryPresenter', () => {

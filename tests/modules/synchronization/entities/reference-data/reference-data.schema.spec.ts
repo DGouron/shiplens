@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
 import {
   labelSchema,
-  workflowStatusSchema,
-  teamMemberSchema,
   milestoneSchema,
   projectSchema,
+  teamMemberSchema,
   teamReferenceDataSchema,
+  workflowStatusSchema,
 } from '@modules/synchronization/entities/reference-data/reference-data.schema.js';
+import { describe, expect, it } from 'vitest';
 
 describe('ReferenceDataSchema', () => {
   describe('labelSchema', () => {
@@ -87,7 +87,11 @@ describe('ReferenceDataSchema', () => {
         teamId: 'team-1',
         name: 'Website Redesign',
         milestones: [
-          { externalId: 'ms-1', projectExternalId: 'project-1', name: 'Phase 1' },
+          {
+            externalId: 'ms-1',
+            projectExternalId: 'project-1',
+            name: 'Phase 1',
+          },
         ],
       });
 
@@ -110,15 +114,23 @@ describe('ReferenceDataSchema', () => {
     it('validates a complete team reference data object', () => {
       const result = teamReferenceDataSchema.safeParse({
         teamId: 'team-1',
-        labels: [{ externalId: 'l-1', teamId: 'team-1', name: 'Bug', color: '#f00' }],
-        workflowStatuses: [{ externalId: 's-1', teamId: 'team-1', name: 'Todo', position: 0 }],
-        teamMembers: [{ externalId: 'm-1', teamId: 'team-1', name: 'Alice', role: 'admin' }],
-        projects: [{
-          externalId: 'p-1',
-          teamId: 'team-1',
-          name: 'Project A',
-          milestones: [],
-        }],
+        labels: [
+          { externalId: 'l-1', teamId: 'team-1', name: 'Bug', color: '#f00' },
+        ],
+        workflowStatuses: [
+          { externalId: 's-1', teamId: 'team-1', name: 'Todo', position: 0 },
+        ],
+        teamMembers: [
+          { externalId: 'm-1', teamId: 'team-1', name: 'Alice', role: 'admin' },
+        ],
+        projects: [
+          {
+            externalId: 'p-1',
+            teamId: 'team-1',
+            name: 'Project A',
+            milestones: [],
+          },
+        ],
       });
 
       expect(result.success).toBe(true);

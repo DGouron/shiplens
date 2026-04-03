@@ -1,6 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { PredictIssueDurationUsecase } from '../../usecases/predict-issue-duration.usecase.js';
-import { DurationPredictionPresenter, type DurationPredictionDto } from '../presenters/duration-prediction.presenter.js';
+import {
+  type DurationPredictionDto,
+  DurationPredictionPresenter,
+} from '../presenters/duration-prediction.presenter.js';
 
 @Controller('api/analytics/teams')
 export class DurationPredictionController {

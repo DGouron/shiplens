@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { TeamSettingsGateway } from '../entities/team-settings/team-settings.gateway.js';
 import { BlockedIssueAlertGateway } from '../entities/blocked-issue-alert/blocked-issue-alert.gateway.js';
+import { TeamSettingsGateway } from '../entities/team-settings/team-settings.gateway.js';
 
 interface SetExcludedStatusesParams {
   teamId: string;
@@ -30,7 +30,10 @@ export class SetTeamExcludedStatusesUsecase
     const now = new Date().toISOString();
 
     const toResolve = activeAlerts
-      .filter((alert) => alert.teamId === params.teamId && excludedSet.has(alert.statusName))
+      .filter(
+        (alert) =>
+          alert.teamId === params.teamId && excludedSet.has(alert.statusName),
+      )
       .map((alert) => alert.resolve(now));
 
     if (toResolve.length > 0) {

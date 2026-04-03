@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { ReportDetailPresenter } from '@modules/analytics/interface-adapters/presenters/report-detail.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { SprintReportBuilder } from '../../../../builders/sprint-report.builder.js';
 
 describe('ReportDetailPresenter', () => {
@@ -159,7 +159,9 @@ describe('ReportDetailPresenter', () => {
 
     const result = presenter.present(report);
 
-    expect(result.markdown).toContain("Pas assez d'historique pour afficher la tendance.");
+    expect(result.markdown).toContain(
+      "Pas assez d'historique pour afficher la tendance.",
+    );
   });
 
   it('does not render audit section when null', () => {

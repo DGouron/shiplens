@@ -1,6 +1,6 @@
+import { createGuard } from '@shared/foundation/guard/guard';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { createGuard } from '@shared/foundation/guard/guard';
 
 const PersonSchema = z.object({
   name: z.string(),
@@ -29,7 +29,9 @@ describe('createGuard', () => {
     });
 
     it('should throw for invalid input', () => {
-      expect(() => personGuard.parse({ name: 42 })).toThrow('[Person] Validation failed');
+      expect(() => personGuard.parse({ name: 42 })).toThrow(
+        '[Person] Validation failed',
+      );
     });
   });
 
@@ -78,7 +80,11 @@ describe('createGuard', () => {
 
   describe('filterCollection', () => {
     it('should separate valid and rejected items', () => {
-      const data = [{ name: 'Alice', age: 30 }, { name: 'Bob' }, { name: 'Charlie', age: 20 }];
+      const data = [
+        { name: 'Alice', age: 30 },
+        { name: 'Bob' },
+        { name: 'Charlie', age: 20 },
+      ];
       const result = personGuard.filterCollection(data);
 
       expect(result.valid).toHaveLength(2);

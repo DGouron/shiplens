@@ -1,6 +1,9 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { SprintReport } from '@modules/analytics/entities/sprint-report/sprint-report.js';
-import { type SprintReportProps, type AuditSection } from '@modules/analytics/entities/sprint-report/sprint-report.schema.js';
+import {
+  type AuditSection,
+  type SprintReportProps,
+} from '@modules/analytics/entities/sprint-report/sprint-report.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: SprintReportProps = {
   id: 'a0000000-0000-4000-8000-000000000001',
@@ -10,11 +13,13 @@ const defaultProps: SprintReportProps = {
   language: 'FR',
   generatedAt: '2026-01-15T10:00:00.000Z',
   sections: {
-    executiveSummary: 'Le sprint s\'est bien déroulé avec une vélocité stable.',
-    trends: 'La vélocité est en hausse de 10% par rapport aux 3 derniers sprints.',
+    executiveSummary: "Le sprint s'est bien déroulé avec une vélocité stable.",
+    trends:
+      'La vélocité est en hausse de 10% par rapport aux 3 derniers sprints.',
     highlights: 'Migration de la base de données terminée en avance.',
     risks: 'Deux issues critiques restent ouvertes.',
-    recommendations: 'Prioriser la résolution des issues critiques au prochain sprint.',
+    recommendations:
+      'Prioriser la résolution des issues critiques au prochain sprint.',
   },
 };
 

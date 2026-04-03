@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/get-team-excluded-statuses.usecase.js';
 import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
+import { GetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/get-team-excluded-statuses.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('GetTeamExcludedStatusesUsecase', () => {
   let gateway: StubTeamSettingsGateway;

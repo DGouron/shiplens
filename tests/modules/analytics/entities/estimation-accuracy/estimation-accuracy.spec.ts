@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { EstimationAccuracy } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.js';
+import { describe, expect, it } from 'vitest';
 
 describe('EstimationAccuracy', () => {
   it('computes ratio per issue as points divided by cycle time in days', () => {
@@ -84,9 +84,30 @@ describe('EstimationAccuracy', () => {
       cycleId: 'cycle-1',
       teamId: 'team-1',
       issues: [
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] },
-        { externalId: 'issue-2', title: 'Task 2', points: 2, cycleTimeInDays: 3, assigneeName: 'Alice', labelNames: [] },
-        { externalId: 'issue-3', title: 'Task 3', points: 5, cycleTimeInDays: 4, assigneeName: 'Bob', labelNames: [] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: 'Alice',
+          labelNames: [],
+        },
+        {
+          externalId: 'issue-2',
+          title: 'Task 2',
+          points: 2,
+          cycleTimeInDays: 3,
+          assigneeName: 'Alice',
+          labelNames: [],
+        },
+        {
+          externalId: 'issue-3',
+          title: 'Task 3',
+          points: 5,
+          cycleTimeInDays: 4,
+          assigneeName: 'Bob',
+          labelNames: [],
+        },
       ],
       excludedWithoutEstimation: 0,
       excludedWithoutCycleTime: 0,
@@ -112,8 +133,22 @@ describe('EstimationAccuracy', () => {
       cycleId: 'cycle-1',
       teamId: 'team-1',
       issues: [
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: null, labelNames: [] },
-        { externalId: 'issue-2', title: 'Task 2', points: 2, cycleTimeInDays: 3, assigneeName: 'Alice', labelNames: [] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: null,
+          labelNames: [],
+        },
+        {
+          externalId: 'issue-2',
+          title: 'Task 2',
+          points: 2,
+          cycleTimeInDays: 3,
+          assigneeName: 'Alice',
+          labelNames: [],
+        },
       ],
       excludedWithoutEstimation: 0,
       excludedWithoutCycleTime: 0,
@@ -130,9 +165,30 @@ describe('EstimationAccuracy', () => {
       cycleId: 'cycle-1',
       teamId: 'team-1',
       issues: [
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: ['frontend'] },
-        { externalId: 'issue-2', title: 'Task 2', points: 5, cycleTimeInDays: 4, assigneeName: 'Bob', labelNames: ['frontend', 'backend'] },
-        { externalId: 'issue-3', title: 'Task 3', points: 2, cycleTimeInDays: 3, assigneeName: 'Alice', labelNames: ['backend'] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: 'Alice',
+          labelNames: ['frontend'],
+        },
+        {
+          externalId: 'issue-2',
+          title: 'Task 2',
+          points: 5,
+          cycleTimeInDays: 4,
+          assigneeName: 'Bob',
+          labelNames: ['frontend', 'backend'],
+        },
+        {
+          externalId: 'issue-3',
+          title: 'Task 3',
+          points: 2,
+          cycleTimeInDays: 3,
+          assigneeName: 'Alice',
+          labelNames: ['backend'],
+        },
       ],
       excludedWithoutEstimation: 0,
       excludedWithoutCycleTime: 0,
@@ -152,8 +208,22 @@ describe('EstimationAccuracy', () => {
       cycleId: 'cycle-1',
       teamId: 'team-1',
       issues: [
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] },
-        { externalId: 'issue-2', title: 'Task 2', points: 2, cycleTimeInDays: 3, assigneeName: 'Bob', labelNames: [] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: 'Alice',
+          labelNames: [],
+        },
+        {
+          externalId: 'issue-2',
+          title: 'Task 2',
+          points: 2,
+          cycleTimeInDays: 3,
+          assigneeName: 'Bob',
+          labelNames: [],
+        },
       ],
       excludedWithoutEstimation: 0,
       excludedWithoutCycleTime: 0,

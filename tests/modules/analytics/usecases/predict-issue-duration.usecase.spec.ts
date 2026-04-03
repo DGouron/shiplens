@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { PredictIssueDurationUsecase } from '@modules/analytics/usecases/predict-issue-duration.usecase.js';
+import {
+  InsufficientHistoryError,
+  NoSimilarIssuesError,
+} from '@modules/analytics/entities/duration-prediction/duration-prediction.errors.js';
 import { StubDurationPredictionDataGateway } from '@modules/analytics/testing/good-path/stub.duration-prediction-data.gateway.js';
-import { InsufficientHistoryError } from '@modules/analytics/entities/duration-prediction/duration-prediction.errors.js';
-import { NoSimilarIssuesError } from '@modules/analytics/entities/duration-prediction/duration-prediction.errors.js';
+import { PredictIssueDurationUsecase } from '@modules/analytics/usecases/predict-issue-duration.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('PredictIssueDurationUsecase', () => {
   let gateway: StubDurationPredictionDataGateway;

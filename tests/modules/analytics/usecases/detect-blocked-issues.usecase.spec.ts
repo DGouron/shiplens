@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { DetectBlockedIssuesUsecase } from '@modules/analytics/usecases/detect-blocked-issues.usecase.js';
-import { StubStatusThresholdGateway } from '@modules/analytics/testing/good-path/stub.status-threshold.gateway.js';
+import { NoSynchronizedDataError } from '@modules/analytics/entities/blocked-issue-alert/blocked-issue-alert.errors.js';
 import { StubBlockedIssueAlertGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-alert.gateway.js';
 import { StubBlockedIssueDetectionDataGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-detection-data.gateway.js';
+import { StubStatusThresholdGateway } from '@modules/analytics/testing/good-path/stub.status-threshold.gateway.js';
 import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
-import { NoSynchronizedDataError } from '@modules/analytics/entities/blocked-issue-alert/blocked-issue-alert.errors.js';
-import { StatusThresholdBuilder } from '../../../builders/status-threshold.builder.js';
+import { DetectBlockedIssuesUsecase } from '@modules/analytics/usecases/detect-blocked-issues.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { BlockedIssueAlertBuilder } from '../../../builders/blocked-issue-alert.builder.js';
+import { StatusThresholdBuilder } from '../../../builders/status-threshold.builder.js';
 
 describe('DetectBlockedIssuesUsecase', () => {
   let usecase: DetectBlockedIssuesUsecase;

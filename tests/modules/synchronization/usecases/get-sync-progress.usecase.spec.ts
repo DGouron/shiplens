@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetSyncProgressUsecase } from '@modules/synchronization/usecases/get-sync-progress.usecase.js';
 import { StubSyncProgressGateway } from '@modules/synchronization/testing/good-path/stub.sync-progress.gateway.js';
+import { GetSyncProgressUsecase } from '@modules/synchronization/usecases/get-sync-progress.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { SyncProgressBuilder } from '../../../builders/sync-progress.builder.js';
 
 describe('GetSyncProgressUsecase', () => {

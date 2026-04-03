@@ -1,4 +1,7 @@
-import { type TeamSummary, type ActiveCycleData } from './workspace-dashboard.schema.js';
+import {
+  type ActiveCycleData,
+  type TeamSummary,
+} from './workspace-dashboard.schema.js';
 
 export abstract class WorkspaceDashboardDataGateway {
   abstract isWorkspaceConnected(): Promise<boolean>;

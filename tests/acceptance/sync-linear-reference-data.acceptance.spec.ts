@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SyncReferenceDataUsecase } from '@modules/synchronization/usecases/sync-reference-data.usecase.js';
 import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
-import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
 import { StubLinearReferenceDataGateway } from '@modules/synchronization/testing/good-path/stub.linear-reference-data.gateway.js';
 import { StubReferenceDataGateway } from '@modules/synchronization/testing/good-path/stub.reference-data.gateway.js';
+import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
+import { SyncReferenceDataUsecase } from '@modules/synchronization/usecases/sync-reference-data.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../builders/linear-workspace-connection.builder.js';
 import { TeamSelectionBuilder } from '../builders/team-selection.builder.js';
 
@@ -23,7 +23,8 @@ describe('Sync Linear Reference Data (acceptance)', () => {
     linearReferenceDataGateway = new StubLinearReferenceDataGateway();
     referenceDataGateway = new StubReferenceDataGateway();
 
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
     teamSelectionGateway.selection = new TeamSelectionBuilder()
       .withSelectedTeams([{ teamId: 'team-1', teamName: 'Engineering' }])
       .withSelectedProjects([])
@@ -54,7 +55,13 @@ describe('Sync Linear Reference Data (acceptance)', () => {
       const stored = referenceDataGateway.dataByTeamId.get('team-1');
       expect(stored?.workflowStatuses).toHaveLength(5);
       const names = stored?.workflowStatuses.map((status) => status.name);
-      expect(names).toEqual(['Backlog', 'Todo', 'In Progress', 'In Review', 'Done']);
+      expect(names).toEqual([
+        'Backlog',
+        'Todo',
+        'In Progress',
+        'In Review',
+        'Done',
+      ]);
     });
 
     it('imports members: team with 6 members results in 6 members imported with name and role', async () => {
@@ -115,7 +122,7 @@ describe('Sync Linear Reference Data (acceptance)', () => {
       connectionGateway.connection = null;
 
       await expect(usecase.execute()).rejects.toThrow(
-        'Veuillez d\'abord connecter votre workspace Linear.',
+        "Veuillez d'abord connecter votre workspace Linear.",
       );
     });
   });

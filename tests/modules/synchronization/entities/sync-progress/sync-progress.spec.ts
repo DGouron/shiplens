@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SyncProgress } from '@modules/synchronization/entities/sync-progress/sync-progress.js';
+import { describe, expect, it } from 'vitest';
 
 describe('SyncProgress', () => {
   it('creates a new sync progress with in_progress status', () => {

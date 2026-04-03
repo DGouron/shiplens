@@ -1,5 +1,8 @@
-import { type SprintReportProps, type AuditSection } from './sprint-report.schema.js';
 import { sprintReportGuard } from './sprint-report.guard.js';
+import {
+  type AuditSection,
+  type SprintReportProps,
+} from './sprint-report.schema.js';
 
 export class SprintReport {
   private constructor(private readonly props: SprintReportProps) {}

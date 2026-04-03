@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { DisconnectLinearWorkspaceUsecase } from '@modules/identity/usecases/disconnect-linear-workspace.usecase.js';
-import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
+import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
+import { DisconnectLinearWorkspaceUsecase } from '@modules/identity/usecases/disconnect-linear-workspace.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../builders/linear-workspace-connection.builder.js';
 
 describe('DisconnectLinearWorkspaceUsecase', () => {
@@ -36,7 +36,7 @@ describe('DisconnectLinearWorkspaceUsecase', () => {
 
   it('throws when no connection exists', async () => {
     await expect(usecase.execute()).rejects.toThrow(
-      'Aucun workspace Linear n\'est connecté.',
+      "Aucun workspace Linear n'est connecté.",
     );
   });
 });

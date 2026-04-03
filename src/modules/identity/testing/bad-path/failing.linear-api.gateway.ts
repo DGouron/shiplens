@@ -1,13 +1,16 @@
+import { GatewayError } from '@shared/foundation/gateway-error.js';
 import {
-  LinearApiGateway,
   type ExchangeCodeResult,
+  LinearApiGateway,
   type RefreshTokenResult,
   type WorkspaceInfo,
 } from '../../entities/linear-workspace-connection/linear-api.gateway.js';
-import { GatewayError } from '@shared/foundation/gateway-error.js';
 
 export class FailingLinearApiGateway extends LinearApiGateway {
-  async exchangeCode(_code: string, _redirectUri: string): Promise<ExchangeCodeResult> {
+  async exchangeCode(
+    _code: string,
+    _redirectUri: string,
+  ): Promise<ExchangeCodeResult> {
     throw new GatewayError('Linear API request failed');
   }
 

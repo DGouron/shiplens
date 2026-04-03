@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SettingsPageController } from '@modules/analytics/interface-adapters/controllers/settings-page.controller.js';
+import { describe, expect, it } from 'vitest';
 
 describe('SettingsPageController', () => {
   const controller = new SettingsPageController();

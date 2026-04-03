@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import {
+  InvalidConditionError,
+  InvalidSeverityError,
+  MissingIdentifierError,
+} from '@modules/audit/entities/audit-rule/audit-rule.errors.js';
 import { AuditRule } from '@modules/audit/entities/audit-rule/audit-rule.js';
 import { type CycleMetrics } from '@modules/audit/entities/audit-rule/cycle-metrics.js';
-import { MissingIdentifierError, InvalidSeverityError, InvalidConditionError } from '@modules/audit/entities/audit-rule/audit-rule.errors.js';
+import { describe, expect, it } from 'vitest';
 
 function defaultMetrics(overrides: Partial<CycleMetrics> = {}): CycleMetrics {
   return {
@@ -99,10 +103,14 @@ describe('AuditRule', () => {
         conditionExpression: 'cycle time > 5 jours',
       });
 
-      const result = rule.evaluate(defaultMetrics({ averageCycleTimeInDays: 3 }));
+      const result = rule.evaluate(
+        defaultMetrics({ averageCycleTimeInDays: 3 }),
+      );
 
       expect(result.outcome).toBe('pass');
-      expect(result.message).toBe('Cycle time moyen : 3 jours (seuil : 5 jours)');
+      expect(result.message).toBe(
+        'Cycle time moyen : 3 jours (seuil : 5 jours)',
+      );
     });
 
     it('returns fail when threshold is violated with error severity', () => {
@@ -113,10 +121,14 @@ describe('AuditRule', () => {
         conditionExpression: 'cycle time > 5 jours',
       });
 
-      const result = rule.evaluate(defaultMetrics({ averageCycleTimeInDays: 8 }));
+      const result = rule.evaluate(
+        defaultMetrics({ averageCycleTimeInDays: 8 }),
+      );
 
       expect(result.outcome).toBe('fail');
-      expect(result.message).toBe('Cycle time moyen : 8 jours (seuil : 5 jours)');
+      expect(result.message).toBe(
+        'Cycle time moyen : 8 jours (seuil : 5 jours)',
+      );
     });
 
     it('returns warn when threshold is violated with warning severity', () => {
@@ -127,7 +139,9 @@ describe('AuditRule', () => {
         conditionExpression: 'cycle time > 5 jours',
       });
 
-      const result = rule.evaluate(defaultMetrics({ averageCycleTimeInDays: 8 }));
+      const result = rule.evaluate(
+        defaultMetrics({ averageCycleTimeInDays: 8 }),
+      );
 
       expect(result.outcome).toBe('warn');
     });
@@ -140,7 +154,9 @@ describe('AuditRule', () => {
         conditionExpression: 'cycle time > 5 jours',
       });
 
-      const result = rule.evaluate(defaultMetrics({ averageCycleTimeInDays: 8 }));
+      const result = rule.evaluate(
+        defaultMetrics({ averageCycleTimeInDays: 8 }),
+      );
 
       expect(result.outcome).toBe('pass');
     });

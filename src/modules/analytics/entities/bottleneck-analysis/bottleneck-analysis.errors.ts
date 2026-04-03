@@ -10,6 +10,6 @@ export class NoCompletedIssuesError extends BusinessRuleViolation {
 
 export class NoSynchronizedDataError extends BusinessRuleViolation {
   constructor() {
-    super('Veuillez d\'abord synchroniser vos données Linear.');
+    super("Veuillez d'abord synchroniser vos données Linear.");
   }
 }

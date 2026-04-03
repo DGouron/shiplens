@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import {
+  CycleNotCompletedError,
+  NoCycleIssuesError,
+} from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
 import { CycleSnapshot } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.js';
-import { CycleNotCompletedError } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
-import { NoCycleIssuesError } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
+import { describe, expect, it } from 'vitest';
 
 describe('CycleSnapshot', () => {
   const completedCycleProps = {

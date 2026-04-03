@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { GatewayError } from '@shared/foundation/gateway-error';
+import { describe, expect, it } from 'vitest';
 
 describe('GatewayError', () => {
   it('should be an instance of Error', () => {

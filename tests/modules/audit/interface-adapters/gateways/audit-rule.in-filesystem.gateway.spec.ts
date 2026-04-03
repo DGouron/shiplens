@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { AuditRuleInFilesystemGateway } from '@modules/audit/interface-adapters/gateways/audit-rule.in-filesystem.gateway.js';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { AuditRuleBuilder } from '../../../../builders/audit-rule.builder.js';
 
 describe('AuditRuleInFilesystemGateway', () => {

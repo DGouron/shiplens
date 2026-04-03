@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
 import { LinearIssueDataInHttpGateway } from '@modules/synchronization/interface-adapters/gateways/linear-issue-data.in-http.gateway.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 function createFetchResponse(data: unknown): Response {
   return new Response(JSON.stringify({ data }), {
@@ -8,7 +8,10 @@ function createFetchResponse(data: unknown): Response {
   });
 }
 
-function generateIssueNodes(count: number, startIndex = 0): Array<{ id: string }> {
+function generateIssueNodes(
+  count: number,
+  startIndex = 0,
+): Array<{ id: string }> {
   return Array.from({ length: count }, (_, index) => ({
     id: `issue-${startIndex + index + 1}`,
   }));
@@ -22,17 +25,19 @@ function createCycleResponse(
   return createFetchResponse({
     team: {
       cycles: {
-        nodes: [{
-          id: 'cycle-1',
-          name: 'Sprint 1',
-          number: 1,
-          startsAt: '2026-01-01T00:00:00Z',
-          endsAt: '2026-01-14T00:00:00Z',
-          issues: {
-            nodes: issueNodes,
-            pageInfo: { hasNextPage, endCursor },
+        nodes: [
+          {
+            id: 'cycle-1',
+            name: 'Sprint 1',
+            number: 1,
+            startsAt: '2026-01-01T00:00:00Z',
+            endsAt: '2026-01-14T00:00:00Z',
+            issues: {
+              nodes: issueNodes,
+              pageInfo: { hasNextPage, endCursor },
+            },
           },
-        }],
+        ],
       },
     },
   });
@@ -61,7 +66,8 @@ describe('LinearIssueDataInHttpGateway', () => {
   describe('getCycles — archived cycles', () => {
     it('sends includeArchived: true in the GraphQL query', async () => {
       const gateway = new LinearIssueDataInHttpGateway();
-      const mockFetch = vi.fn()
+      const mockFetch = vi
+        .fn()
         .mockResolvedValueOnce(createCycleResponse([], false, null));
 
       vi.stubGlobal('fetch', mockFetch);
@@ -76,11 +82,32 @@ describe('LinearIssueDataInHttpGateway', () => {
   describe('getCycles — issue pagination', () => {
     it('fetches all issue IDs across multiple pages for a cycle', async () => {
       const gateway = new LinearIssueDataInHttpGateway();
-      const mockFetch = vi.fn()
-        .mockResolvedValueOnce(createCycleResponse(generateIssueNodes(50), true, 'cursor-50'))
-        .mockResolvedValueOnce(createCycleIssuePageResponse(generateIssueNodes(50, 50), true, 'cursor-100'))
-        .mockResolvedValueOnce(createCycleIssuePageResponse(generateIssueNodes(50, 100), true, 'cursor-150'))
-        .mockResolvedValueOnce(createCycleIssuePageResponse(generateIssueNodes(23, 150), false, null));
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValueOnce(
+          createCycleResponse(generateIssueNodes(50), true, 'cursor-50'),
+        )
+        .mockResolvedValueOnce(
+          createCycleIssuePageResponse(
+            generateIssueNodes(50, 50),
+            true,
+            'cursor-100',
+          ),
+        )
+        .mockResolvedValueOnce(
+          createCycleIssuePageResponse(
+            generateIssueNodes(50, 100),
+            true,
+            'cursor-150',
+          ),
+        )
+        .mockResolvedValueOnce(
+          createCycleIssuePageResponse(
+            generateIssueNodes(23, 150),
+            false,
+            null,
+          ),
+        );
 
       vi.stubGlobal('fetch', mockFetch);
 
@@ -92,8 +119,11 @@ describe('LinearIssueDataInHttpGateway', () => {
 
     it('does not make extra requests when all issues fit in one page', async () => {
       const gateway = new LinearIssueDataInHttpGateway();
-      const mockFetch = vi.fn()
-        .mockResolvedValueOnce(createCycleResponse(generateIssueNodes(30), false, null));
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValueOnce(
+          createCycleResponse(generateIssueNodes(30), false, null),
+        );
 
       vi.stubGlobal('fetch', mockFetch);
 
@@ -106,7 +136,8 @@ describe('LinearIssueDataInHttpGateway', () => {
 
     it('handles a cycle with zero issues', async () => {
       const gateway = new LinearIssueDataInHttpGateway();
-      const mockFetch = vi.fn()
+      const mockFetch = vi
+        .fn()
         .mockResolvedValueOnce(createCycleResponse([], false, null));
 
       vi.stubGlobal('fetch', mockFetch);

@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SyncIssueDataUsecase } from '@modules/synchronization/usecases/sync-issue-data.usecase.js';
-import { GetSyncProgressUsecase } from '@modules/synchronization/usecases/get-sync-progress.usecase.js';
 import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
-import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
-import { StubLinearIssueDataGateway } from '@modules/synchronization/testing/good-path/stub.linear-issue-data.gateway.js';
 import { StubIssueDataGateway } from '@modules/synchronization/testing/good-path/stub.issue-data.gateway.js';
+import { StubLinearIssueDataGateway } from '@modules/synchronization/testing/good-path/stub.linear-issue-data.gateway.js';
 import { StubSyncProgressGateway } from '@modules/synchronization/testing/good-path/stub.sync-progress.gateway.js';
+import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
+import { GetSyncProgressUsecase } from '@modules/synchronization/usecases/get-sync-progress.usecase.js';
+import { SyncIssueDataUsecase } from '@modules/synchronization/usecases/sync-issue-data.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../builders/linear-workspace-connection.builder.js';
 import { TeamSelectionBuilder } from '../builders/team-selection.builder.js';
 
@@ -28,7 +28,8 @@ describe('Sync Linear Data (acceptance)', () => {
     issueDataGateway = new StubIssueDataGateway();
     syncProgressGateway = new StubSyncProgressGateway();
 
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
     teamSelectionGateway.selection = new TeamSelectionBuilder()
       .withSelectedTeams([{ teamId: 'team-1', teamName: 'Engineering' }])
       .withSelectedProjects([])
@@ -76,9 +77,10 @@ describe('Sync Linear Data (acceptance)', () => {
     it('import des transitions: issue with 4 status changes results in 4 timestamped transitions', async () => {
       await syncUsecase.execute({ teamId: 'team-1' });
 
-      const storedTransitions = issueDataGateway.transitionsByTeamId.get('team-1');
+      const storedTransitions =
+        issueDataGateway.transitionsByTeamId.get('team-1');
       expect(storedTransitions).toBeDefined();
-      expect(storedTransitions!.length).toBeGreaterThanOrEqual(4);
+      expect(storedTransitions?.length).toBeGreaterThanOrEqual(4);
       expect(storedTransitions?.[0]).toHaveProperty('fromStatusName');
       expect(storedTransitions?.[0]).toHaveProperty('toStatusName');
       expect(storedTransitions?.[0]).toHaveProperty('occurredAt');

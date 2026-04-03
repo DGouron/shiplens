@@ -1,4 +1,7 @@
-import { MemberDigestDataGateway, type MemberCycleContext } from '../../entities/member-digest/member-digest-data.gateway.js';
+import {
+  type MemberCycleContext,
+  MemberDigestDataGateway,
+} from '../../entities/member-digest/member-digest-data.gateway.js';
 
 export class FailingMemberDigestDataGateway extends MemberDigestDataGateway {
   async getMemberCycleContext(

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetConnectionStatusUsecase } from '@modules/identity/usecases/get-connection-status.usecase.js';
 import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
+import { GetConnectionStatusUsecase } from '@modules/identity/usecases/get-connection-status.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../builders/linear-workspace-connection.builder.js';
 
 describe('GetConnectionStatusUsecase', () => {

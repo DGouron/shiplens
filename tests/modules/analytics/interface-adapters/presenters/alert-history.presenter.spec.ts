@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { AlertHistoryPresenter } from '@modules/analytics/interface-adapters/presenters/alert-history.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { BlockedIssueAlertBuilder } from '../../../../builders/blocked-issue-alert.builder.js';
 
 describe('AlertHistoryPresenter', () => {

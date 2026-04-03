@@ -7,10 +7,7 @@ export class StubTeamSettingsGateway extends TeamSettingsGateway {
     return this.excludedStatuses.get(teamId) ?? [];
   }
 
-  async setExcludedStatuses(
-    teamId: string,
-    statuses: string[],
-  ): Promise<void> {
+  async setExcludedStatuses(teamId: string, statuses: string[]): Promise<void> {
     this.excludedStatuses.set(teamId, statuses);
   }
 }

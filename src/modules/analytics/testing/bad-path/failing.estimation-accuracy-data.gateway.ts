@@ -1,5 +1,5 @@
-import { EstimationAccuracyDataGateway } from '../../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { type EstimationAccuracyProps } from '../../entities/estimation-accuracy/estimation-accuracy.schema.js';
+import { EstimationAccuracyDataGateway } from '../../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 
 export class FailingEstimationAccuracyDataGateway extends EstimationAccuracyDataGateway {
   async getEstimationData(): Promise<EstimationAccuracyProps> {

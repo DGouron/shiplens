@@ -1,5 +1,8 @@
+import {
+  type CycleIssueDetail,
+  type CycleSummary,
+} from '../../entities/cycle-report-page/cycle-report-page.schema.js';
 import { CycleReportPageDataGateway } from '../../entities/cycle-report-page/cycle-report-page-data.gateway.js';
-import { type CycleSummary, type CycleIssueDetail } from '../../entities/cycle-report-page/cycle-report-page.schema.js';
 
 export class StubCycleReportPageDataGateway extends CycleReportPageDataGateway {
   cycles: CycleSummary[] = [];

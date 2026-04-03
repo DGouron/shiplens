@@ -1,6 +1,9 @@
-import { type BottleneckAnalysisProps, type CompletedIssue } from './bottleneck-analysis.schema.js';
-import { bottleneckAnalysisGuard } from './bottleneck-analysis.guard.js';
 import { NoCompletedIssuesError } from './bottleneck-analysis.errors.js';
+import { bottleneckAnalysisGuard } from './bottleneck-analysis.guard.js';
+import {
+  type BottleneckAnalysisProps,
+  type CompletedIssue,
+} from './bottleneck-analysis.schema.js';
 
 const MILLISECONDS_PER_HOUR = 1000 * 60 * 60;
 
@@ -22,7 +25,9 @@ interface CycleComparisonEntry {
 }
 
 function hoursBetween(from: string, to: string): number {
-  return (new Date(to).getTime() - new Date(from).getTime()) / MILLISECONDS_PER_HOUR;
+  return (
+    (new Date(to).getTime() - new Date(from).getTime()) / MILLISECONDS_PER_HOUR
+  );
 }
 
 function computeMedian(values: number[]): number {
@@ -120,10 +125,12 @@ export class BottleneckAnalysis {
       const medians = computeMediansByStatus(issues);
       return {
         assigneeName,
-        statusMedians: [...medians.entries()].map(([statusName, medianHours]) => ({
-          statusName,
-          medianHours,
-        })),
+        statusMedians: [...medians.entries()].map(
+          ([statusName, medianHours]) => ({
+            statusName,
+            medianHours,
+          }),
+        ),
       };
     });
   }
@@ -134,11 +141,18 @@ export class BottleneckAnalysis {
     const currentMedians = computeMediansByStatus(this.props.completedIssues);
     const entries: CycleComparisonEntry[] = [];
 
-    for (const [statusName, previousMedianHours] of Object.entries(this.props.previousCycleMedians)) {
+    for (const [statusName, previousMedianHours] of Object.entries(
+      this.props.previousCycleMedians,
+    )) {
       const currentMedianHours = currentMedians.get(statusName) ?? 0;
-      const evolutionPercent = previousMedianHours === 0
-        ? 0
-        : Math.round(((currentMedianHours - previousMedianHours) / previousMedianHours) * 100);
+      const evolutionPercent =
+        previousMedianHours === 0
+          ? 0
+          : Math.round(
+              ((currentMedianHours - previousMedianHours) /
+                previousMedianHours) *
+                100,
+            );
 
       entries.push({
         statusName,

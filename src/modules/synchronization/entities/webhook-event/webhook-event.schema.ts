@@ -4,7 +4,11 @@ export const webhookEventActionSchema = z.enum(['create', 'update', 'remove']);
 
 export const webhookEventTypeSchema = z.enum(['Issue', 'Cycle', 'Comment']);
 
-export const webhookEventStatusSchema = z.enum(['pending', 'processed', 'failed']);
+export const webhookEventStatusSchema = z.enum([
+  'pending',
+  'processed',
+  'failed',
+]);
 
 export const webhookEventPropsSchema = z.object({
   deliveryId: z.string().min(1),
@@ -45,4 +49,6 @@ export const webhookIssueDeleteDataSchema = z.object({
 });
 
 export type WebhookIssueData = z.infer<typeof webhookIssueDataSchema>;
-export type WebhookIssueDeleteData = z.infer<typeof webhookIssueDeleteDataSchema>;
+export type WebhookIssueDeleteData = z.infer<
+  typeof webhookIssueDeleteDataSchema
+>;

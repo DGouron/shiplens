@@ -1,7 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { CalculateCycleMetricsUsecase } from '@modules/analytics/usecases/calculate-cycle-metrics.usecase.js';
 import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
-import { CycleSnapshotBuilder } from '../builders/cycle-snapshot.builder.js';
+import { CalculateCycleMetricsUsecase } from '@modules/analytics/usecases/calculate-cycle-metrics.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Calculate Cycle Metrics (acceptance)', () => {
   let gateway: StubCycleMetricsDataGateway;
@@ -43,7 +42,10 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
         issues: [...completedIssues, ...incompleteIssues],
       };
 
-      const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await usecase.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
 
       expect(result.velocity.completedPoints).toBe(21);
       expect(result.velocity.plannedPoints).toBe(25);
@@ -63,7 +65,9 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
 
       await expect(
         usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' }),
-      ).rejects.toThrow('Les métriques ne sont disponibles que pour les cycles terminés.');
+      ).rejects.toThrow(
+        'Les métriques ne sont disponibles que pour les cycles terminés.',
+      );
     });
 
     it('cycle with no issues: rejects with error', async () => {
@@ -78,7 +82,9 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
 
       await expect(
         usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' }),
-      ).rejects.toThrow('Ce cycle ne contient aucune issue. Impossible de calculer les métriques.');
+      ).rejects.toThrow(
+        'Ce cycle ne contient aucune issue. Impossible de calculer les métriques.',
+      );
     });
   });
 
@@ -114,7 +120,10 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
         issues,
       };
 
-      const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await usecase.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
 
       expect(result.averageCycleTimeInDays).toBe(5.5);
       expect(result.averageLeadTimeInDays).toBe(9.5);
@@ -151,7 +160,10 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
         issues,
       };
 
-      const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await usecase.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
 
       expect(result.averageCycleTimeInDays).toBe(5);
     });
@@ -188,7 +200,10 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
         issues: [...initialIssues, ...addedIssues],
       };
 
-      const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+      const result = await usecase.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
 
       expect(result.scopeCreep).toBe(3);
     });
@@ -256,8 +271,14 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
       gateway.previousVelocities = [18, 20];
 
       await expect(
-        usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1', includeTrend: true }),
-      ).rejects.toThrow('Pas assez d\'historique pour afficher la tendance. Minimum 3 cycles terminés requis.');
+        usecase.execute({
+          cycleId: 'cycle-1',
+          teamId: 'team-1',
+          includeTrend: true,
+        }),
+      ).rejects.toThrow(
+        "Pas assez d'historique pour afficher la tendance. Minimum 3 cycles terminés requis.",
+      );
     });
   });
 });

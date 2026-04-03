@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ConfigureSlackWebhookUsecase } from '@modules/notification/usecases/configure-slack-webhook.usecase.js';
-import { StubSlackNotificationConfigGateway } from '@modules/notification/testing/good-path/stub.slack-notification-config.gateway.js';
-import { StubSlackMessengerGateway } from '@modules/notification/testing/good-path/stub.slack-messenger.gateway.js';
-import { SlackNotificationConfigBuilder } from '../../../builders/slack-notification-config.builder.js';
 import { InvalidSlackWebhookUrlError } from '@modules/notification/entities/slack-notification-config/slack-notification-config.errors.js';
+import { StubSlackMessengerGateway } from '@modules/notification/testing/good-path/stub.slack-messenger.gateway.js';
+import { StubSlackNotificationConfigGateway } from '@modules/notification/testing/good-path/stub.slack-notification-config.gateway.js';
+import { ConfigureSlackWebhookUsecase } from '@modules/notification/usecases/configure-slack-webhook.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { SlackNotificationConfigBuilder } from '../../../builders/slack-notification-config.builder.js';
 
 describe('ConfigureSlackWebhookUsecase', () => {
   let configGateway: StubSlackNotificationConfigGateway;

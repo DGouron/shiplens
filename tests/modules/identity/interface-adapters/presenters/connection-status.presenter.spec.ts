@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { ConnectionStatusPresenter } from '@modules/identity/interface-adapters/presenters/connection-status.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../../builders/linear-workspace-connection.builder.js';
 
 describe('ConnectionStatusPresenter', () => {

@@ -7,4 +7,6 @@ export const durationPredictionPropsSchema = z.object({
   similarIssueCount: z.number().int().nonnegative(),
 });
 
-export type DurationPredictionProps = z.infer<typeof durationPredictionPropsSchema>;
+export type DurationPredictionProps = z.infer<
+  typeof durationPredictionPropsSchema
+>;

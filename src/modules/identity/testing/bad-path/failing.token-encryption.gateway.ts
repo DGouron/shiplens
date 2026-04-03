@@ -1,5 +1,5 @@
-import { TokenEncryptionGateway } from '../../entities/linear-workspace-connection/token-encryption.gateway.js';
 import { GatewayError } from '@shared/foundation/gateway-error.js';
+import { TokenEncryptionGateway } from '../../entities/linear-workspace-connection/token-encryption.gateway.js';
 
 export class FailingTokenEncryptionGateway extends TokenEncryptionGateway {
   async encrypt(_plaintext: string): Promise<string> {

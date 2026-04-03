@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SendReportOnSlackUsecase } from '@modules/notification/usecases/send-report-on-slack.usecase.js';
-import { ConfigureSlackWebhookUsecase } from '@modules/notification/usecases/configure-slack-webhook.usecase.js';
-import { StubSlackNotificationConfigGateway } from '@modules/notification/testing/good-path/stub.slack-notification-config.gateway.js';
-import { StubSlackMessengerGateway } from '@modules/notification/testing/good-path/stub.slack-messenger.gateway.js';
-import { FailingSlackMessengerGateway } from '@modules/notification/testing/bad-path/failing.slack-messenger.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
-import { SprintReportBuilder } from '../builders/sprint-report.builder.js';
+import { FailingSlackMessengerGateway } from '@modules/notification/testing/bad-path/failing.slack-messenger.gateway.js';
+import { StubSlackMessengerGateway } from '@modules/notification/testing/good-path/stub.slack-messenger.gateway.js';
+import { StubSlackNotificationConfigGateway } from '@modules/notification/testing/good-path/stub.slack-notification-config.gateway.js';
+import { ConfigureSlackWebhookUsecase } from '@modules/notification/usecases/configure-slack-webhook.usecase.js';
+import { SendReportOnSlackUsecase } from '@modules/notification/usecases/send-report-on-slack.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { SlackNotificationConfigBuilder } from '../builders/slack-notification-config.builder.js';
+import { SprintReportBuilder } from '../builders/sprint-report.builder.js';
 
 describe('Notify Report on Slack (acceptance)', () => {
   let configGateway: StubSlackNotificationConfigGateway;
@@ -58,9 +58,7 @@ describe('Notify Report on Slack (acceptance)', () => {
     });
 
     it('notification disabled: no message sent', async () => {
-      const report = new SprintReportBuilder()
-        .withTeamId('team-1')
-        .build();
+      const report = new SprintReportBuilder().withTeamId('team-1').build();
       await reportGateway.save(report);
 
       const notificationConfig = new SlackNotificationConfigBuilder()
@@ -79,9 +77,7 @@ describe('Notify Report on Slack (acceptance)', () => {
     });
 
     it('webhook not configured: rejects with error message', async () => {
-      const report = new SprintReportBuilder()
-        .withTeamId('team-1')
-        .build();
+      const report = new SprintReportBuilder().withTeamId('team-1').build();
       await reportGateway.save(report);
 
       await expect(
@@ -114,9 +110,7 @@ describe('Notify Report on Slack (acceptance)', () => {
     });
 
     it('Slack delivery failed: rejects with error message', async () => {
-      const report = new SprintReportBuilder()
-        .withTeamId('team-1')
-        .build();
+      const report = new SprintReportBuilder().withTeamId('team-1').build();
       await reportGateway.save(report);
 
       const notificationConfig = new SlackNotificationConfigBuilder()

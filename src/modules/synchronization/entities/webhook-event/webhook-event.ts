@@ -1,6 +1,6 @@
-import { createHmac, timingSafeEqual } from 'crypto';
-import { type WebhookEventProps } from './webhook-event.schema.js';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { webhookEventGuard } from './webhook-event.guard.js';
+import { type WebhookEventProps } from './webhook-event.schema.js';
 
 interface CreateWebhookEventParams {
   deliveryId: string;
@@ -38,13 +38,20 @@ export class WebhookEvent {
     return new WebhookEvent(props);
   }
 
-  static verifySignature(rawBody: string, signature: string, secret: string): boolean {
+  static verifySignature(
+    rawBody: string,
+    signature: string,
+    secret: string,
+  ): boolean {
     const expected = createHmac('sha256', secret).update(rawBody).digest('hex');
     if (expected.length !== signature.length) {
       return false;
     }
     try {
-      return timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(signature, 'hex'));
+      return timingSafeEqual(
+        Buffer.from(expected, 'hex'),
+        Buffer.from(signature, 'hex'),
+      );
     } catch {
       return false;
     }

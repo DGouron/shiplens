@@ -1,8 +1,14 @@
 import { Controller, Get, Header } from '@nestjs/common';
+import {
+  NoTeamsSynchronizedError,
+  WorkspaceNotConnectedError,
+} from '../../entities/workspace-dashboard/workspace-dashboard.errors.js';
 import { GetWorkspaceDashboardUsecase } from '../../usecases/get-workspace-dashboard.usecase.js';
-import { WorkspaceDashboardPresenter, type WorkspaceDashboardDto } from '../presenters/workspace-dashboard.presenter.js';
+import {
+  type WorkspaceDashboardDto,
+  WorkspaceDashboardPresenter,
+} from '../presenters/workspace-dashboard.presenter.js';
 import { workspaceDashboardHtml } from './workspace-dashboard.html.js';
-import { WorkspaceNotConnectedError, NoTeamsSynchronizedError } from '../../entities/workspace-dashboard/workspace-dashboard.errors.js';
 
 interface DashboardEmptyState {
   status: 'not_connected' | 'no_teams';
@@ -17,7 +23,9 @@ export class WorkspaceDashboardController {
   ) {}
 
   @Get('dashboard/data')
-  async getDashboardData(): Promise<WorkspaceDashboardDto | DashboardEmptyState> {
+  async getDashboardData(): Promise<
+    WorkspaceDashboardDto | DashboardEmptyState
+  > {
     try {
       const result = await this.getWorkspaceDashboardUsecase.execute();
       return this.workspaceDashboardPresenter.present(result);

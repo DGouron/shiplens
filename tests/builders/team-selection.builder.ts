@@ -1,6 +1,6 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { TeamSelection } from '@modules/synchronization/entities/team-selection/team-selection.js';
 import { type TeamSelectionProps } from '@modules/synchronization/entities/team-selection/team-selection.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: TeamSelectionProps = {
   selectedTeams: [
@@ -20,16 +20,12 @@ export class TeamSelectionBuilder extends EntityBuilder<
     super(defaultProps);
   }
 
-  withSelectedTeams(
-    teams: TeamSelectionProps['selectedTeams'],
-  ): this {
+  withSelectedTeams(teams: TeamSelectionProps['selectedTeams']): this {
     this.props.selectedTeams = teams;
     return this;
   }
 
-  withSelectedProjects(
-    projects: TeamSelectionProps['selectedProjects'],
-  ): this {
+  withSelectedProjects(projects: TeamSelectionProps['selectedProjects']): this {
     this.props.selectedProjects = projects;
     return this;
   }
