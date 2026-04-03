@@ -30,7 +30,7 @@ export class SetTeamExcludedStatusesUsecase
     const now = new Date().toISOString();
 
     const toResolve = activeAlerts
-      .filter((alert) => excludedSet.has(alert.statusName))
+      .filter((alert) => alert.teamId === params.teamId && excludedSet.has(alert.statusName))
       .map((alert) => alert.resolve(now));
 
     if (toResolve.length > 0) {

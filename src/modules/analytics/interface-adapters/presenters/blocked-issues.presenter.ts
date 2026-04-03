@@ -7,6 +7,7 @@ export interface BlockedIssueAlertDto {
   id: string;
   issueExternalId: string;
   issueTitle: string;
+  teamId: string;
   statusName: string;
   severity: string;
   durationHours: string;
@@ -23,6 +24,7 @@ export class BlockedIssuesPresenter
       id: alert.id,
       issueExternalId: alert.issueExternalId,
       issueTitle: alert.issueTitle,
+      teamId: alert.teamId,
       statusName: alert.statusName,
       severity: alert.severity,
       durationHours: formatDuration(alert.durationHours),

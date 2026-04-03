@@ -726,7 +726,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       document.getElementById('reportContent').textContent = 'Aucun rapport genere pour ce cycle.';
       loadMetrics(cycleId, teamId);
       loadBottlenecks(cycleId, teamId);
-      loadBlockedIssues();
+      loadBlockedIssues(teamId);
       loadEstimationAccuracy(teamId, cycleId);
     });
 
@@ -861,7 +861,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       }
     }
 
-    async function loadBlockedIssues() {
+    async function loadBlockedIssues(teamId) {
       const container = document.getElementById('blockedIssuesContent');
       container.className = 'loading';
       container.textContent = 'Chargement des issues bloquees...';
@@ -874,7 +874,8 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Issues bloquees non disponibles') + '</div>';
           return;
         }
-        var alerts = await response.json();
+        var allAlerts = await response.json();
+        var alerts = teamId ? allAlerts.filter(function(a) { return a.teamId === teamId; }) : allAlerts;
         container.className = '';
 
         if (alerts.length === 0) {
@@ -909,7 +910,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       }
     }
 
-    async function detectBlockedIssues() {
+    async function detectBlockedIssues(teamId) {
       const btn = document.getElementById('detectBtn');
       btn.disabled = true;
       btn.textContent = 'Detection en cours...';
@@ -920,7 +921,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           const err = await response.json().catch(function() { return {}; });
           throw new Error(err.message || 'Erreur lors de la detection');
         }
-        await loadBlockedIssues();
+        await loadBlockedIssues(teamId);
         btn.textContent = 'Relancer la detection';
         btn.disabled = false;
       } catch (error) {
@@ -985,7 +986,10 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       }
     }
 
-    document.getElementById('detectBtn').addEventListener('click', detectBlockedIssues);
+    document.getElementById('detectBtn').addEventListener('click', function() {
+      var teamId = document.getElementById('teamId').value.trim();
+      detectBlockedIssues(teamId);
+    });
 
     document.getElementById('generateBtn').addEventListener('click', async function() {
       const cycleId = document.getElementById('cycleSelector').value;

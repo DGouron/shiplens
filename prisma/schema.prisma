@@ -187,6 +187,7 @@ model BlockedIssueAlert {
   issueExternalId String
   issueTitle      String
   issueUuid       String
+  teamId          String  @default("")
   statusName      String
   severity        String
   durationHours   Int
