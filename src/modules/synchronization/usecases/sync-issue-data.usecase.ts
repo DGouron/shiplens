@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { LinearWorkspaceConnectionGateway } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
 import { TokenEncryptionGateway } from '@modules/identity/entities/linear-workspace-connection/token-encryption.gateway.js';
@@ -17,6 +17,8 @@ interface SyncIssueDataParams {
 
 @Injectable()
 export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> {
+  private readonly logger = new Logger(SyncIssueDataUsecase.name);
+
   constructor(
     private readonly connectionGateway: LinearWorkspaceConnectionGateway,
     private readonly tokenEncryptionGateway: TokenEncryptionGateway,
@@ -27,6 +29,10 @@ export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> 
   ) {}
 
   async execute(params: SyncIssueDataParams): Promise<void> {
+    const { teamId } = params;
+    const startTime = Date.now();
+    this.logger.log(`[${teamId}] Sync started`);
+
     const connection = await this.connectionGateway.get();
     if (!connection) {
       throw new WorkspaceNotConnectedError();
@@ -41,24 +47,33 @@ export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> 
       connection.encryptedAccessToken,
     );
 
-    const { teamId } = params;
-
     const existingProgress = await this.syncProgressGateway.getByTeamId(teamId);
     const cursor = existingProgress?.canResume ? existingProgress.cursor : null;
+    if (cursor) {
+      this.logger.log(`[${teamId}] Resuming from cursor`);
+    }
 
     const allIssues = await this.fetchAllIssues(accessToken, teamId, cursor);
+    this.logger.log(`[${teamId}] Issues fetched: ${allIssues.length}`);
 
     await this.issueDataGateway.upsertIssuesForTeam(teamId, allIssues);
+    this.logger.log(`[${teamId}] Issues stored`);
 
     const cycles = await this.linearIssueDataGateway.getCycles(accessToken, teamId);
+    this.logger.log(`[${teamId}] Cycles fetched: ${cycles.length}`);
+
     await this.issueDataGateway.upsertCyclesForTeam(teamId, cycles);
 
     const issueExternalIds = allIssues.map((issue) => issue.externalId);
+    this.logger.log(`[${teamId}] Fetching transitions for ${issueExternalIds.length} issues...`);
+
     const transitions = await this.linearIssueDataGateway.getIssueHistory(
       accessToken,
       teamId,
       issueExternalIds,
     );
+    this.logger.log(`[${teamId}] Transitions fetched: ${transitions.length}`);
+
     await this.issueDataGateway.upsertTransitionsForTeam(teamId, transitions);
 
     const completedProgress = SyncProgress.create({
@@ -69,6 +84,11 @@ export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> 
       cursor: null,
     });
     await this.syncProgressGateway.save(completedProgress);
+
+    const durationSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+    this.logger.log(
+      `[${teamId}] Sync completed in ${durationSeconds}s — ${allIssues.length} issues, ${cycles.length} cycles, ${transitions.length} transitions`,
+    );
   }
 
   private async fetchAllIssues(
@@ -79,6 +99,7 @@ export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> 
     const allIssues: IssueData[] = [];
     let cursor = initialCursor;
     let hasNextPage = true;
+    let pageNumber = 0;
 
     while (hasNextPage) {
       const page = await this.linearIssueDataGateway.getIssuesPage(
@@ -89,6 +110,8 @@ export class SyncIssueDataUsecase implements Usecase<SyncIssueDataParams, void> 
       allIssues.push(...page.issues);
       cursor = page.endCursor;
       hasNextPage = page.hasNextPage;
+      pageNumber++;
+      this.logger.log(`[${teamId}] Issues page ${pageNumber}: +${page.issues.length} (total: ${allIssues.length})`);
     }
 
     return allIssues;

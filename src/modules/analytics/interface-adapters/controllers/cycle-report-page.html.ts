@@ -20,7 +20,12 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
     .metric-card { background: #0f172a; border-radius: 0.5rem; padding: 1rem; }
     .metric-value { font-size: 1.5rem; font-weight: 700; color: #f8fafc; }
-    .metric-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-top: 0.25rem; }
+    .metric-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-top: 0.25rem; display: flex; align-items: center; gap: 0.35rem; }
+    .metric-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid #475569; color: #64748b; font-size: 0.6rem; font-style: normal; font-weight: 600; cursor: help; flex-shrink: 0; }
+    .metric-info:hover { border-color: #93c5fd; color: #93c5fd; }
+    .metric-info .tooltip { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #334155; color: #e2e8f0; font-size: 0.75rem; font-weight: 400; text-transform: none; padding: 0.5rem 0.75rem; border-radius: 0.375rem; white-space: normal; width: 220px; line-height: 1.4; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .metric-info .tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #334155; }
+    .metric-info:hover .tooltip { display: block; }
     .alert { color: #f59e0b; }
     .scope-creep-alert .metric-value { color: #ef4444; }
     table { width: 100%; border-collapse: collapse; }
@@ -118,6 +123,15 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       return '<span class="status-badge ' + cls + '">' + escapeHtml(statusName) + '</span>';
     }
 
+    function metricCard(value, label, tooltip, cssClass) {
+      var cls = cssClass || 'metric-card';
+      return '<div class="' + cls + '">' +
+        '<div class="metric-value">' + escapeHtml(value) + '</div>' +
+        '<div class="metric-label">' + escapeHtml(label) +
+        '<span class="metric-info">i<span class="tooltip">' + escapeHtml(tooltip) + '</span></span>' +
+        '</div></div>';
+    }
+
     document.getElementById('loadTeamBtn').addEventListener('click', loadTeam);
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -186,12 +200,12 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
         container.innerHTML =
           '<div class="metrics-grid">' +
-          '<div class="metric-card"><div class="metric-value">' + escapeHtml(data.velocity) + '</div><div class="metric-label">Velocite</div></div>' +
-          '<div class="metric-card"><div class="metric-value">' + escapeHtml(data.throughput) + '</div><div class="metric-label">Throughput</div></div>' +
-          '<div class="metric-card"><div class="metric-value">' + escapeHtml(data.completionRate) + '</div><div class="metric-label">Taux de completion</div></div>' +
-          '<div class="' + scopeCreepClass + '"><div class="metric-value">' + escapeHtml(data.scopeCreep) + '</div><div class="metric-label">Scope creep</div></div>' +
-          '<div class="metric-card"><div class="metric-value">' + escapeHtml(data.averageCycleTime) + '</div><div class="metric-label">Cycle time moyen</div></div>' +
-          '<div class="metric-card"><div class="metric-value">' + escapeHtml(data.averageLeadTime) + '</div><div class="metric-label">Lead time moyen</div></div>' +
+          metricCard(data.velocity, 'Velocite', 'Points completes par rapport aux points planifies sur le cycle.') +
+          metricCard(data.throughput, 'Throughput', 'Nombre total d\\'issues terminees dans le cycle.') +
+          metricCard(data.completionRate, 'Taux de completion', 'Pourcentage d\\'issues du scope initial terminees (hors scope creep).') +
+          metricCard(data.scopeCreep, 'Scope creep', 'Issues ajoutees apres le debut du cycle. Un scope creep eleve indique un perimetre instable.', scopeCreepClass) +
+          metricCard(data.averageCycleTime, 'Cycle time moyen', 'Duree moyenne entre le debut du travail sur une issue et sa completion.') +
+          metricCard(data.averageLeadTime, 'Lead time moyen', 'Duree moyenne entre la creation d\\'une issue et sa completion. Inclut le temps d\\'attente avant le debut du travail.') +
           '</div>';
       } catch (error) {
         container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
