@@ -64,7 +64,7 @@ export class WorkspaceDashboardDataInPrismaGateway extends WorkspaceDashboardDat
     });
 
     const completedIssues = issues.filter(
-      (issue) => issue.statusName.toLowerCase() === 'done',
+      (issue) => issue.statusType === 'completed',
     );
     const blockedIssues = issues.filter((issue) =>
       issue.statusName.toLowerCase().includes('blocked'),
@@ -118,7 +118,7 @@ export class WorkspaceDashboardDataInPrismaGateway extends WorkspaceDashboardDat
         where: {
           externalId: { in: issueExternalIds },
           teamId,
-          statusName: 'Done',
+          statusType: 'completed',
         },
       });
 

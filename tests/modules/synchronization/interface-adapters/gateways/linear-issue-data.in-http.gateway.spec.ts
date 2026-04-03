@@ -1,0 +1,121 @@
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { LinearIssueDataInHttpGateway } from '@modules/synchronization/interface-adapters/gateways/linear-issue-data.in-http.gateway.js';
+
+function createFetchResponse(data: unknown): Response {
+  return new Response(JSON.stringify({ data }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+function generateIssueNodes(count: number, startIndex = 0): Array<{ id: string }> {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `issue-${startIndex + index + 1}`,
+  }));
+}
+
+function createCycleResponse(
+  issueNodes: Array<{ id: string }>,
+  hasNextPage: boolean,
+  endCursor: string | null,
+) {
+  return createFetchResponse({
+    team: {
+      cycles: {
+        nodes: [{
+          id: 'cycle-1',
+          name: 'Sprint 1',
+          number: 1,
+          startsAt: '2026-01-01T00:00:00Z',
+          endsAt: '2026-01-14T00:00:00Z',
+          issues: {
+            nodes: issueNodes,
+            pageInfo: { hasNextPage, endCursor },
+          },
+        }],
+      },
+    },
+  });
+}
+
+function createCycleIssuePageResponse(
+  issueNodes: Array<{ id: string }>,
+  hasNextPage: boolean,
+  endCursor: string | null,
+) {
+  return createFetchResponse({
+    cycle: {
+      issues: {
+        nodes: issueNodes,
+        pageInfo: { hasNextPage, endCursor },
+      },
+    },
+  });
+}
+
+describe('LinearIssueDataInHttpGateway', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('getCycles — archived cycles', () => {
+    it('sends includeArchived: true in the GraphQL query', async () => {
+      const gateway = new LinearIssueDataInHttpGateway();
+      const mockFetch = vi.fn()
+        .mockResolvedValueOnce(createCycleResponse([], false, null));
+
+      vi.stubGlobal('fetch', mockFetch);
+
+      await gateway.getCycles('test-token', 'team-1');
+
+      const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      expect(requestBody.query).toContain('includeArchived');
+    });
+  });
+
+  describe('getCycles — issue pagination', () => {
+    it('fetches all issue IDs across multiple pages for a cycle', async () => {
+      const gateway = new LinearIssueDataInHttpGateway();
+      const mockFetch = vi.fn()
+        .mockResolvedValueOnce(createCycleResponse(generateIssueNodes(50), true, 'cursor-50'))
+        .mockResolvedValueOnce(createCycleIssuePageResponse(generateIssueNodes(50, 50), true, 'cursor-100'))
+        .mockResolvedValueOnce(createCycleIssuePageResponse(generateIssueNodes(50, 100), true, 'cursor-150'))
+        .mockResolvedValueOnce(createCycleIssuePageResponse(generateIssueNodes(23, 150), false, null));
+
+      vi.stubGlobal('fetch', mockFetch);
+
+      const cycles = await gateway.getCycles('test-token', 'team-1');
+
+      const issueIds: string[] = JSON.parse(cycles[0].issueExternalIds);
+      expect(issueIds).toHaveLength(173);
+    });
+
+    it('does not make extra requests when all issues fit in one page', async () => {
+      const gateway = new LinearIssueDataInHttpGateway();
+      const mockFetch = vi.fn()
+        .mockResolvedValueOnce(createCycleResponse(generateIssueNodes(30), false, null));
+
+      vi.stubGlobal('fetch', mockFetch);
+
+      const cycles = await gateway.getCycles('test-token', 'team-1');
+
+      const issueIds: string[] = JSON.parse(cycles[0].issueExternalIds);
+      expect(issueIds).toHaveLength(30);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles a cycle with zero issues', async () => {
+      const gateway = new LinearIssueDataInHttpGateway();
+      const mockFetch = vi.fn()
+        .mockResolvedValueOnce(createCycleResponse([], false, null));
+
+      vi.stubGlobal('fetch', mockFetch);
+
+      const cycles = await gateway.getCycles('test-token', 'team-1');
+
+      const issueIds: string[] = JSON.parse(cycles[0].issueExternalIds);
+      expect(issueIds).toHaveLength(0);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+  });
+});

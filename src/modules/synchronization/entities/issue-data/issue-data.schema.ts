@@ -5,6 +5,7 @@ export const issueDataSchema = z.object({
   teamId: z.string().min(1),
   title: z.string().min(1),
   statusName: z.string().min(1),
+  statusType: z.string().min(1),
   points: z.number().nullable(),
   labelIds: z.string(),
   assigneeName: z.string().nullable(),
@@ -26,7 +27,9 @@ export const stateTransitionDataSchema = z.object({
   issueExternalId: z.string().min(1),
   teamId: z.string().min(1),
   fromStatusName: z.string().nullable(),
+  fromStatusType: z.string().nullable(),
   toStatusName: z.string().min(1),
+  toStatusType: z.string().min(1),
   occurredAt: z.string().min(1),
 });
 

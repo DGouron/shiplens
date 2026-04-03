@@ -88,6 +88,7 @@ model Issue {
   teamId       String
   title        String
   statusName   String
+  statusType   String  @default("unstarted")
   points       Int?
   labelIds     String
   assigneeName String?
@@ -116,7 +117,9 @@ model StateTransition {
   issueExternalId String
   teamId          String
   fromStatusName  String?
+  fromStatusType  String?
   toStatusName    String
+  toStatusType    String  @default("unstarted")
   occurredAt      String
 
   @@unique([externalId, teamId])

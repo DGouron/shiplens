@@ -131,6 +131,7 @@ export class ProcessWebhookEventUsecase implements Usecase<ProcessWebhookEventPa
       teamId: webhookData.teamId,
       title: webhookData.title,
       statusName: webhookData.statusName,
+      statusType: webhookData.statusType,
       points: webhookData.points,
       labelIds: webhookData.labelIds,
       assigneeName: webhookData.assigneeName,
@@ -145,7 +146,9 @@ export class ProcessWebhookEventUsecase implements Usecase<ProcessWebhookEventPa
         issueExternalId: webhookData.externalId,
         teamId: webhookData.teamId,
         fromStatusName: webhookData.previousStatusName,
+        fromStatusType: webhookData.previousStatusType ?? null,
         toStatusName: webhookData.statusName,
+        toStatusType: webhookData.statusType,
         occurredAt: webhookData.updatedAt,
       });
       await this.issueDataGateway.upsertTransition(transition);
