@@ -22,6 +22,7 @@ function generateCycles(teamId: string): CycleData[] {
     externalId: `cycle-${teamId}-${index + 1}`,
     teamId,
     name: `Sprint ${index + 1}`,
+    number: index + 1,
     startsAt: `2026-0${index + 1}-01T00:00:00Z`,
     endsAt: `2026-0${index + 1}-14T00:00:00Z`,
     issueExternalIds: JSON.stringify(

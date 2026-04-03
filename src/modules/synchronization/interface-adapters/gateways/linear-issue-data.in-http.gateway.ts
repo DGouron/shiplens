@@ -140,7 +140,8 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
     return body.team.cycles.nodes.map((cycle) => ({
       externalId: cycle.id,
       teamId,
-      name: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : null),
+      name: cycle.name,
+      number: cycle.number,
       startsAt: cycle.startsAt,
       endsAt: cycle.endsAt,
       issueExternalIds: JSON.stringify(

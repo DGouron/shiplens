@@ -71,7 +71,7 @@ export class SprintReportDataInPrismaGateway extends SprintReportDataGateway {
     return {
       cycleId: cycle.externalId,
       teamId: cycle.teamId,
-      cycleName: cycle.name ?? `Cycle ${cycle.externalId}`,
+      cycleName: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : 'Cycle sans nom'),
       startsAt: cycle.startsAt,
       endsAt: cycle.endsAt,
       issues: cycleIssues,

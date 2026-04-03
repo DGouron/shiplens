@@ -103,6 +103,7 @@ model Cycle {
   externalId       String
   teamId           String
   name             String?
+  number           Int?
   startsAt         String
   endsAt           String
   issueExternalIds String
