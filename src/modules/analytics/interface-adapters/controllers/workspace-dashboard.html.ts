@@ -373,6 +373,7 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
         <span class="nav-crumb-active">Dashboard</span>
       </div>
       <div class="nav-right">
+        <a href="/settings" class="nav-crumb">Settings</a>
         <div class="theme-toggle" id="themeToggle" title="Changer de theme">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>

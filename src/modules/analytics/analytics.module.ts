@@ -61,11 +61,17 @@ import { PredictIssueDurationUsecase } from './usecases/predict-issue-duration.u
 import { DurationPredictionPresenter } from './interface-adapters/presenters/duration-prediction.presenter.js';
 import { DurationPredictionDataGateway } from './entities/duration-prediction/duration-prediction-data.gateway.js';
 import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
+import { TeamSettingsGateway } from './entities/team-settings/team-settings.gateway.js';
+import { TeamSettingsInFileGateway } from './interface-adapters/gateways/team-settings.in-file.gateway.js';
+import { TeamSettingsController } from './interface-adapters/controllers/team-settings.controller.js';
+import { SettingsPageController } from './interface-adapters/controllers/settings-page.controller.js';
+import { GetTeamExcludedStatusesUsecase } from './usecases/get-team-excluded-statuses.usecase.js';
+import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-statuses.usecase.js';
 import { AuditModule } from '../audit/audit.module.js';
 
 @Module({
   imports: [AuditModule],
-  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController, DurationPredictionController],
+  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController, DurationPredictionController, TeamSettingsController, SettingsPageController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -131,6 +137,12 @@ import { AuditModule } from '../audit/audit.module.js';
     {
       provide: BlockedIssueDetectionDataGateway,
       useClass: BlockedIssueDetectionDataInPrismaGateway,
+    },
+    GetTeamExcludedStatusesUsecase,
+    SetTeamExcludedStatusesUsecase,
+    {
+      provide: TeamSettingsGateway,
+      useClass: TeamSettingsInFileGateway,
     },
     CalculateEstimationAccuracyUsecase,
     GetEstimationTrendUsecase,

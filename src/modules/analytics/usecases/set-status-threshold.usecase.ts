@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { StatusThresholdGateway } from '../entities/status-threshold/status-threshold.gateway.js';
 import { StatusThreshold } from '../entities/status-threshold/status-threshold.js';
@@ -12,6 +12,8 @@ interface SetStatusThresholdParams {
 export class SetStatusThresholdUsecase
   implements Usecase<SetStatusThresholdParams, void>
 {
+  private readonly logger = new Logger(SetStatusThresholdUsecase.name);
+
   constructor(
     private readonly statusThresholdGateway: StatusThresholdGateway,
   ) {}
@@ -28,5 +30,7 @@ export class SetStatusThresholdUsecase
     });
 
     await this.statusThresholdGateway.save(threshold);
+
+    this.logger.log(`[${params.statusName}] Threshold updated — ${params.thresholdHours}h`);
   }
 }

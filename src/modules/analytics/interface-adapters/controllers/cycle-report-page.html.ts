@@ -521,6 +521,13 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     .evolution-negative { color: var(--danger); }
 
     .subsection { margin-top: 1.5rem; }
+    .section-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+    }
+
     .subsection-title {
       font-size: 0.68rem;
       font-weight: 700;
@@ -570,6 +577,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         <span class="nav-crumb nav-crumb-active">Rapport de cycle</span>
       </div>
       <div class="nav-right">
+        <a href="/settings" class="nav-crumb">Settings</a>
         <div class="theme-toggle" id="themeToggle" title="Changer de theme">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>
@@ -601,6 +609,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         <div class="section-head">
           <span class="section-title">Goulots d'etranglement</span>
         </div>
+        <div class="section-subtitle">Temps median passe dans chaque statut du workflow — identifie ou les issues s'accumulent.</div>
         <div id="bottlenecksContent" class="loading">Selectionnez un cycle pour voir les goulots.</div>
       </div>
 
@@ -609,6 +618,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           <span class="section-title">Issues bloquees</span>
           <button class="btn" id="detectBtn" disabled>Relancer la detection</button>
         </div>
+        <div class="section-subtitle">Issues restees dans le meme statut au-dela du seuil configure — triees par severite.</div>
         <div id="blockedIssuesContent" class="loading">Selectionnez un cycle pour voir les issues bloquees.</div>
       </div>
 
@@ -616,6 +626,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         <div class="section-head">
           <span class="section-title">Precision d'estimation</span>
         </div>
+        <div class="section-subtitle">Ecart entre l'estimation en points et le cycle time reel — par equipe et par developpeur.</div>
         <div id="estimationContent" class="loading">Selectionnez un cycle pour voir la precision d'estimation.</div>
       </div>
 
@@ -811,7 +822,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         });
         html += '</tbody></table>';
 
-        html += '<div class="subsection"><div class="subsection-title">Comparaison avec le cycle precedent</div>';
+        html += '<div class="subsection"><div class="subsection-title">Comparaison avec le cycle precedent</div><div class="section-subtitle">Evolution du temps median par statut entre les deux derniers cycles.</div>';
         if (data.cycleComparison) {
           html += '<table><thead><tr><th>Statut</th><th>Cycle precedent</th><th>Cycle actuel</th><th>Evolution</th></tr></thead><tbody>';
           data.cycleComparison.forEach(function(entry) {
@@ -825,7 +836,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         }
         html += '</div>';
 
-        html += '<div class="subsection"><div class="subsection-title">Breakdown par assignee</div>';
+        html += '<div class="subsection"><div class="subsection-title">Breakdown par assignee</div><div class="section-subtitle">Temps median par statut pour chaque membre de l\\'equipe.</div>';
         if (data.assigneeBreakdown.length > 0) {
           var allStatuses = data.assigneeBreakdown[0].statusMedians.map(function(s) { return s.statusName; });
           html += '<table><thead><tr><th>Assignee</th>';
@@ -953,7 +964,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           '</div>';
 
         if (data.developerScores.length > 0) {
-          html += '<div class="subsection"><div class="subsection-title">Breakdown par developpeur</div>';
+          html += '<div class="subsection"><div class="subsection-title">Breakdown par developpeur</div><div class="section-subtitle">Score de precision et tendances d\\'estimation par membre.</div>';
           html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Score</th><th>Classification</th></tr></thead><tbody>';
           data.developerScores.forEach(function(dev) {
             var devClassification = 'classification-' + dev.classification;

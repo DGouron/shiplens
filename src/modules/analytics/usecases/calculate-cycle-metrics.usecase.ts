@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { CycleMetricsDataGateway } from '../entities/cycle-snapshot/cycle-metrics-data.gateway.js';
 import { CycleSnapshot } from '../entities/cycle-snapshot/cycle-snapshot.js';
@@ -30,11 +30,15 @@ const MINIMUM_CYCLES_FOR_TREND = 3;
 export class CalculateCycleMetricsUsecase
   implements Usecase<CalculateCycleMetricsParams, CycleMetricsResult>
 {
+  private readonly logger = new Logger(CalculateCycleMetricsUsecase.name);
+
   constructor(
     private readonly cycleMetricsDataGateway: CycleMetricsDataGateway,
   ) {}
 
   async execute(params: CalculateCycleMetricsParams): Promise<CycleMetricsResult> {
+    this.logger.log(`[${params.cycleId}] Cycle metrics calculation started`);
+
     const snapshotData = await this.cycleMetricsDataGateway.getSnapshotData(
       params.cycleId,
       params.teamId,
@@ -68,6 +72,8 @@ export class CalculateCycleMetricsUsecase
         previousVelocities: trendData.previousVelocities,
       };
     }
+
+    this.logger.log(`[${params.cycleId}] Cycle metrics calculated — velocity: ${result.velocity.completedPoints}/${result.velocity.plannedPoints}, throughput: ${result.throughput}, completion: ${result.completionRate}%`);
 
     return result;
   }
