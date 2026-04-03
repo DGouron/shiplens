@@ -19,7 +19,7 @@ export class CycleReportPageDataInPrismaGateway extends CycleReportPageDataGatew
 
     return cycles.map((cycle) => {
       const issueExternalIds = cycle.issueExternalIds
-        ? cycle.issueExternalIds.split(',').filter(Boolean)
+        ? JSON.parse(cycle.issueExternalIds)
         : [];
 
       return {
@@ -40,7 +40,7 @@ export class CycleReportPageDataInPrismaGateway extends CycleReportPageDataGatew
     });
 
     const issueExternalIds = cycle.issueExternalIds
-      ? cycle.issueExternalIds.split(',').filter(Boolean)
+      ? JSON.parse(cycle.issueExternalIds)
       : [];
 
     if (issueExternalIds.length === 0) {

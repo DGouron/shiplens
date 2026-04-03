@@ -120,6 +120,13 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
     document.getElementById('loadTeamBtn').addEventListener('click', loadTeam);
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialTeamId = urlParams.get('teamId');
+    if (initialTeamId) {
+      document.getElementById('teamId').value = initialTeamId;
+      loadTeam();
+    }
+
     async function loadTeam() {
       const teamId = document.getElementById('teamId').value.trim();
       if (!teamId) return;
