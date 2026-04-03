@@ -37,6 +37,34 @@ describe('CycleMetricsPresenter', () => {
     expect(result.averageLeadTime).toBe('Non disponible');
   });
 
+  it('rounds cycle time and lead time to 1 decimal', () => {
+    const result = presenter.present({
+      velocity: { completedPoints: 10, plannedPoints: 20 },
+      throughput: 5,
+      completionRate: 50,
+      scopeCreep: 0,
+      averageCycleTimeInDays: 2.5556056215524032,
+      averageLeadTimeInDays: 7.123456789,
+    });
+
+    expect(result.averageCycleTime).toBe('2.6 jours');
+    expect(result.averageLeadTime).toBe('7.1 jours');
+  });
+
+  it('drops trailing zero after rounding', () => {
+    const result = presenter.present({
+      velocity: { completedPoints: 10, plannedPoints: 20 },
+      throughput: 5,
+      completionRate: 50,
+      scopeCreep: 0,
+      averageCycleTimeInDays: 7.0,
+      averageLeadTimeInDays: 3.001,
+    });
+
+    expect(result.averageCycleTime).toBe('7 jours');
+    expect(result.averageLeadTime).toBe('3 jours');
+  });
+
   it('presents trend when included', () => {
     const result = presenter.present({
       velocity: { completedPoints: 21, plannedPoints: 25 },
