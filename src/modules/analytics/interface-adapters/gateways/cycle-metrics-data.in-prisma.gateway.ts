@@ -22,6 +22,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
       where: {
         externalId: { in: issueExternalIds },
         teamId,
+        deletedAt: null,
       },
     });
 
@@ -94,6 +95,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
         where: {
           externalId: { in: issueExternalIds },
           teamId,
+          deletedAt: null,
         },
       });
 
