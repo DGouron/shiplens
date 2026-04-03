@@ -23,6 +23,6 @@ o# Feature Tracker
 | Voir le rapport de cycle detaille | [view-cycle-report-page](specs/view-cycle-report-page.md) | Analytics | implemented | 2026-03-31 |
 | Afficher les etats vides du dashboard | [handle-dashboard-empty-states](specs/handle-dashboard-empty-states.md) | Analytics | implemented | 2026-04-02 |
 | Afficher les donnees de pilotage dans le rapport de cycle | [display-cycle-piloting-data](specs/display-cycle-piloting-data.md) | Analytics | implemented | 2026-04-03 |
-| Voir le profil cycle d'un membre | [view-member-cycle-profile](specs/view-member-cycle-profile.md) | Analytics | ready | 2026-04-03 |
+| Voir le profil cycle d'un membre | [view-member-cycle-profile](specs/view-member-cycle-profile.md) | Analytics | implemented | 2026-04-03 |
 | Detecter les tickets en derive | [detect-drifting-issues](specs/detect-drifting-issues.md) | Analytics | ready | 2026-04-03 |
 | Voir les tendances de sante d'un membre | [view-member-health-trends](specs/view-member-health-trends.md) | Analytics | ready | 2026-04-03 |
