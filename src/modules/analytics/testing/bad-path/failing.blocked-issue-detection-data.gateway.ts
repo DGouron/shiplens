@@ -1,4 +1,7 @@
-import { BlockedIssueDetectionDataGateway, type IssueWithCurrentStatus } from '../../entities/blocked-issue-alert/blocked-issue-detection-data.gateway.js';
+import {
+  BlockedIssueDetectionDataGateway,
+  type IssueWithCurrentStatus,
+} from '../../entities/blocked-issue-alert/blocked-issue-detection-data.gateway.js';
 
 export class FailingBlockedIssueDetectionDataGateway extends BlockedIssueDetectionDataGateway {
   async hasSynchronizedData(): Promise<boolean> {

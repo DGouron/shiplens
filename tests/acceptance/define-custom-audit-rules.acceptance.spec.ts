@@ -1,8 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { CreateAuditRuleUsecase } from '@modules/audit/usecases/create-audit-rule.usecase.js';
 import { EvaluateAuditRuleUsecase } from '@modules/audit/usecases/evaluate-audit-rule.usecase.js';
-import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
-import { AuditRuleBuilder } from '../builders/audit-rule.builder.js';
+import { describe, expect, it } from 'vitest';
 
 describe('Define Custom Audit Rules (acceptance)', () => {
   describe('a rule requires identifier, name, severity and condition', () => {
@@ -86,9 +85,7 @@ describe('Define Custom Audit Rules (acceptance)', () => {
           severity: 'error',
           conditionExpression: 'cycle time > 10 jours',
         }),
-      ).rejects.toThrow(
-        'Une regle avec l\'identifiant CT-MAX-5 existe deja.',
-      );
+      ).rejects.toThrow("Une regle avec l'identifiant CT-MAX-5 existe deja.");
     });
   });
 
@@ -121,7 +118,9 @@ describe('Define Custom Audit Rules (acceptance)', () => {
       });
 
       expect(result.outcome).toBe('pass');
-      expect(result.message).toBe('Cycle time moyen : 3 jours (seuil : 5 jours)');
+      expect(result.message).toBe(
+        'Cycle time moyen : 3 jours (seuil : 5 jours)',
+      );
     });
 
     it('evaluation warn: condition violated with warning severity', async () => {
@@ -183,7 +182,9 @@ describe('Define Custom Audit Rules (acceptance)', () => {
       });
 
       expect(result.outcome).toBe('fail');
-      expect(result.message).toBe('Cycle time moyen : 8 jours (seuil : 5 jours)');
+      expect(result.message).toBe(
+        'Cycle time moyen : 8 jours (seuil : 5 jours)',
+      );
     });
   });
 });

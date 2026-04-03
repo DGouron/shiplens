@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { ApplicationRuleViolation } from '@shared/foundation/application-rule-violation';
+import { describe, expect, it } from 'vitest';
 
 class TestApplicationRuleViolation extends ApplicationRuleViolation {
   constructor() {

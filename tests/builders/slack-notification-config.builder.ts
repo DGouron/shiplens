@@ -1,6 +1,6 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { SlackNotificationConfig } from '@modules/notification/entities/slack-notification-config/slack-notification-config.js';
 import { type SlackNotificationConfigProps } from '@modules/notification/entities/slack-notification-config/slack-notification-config.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: SlackNotificationConfigProps = {
   id: 'b0000000-0000-4000-8000-000000000001',

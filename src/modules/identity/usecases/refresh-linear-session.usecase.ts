@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
+import {
+  LinearApiGateway,
+  type RefreshTokenResult,
+} from '../entities/linear-workspace-connection/linear-api.gateway.js';
+import {
+  LinearSessionExpiredError,
+  NoLinearConnectionError,
+} from '../entities/linear-workspace-connection/linear-workspace-connection.errors.js';
 import { LinearWorkspaceConnectionGateway } from '../entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
-import { LinearApiGateway, type RefreshTokenResult } from '../entities/linear-workspace-connection/linear-api.gateway.js';
-import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
 import { LinearWorkspaceConnection } from '../entities/linear-workspace-connection/linear-workspace-connection.js';
-import { NoLinearConnectionError, LinearSessionExpiredError } from '../entities/linear-workspace-connection/linear-workspace-connection.errors.js';
+import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
 
 @Injectable()
 export class RefreshLinearSessionUsecase implements Usecase<void, void> {

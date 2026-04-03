@@ -1,6 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AnalyzeBottlenecksByStatusUsecase } from '../../usecases/analyze-bottlenecks-by-status.usecase.js';
-import { BottleneckAnalysisPresenter, type BottleneckAnalysisDto } from '../presenters/bottleneck-analysis.presenter.js';
+import {
+  type BottleneckAnalysisDto,
+  BottleneckAnalysisPresenter,
+} from '../presenters/bottleneck-analysis.presenter.js';
 
 @Controller('analytics/cycles')
 export class BottleneckAnalysisController {

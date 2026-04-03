@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
 import {
-  issueDataSchema,
   cycleDataSchema,
-  stateTransitionDataSchema,
+  issueDataSchema,
   paginatedIssuesSchema,
+  stateTransitionDataSchema,
 } from '@modules/synchronization/entities/issue-data/issue-data.schema.js';
+import { describe, expect, it } from 'vitest';
 
 describe('IssueDataSchema', () => {
   it('validates a valid issue data', () => {

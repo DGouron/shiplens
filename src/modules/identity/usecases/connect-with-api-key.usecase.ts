@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { LinearWorkspaceConnectionGateway } from '../entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
-import { LinearApiGateway } from '../entities/linear-workspace-connection/linear-api.gateway.js';
-import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
-import { LinearWorkspaceConnection } from '../entities/linear-workspace-connection/linear-workspace-connection.js';
+import {
+  LinearApiGateway,
+  type WorkspaceInfo,
+} from '../entities/linear-workspace-connection/linear-api.gateway.js';
 import { InvalidLinearApiKeyError } from '../entities/linear-workspace-connection/linear-workspace-connection.errors.js';
+import { LinearWorkspaceConnectionGateway } from '../entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
+import { LinearWorkspaceConnection } from '../entities/linear-workspace-connection/linear-workspace-connection.js';
+import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
 import { REQUIRED_SCOPES } from './connect-linear-workspace.usecase.js';
 
 interface ConnectWithApiKeyParams {
@@ -12,7 +15,9 @@ interface ConnectWithApiKeyParams {
 }
 
 @Injectable()
-export class ConnectWithApiKeyUsecase implements Usecase<ConnectWithApiKeyParams, void> {
+export class ConnectWithApiKeyUsecase
+  implements Usecase<ConnectWithApiKeyParams, void>
+{
   constructor(
     private readonly connectionGateway: LinearWorkspaceConnectionGateway,
     private readonly linearApiGateway: LinearApiGateway,
@@ -20,14 +25,18 @@ export class ConnectWithApiKeyUsecase implements Usecase<ConnectWithApiKeyParams
   ) {}
 
   async execute(params: ConnectWithApiKeyParams): Promise<void> {
-    let workspaceInfo;
+    let workspaceInfo: WorkspaceInfo;
     try {
-      workspaceInfo = await this.linearApiGateway.getWorkspaceInfo(params.apiKey);
+      workspaceInfo = await this.linearApiGateway.getWorkspaceInfo(
+        params.apiKey,
+      );
     } catch {
       throw new InvalidLinearApiKeyError();
     }
 
-    const encryptedAccessToken = await this.tokenEncryptionGateway.encrypt(params.apiKey);
+    const encryptedAccessToken = await this.tokenEncryptionGateway.encrypt(
+      params.apiKey,
+    );
 
     const existing = await this.connectionGateway.get();
     if (existing) {

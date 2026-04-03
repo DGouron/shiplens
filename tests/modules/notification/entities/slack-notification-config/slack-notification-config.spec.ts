@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SlackNotificationConfig } from '@modules/notification/entities/slack-notification-config/slack-notification-config.js';
+import { describe, expect, it } from 'vitest';
 
 describe('SlackNotificationConfig', () => {
   const validProps = {

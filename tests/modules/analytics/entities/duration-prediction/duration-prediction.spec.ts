@@ -1,9 +1,11 @@
-import { describe, it, expect } from 'vitest';
 import { DurationPrediction } from '@modules/analytics/entities/duration-prediction/duration-prediction.js';
+import { describe, expect, it } from 'vitest';
 
 describe('DurationPrediction', () => {
   it('computes P25 as optimistic, P50 as probable, P75 as pessimistic from cycle times', () => {
-    const prediction = DurationPrediction.fromCycleTimes([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+    const prediction = DurationPrediction.fromCycleTimes([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+    ]);
 
     expect(prediction.optimistic).toBe(3.5);
     expect(prediction.probable).toBe(6);
@@ -47,7 +49,9 @@ describe('DurationPrediction', () => {
   it('sorts unsorted cycle times before computing percentiles', () => {
     const prediction = DurationPrediction.fromCycleTimes([10, 1, 5, 3, 8]);
 
-    const predictionFromSorted = DurationPrediction.fromCycleTimes([1, 3, 5, 8, 10]);
+    const predictionFromSorted = DurationPrediction.fromCycleTimes([
+      1, 3, 5, 8, 10,
+    ]);
 
     expect(prediction.optimistic).toBe(predictionFromSorted.optimistic);
     expect(prediction.probable).toBe(predictionFromSorted.probable);
@@ -55,7 +59,9 @@ describe('DurationPrediction', () => {
   });
 
   it('ensures optimistic <= probable <= pessimistic', () => {
-    const prediction = DurationPrediction.fromCycleTimes([2, 3, 4, 5, 6, 3, 4, 5, 2, 3, 4, 5, 6, 7, 3]);
+    const prediction = DurationPrediction.fromCycleTimes([
+      2, 3, 4, 5, 6, 3, 4, 5, 2, 3, 4, 5, 6, 7, 3,
+    ]);
 
     expect(prediction.optimistic).toBeLessThanOrEqual(prediction.probable);
     expect(prediction.probable).toBeLessThanOrEqual(prediction.pessimistic);

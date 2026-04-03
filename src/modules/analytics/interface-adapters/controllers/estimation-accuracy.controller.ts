@@ -1,7 +1,13 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { CalculateEstimationAccuracyUsecase } from '../../usecases/calculate-estimation-accuracy.usecase.js';
-import { GetEstimationTrendUsecase, type CycleTrendEntry } from '../../usecases/get-estimation-trend.usecase.js';
-import { EstimationAccuracyPresenter, type EstimationAccuracyDto } from '../presenters/estimation-accuracy.presenter.js';
+import {
+  type CycleTrendEntry,
+  GetEstimationTrendUsecase,
+} from '../../usecases/get-estimation-trend.usecase.js';
+import {
+  type EstimationAccuracyDto,
+  EstimationAccuracyPresenter,
+} from '../presenters/estimation-accuracy.presenter.js';
 
 @Controller('api/analytics/teams')
 export class EstimationAccuracyController {

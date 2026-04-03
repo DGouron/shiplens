@@ -1,7 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { CreateAuditRuleUsecase } from '@modules/audit/usecases/create-audit-rule.usecase.js';
+import {
+  DuplicateIdentifierError,
+  InvalidConditionError,
+  InvalidSeverityError,
+  MissingIdentifierError,
+} from '@modules/audit/entities/audit-rule/audit-rule.errors.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
-import { DuplicateIdentifierError, MissingIdentifierError, InvalidSeverityError, InvalidConditionError } from '@modules/audit/entities/audit-rule/audit-rule.errors.js';
+import { CreateAuditRuleUsecase } from '@modules/audit/usecases/create-audit-rule.usecase.js';
+import { describe, expect, it } from 'vitest';
 
 describe('CreateAuditRuleUsecase', () => {
   it('creates and persists a valid audit rule', async () => {

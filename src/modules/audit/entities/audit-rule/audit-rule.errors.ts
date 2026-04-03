@@ -1,5 +1,5 @@
-import { BusinessRuleViolation } from '@shared/foundation/business-rule-violation.js';
 import { ApplicationRuleViolation } from '@shared/foundation/application-rule-violation.js';
+import { BusinessRuleViolation } from '@shared/foundation/business-rule-violation.js';
 
 export class MissingIdentifierError extends BusinessRuleViolation {
   constructor() {

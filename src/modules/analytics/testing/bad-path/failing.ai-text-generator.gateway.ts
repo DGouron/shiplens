@@ -1,4 +1,7 @@
-import { AiTextGeneratorGateway, type AiProvider } from '../../entities/sprint-report/ai-text-generator.gateway.js';
+import {
+  type AiProvider,
+  AiTextGeneratorGateway,
+} from '../../entities/sprint-report/ai-text-generator.gateway.js';
 import { AiProviderUnavailableError } from '../../entities/sprint-report/sprint-report.errors.js';
 
 export class FailingAiTextGeneratorGateway extends AiTextGeneratorGateway {

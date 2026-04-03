@@ -1,5 +1,10 @@
+import {
+  type CycleData,
+  type IssueData,
+  type PaginatedIssues,
+  type StateTransitionData,
+} from '../../entities/issue-data/issue-data.schema.js';
 import { LinearIssueDataGateway } from '../../entities/issue-data/linear-issue-data.gateway.js';
-import { type PaginatedIssues, type CycleData, type StateTransitionData, type IssueData } from '../../entities/issue-data/issue-data.schema.js';
 
 const PAGE_SIZE = 50;
 
@@ -34,12 +39,18 @@ function generateCycles(teamId: string): CycleData[] {
     startsAt: `2026-0${index + 1}-01T00:00:00Z`,
     endsAt: `2026-0${index + 1}-14T00:00:00Z`,
     issueExternalIds: JSON.stringify(
-      Array.from({ length: 10 }, (_, issueIndex) => `issue-${teamId}-${index * 10 + issueIndex + 1}`),
+      Array.from(
+        { length: 10 },
+        (_, issueIndex) => `issue-${teamId}-${index * 10 + issueIndex + 1}`,
+      ),
     ),
   }));
 }
 
-function generateTransitions(teamId: string, issueExternalIds: string[]): StateTransitionData[] {
+function generateTransitions(
+  teamId: string,
+  issueExternalIds: string[],
+): StateTransitionData[] {
   const transitions: StateTransitionData[] = [];
 
   for (const issueExternalId of issueExternalIds.slice(0, 5)) {
@@ -48,8 +59,10 @@ function generateTransitions(teamId: string, issueExternalIds: string[]): StateT
         externalId: `transition-${issueExternalId}-${statusIndex}`,
         issueExternalId,
         teamId,
-        fromStatusName: statusIndex === 0 ? null : STATUS_POOL[statusIndex - 1].name,
-        fromStatusType: statusIndex === 0 ? null : STATUS_POOL[statusIndex - 1].type,
+        fromStatusName:
+          statusIndex === 0 ? null : STATUS_POOL[statusIndex - 1].name,
+        fromStatusType:
+          statusIndex === 0 ? null : STATUS_POOL[statusIndex - 1].type,
         toStatusName: STATUS_POOL[statusIndex].name,
         toStatusType: STATUS_POOL[statusIndex].type,
         occurredAt: `2026-01-${String(statusIndex + 15).padStart(2, '0')}T10:00:00Z`,
@@ -87,10 +100,7 @@ export class StubLinearIssueDataGateway extends LinearIssueDataGateway {
     };
   }
 
-  async getCycles(
-    _accessToken: string,
-    teamId: string,
-  ): Promise<CycleData[]> {
+  async getCycles(_accessToken: string, teamId: string): Promise<CycleData[]> {
     return this.cyclesByTeamId.get(teamId) ?? [];
   }
 

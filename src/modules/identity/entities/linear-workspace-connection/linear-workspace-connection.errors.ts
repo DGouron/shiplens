@@ -22,7 +22,7 @@ export class LinearSessionExpiredError extends BusinessRuleViolation {
 
 export class NoLinearConnectionError extends BusinessRuleViolation {
   constructor() {
-    super('Aucun workspace Linear n\'est connecté.');
+    super("Aucun workspace Linear n'est connecté.");
   }
 }
 

@@ -1,9 +1,9 @@
-import {
-  SlackMessengerGateway,
-  type SendReportParams,
-  type SendAlertParams,
-} from '../../entities/slack-notification-config/slack-messenger.gateway.js';
 import { GatewayError } from '@shared/foundation/gateway-error.js';
+import {
+  type SendAlertParams,
+  type SendReportParams,
+  SlackMessengerGateway,
+} from '../../entities/slack-notification-config/slack-messenger.gateway.js';
 
 export class FailingSlackMessengerGateway extends SlackMessengerGateway {
   async sendReport(_params: SendReportParams): Promise<void> {

@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { WorkspaceDashboardPresenter } from '@modules/analytics/interface-adapters/presenters/workspace-dashboard.presenter.js';
+import { describe, expect, it } from 'vitest';
 
 describe('WorkspaceDashboardPresenter', () => {
   const presenter = new WorkspaceDashboardPresenter();
@@ -190,7 +190,9 @@ describe('WorkspaceDashboardPresenter', () => {
     });
 
     expect(result.synchronization.isLate).toBe(true);
-    expect(result.synchronization.lateWarning).toBe('Synchronisation en retard');
+    expect(result.synchronization.lateWarning).toBe(
+      'Synchronisation en retard',
+    );
   });
 
   it('does not show sync late warning when synchronization is recent', () => {

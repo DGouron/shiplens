@@ -1,13 +1,13 @@
+import { SprintReportGateway } from '@modules/analytics/entities/sprint-report/sprint-report.gateway.js';
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { SlackNotificationConfigGateway } from '../entities/slack-notification-config/slack-notification-config.gateway.js';
 import { SlackMessengerGateway } from '../entities/slack-notification-config/slack-messenger.gateway.js';
-import { SprintReportGateway } from '@modules/analytics/entities/sprint-report/sprint-report.gateway.js';
 import {
-  SlackWebhookNotConfiguredError,
   ReportNotGeneratedError,
   SlackDeliveryFailedError,
+  SlackWebhookNotConfiguredError,
 } from '../entities/slack-notification-config/slack-notification-config.errors.js';
+import { SlackNotificationConfigGateway } from '../entities/slack-notification-config/slack-notification-config.gateway.js';
 
 interface SendReportOnSlackParams {
   teamId: string;

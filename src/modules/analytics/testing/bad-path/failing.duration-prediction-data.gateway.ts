@@ -6,6 +6,8 @@ export class FailingDurationPredictionDataGateway extends DurationPredictionData
   }
 
   async getSimilarIssuesCycleTimes(): Promise<number[]> {
-    throw new Error('Gateway failure: unable to fetch similar issues cycle times');
+    throw new Error(
+      'Gateway failure: unable to fetch similar issues cycle times',
+    );
   }
 }

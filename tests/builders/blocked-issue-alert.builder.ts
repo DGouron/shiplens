@@ -1,6 +1,6 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { BlockedIssueAlert } from '@modules/analytics/entities/blocked-issue-alert/blocked-issue-alert.js';
 import { type BlockedIssueAlertProps } from '@modules/analytics/entities/blocked-issue-alert/blocked-issue-alert.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: BlockedIssueAlertProps = {
   id: 'alert-1',

@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { LinearConnectionController } from '@modules/identity/interface-adapters/controllers/linear-connection.controller.js';
-import { GetConnectionStatusUsecase } from '@modules/identity/usecases/get-connection-status.usecase.js';
+import { ConnectionStatusPresenter } from '@modules/identity/interface-adapters/presenters/connection-status.presenter.js';
+import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
+import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
+import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
 import { ConnectLinearWorkspaceUsecase } from '@modules/identity/usecases/connect-linear-workspace.usecase.js';
 import { DisconnectLinearWorkspaceUsecase } from '@modules/identity/usecases/disconnect-linear-workspace.usecase.js';
+import { GetConnectionStatusUsecase } from '@modules/identity/usecases/get-connection-status.usecase.js';
 import { RefreshLinearSessionUsecase } from '@modules/identity/usecases/refresh-linear-session.usecase.js';
-import { ConnectionStatusPresenter } from '@modules/identity/interface-adapters/presenters/connection-status.presenter.js';
-import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
-import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
-import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../../builders/linear-workspace-connection.builder.js';
 
 describe('LinearConnectionController', () => {
@@ -23,9 +23,21 @@ describe('LinearConnectionController', () => {
 
     controller = new LinearConnectionController(
       new GetConnectionStatusUsecase(connectionGateway),
-      new ConnectLinearWorkspaceUsecase(connectionGateway, linearApiGateway, tokenEncryptionGateway),
-      new DisconnectLinearWorkspaceUsecase(connectionGateway, linearApiGateway, tokenEncryptionGateway),
-      new RefreshLinearSessionUsecase(connectionGateway, linearApiGateway, tokenEncryptionGateway),
+      new ConnectLinearWorkspaceUsecase(
+        connectionGateway,
+        linearApiGateway,
+        tokenEncryptionGateway,
+      ),
+      new DisconnectLinearWorkspaceUsecase(
+        connectionGateway,
+        linearApiGateway,
+        tokenEncryptionGateway,
+      ),
+      new RefreshLinearSessionUsecase(
+        connectionGateway,
+        linearApiGateway,
+        tokenEncryptionGateway,
+      ),
       new ConnectionStatusPresenter(),
     );
   });
@@ -51,14 +63,18 @@ describe('LinearConnectionController', () => {
   });
 
   it('connects a workspace and returns success', async () => {
-    await controller.connect({ code: 'oauth-code', redirectUri: 'http://localhost/callback' });
+    await controller.connect({
+      code: 'oauth-code',
+      redirectUri: 'http://localhost/callback',
+    });
 
     const status = await controller.getStatus();
     expect(status.connected).toBe(true);
   });
 
   it('disconnects the workspace', async () => {
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
 
     await controller.disconnect();
 
@@ -67,7 +83,8 @@ describe('LinearConnectionController', () => {
   });
 
   it('refreshes the session', async () => {
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
 
     await controller.refresh();
 

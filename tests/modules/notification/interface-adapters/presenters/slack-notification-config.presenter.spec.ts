@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SlackNotificationConfigPresenter } from '@modules/notification/interface-adapters/presenters/slack-notification-config.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { SlackNotificationConfigBuilder } from '../../../../builders/slack-notification-config.builder.js';
 
 describe('SlackNotificationConfigPresenter', () => {

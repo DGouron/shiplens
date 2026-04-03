@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ProcessWebhookEventUsecase } from '@modules/synchronization/usecases/process-webhook-event.usecase.js';
-import { StubWebhookEventGateway } from '@modules/synchronization/testing/good-path/stub.webhook-event.gateway.js';
+import { UnverifiedWebhookSignatureError } from '@modules/synchronization/entities/webhook-event/webhook-event.errors.js';
 import { StubIssueDataGateway } from '@modules/synchronization/testing/good-path/stub.issue-data.gateway.js';
 import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
+import { StubWebhookEventGateway } from '@modules/synchronization/testing/good-path/stub.webhook-event.gateway.js';
+import { ProcessWebhookEventUsecase } from '@modules/synchronization/usecases/process-webhook-event.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TeamSelectionBuilder } from '../../../builders/team-selection.builder.js';
 import { WebhookEventBuilder } from '../../../builders/webhook-event.builder.js';
-import { UnverifiedWebhookSignatureError } from '@modules/synchronization/entities/webhook-event/webhook-event.errors.js';
 
 describe('ProcessWebhookEventUsecase', () => {
   let webhookEventGateway: StubWebhookEventGateway;
@@ -207,7 +207,9 @@ describe('ProcessWebhookEventUsecase', () => {
 
       expect(issueDataGateway.upsertedIssues).toHaveLength(1);
       expect(issueDataGateway.upsertedTransitions).toHaveLength(1);
-      expect(issueDataGateway.upsertedTransitions[0].fromStatusName).toBe('In Progress');
+      expect(issueDataGateway.upsertedTransitions[0].fromStatusName).toBe(
+        'In Progress',
+      );
       expect(issueDataGateway.upsertedTransitions[0].toStatusName).toBe('Done');
     });
 

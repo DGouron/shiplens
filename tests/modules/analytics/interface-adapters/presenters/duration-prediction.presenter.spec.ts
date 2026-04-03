@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { DurationPredictionPresenter } from '@modules/analytics/interface-adapters/presenters/duration-prediction.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { DurationPredictionBuilder } from '../../../../builders/duration-prediction.builder.js';
 
 describe('DurationPredictionPresenter', () => {

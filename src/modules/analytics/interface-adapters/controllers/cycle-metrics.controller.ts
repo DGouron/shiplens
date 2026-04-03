@@ -1,6 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { CalculateCycleMetricsUsecase } from '../../usecases/calculate-cycle-metrics.usecase.js';
-import { CycleMetricsPresenter, type CycleMetricsDto } from '../presenters/cycle-metrics.presenter.js';
+import {
+  type CycleMetricsDto,
+  CycleMetricsPresenter,
+} from '../presenters/cycle-metrics.presenter.js';
 
 @Controller('analytics/cycles')
 export class CycleMetricsController {

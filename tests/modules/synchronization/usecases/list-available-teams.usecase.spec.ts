@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ListAvailableTeamsUsecase } from '@modules/synchronization/usecases/list-available-teams.usecase.js';
 import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
 import { StubLinearTeamGateway } from '@modules/synchronization/testing/good-path/stub.linear-team.gateway.js';
+import { ListAvailableTeamsUsecase } from '@modules/synchronization/usecases/list-available-teams.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../builders/linear-workspace-connection.builder.js';
 
 describe('ListAvailableTeamsUsecase', () => {
@@ -23,7 +23,8 @@ describe('ListAvailableTeamsUsecase', () => {
   });
 
   it('returns teams with projects from Linear', async () => {
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
 
     const teams = await usecase.execute();
 
@@ -35,12 +36,13 @@ describe('ListAvailableTeamsUsecase', () => {
 
   it('rejects when workspace is not connected', async () => {
     await expect(usecase.execute()).rejects.toThrow(
-      'Veuillez d\'abord connecter votre workspace Linear.',
+      "Veuillez d'abord connecter votre workspace Linear.",
     );
   });
 
   it('rejects when no teams found in workspace', async () => {
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
     linearTeamGateway.teams = [];
 
     await expect(usecase.execute()).rejects.toThrow(

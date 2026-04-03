@@ -52,14 +52,16 @@ export class WorkspaceDashboardPresenter
           team.blockedIssuesCount > 0 &&
           team.blockedIssuesCount === team.totalIssues,
         currentVelocity: team.currentVelocity,
-        velocityTrendLabel: VELOCITY_TREND_LABELS[team.velocityTrend] ?? team.velocityTrend,
+        velocityTrendLabel:
+          VELOCITY_TREND_LABELS[team.velocityTrend] ?? team.velocityTrend,
         reportLink: team.hasActiveCycle
           ? `/cycle-report?teamId=${team.teamId}`
           : null,
         noActiveCycleMessage: team.hasActiveCycle ? null : 'Aucun cycle actif',
       })),
       synchronization: {
-        lastSyncDate: input.synchronizationStatus.lastSyncDate?.toISOString() ?? null,
+        lastSyncDate:
+          input.synchronizationStatus.lastSyncDate?.toISOString() ?? null,
         isLate: input.synchronizationStatus.isLate,
         lateWarning: input.synchronizationStatus.isLate
           ? 'Synchronisation en retard'

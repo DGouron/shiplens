@@ -1,6 +1,9 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { CycleSnapshot } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.js';
-import { type CycleSnapshotProps, type CycleIssue } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.schema.js';
+import {
+  type CycleIssue,
+  type CycleSnapshotProps,
+} from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: CycleSnapshotProps = {
   cycleId: 'cycle-1',

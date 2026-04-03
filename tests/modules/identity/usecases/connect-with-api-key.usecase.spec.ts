@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ConnectWithApiKeyUsecase } from '@modules/identity/usecases/connect-with-api-key.usecase.js';
-import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
-import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
-import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
 import { FailingLinearApiGateway } from '@modules/identity/testing/bad-path/failing.linear-api.gateway.js';
+import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
+import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
+import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
+import { ConnectWithApiKeyUsecase } from '@modules/identity/usecases/connect-with-api-key.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../builders/linear-workspace-connection.builder.js';
 
 describe('ConnectWithApiKeyUsecase', () => {

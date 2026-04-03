@@ -1,6 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import {
+  MissingChecklistItemIdentifierError,
+  MissingChecklistItemNameError,
+} from '@modules/audit/entities/checklist-item/checklist-item.errors.js';
 import { ChecklistItem } from '@modules/audit/entities/checklist-item/checklist-item.js';
-import { MissingChecklistItemIdentifierError, MissingChecklistItemNameError } from '@modules/audit/entities/checklist-item/checklist-item.errors.js';
+import { describe, expect, it } from 'vitest';
 
 describe('ChecklistItem', () => {
   describe('creation', () => {

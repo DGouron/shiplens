@@ -1,11 +1,16 @@
-import { type AuditRuleProps, type Origin, severitySchema, originSchema } from './audit-rule.schema.js';
+import {
+  InvalidSeverityError,
+  MissingIdentifierError,
+} from './audit-rule.errors.js';
+import {
+  type AuditRuleProps,
+  type Origin,
+  originSchema,
+  severitySchema,
+} from './audit-rule.schema.js';
 import { type Condition } from './condition.schema.js';
 import { type CycleMetrics } from './cycle-metrics.js';
 import { parseCondition } from './parse-condition.js';
-import {
-  MissingIdentifierError,
-  InvalidSeverityError,
-} from './audit-rule.errors.js';
 
 export interface EvaluationResult {
   outcome: 'pass' | 'warn' | 'fail';
@@ -23,28 +28,37 @@ interface CreateAuditRuleInput {
 const METRIC_FIELD_MAP: Record<string, keyof CycleMetrics> = {
   'cycle time': 'averageCycleTimeInDays',
   'lead time': 'averageLeadTimeInDays',
-  'throughput': 'throughput',
+  throughput: 'throughput',
   'completion rate': 'completionRate',
   'scope creep': 'scopeCreep',
-  'velocity': 'velocity',
+  velocity: 'velocity',
 };
 
 const METRIC_LABEL_MAP: Record<string, string> = {
   'cycle time': 'Cycle time moyen',
   'lead time': 'Lead time moyen',
-  'throughput': 'Throughput',
+  throughput: 'Throughput',
   'completion rate': 'Taux de completion',
   'scope creep': 'Scope creep',
-  'velocity': 'Velocite',
+  velocity: 'Velocite',
 };
 
-function compareValues(actual: number, operator: string, threshold: number): boolean {
+function compareValues(
+  actual: number,
+  operator: string,
+  threshold: number,
+): boolean {
   switch (operator) {
-    case '>': return actual > threshold;
-    case '<': return actual < threshold;
-    case '>=': return actual >= threshold;
-    case '<=': return actual <= threshold;
-    default: return false;
+    case '>':
+      return actual > threshold;
+    case '<':
+      return actual < threshold;
+    case '>=':
+      return actual >= threshold;
+    case '<=':
+      return actual <= threshold;
+    default:
+      return false;
   }
 }
 
@@ -118,7 +132,11 @@ export class AuditRule {
     const actualValue = metricField ? metrics[metricField] : 0;
     const numericValue = typeof actualValue === 'number' ? actualValue : 0;
 
-    const violated = compareValues(numericValue, condition.operator, condition.value);
+    const violated = compareValues(
+      numericValue,
+      condition.operator,
+      condition.value,
+    );
     const unitSuffix = condition.unit ? ` ${condition.unit}` : '';
     const message = `${metricLabel} : ${numericValue}${unitSuffix} (seuil : ${condition.value}${unitSuffix})`;
 
@@ -135,7 +153,11 @@ export class AuditRule {
     const ratioKey = `${condition.numerator}/${condition.denominator}`;
     const actualValue = metrics.metricRatios[ratioKey] ?? 0;
 
-    const violated = compareValues(actualValue, condition.operator, condition.value);
+    const violated = compareValues(
+      actualValue,
+      condition.operator,
+      condition.value,
+    );
     const message = `Ratio ${ratioKey} : ${actualValue} (seuil : ${condition.value})`;
 
     return {
@@ -157,7 +179,9 @@ export class AuditRule {
     if (condition.matcher === 'contains') {
       matched = condition.value in distribution;
     } else {
-      matched = Object.keys(distribution).length === 1 && condition.value in distribution;
+      matched =
+        Object.keys(distribution).length === 1 &&
+        condition.value in distribution;
     }
 
     const message = matched

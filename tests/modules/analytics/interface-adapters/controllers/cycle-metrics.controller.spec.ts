@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { CycleMetricsController } from '@modules/analytics/interface-adapters/controllers/cycle-metrics.controller.js';
-import { CalculateCycleMetricsUsecase } from '@modules/analytics/usecases/calculate-cycle-metrics.usecase.js';
 import { CycleMetricsPresenter } from '@modules/analytics/interface-adapters/presenters/cycle-metrics.presenter.js';
 import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
+import { CalculateCycleMetricsUsecase } from '@modules/analytics/usecases/calculate-cycle-metrics.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('CycleMetricsController', () => {
   let gateway: StubCycleMetricsDataGateway;

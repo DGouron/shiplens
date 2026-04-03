@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { LinearWorkspaceConnectionGateway } from '../entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
 import { LinearApiGateway } from '../entities/linear-workspace-connection/linear-api.gateway.js';
-import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
 import { NoLinearConnectionError } from '../entities/linear-workspace-connection/linear-workspace-connection.errors.js';
+import { LinearWorkspaceConnectionGateway } from '../entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
+import { TokenEncryptionGateway } from '../entities/linear-workspace-connection/token-encryption.gateway.js';
 
 @Injectable()
 export class DisconnectLinearWorkspaceUsecase implements Usecase<void, void> {

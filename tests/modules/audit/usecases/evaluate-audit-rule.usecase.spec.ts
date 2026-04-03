@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { EvaluateAuditRuleUsecase } from '@modules/audit/usecases/evaluate-audit-rule.usecase.js';
-import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
-import { AuditRuleBuilder } from '../../../builders/audit-rule.builder.js';
 import { RuleNotFoundError } from '@modules/audit/entities/audit-rule/audit-rule.errors.js';
 import { type CycleMetrics } from '@modules/audit/entities/audit-rule/cycle-metrics.js';
+import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
+import { EvaluateAuditRuleUsecase } from '@modules/audit/usecases/evaluate-audit-rule.usecase.js';
+import { describe, expect, it } from 'vitest';
+import { AuditRuleBuilder } from '../../../builders/audit-rule.builder.js';
 
 function defaultMetrics(overrides: Partial<CycleMetrics> = {}): CycleMetrics {
   return {

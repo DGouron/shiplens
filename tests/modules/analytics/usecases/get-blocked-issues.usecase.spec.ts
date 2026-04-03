@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetBlockedIssuesUsecase } from '@modules/analytics/usecases/get-blocked-issues.usecase.js';
 import { StubBlockedIssueAlertGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-alert.gateway.js';
+import { GetBlockedIssuesUsecase } from '@modules/analytics/usecases/get-blocked-issues.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { BlockedIssueAlertBuilder } from '../../../builders/blocked-issue-alert.builder.js';
 
 describe('GetBlockedIssuesUsecase', () => {

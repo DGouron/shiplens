@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
+import { RulesDirectoryNotFoundError } from '../../entities/audit-rule/audit-rule.errors.js';
 import { AuditRuleGateway } from '../../entities/audit-rule/audit-rule.gateway.js';
 import { AuditRule } from '../../entities/audit-rule/audit-rule.js';
-import { RulesDirectoryNotFoundError } from '../../entities/audit-rule/audit-rule.errors.js';
 
 const storedRuleSchema = z.object({
   identifier: z.string(),

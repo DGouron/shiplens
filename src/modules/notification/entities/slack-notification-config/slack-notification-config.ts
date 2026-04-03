@@ -1,5 +1,5 @@
-import { type SlackNotificationConfigProps } from './slack-notification-config.schema.js';
 import { slackNotificationConfigGuard } from './slack-notification-config.guard.js';
+import { type SlackNotificationConfigProps } from './slack-notification-config.schema.js';
 
 export class SlackNotificationConfig {
   private constructor(private readonly props: SlackNotificationConfigProps) {}

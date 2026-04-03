@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ListTeamCyclesUsecase } from '@modules/analytics/usecases/list-team-cycles.usecase.js';
-import { StubCycleReportPageDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-report-page-data.gateway.js';
 import { DataNotSynchronizedError } from '@modules/analytics/entities/cycle-report-page/cycle-report-page.errors.js';
+import { StubCycleReportPageDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-report-page-data.gateway.js';
+import { ListTeamCyclesUsecase } from '@modules/analytics/usecases/list-team-cycles.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('ListTeamCyclesUsecase', () => {
   let gateway: StubCycleReportPageDataGateway;
@@ -44,9 +44,9 @@ describe('ListTeamCyclesUsecase', () => {
   it('throws DataNotSynchronizedError when data is not synced', async () => {
     gateway.synchronized = false;
 
-    await expect(
-      usecase.execute({ teamId: 'team-1' }),
-    ).rejects.toThrow(DataNotSynchronizedError);
+    await expect(usecase.execute({ teamId: 'team-1' })).rejects.toThrow(
+      DataNotSynchronizedError,
+    );
   });
 
   it('returns empty list when no cycles exist', async () => {

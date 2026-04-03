@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { WebhookEvent } from '../entities/webhook-event/webhook-event.js';
-import { WebhookEventGateway } from '../entities/webhook-event/webhook-event.gateway.js';
 import { IssueDataGateway } from '../entities/issue-data/issue-data.gateway.js';
+import {
+  commentDataSchema,
+  cycleDataSchema,
+  issueDataSchema,
+  stateTransitionDataSchema,
+} from '../entities/issue-data/issue-data.schema.js';
 import { TeamSelectionGateway } from '../entities/team-selection/team-selection.gateway.js';
 import { UnverifiedWebhookSignatureError } from '../entities/webhook-event/webhook-event.errors.js';
+import { WebhookEventGateway } from '../entities/webhook-event/webhook-event.gateway.js';
+import { WebhookEvent } from '../entities/webhook-event/webhook-event.js';
 import {
   webhookIssueDataSchema,
   webhookIssueDeleteDataSchema,
 } from '../entities/webhook-event/webhook-event.schema.js';
-import { issueDataSchema } from '../entities/issue-data/issue-data.schema.js';
-import { cycleDataSchema } from '../entities/issue-data/issue-data.schema.js';
-import { commentDataSchema } from '../entities/issue-data/issue-data.schema.js';
-import { stateTransitionDataSchema } from '../entities/issue-data/issue-data.schema.js';
 
 interface ProcessWebhookEventParams {
   rawBody: string;
@@ -28,7 +30,9 @@ interface ProcessWebhookEventParams {
 const MAX_RETRIES = 3;
 
 @Injectable()
-export class ProcessWebhookEventUsecase implements Usecase<ProcessWebhookEventParams, void> {
+export class ProcessWebhookEventUsecase
+  implements Usecase<ProcessWebhookEventParams, void>
+{
   constructor(
     private readonly webhookEventGateway: WebhookEventGateway,
     private readonly issueDataGateway: IssueDataGateway,
@@ -45,7 +49,9 @@ export class ProcessWebhookEventUsecase implements Usecase<ProcessWebhookEventPa
       throw new UnverifiedWebhookSignatureError();
     }
 
-    const alreadyProcessed = await this.webhookEventGateway.hasBeenProcessed(params.deliveryId);
+    const alreadyProcessed = await this.webhookEventGateway.hasBeenProcessed(
+      params.deliveryId,
+    );
     if (alreadyProcessed) {
       return;
     }
@@ -88,7 +94,9 @@ export class ProcessWebhookEventUsecase implements Usecase<ProcessWebhookEventPa
       currentEvent = currentEvent.incrementAttempts();
       try {
         await this.routeEvent(params.action, params.type, params.data);
-        const processed = currentEvent.markAsProcessed(new Date().toISOString());
+        const processed = currentEvent.markAsProcessed(
+          new Date().toISOString(),
+        );
         await this.webhookEventGateway.save(processed);
         return;
       } catch {
@@ -121,7 +129,10 @@ export class ProcessWebhookEventUsecase implements Usecase<ProcessWebhookEventPa
   ): Promise<void> {
     if (action === 'remove') {
       const parsed = webhookIssueDeleteDataSchema.parse(data);
-      await this.issueDataGateway.softDeleteIssue(parsed.externalId, parsed.teamId);
+      await this.issueDataGateway.softDeleteIssue(
+        parsed.externalId,
+        parsed.teamId,
+      );
       return;
     }
 
@@ -160,7 +171,9 @@ export class ProcessWebhookEventUsecase implements Usecase<ProcessWebhookEventPa
     await this.issueDataGateway.upsertCycle(cycleData);
   }
 
-  private async handleCommentEvent(data: Record<string, unknown>): Promise<void> {
+  private async handleCommentEvent(
+    data: Record<string, unknown>,
+  ): Promise<void> {
     const comment = commentDataSchema.parse(data);
     await this.issueDataGateway.createComment(comment);
   }

@@ -1,11 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { StatusThresholdGateway } from '../entities/status-threshold/status-threshold.gateway.js';
-import { StatusThreshold } from '../entities/status-threshold/status-threshold.js';
+import { NoSynchronizedDataError } from '../entities/blocked-issue-alert/blocked-issue-alert.errors.js';
 import { BlockedIssueAlertGateway } from '../entities/blocked-issue-alert/blocked-issue-alert.gateway.js';
 import { BlockedIssueAlert } from '../entities/blocked-issue-alert/blocked-issue-alert.js';
-import { BlockedIssueDetectionDataGateway, type IssueWithCurrentStatus } from '../entities/blocked-issue-alert/blocked-issue-detection-data.gateway.js';
-import { NoSynchronizedDataError } from '../entities/blocked-issue-alert/blocked-issue-alert.errors.js';
+import {
+  BlockedIssueDetectionDataGateway,
+  type IssueWithCurrentStatus,
+} from '../entities/blocked-issue-alert/blocked-issue-detection-data.gateway.js';
+import { StatusThresholdGateway } from '../entities/status-threshold/status-threshold.gateway.js';
+import { StatusThreshold } from '../entities/status-threshold/status-threshold.js';
 import { TeamSettingsGateway } from '../entities/team-settings/team-settings.gateway.js';
 
 @Injectable()
@@ -28,7 +31,8 @@ export class DetectBlockedIssuesUsecase implements Usecase<void, void> {
     }
 
     const thresholdMap = await this.buildThresholdMap();
-    const allIssues = await this.detectionDataGateway.getIssuesWithCurrentStatus();
+    const allIssues =
+      await this.detectionDataGateway.getIssuesWithCurrentStatus();
     const issues = await this.filterExcludedStatuses(allIssues);
     const existingAlerts = await this.blockedIssueAlertGateway.findAllActive();
 
@@ -97,7 +101,9 @@ export class DetectBlockedIssuesUsecase implements Usecase<void, void> {
       }
     }
 
-    this.logger.log(`Blocked issue detection completed — issues checked: ${issues.length}, alerts created: ${createdCount}, alerts resolved: ${resolvedCount}`);
+    this.logger.log(
+      `Blocked issue detection completed — issues checked: ${issues.length}, alerts created: ${createdCount}, alerts resolved: ${resolvedCount}`,
+    );
   }
 
   private async filterExcludedStatuses(
@@ -118,7 +124,7 @@ export class DetectBlockedIssuesUsecase implements Usecase<void, void> {
 
     return issues.filter((issue) => {
       const excluded = exclusionsByTeam.get(issue.teamId);
-      return !excluded || !excluded.has(issue.statusName);
+      return !excluded?.has(issue.statusName);
     });
   }
 

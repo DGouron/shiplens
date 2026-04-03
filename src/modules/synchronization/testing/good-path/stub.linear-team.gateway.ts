@@ -1,6 +1,6 @@
 import {
-  LinearTeamGateway,
   type LinearTeam,
+  LinearTeamGateway,
 } from '../../entities/team-selection/linear-team.gateway.js';
 
 export class StubLinearTeamGateway extends LinearTeamGateway {

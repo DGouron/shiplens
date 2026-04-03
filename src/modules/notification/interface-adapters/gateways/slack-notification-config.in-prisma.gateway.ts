@@ -9,9 +9,7 @@ export class SlackNotificationConfigInPrismaGateway extends SlackNotificationCon
     super();
   }
 
-  async findByTeamId(
-    teamId: string,
-  ): Promise<SlackNotificationConfig | null> {
+  async findByTeamId(teamId: string): Promise<SlackNotificationConfig | null> {
     const record = await this.prisma.slackNotificationConfig.findUnique({
       where: { teamId },
     });

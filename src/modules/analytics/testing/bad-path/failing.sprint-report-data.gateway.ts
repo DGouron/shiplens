@@ -1,4 +1,8 @@
-import { SprintReportDataGateway, type SprintContext, type TrendContext } from '../../entities/sprint-report/sprint-report-data.gateway.js';
+import {
+  type SprintContext,
+  SprintReportDataGateway,
+  type TrendContext,
+} from '../../entities/sprint-report/sprint-report-data.gateway.js';
 
 export class FailingSprintReportDataGateway extends SprintReportDataGateway {
   async isSynchronized(): Promise<boolean> {

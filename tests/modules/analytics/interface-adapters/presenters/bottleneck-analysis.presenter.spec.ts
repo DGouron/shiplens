@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { BottleneckAnalysisPresenter } from '@modules/analytics/interface-adapters/presenters/bottleneck-analysis.presenter.js';
 import { type BottleneckAnalysisResult } from '@modules/analytics/usecases/analyze-bottlenecks-by-status.usecase.js';
+import { describe, expect, it } from 'vitest';
 
 describe('BottleneckAnalysisPresenter', () => {
   const presenter = new BottleneckAnalysisPresenter();

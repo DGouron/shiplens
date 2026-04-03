@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { InsufficientHistoryForTrendError } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.errors.js';
 import { EstimationAccuracyController } from '@modules/analytics/interface-adapters/controllers/estimation-accuracy.controller.js';
-import { CalculateEstimationAccuracyUsecase } from '@modules/analytics/usecases/calculate-estimation-accuracy.usecase.js';
-import { GetEstimationTrendUsecase } from '@modules/analytics/usecases/get-estimation-trend.usecase.js';
 import { EstimationAccuracyPresenter } from '@modules/analytics/interface-adapters/presenters/estimation-accuracy.presenter.js';
 import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
-import { InsufficientHistoryForTrendError } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.errors.js';
+import { CalculateEstimationAccuracyUsecase } from '@modules/analytics/usecases/calculate-estimation-accuracy.usecase.js';
+import { GetEstimationTrendUsecase } from '@modules/analytics/usecases/get-estimation-trend.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('EstimationAccuracyController', () => {
   let gateway: StubEstimationAccuracyDataGateway;
@@ -27,7 +27,14 @@ describe('EstimationAccuracyController', () => {
       cycleId: 'cycle-1',
       teamId: 'team-1',
       issues: [
-        { externalId: 'issue-1', title: 'Task 1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: ['frontend'] },
+        {
+          externalId: 'issue-1',
+          title: 'Task 1',
+          points: 3,
+          cycleTimeInDays: 2,
+          assigneeName: 'Alice',
+          labelNames: ['frontend'],
+        },
       ],
       excludedWithoutEstimation: 1,
       excludedWithoutCycleTime: 0,
@@ -45,14 +52,36 @@ describe('EstimationAccuracyController', () => {
     gateway.completedCycleIds = ['cycle-1', 'cycle-2'];
     gateway.estimationDataByCycle = {
       'cycle-1': {
-        cycleId: 'cycle-1', teamId: 'team-1',
-        issues: [{ externalId: 'i-1', title: 'T1', points: 3, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] }],
-        excludedWithoutEstimation: 0, excludedWithoutCycleTime: 0,
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+        issues: [
+          {
+            externalId: 'i-1',
+            title: 'T1',
+            points: 3,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+        ],
+        excludedWithoutEstimation: 0,
+        excludedWithoutCycleTime: 0,
       },
       'cycle-2': {
-        cycleId: 'cycle-2', teamId: 'team-1',
-        issues: [{ externalId: 'i-2', title: 'T2', points: 2, cycleTimeInDays: 2, assigneeName: 'Alice', labelNames: [] }],
-        excludedWithoutEstimation: 0, excludedWithoutCycleTime: 0,
+        cycleId: 'cycle-2',
+        teamId: 'team-1',
+        issues: [
+          {
+            externalId: 'i-2',
+            title: 'T2',
+            points: 2,
+            cycleTimeInDays: 2,
+            assigneeName: 'Alice',
+            labelNames: [],
+          },
+        ],
+        excludedWithoutEstimation: 0,
+        excludedWithoutCycleTime: 0,
       },
     };
 
@@ -66,8 +95,8 @@ describe('EstimationAccuracyController', () => {
   it('propagates InsufficientHistoryForTrendError for trend', async () => {
     gateway.completedCycleIds = ['cycle-1'];
 
-    await expect(
-      controller.getEstimationTrend('team-1'),
-    ).rejects.toThrow(InsufficientHistoryForTrendError);
+    await expect(controller.getEstimationTrend('team-1')).rejects.toThrow(
+      InsufficientHistoryForTrendError,
+    );
   });
 });

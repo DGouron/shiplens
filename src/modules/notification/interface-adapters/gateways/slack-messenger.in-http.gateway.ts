@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
-  SlackMessengerGateway,
-  type SendReportParams,
   type SendAlertParams,
+  type SendReportParams,
+  SlackMessengerGateway,
 } from '../../entities/slack-notification-config/slack-messenger.gateway.js';
 
 @Injectable()
@@ -46,7 +46,8 @@ export class SlackMessengerInHttpGateway extends SlackMessengerGateway {
   }
 
   async sendAlert(params: SendAlertParams): Promise<void> {
-    const severityEmoji = params.severity === 'critical' ? ':red_circle:' : ':warning:';
+    const severityEmoji =
+      params.severity === 'critical' ? ':red_circle:' : ':warning:';
     const assigneeText = params.assigneeName
       ? `*Assigné à :* ${params.assigneeName}`
       : '_Aucun responsable assigné_';

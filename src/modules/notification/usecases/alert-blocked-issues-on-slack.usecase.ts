@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { TeamAlertChannelGateway } from '../entities/team-alert-channel/team-alert-channel.gateway.js';
 import { SlackMessengerGateway } from '../entities/slack-notification-config/slack-messenger.gateway.js';
 import { BlockedIssueAlertDataGateway } from '../entities/team-alert-channel/blocked-issue-alert-data.gateway.js';
 import { SlackAlertLogGateway } from '../entities/team-alert-channel/slack-alert-log.gateway.js';
 import { SlackAlertDeliveryFailedError } from '../entities/team-alert-channel/team-alert-channel.errors.js';
+import { TeamAlertChannelGateway } from '../entities/team-alert-channel/team-alert-channel.gateway.js';
 
 @Injectable()
 export class AlertBlockedIssuesOnSlackUsecase implements Usecase<void, void> {

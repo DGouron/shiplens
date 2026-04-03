@@ -1,5 +1,5 @@
-import { type LinearWorkspaceConnectionProps } from './linear-workspace-connection.schema.js';
 import { linearWorkspaceConnectionGuard } from './linear-workspace-connection.guard.js';
+import { type LinearWorkspaceConnectionProps } from './linear-workspace-connection.schema.js';
 
 export class LinearWorkspaceConnection {
   private constructor(private readonly props: LinearWorkspaceConnectionProps) {}

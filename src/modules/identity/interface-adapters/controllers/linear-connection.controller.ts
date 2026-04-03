@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { GetConnectionStatusUsecase } from '../../usecases/get-connection-status.usecase.js';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ConnectLinearWorkspaceUsecase } from '../../usecases/connect-linear-workspace.usecase.js';
 import { DisconnectLinearWorkspaceUsecase } from '../../usecases/disconnect-linear-workspace.usecase.js';
+import { GetConnectionStatusUsecase } from '../../usecases/get-connection-status.usecase.js';
 import { RefreshLinearSessionUsecase } from '../../usecases/refresh-linear-session.usecase.js';
-import { ConnectionStatusPresenter, type ConnectionStatusDto } from '../presenters/connection-status.presenter.js';
+import {
+  type ConnectionStatusDto,
+  ConnectionStatusPresenter,
+} from '../presenters/connection-status.presenter.js';
 
 interface ConnectBody {
   code: string;

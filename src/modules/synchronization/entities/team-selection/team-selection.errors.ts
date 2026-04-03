@@ -8,7 +8,7 @@ export class NoTeamSelectedError extends BusinessRuleViolation {
 
 export class WorkspaceNotConnectedError extends BusinessRuleViolation {
   constructor() {
-    super('Veuillez d\'abord connecter votre workspace Linear.');
+    super("Veuillez d'abord connecter votre workspace Linear.");
   }
 }
 

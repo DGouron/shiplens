@@ -1,10 +1,12 @@
+import { GatewayError } from '@shared/foundation/gateway-error.js';
 import { ChecklistItemGateway } from '../../entities/checklist-item/checklist-item.gateway.js';
 import { type ChecklistItem } from '../../entities/checklist-item/checklist-item.js';
-import { GatewayError } from '@shared/foundation/gateway-error.js';
 
 export class FailingChecklistItemGateway extends ChecklistItemGateway {
   async save(_item: ChecklistItem): Promise<void> {
-    throw new GatewayError('Impossible de sauvegarder les elements de checklist.');
+    throw new GatewayError(
+      'Impossible de sauvegarder les elements de checklist.',
+    );
   }
 
   async findAll(): Promise<ChecklistItem[]> {

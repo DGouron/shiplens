@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GetCycleIssuesUsecase } from '@modules/analytics/usecases/get-cycle-issues.usecase.js';
-import { StubCycleReportPageDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-report-page-data.gateway.js';
 import { DataNotSynchronizedError } from '@modules/analytics/entities/cycle-report-page/cycle-report-page.errors.js';
+import { StubCycleReportPageDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-report-page-data.gateway.js';
+import { GetCycleIssuesUsecase } from '@modules/analytics/usecases/get-cycle-issues.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('GetCycleIssuesUsecase', () => {
   let gateway: StubCycleReportPageDataGateway;
@@ -30,7 +30,10 @@ describe('GetCycleIssuesUsecase', () => {
       },
     ];
 
-    const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+    const result = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+    });
 
     expect(result.issues).toHaveLength(2);
     expect(result.issues[0].title).toBe('Fix login bug');
@@ -48,7 +51,10 @@ describe('GetCycleIssuesUsecase', () => {
   it('returns empty list when cycle has no issues', async () => {
     gateway.issues = [];
 
-    const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+    const result = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+    });
 
     expect(result.issues).toHaveLength(0);
   });
@@ -64,7 +70,10 @@ describe('GetCycleIssuesUsecase', () => {
       },
     ];
 
-    const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+    const result = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+    });
 
     expect(result.issues[0].points).toBeNull();
     expect(result.issues[0].assigneeName).toBeNull();

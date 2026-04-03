@@ -1,5 +1,8 @@
+import {
+  type ActiveCycleData,
+  type TeamSummary,
+} from '../../entities/workspace-dashboard/workspace-dashboard.schema.js';
 import { WorkspaceDashboardDataGateway } from '../../entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
-import { type TeamSummary, type ActiveCycleData } from '../../entities/workspace-dashboard/workspace-dashboard.schema.js';
 
 export class FailingWorkspaceDashboardDataGateway extends WorkspaceDashboardDataGateway {
   async isWorkspaceConnected(): Promise<boolean> {

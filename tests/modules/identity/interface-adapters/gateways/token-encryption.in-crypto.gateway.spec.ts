@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { TokenEncryptionInCryptoGateway } from '@modules/identity/interface-adapters/gateways/token-encryption.in-crypto.gateway.js';
+import { describe, expect, it } from 'vitest';
 
 describe('TokenEncryptionInCryptoGateway', () => {
   const encryptionKey = 'a'.repeat(64);

@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SprintReportBuilder } from '../builders/sprint-report.builder.js';
-import { ListTeamReportsUsecase } from '@modules/analytics/usecases/list-team-reports.usecase.js';
-import { GetReportUsecase } from '@modules/analytics/usecases/get-report.usecase.js';
-import { ReportHistoryPresenter } from '@modules/analytics/interface-adapters/presenters/report-history.presenter.js';
-import { ReportDetailPresenter } from '@modules/analytics/interface-adapters/presenters/report-detail.presenter.js';
-import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 import { ReportNotFoundError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
+import { ReportDetailPresenter } from '@modules/analytics/interface-adapters/presenters/report-detail.presenter.js';
+import { ReportHistoryPresenter } from '@modules/analytics/interface-adapters/presenters/report-history.presenter.js';
+import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { GetReportUsecase } from '@modules/analytics/usecases/get-report.usecase.js';
+import { ListTeamReportsUsecase } from '@modules/analytics/usecases/list-team-reports.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { SprintReportBuilder } from '../builders/sprint-report.builder.js';
 
 describe('Export Sprint Report (acceptance)', () => {
   let sprintReportGateway: StubSprintReportGateway;
@@ -102,7 +102,9 @@ describe('Export Sprint Report (acceptance)', () => {
       const history = reportHistoryPresenter.present(reports);
 
       expect(history.reports).toHaveLength(0);
-      expect(history.emptyMessage).toBe("Aucun rapport n'a encore été généré pour cette équipe.");
+      expect(history.emptyMessage).toBe(
+        "Aucun rapport n'a encore été généré pour cette équipe.",
+      );
     });
   });
 

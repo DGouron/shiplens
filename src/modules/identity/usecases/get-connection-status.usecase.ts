@@ -4,8 +4,12 @@ import { LinearWorkspaceConnectionGateway } from '../entities/linear-workspace-c
 import { type LinearWorkspaceConnection } from '../entities/linear-workspace-connection/linear-workspace-connection.js';
 
 @Injectable()
-export class GetConnectionStatusUsecase implements Usecase<void, LinearWorkspaceConnection | null> {
-  constructor(private readonly connectionGateway: LinearWorkspaceConnectionGateway) {}
+export class GetConnectionStatusUsecase
+  implements Usecase<void, LinearWorkspaceConnection | null>
+{
+  constructor(
+    private readonly connectionGateway: LinearWorkspaceConnectionGateway,
+  ) {}
 
   async execute(): Promise<LinearWorkspaceConnection | null> {
     return this.connectionGateway.get();

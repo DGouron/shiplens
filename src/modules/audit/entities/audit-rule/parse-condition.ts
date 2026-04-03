@@ -1,10 +1,10 @@
+import { InvalidConditionError } from './audit-rule.errors.js';
 import {
   type Condition,
-  ratioConditionSchema,
   patternConditionSchema,
+  ratioConditionSchema,
   thresholdConditionSchema,
 } from './condition.schema.js';
-import { InvalidConditionError } from './audit-rule.errors.js';
 
 const THRESHOLD_PATTERN = /^(.+?)\s*(>|<|>=|<=)\s*(\d+(?:\.\d+)?)\s*(.+)?$/;
 const RATIO_PATTERN = /^ratio\s+(\w+)\/(\w+)\s*(>|<|>=|<=)\s*(\d+(?:\.\d+)?)$/;

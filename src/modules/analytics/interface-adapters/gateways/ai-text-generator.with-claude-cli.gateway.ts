@@ -1,9 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { spawn } from 'node:child_process';
-import { execSync } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { Injectable, Logger } from '@nestjs/common';
 import { AiTextGeneratorGateway } from '../../entities/sprint-report/ai-text-generator.gateway.js';
 import { AiProviderUnavailableError } from '../../entities/sprint-report/sprint-report.errors.js';
 
@@ -37,7 +36,9 @@ function resolveClaudePath(): string {
 
 @Injectable()
 export class AiTextGeneratorWithClaudeCliGateway extends AiTextGeneratorGateway {
-  private readonly logger = new Logger(AiTextGeneratorWithClaudeCliGateway.name);
+  private readonly logger = new Logger(
+    AiTextGeneratorWithClaudeCliGateway.name,
+  );
 
   async generate(prompt: string): Promise<string> {
     this.logger.log('Calling Claude CLI...');
@@ -48,9 +49,12 @@ export class AiTextGeneratorWithClaudeCliGateway extends AiTextGeneratorGateway 
     return new Promise((resolve, reject) => {
       const args = [
         '--print',
-        '--model', 'claude-sonnet-4-20250514',
-        '--setting-sources', 'user',
-        '-p', prompt,
+        '--model',
+        'claude-sonnet-4-20250514',
+        '--setting-sources',
+        'user',
+        '-p',
+        prompt,
       ];
 
       const childEnv = { ...process.env };
@@ -100,7 +104,9 @@ export class AiTextGeneratorWithClaudeCliGateway extends AiTextGeneratorGateway 
           this.logger.log(`Claude CLI responded (${stdout.length} chars)`);
           resolve(stdout);
         } else {
-          this.logger.error(`Claude CLI exited with code ${code}: ${stderr.substring(0, 500)}`);
+          this.logger.error(
+            `Claude CLI exited with code ${code}: ${stderr.substring(0, 500)}`,
+          );
           reject(new AiProviderUnavailableError());
         }
       });

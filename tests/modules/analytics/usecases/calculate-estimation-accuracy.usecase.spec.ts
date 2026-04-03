@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { CalculateEstimationAccuracyUsecase } from '@modules/analytics/usecases/calculate-estimation-accuracy.usecase.js';
 import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
+import { CalculateEstimationAccuracyUsecase } from '@modules/analytics/usecases/calculate-estimation-accuracy.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('CalculateEstimationAccuracyUsecase', () => {
   let gateway: StubEstimationAccuracyDataGateway;
@@ -29,7 +29,10 @@ describe('CalculateEstimationAccuracyUsecase', () => {
       excludedWithoutCycleTime: 1,
     };
 
-    const result = await usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' });
+    const result = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+    });
 
     expect(result.ratioPerIssue()).toHaveLength(1);
     expect(result.ratioPerIssue()[0].ratio).toBe(1.5);

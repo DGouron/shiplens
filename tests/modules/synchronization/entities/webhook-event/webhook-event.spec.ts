@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { createHmac } from 'node:crypto';
 import { WebhookEvent } from '@modules/synchronization/entities/webhook-event/webhook-event.js';
-import { createHmac } from 'crypto';
+import { describe, expect, it } from 'vitest';
 
 function computeSignature(rawBody: string, secret: string): string {
   return createHmac('sha256', secret).update(rawBody).digest('hex');
@@ -33,7 +33,11 @@ describe('WebhookEvent', () => {
       const secret = 'webhook-secret';
       const signature = computeSignature(originalBody, secret);
 
-      const result = WebhookEvent.verifySignature('tampered-body', signature, secret);
+      const result = WebhookEvent.verifySignature(
+        'tampered-body',
+        signature,
+        secret,
+      );
 
       expect(result).toBe(false);
     });

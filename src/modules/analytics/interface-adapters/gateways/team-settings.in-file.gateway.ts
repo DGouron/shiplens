@@ -1,6 +1,6 @@
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { Injectable } from '@nestjs/common';
-import { readFile, writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { TeamSettingsGateway } from '../../entities/team-settings/team-settings.gateway.js';
 
 interface TeamSettingsFile {
@@ -16,10 +16,7 @@ export class TeamSettingsInFileGateway extends TeamSettingsGateway {
     return settings[teamId]?.excludedStatuses ?? [];
   }
 
-  async setExcludedStatuses(
-    teamId: string,
-    statuses: string[],
-  ): Promise<void> {
+  async setExcludedStatuses(teamId: string, statuses: string[]): Promise<void> {
     const settings = await this.readSettings();
     settings[teamId] = { excludedStatuses: statuses };
     await this.writeSettings(settings);

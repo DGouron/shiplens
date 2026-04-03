@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SprintReport } from '@modules/analytics/entities/sprint-report/sprint-report.js';
+import { describe, expect, it } from 'vitest';
 
 describe('SprintReport', () => {
   const validProps = {
@@ -10,11 +10,14 @@ describe('SprintReport', () => {
     language: 'FR',
     generatedAt: '2026-01-15T10:00:00.000Z',
     sections: {
-      executiveSummary: 'Le sprint s\'est bien déroulé avec une vélocité stable.',
-      trends: 'La vélocité est en hausse de 10% par rapport aux 3 derniers sprints.',
+      executiveSummary:
+        "Le sprint s'est bien déroulé avec une vélocité stable.",
+      trends:
+        'La vélocité est en hausse de 10% par rapport aux 3 derniers sprints.',
       highlights: 'Migration de la base de données terminée en avance.',
       risks: 'Deux issues critiques restent ouvertes.',
-      recommendations: 'Prioriser la résolution des issues critiques au prochain sprint.',
+      recommendations:
+        'Prioriser la résolution des issues critiques au prochain sprint.',
     },
   };
 
@@ -119,7 +122,9 @@ describe('SprintReport', () => {
     expect(report.auditSection).not.toBeNull();
     expect(report.auditSection?.adherenceScore).toBe(100);
     expect(report.auditSection?.evaluatedRules).toHaveLength(1);
-    expect(report.auditSection?.evaluatedRules[0].ruleName).toBe('Cycle time max');
+    expect(report.auditSection?.evaluatedRules[0].ruleName).toBe(
+      'Cycle time max',
+    );
     expect(report.auditSection?.checklistItems).toHaveLength(1);
     expect(report.auditSection?.trend).toBeNull();
   });

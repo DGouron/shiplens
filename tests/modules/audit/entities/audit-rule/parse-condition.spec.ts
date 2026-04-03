@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { parseCondition } from '@modules/audit/entities/audit-rule/parse-condition.js';
 import { InvalidConditionError } from '@modules/audit/entities/audit-rule/audit-rule.errors.js';
+import { parseCondition } from '@modules/audit/entities/audit-rule/parse-condition.js';
+import { describe, expect, it } from 'vitest';
 
 describe('parseCondition', () => {
   describe('threshold conditions', () => {

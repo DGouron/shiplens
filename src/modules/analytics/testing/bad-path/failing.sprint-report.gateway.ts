@@ -1,6 +1,6 @@
+import { GatewayError } from '@shared/foundation/gateway-error.js';
 import { SprintReportGateway } from '../../entities/sprint-report/sprint-report.gateway.js';
 import { type SprintReport } from '../../entities/sprint-report/sprint-report.js';
-import { GatewayError } from '@shared/foundation/gateway-error.js';
 
 export class FailingSprintReportGateway extends SprintReportGateway {
   async save(_report: SprintReport): Promise<void> {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { CycleReportPageDataGateway } from '../entities/cycle-report-page/cycle-report-page-data.gateway.js';
-import { type CycleSummary } from '../entities/cycle-report-page/cycle-report-page.schema.js';
 import { DataNotSynchronizedError } from '../entities/cycle-report-page/cycle-report-page.errors.js';
+import { type CycleSummary } from '../entities/cycle-report-page/cycle-report-page.schema.js';
+import { CycleReportPageDataGateway } from '../entities/cycle-report-page/cycle-report-page-data.gateway.js';
 
 interface ListTeamCyclesParams {
   teamId: string;

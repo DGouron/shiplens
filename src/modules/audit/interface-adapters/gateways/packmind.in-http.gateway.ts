@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { GatewayError } from '@shared/foundation/gateway-error.js';
+import { InvalidPackmindTokenError } from '../../entities/packmind/packmind.errors.js';
 import { PackmindGateway } from '../../entities/packmind/packmind.gateway.js';
 import { type PackmindPractice } from '../../entities/packmind/packmind-practice.js';
-import { InvalidPackmindTokenError } from '../../entities/packmind/packmind.errors.js';
-import { GatewayError } from '@shared/foundation/gateway-error.js';
 
 interface PackmindApiPractice {
   id: string;
@@ -39,7 +39,9 @@ export class PackmindInHttpGateway extends PackmindGateway {
     }
 
     if (!response.ok) {
-      throw new GatewayError(`Packmind a retourne une erreur ${response.status}.`);
+      throw new GatewayError(
+        `Packmind a retourne une erreur ${response.status}.`,
+      );
     }
 
     return response.json() as Promise<PackmindApiPractice[]>;

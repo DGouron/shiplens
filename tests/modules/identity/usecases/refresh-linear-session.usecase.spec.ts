@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { RefreshLinearSessionUsecase } from '@modules/identity/usecases/refresh-linear-session.usecase.js';
-import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
-import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
-import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
 import { FailingLinearApiGateway } from '@modules/identity/testing/bad-path/failing.linear-api.gateway.js';
+import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
+import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
+import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
+import { RefreshLinearSessionUsecase } from '@modules/identity/usecases/refresh-linear-session.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../builders/linear-workspace-connection.builder.js';
 
 describe('RefreshLinearSessionUsecase', () => {
@@ -24,25 +24,31 @@ describe('RefreshLinearSessionUsecase', () => {
   });
 
   it('refreshes tokens and updates the connection', async () => {
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
 
     await usecase.execute();
 
     const updated = await connectionGateway.get();
     expect(updated).not.toBeNull();
     expect(updated?.status).toBe('connected');
-    expect(updated?.encryptedAccessToken).toBe('encrypted:refreshed-access-token');
-    expect(updated?.encryptedRefreshToken).toBe('encrypted:refreshed-refresh-token');
+    expect(updated?.encryptedAccessToken).toBe(
+      'encrypted:refreshed-access-token',
+    );
+    expect(updated?.encryptedRefreshToken).toBe(
+      'encrypted:refreshed-refresh-token',
+    );
   });
 
   it('throws when no connection exists', async () => {
     await expect(usecase.execute()).rejects.toThrow(
-      'Aucun workspace Linear n\'est connecté.',
+      "Aucun workspace Linear n'est connecté.",
     );
   });
 
   it('throws session expired error when refresh fails', async () => {
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
     const failingApi = new FailingLinearApiGateway();
     const failingUsecase = new RefreshLinearSessionUsecase(
       connectionGateway,

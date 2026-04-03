@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { SlackNotificationConfigGateway } from '../entities/slack-notification-config/slack-notification-config.gateway.js';
 import { SlackMessengerGateway } from '../entities/slack-notification-config/slack-messenger.gateway.js';
-import { SlackNotificationConfig } from '../entities/slack-notification-config/slack-notification-config.js';
 import { InvalidSlackWebhookUrlError } from '../entities/slack-notification-config/slack-notification-config.errors.js';
+import { SlackNotificationConfigGateway } from '../entities/slack-notification-config/slack-notification-config.gateway.js';
 import { slackNotificationConfigGuard } from '../entities/slack-notification-config/slack-notification-config.guard.js';
+import { SlackNotificationConfig } from '../entities/slack-notification-config/slack-notification-config.js';
 
 interface ConfigureSlackWebhookParams {
   teamId: string;

@@ -1,6 +1,10 @@
-import { type ArgumentsHost, Catch, type ExceptionFilter } from '@nestjs/common';
-import { type Response } from 'express';
+import {
+  type ArgumentsHost,
+  Catch,
+  type ExceptionFilter,
+} from '@nestjs/common';
 import { BusinessRuleViolation } from '@shared/foundation/business-rule-violation.js';
+import { type Response } from 'express';
 
 @Catch(BusinessRuleViolation)
 export class BusinessRuleViolationFilter implements ExceptionFilter {

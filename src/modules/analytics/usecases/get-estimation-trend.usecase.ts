@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { EstimationAccuracyDataGateway } from '../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
-import { EstimationAccuracy } from '../entities/estimation-accuracy/estimation-accuracy.js';
 import { InsufficientHistoryForTrendError } from '../entities/estimation-accuracy/estimation-accuracy.errors.js';
+import { EstimationAccuracy } from '../entities/estimation-accuracy/estimation-accuracy.js';
+import { EstimationAccuracyDataGateway } from '../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 
 interface GetEstimationTrendParams {
   teamId: string;
@@ -25,9 +25,10 @@ export class GetEstimationTrendUsecase
   ) {}
 
   async execute(params: GetEstimationTrendParams): Promise<CycleTrendEntry[]> {
-    const cycleIds = await this.estimationAccuracyDataGateway.getCompletedCycleIds(
-      params.teamId,
-    );
+    const cycleIds =
+      await this.estimationAccuracyDataGateway.getCompletedCycleIds(
+        params.teamId,
+      );
 
     if (cycleIds.length < MINIMUM_CYCLES_FOR_TREND) {
       throw new InsufficientHistoryForTrendError();

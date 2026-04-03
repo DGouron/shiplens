@@ -1,9 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { BottleneckAnalysis } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.js';
 import { NoCompletedIssuesError } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.errors.js';
+import { BottleneckAnalysis } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.js';
 import { type BottleneckAnalysisProps } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.schema.js';
+import { describe, expect, it } from 'vitest';
 
-function makeProps(overrides?: Partial<BottleneckAnalysisProps>): BottleneckAnalysisProps {
+function makeProps(
+  overrides?: Partial<BottleneckAnalysisProps>,
+): BottleneckAnalysisProps {
   return {
     cycleId: 'cycle-1',
     teamId: 'team-1',
@@ -57,7 +59,7 @@ describe('BottleneckAnalysis', () => {
 
     const inReview = distribution.find((d) => d.statusName === 'In Review');
     expect(inReview).toBeDefined();
-    expect(inReview!.medianHours).toBeGreaterThan(0);
+    expect(inReview?.medianHours).toBeGreaterThan(0);
   });
 
   it('identifies bottleneck as status with highest median', () => {
@@ -101,7 +103,7 @@ describe('BottleneckAnalysis', () => {
       (d) => d.statusName === 'In Progress',
     );
 
-    expect(inProgress!.medianHours).toBe(20);
+    expect(inProgress?.medianHours).toBe(20);
   });
 
   it('provides breakdown by assignee', () => {
@@ -115,7 +117,7 @@ describe('BottleneckAnalysis', () => {
 
     expect(alice).toBeDefined();
     expect(bob).toBeDefined();
-    expect(alice!.statusMedians.length).toBeGreaterThan(0);
+    expect(alice?.statusMedians.length).toBeGreaterThan(0);
   });
 
   it('excludes issues without assignee from breakdown', () => {
@@ -141,8 +143,8 @@ describe('BottleneckAnalysis', () => {
   it('calculates cycle comparison when previous medians provided', () => {
     const props = makeProps({
       previousCycleMedians: {
-        'Backlog': 8,
-        'Todo': 6,
+        Backlog: 8,
+        Todo: 6,
         'In Progress': 30,
         'In Review': 48,
       },
@@ -152,11 +154,11 @@ describe('BottleneckAnalysis', () => {
     const comparison = analysis.cycleComparison;
 
     expect(comparison).not.toBeNull();
-    expect(comparison!.length).toBeGreaterThan(0);
+    expect(comparison?.length).toBeGreaterThan(0);
 
-    const inReview = comparison!.find((c) => c.statusName === 'In Review');
+    const inReview = comparison?.find((c) => c.statusName === 'In Review');
     expect(inReview).toBeDefined();
-    expect(inReview!.evolutionPercent).toBeDefined();
+    expect(inReview?.evolutionPercent).toBeDefined();
   });
 
   it('returns null cycle comparison when no previous medians', () => {

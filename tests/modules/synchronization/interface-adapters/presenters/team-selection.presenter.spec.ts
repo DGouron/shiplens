@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { TeamSelectionPresenter } from '@modules/synchronization/interface-adapters/presenters/team-selection.presenter.js';
+import { describe, expect, it } from 'vitest';
 import { TeamSelectionBuilder } from '../../../../builders/team-selection.builder.js';
 
 describe('TeamSelectionPresenter', () => {

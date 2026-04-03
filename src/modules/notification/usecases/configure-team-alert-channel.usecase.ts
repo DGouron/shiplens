@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { TeamAlertChannelGateway } from '../entities/team-alert-channel/team-alert-channel.gateway.js';
 import { SlackMessengerGateway } from '../entities/slack-notification-config/slack-messenger.gateway.js';
-import { TeamAlertChannel } from '../entities/team-alert-channel/team-alert-channel.js';
-import { teamAlertChannelGuard } from '../entities/team-alert-channel/team-alert-channel.guard.js';
 import { InvalidSlackWebhookUrlError } from '../entities/slack-notification-config/slack-notification-config.errors.js';
+import { TeamAlertChannelGateway } from '../entities/team-alert-channel/team-alert-channel.gateway.js';
+import { teamAlertChannelGuard } from '../entities/team-alert-channel/team-alert-channel.guard.js';
+import { TeamAlertChannel } from '../entities/team-alert-channel/team-alert-channel.js';
 
 interface ConfigureTeamAlertChannelParams {
   teamId: string;

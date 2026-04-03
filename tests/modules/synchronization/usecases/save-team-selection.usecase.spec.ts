@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { SaveTeamSelectionUsecase } from '@modules/synchronization/usecases/save-team-selection.usecase.js';
 import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
-import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
 import { StubLinearTeamGateway } from '@modules/synchronization/testing/good-path/stub.linear-team.gateway.js';
+import { StubTeamSelectionGateway } from '@modules/synchronization/testing/good-path/stub.team-selection.gateway.js';
+import { SaveTeamSelectionUsecase } from '@modules/synchronization/usecases/save-team-selection.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../../../builders/linear-workspace-connection.builder.js';
 
 describe('SaveTeamSelectionUsecase', () => {
@@ -18,7 +18,8 @@ describe('SaveTeamSelectionUsecase', () => {
     tokenEncryptionGateway = new StubTokenEncryptionGateway();
     teamSelectionGateway = new StubTeamSelectionGateway();
     linearTeamGateway = new StubLinearTeamGateway();
-    connectionGateway.connection = new LinearWorkspaceConnectionBuilder().build();
+    connectionGateway.connection =
+      new LinearWorkspaceConnectionBuilder().build();
 
     usecase = new SaveTeamSelectionUsecase(
       connectionGateway,
@@ -61,7 +62,7 @@ describe('SaveTeamSelectionUsecase', () => {
         selectedTeams: [{ teamId: 'team-1', teamName: 'Frontend' }],
         selectedProjects: [],
       }),
-    ).rejects.toThrow('Veuillez d\'abord connecter votre workspace Linear.');
+    ).rejects.toThrow("Veuillez d'abord connecter votre workspace Linear.");
   });
 
   it('replaces existing selection on modification', async () => {
@@ -78,6 +79,8 @@ describe('SaveTeamSelectionUsecase', () => {
     });
 
     expect(teamSelectionGateway.selection?.selectedTeams).toHaveLength(1);
-    expect(teamSelectionGateway.selection?.selectedTeams[0].teamId).toBe('team-2');
+    expect(teamSelectionGateway.selection?.selectedTeams[0].teamId).toBe(
+      'team-2',
+    );
   });
 });

@@ -12,4 +12,6 @@ export const linearWorkspaceConnectionSchema = z.object({
   updatedAt: z.date(),
 });
 
-export type LinearWorkspaceConnectionProps = z.infer<typeof linearWorkspaceConnectionSchema>;
+export type LinearWorkspaceConnectionProps = z.infer<
+  typeof linearWorkspaceConnectionSchema
+>;

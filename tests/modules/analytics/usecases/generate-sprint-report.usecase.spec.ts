@@ -1,16 +1,18 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
-import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
+import {
+  AiProviderUnavailableError,
+  EmptySprintError,
+  SprintNotSynchronizedError,
+  UnsupportedLanguageError,
+} from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
+import { FailingAiTextGeneratorGateway } from '@modules/analytics/testing/bad-path/failing.ai-text-generator.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
+import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
+import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
-import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
-import { SprintNotSynchronizedError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
-import { EmptySprintError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
-import { UnsupportedLanguageError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
-import { AiProviderUnavailableError } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
-import { FailingAiTextGeneratorGateway } from '@modules/analytics/testing/bad-path/failing.ai-text-generator.gateway.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { AuditRuleBuilder } from '../../../builders/audit-rule.builder.js';
 import { ChecklistItemBuilder } from '../../../builders/checklist-item.builder.js';
 import { SprintReportBuilder } from '../../../builders/sprint-report.builder.js';
@@ -186,7 +188,7 @@ describe('GenerateSprintReportUsecase', () => {
     dataGateway.trendContext = { previousVelocities: [18, 20, 22] };
 
     aiGateway.generatedText = JSON.stringify({
-      executiveSummary: 'Le sprint s\'est bien déroulé.',
+      executiveSummary: "Le sprint s'est bien déroulé.",
       trends: 'La vélocité est en hausse.',
       highlights: 'Bonne progression.',
       risks: 'Aucun risque majeur.',

@@ -1,7 +1,10 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
-import { SyncIssueDataUsecase } from '../../usecases/sync-issue-data.usecase.js';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { GetSyncProgressUsecase } from '../../usecases/get-sync-progress.usecase.js';
-import { SyncProgressPresenter, type SyncProgressDto } from '../presenters/sync-progress.presenter.js';
+import { SyncIssueDataUsecase } from '../../usecases/sync-issue-data.usecase.js';
+import {
+  type SyncProgressDto,
+  SyncProgressPresenter,
+} from '../presenters/sync-progress.presenter.js';
 
 interface SyncIssueDataBody {
   teamId: string;

@@ -1,6 +1,6 @@
 import {
-  LinearApiGateway,
   type ExchangeCodeResult,
+  LinearApiGateway,
   type RefreshTokenResult,
   type WorkspaceInfo,
 } from '../../entities/linear-workspace-connection/linear-api.gateway.js';
@@ -10,7 +10,10 @@ export class StubLinearApiGateway extends LinearApiGateway {
   grantedScopes: string[] = [...REQUIRED_SCOPES];
   revokedTokens: string[] = [];
 
-  async exchangeCode(_code: string, _redirectUri: string): Promise<ExchangeCodeResult> {
+  async exchangeCode(
+    _code: string,
+    _redirectUri: string,
+  ): Promise<ExchangeCodeResult> {
     return {
       accessToken: 'test-access-token',
       refreshToken: 'test-refresh-token',

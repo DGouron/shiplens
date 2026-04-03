@@ -35,12 +35,14 @@ export class CycleMetricsPresenter
       throughput: `${input.throughput} issues`,
       completionRate: `${input.completionRate}%`,
       scopeCreep: `${input.scopeCreep} issues ajoutees`,
-      averageCycleTime: input.averageCycleTimeInDays !== null
-        ? `${parseFloat(input.averageCycleTimeInDays.toFixed(1))} jours`
-        : 'Non disponible',
-      averageLeadTime: input.averageLeadTimeInDays !== null
-        ? `${parseFloat(input.averageLeadTimeInDays.toFixed(1))} jours`
-        : 'Non disponible',
+      averageCycleTime:
+        input.averageCycleTimeInDays !== null
+          ? `${parseFloat(input.averageCycleTimeInDays.toFixed(1))} jours`
+          : 'Non disponible',
+      averageLeadTime:
+        input.averageLeadTimeInDays !== null
+          ? `${parseFloat(input.averageLeadTimeInDays.toFixed(1))} jours`
+          : 'Non disponible',
     };
 
     if (input.trend) {

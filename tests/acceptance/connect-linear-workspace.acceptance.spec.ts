@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ConnectLinearWorkspaceUsecase } from '@modules/identity/usecases/connect-linear-workspace.usecase.js';
-import { GetConnectionStatusUsecase } from '@modules/identity/usecases/get-connection-status.usecase.js';
-import { DisconnectLinearWorkspaceUsecase } from '@modules/identity/usecases/disconnect-linear-workspace.usecase.js';
-import { RefreshLinearSessionUsecase } from '@modules/identity/usecases/refresh-linear-session.usecase.js';
-import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
-import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
-import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
 import { FailingLinearApiGateway } from '@modules/identity/testing/bad-path/failing.linear-api.gateway.js';
+import { StubLinearApiGateway } from '@modules/identity/testing/good-path/stub.linear-api.gateway.js';
+import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
+import { StubTokenEncryptionGateway } from '@modules/identity/testing/good-path/stub.token-encryption.gateway.js';
+import { ConnectLinearWorkspaceUsecase } from '@modules/identity/usecases/connect-linear-workspace.usecase.js';
+import { DisconnectLinearWorkspaceUsecase } from '@modules/identity/usecases/disconnect-linear-workspace.usecase.js';
+import { GetConnectionStatusUsecase } from '@modules/identity/usecases/get-connection-status.usecase.js';
+import { RefreshLinearSessionUsecase } from '@modules/identity/usecases/refresh-linear-session.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinearWorkspaceConnectionBuilder } from '../builders/linear-workspace-connection.builder.js';
 
 describe('Connect Linear Workspace (acceptance)', () => {
@@ -27,7 +27,9 @@ describe('Connect Linear Workspace (acceptance)', () => {
         linearApiGateway,
         tokenEncryptionGateway,
       );
-      const getStatusUsecase = new GetConnectionStatusUsecase(connectionGateway);
+      const getStatusUsecase = new GetConnectionStatusUsecase(
+        connectionGateway,
+      );
 
       await connectUsecase.execute({
         code: 'valid-oauth-code',
@@ -50,7 +52,9 @@ describe('Connect Linear Workspace (acceptance)', () => {
         linearApiGateway,
         tokenEncryptionGateway,
       );
-      const getStatusUsecase = new GetConnectionStatusUsecase(connectionGateway);
+      const getStatusUsecase = new GetConnectionStatusUsecase(
+        connectionGateway,
+      );
 
       await connectUsecase.execute({
         code: 'new-oauth-code',
@@ -99,7 +103,9 @@ describe('Connect Linear Workspace (acceptance)', () => {
           code: 'invalid-code',
           redirectUri: 'http://localhost:3000/callback',
         }),
-      ).rejects.toThrow('La connexion à Linear a été refusée. Veuillez réessayer.');
+      ).rejects.toThrow(
+        'La connexion à Linear a été refusée. Veuillez réessayer.',
+      );
     });
   });
 
@@ -138,7 +144,9 @@ describe('Connect Linear Workspace (acceptance)', () => {
 
       await refreshUsecase.execute();
 
-      const getStatusUsecase = new GetConnectionStatusUsecase(connectionGateway);
+      const getStatusUsecase = new GetConnectionStatusUsecase(
+        connectionGateway,
+      );
       const status = await getStatusUsecase.execute();
 
       expect(status?.status).toBe('connected');
@@ -174,7 +182,9 @@ describe('Connect Linear Workspace (acceptance)', () => {
 
       await disconnectUsecase.execute();
 
-      const getStatusUsecase = new GetConnectionStatusUsecase(connectionGateway);
+      const getStatusUsecase = new GetConnectionStatusUsecase(
+        connectionGateway,
+      );
       const status = await getStatusUsecase.execute();
 
       expect(status).toBeNull();

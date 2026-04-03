@@ -3,7 +3,7 @@ import { BusinessRuleViolation } from '@shared/foundation/business-rule-violatio
 export class SprintNotSynchronizedError extends BusinessRuleViolation {
   constructor() {
     super(
-      'Les données de ce sprint ne sont pas encore synchronisées. Veuillez lancer la synchronisation d\'abord.',
+      "Les données de ce sprint ne sont pas encore synchronisées. Veuillez lancer la synchronisation d'abord.",
     );
   }
 }
@@ -19,7 +19,7 @@ export class EmptySprintError extends BusinessRuleViolation {
 export class UnsupportedLanguageError extends BusinessRuleViolation {
   constructor() {
     super(
-      'Cette langue n\'est pas encore supportée. Langues disponibles : français, anglais.',
+      "Cette langue n'est pas encore supportée. Langues disponibles : français, anglais.",
     );
   }
 }
@@ -27,7 +27,7 @@ export class UnsupportedLanguageError extends BusinessRuleViolation {
 export class AiProviderUnavailableError extends BusinessRuleViolation {
   constructor() {
     super(
-      'Le fournisseur d\'IA sélectionné est indisponible. Veuillez réessayer ou choisir un autre fournisseur.',
+      "Le fournisseur d'IA sélectionné est indisponible. Veuillez réessayer ou choisir un autre fournisseur.",
     );
   }
 }

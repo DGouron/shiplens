@@ -1,6 +1,6 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { StatusThreshold } from '@modules/analytics/entities/status-threshold/status-threshold.js';
 import { type StatusThresholdProps } from '@modules/analytics/entities/status-threshold/status-threshold.schema.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 const defaultProps: StatusThresholdProps = {
   id: 'threshold-1',

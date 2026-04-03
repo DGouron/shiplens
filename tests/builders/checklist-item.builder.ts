@@ -1,5 +1,5 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { ChecklistItem } from '@modules/audit/entities/checklist-item/checklist-item.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 interface ChecklistItemBuilderProps {
   identifier: string;
@@ -13,7 +13,10 @@ const defaultProps: ChecklistItemBuilderProps = {
   origin: 'packmind',
 };
 
-export class ChecklistItemBuilder extends EntityBuilder<ChecklistItemBuilderProps, ChecklistItem> {
+export class ChecklistItemBuilder extends EntityBuilder<
+  ChecklistItemBuilderProps,
+  ChecklistItem
+> {
   constructor() {
     super(defaultProps);
   }

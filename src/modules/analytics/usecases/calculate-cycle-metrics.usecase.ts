@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { CycleMetricsDataGateway } from '../entities/cycle-snapshot/cycle-metrics-data.gateway.js';
-import { CycleSnapshot } from '../entities/cycle-snapshot/cycle-snapshot.js';
 import { InsufficientHistoryError } from '../entities/cycle-snapshot/cycle-snapshot.errors.js';
+import { CycleSnapshot } from '../entities/cycle-snapshot/cycle-snapshot.js';
 
 interface CalculateCycleMetricsParams {
   cycleId: string;
@@ -36,7 +36,9 @@ export class CalculateCycleMetricsUsecase
     private readonly cycleMetricsDataGateway: CycleMetricsDataGateway,
   ) {}
 
-  async execute(params: CalculateCycleMetricsParams): Promise<CycleMetricsResult> {
+  async execute(
+    params: CalculateCycleMetricsParams,
+  ): Promise<CycleMetricsResult> {
     this.logger.log(`[${params.cycleId}] Cycle metrics calculation started`);
 
     const snapshotData = await this.cycleMetricsDataGateway.getSnapshotData(
@@ -73,7 +75,9 @@ export class CalculateCycleMetricsUsecase
       };
     }
 
-    this.logger.log(`[${params.cycleId}] Cycle metrics calculated — velocity: ${result.velocity.completedPoints}/${result.velocity.plannedPoints}, throughput: ${result.throughput}, completion: ${result.completionRate}%`);
+    this.logger.log(
+      `[${params.cycleId}] Cycle metrics calculated — velocity: ${result.velocity.completedPoints}/${result.velocity.plannedPoints}, throughput: ${result.throughput}, completion: ${result.completionRate}%`,
+    );
 
     return result;
   }

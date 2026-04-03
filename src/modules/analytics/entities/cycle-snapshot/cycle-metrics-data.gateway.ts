@@ -6,6 +6,9 @@ export interface TrendData {
 }
 
 export abstract class CycleMetricsDataGateway {
-  abstract getSnapshotData(cycleId: string, teamId: string): Promise<CycleSnapshotProps>;
+  abstract getSnapshotData(
+    cycleId: string,
+    teamId: string,
+  ): Promise<CycleSnapshotProps>;
   abstract getTrendData(cycleId: string, teamId: string): Promise<TrendData>;
 }

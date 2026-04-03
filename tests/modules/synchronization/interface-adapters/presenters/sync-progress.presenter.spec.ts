@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { SyncProgressPresenter } from '@modules/synchronization/interface-adapters/presenters/sync-progress.presenter.js';
+import { describe, expect, it } from 'vitest';
 
 describe('SyncProgressPresenter', () => {
   const presenter = new SyncProgressPresenter();

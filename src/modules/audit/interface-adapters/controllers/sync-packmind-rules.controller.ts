@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { SyncPackmindRulesUsecase } from '../../usecases/sync-packmind-rules.usecase.js';
 import {
   SyncPackmindRulesPresenter,
@@ -17,8 +17,12 @@ export class SyncPackmindRulesController {
   ) {}
 
   @Post('sync-packmind')
-  async syncPackmindRules(@Body() body: SyncPackmindRulesBody): Promise<SyncPackmindRulesViewModel> {
-    const result = await this.syncPackmindRulesUsecase.execute({ token: body.token });
+  async syncPackmindRules(
+    @Body() body: SyncPackmindRulesBody,
+  ): Promise<SyncPackmindRulesViewModel> {
+    const result = await this.syncPackmindRulesUsecase.execute({
+      token: body.token,
+    });
     return this.presenter.present(result);
   }
 }

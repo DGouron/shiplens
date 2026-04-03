@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { AvailableTeamsPresenter } from '@modules/synchronization/interface-adapters/presenters/available-teams.presenter.js';
 import { type LinearTeam } from '@modules/synchronization/entities/team-selection/linear-team.gateway.js';
+import { AvailableTeamsPresenter } from '@modules/synchronization/interface-adapters/presenters/available-teams.presenter.js';
+import { describe, expect, it } from 'vitest';
 
 describe('AvailableTeamsPresenter', () => {
   const presenter = new AvailableTeamsPresenter();

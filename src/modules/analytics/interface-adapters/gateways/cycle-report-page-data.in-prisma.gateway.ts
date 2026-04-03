@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/prisma/prisma.service.js';
+import {
+  type CycleIssueDetail,
+  type CycleSummary,
+} from '../../entities/cycle-report-page/cycle-report-page.schema.js';
 import { CycleReportPageDataGateway } from '../../entities/cycle-report-page/cycle-report-page-data.gateway.js';
-import { type CycleSummary, type CycleIssueDetail } from '../../entities/cycle-report-page/cycle-report-page.schema.js';
 
 @Injectable()
 export class CycleReportPageDataInPrismaGateway extends CycleReportPageDataGateway {
@@ -25,7 +28,9 @@ export class CycleReportPageDataInPrismaGateway extends CycleReportPageDataGatew
       return {
         externalId: cycle.externalId,
         teamId: cycle.teamId,
-        name: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : 'Cycle sans nom'),
+        name:
+          cycle.name ??
+          (cycle.number ? `Cycle ${cycle.number}` : 'Cycle sans nom'),
         startsAt: cycle.startsAt,
         endsAt: cycle.endsAt,
         issueCount: issueExternalIds.length,
@@ -34,7 +39,10 @@ export class CycleReportPageDataInPrismaGateway extends CycleReportPageDataGatew
     });
   }
 
-  async getCycleIssues(cycleId: string, teamId: string): Promise<CycleIssueDetail[]> {
+  async getCycleIssues(
+    cycleId: string,
+    teamId: string,
+  ): Promise<CycleIssueDetail[]> {
     const cycle = await this.prisma.cycle.findFirstOrThrow({
       where: { externalId: cycleId, teamId },
     });

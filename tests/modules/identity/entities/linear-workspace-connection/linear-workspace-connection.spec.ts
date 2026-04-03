@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { LinearWorkspaceConnection } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.js';
+import { describe, expect, it } from 'vitest';
 
 describe('LinearWorkspaceConnection', () => {
   const validProps = {
@@ -22,7 +22,11 @@ describe('LinearWorkspaceConnection', () => {
     expect(connection.workspaceName).toBe('My Workspace');
     expect(connection.encryptedAccessToken).toBe('encrypted-access');
     expect(connection.encryptedRefreshToken).toBe('encrypted-refresh');
-    expect(connection.grantedScopes).toEqual(['read', 'write', 'issues:create']);
+    expect(connection.grantedScopes).toEqual([
+      'read',
+      'write',
+      'issues:create',
+    ]);
     expect(connection.status).toBe('connected');
     expect(connection.connectedAt).toEqual(new Date('2026-01-01'));
   });
@@ -41,7 +45,10 @@ describe('LinearWorkspaceConnection', () => {
 
   it('rejects creation with invalid status', () => {
     expect(() =>
-      LinearWorkspaceConnection.create({ ...validProps, status: 'invalid' as 'connected' }),
+      LinearWorkspaceConnection.create({
+        ...validProps,
+        status: 'invalid' as 'connected',
+      }),
     ).toThrow();
   });
 });

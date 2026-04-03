@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/prisma/prisma.service.js';
 import { IssueDataGateway } from '../../entities/issue-data/issue-data.gateway.js';
 import {
-  type IssueData,
-  type CycleData,
-  type StateTransitionData,
   type CommentData,
+  type CycleData,
+  type IssueData,
+  type StateTransitionData,
 } from '../../entities/issue-data/issue-data.schema.js';
 
 @Injectable()

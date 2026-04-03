@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { SyncPackmindRulesUsecase } from '@modules/audit/usecases/sync-packmind-rules.usecase.js';
+import { type PackmindPractice } from '@modules/audit/entities/packmind/packmind-practice.js';
+import { FailingPackmindGateway } from '@modules/audit/testing/bad-path/failing.packmind.gateway.js';
+import { UnreachablePackmindGateway } from '@modules/audit/testing/bad-path/unreachable.packmind.gateway.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
 import { StubPackmindGateway } from '@modules/audit/testing/good-path/stub.packmind.gateway.js';
-import { FailingPackmindGateway } from '@modules/audit/testing/bad-path/failing.packmind.gateway.js';
-import { UnreachablePackmindGateway } from '@modules/audit/testing/bad-path/unreachable.packmind.gateway.js';
+import { SyncPackmindRulesUsecase } from '@modules/audit/usecases/sync-packmind-rules.usecase.js';
+import { describe, expect, it } from 'vitest';
 import { AuditRuleBuilder } from '../builders/audit-rule.builder.js';
-import { type PackmindPractice } from '@modules/audit/entities/packmind/packmind-practice.js';
 
 describe('Import Packmind Rules (acceptance)', () => {
   describe('measurable practices are converted to audit rules, qualitative to checklist items', () => {
@@ -14,14 +14,44 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
       const practices: PackmindPractice[] = [
-        { identifier: 'PM-1', name: 'Cycle time sous 5 jours', measurable: true, conditionExpression: 'cycle time > 5 jours', severity: 'warning' },
-        { identifier: 'PM-2', name: 'Lead time sous 10 jours', measurable: true, conditionExpression: 'lead time > 10 jours', severity: 'error' },
-        { identifier: 'PM-3', name: 'Throughput minimum', measurable: true, conditionExpression: 'throughput < 5', severity: 'warning' },
-        { identifier: 'PM-4', name: 'Ecrire des messages de commit clairs', measurable: false },
-        { identifier: 'PM-5', name: 'Faire des code reviews constructives', measurable: false },
+        {
+          identifier: 'PM-1',
+          name: 'Cycle time sous 5 jours',
+          measurable: true,
+          conditionExpression: 'cycle time > 5 jours',
+          severity: 'warning',
+        },
+        {
+          identifier: 'PM-2',
+          name: 'Lead time sous 10 jours',
+          measurable: true,
+          conditionExpression: 'lead time > 10 jours',
+          severity: 'error',
+        },
+        {
+          identifier: 'PM-3',
+          name: 'Throughput minimum',
+          measurable: true,
+          conditionExpression: 'throughput < 5',
+          severity: 'warning',
+        },
+        {
+          identifier: 'PM-4',
+          name: 'Ecrire des messages de commit clairs',
+          measurable: false,
+        },
+        {
+          identifier: 'PM-5',
+          name: 'Faire des code reviews constructives',
+          measurable: false,
+        },
       ];
       const packmindGateway = new StubPackmindGateway(practices);
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       const result = await usecase.execute({ token: 'valid-token' });
 
@@ -37,10 +67,20 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
       const practices: PackmindPractice[] = [
-        { identifier: 'PM-REVIEW', name: 'PR review sous 24h', measurable: true, conditionExpression: 'lead time > 1 jours', severity: 'warning' },
+        {
+          identifier: 'PM-REVIEW',
+          name: 'PR review sous 24h',
+          measurable: true,
+          conditionExpression: 'lead time > 1 jours',
+          severity: 'warning',
+        },
       ];
       const packmindGateway = new StubPackmindGateway(practices);
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       const result = await usecase.execute({ token: 'valid-token' });
 
@@ -54,10 +94,18 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
       const practices: PackmindPractice[] = [
-        { identifier: 'PM-COMMIT', name: 'Ecrire des messages de commit clairs', measurable: false },
+        {
+          identifier: 'PM-COMMIT',
+          name: 'Ecrire des messages de commit clairs',
+          measurable: false,
+        },
       ];
       const packmindGateway = new StubPackmindGateway(practices);
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       const result = await usecase.execute({ token: 'valid-token' });
 
@@ -75,22 +123,68 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
 
-      const existingRule1 = new AuditRuleBuilder().withIdentifier('PM-1').withName('Old name 1').withOrigin('packmind').build();
-      const existingRule2 = new AuditRuleBuilder().withIdentifier('PM-2').withName('Old name 2').withOrigin('packmind').build();
-      const existingRule3 = new AuditRuleBuilder().withIdentifier('PM-3').withName('Old name 3').withOrigin('packmind').build();
+      const existingRule1 = new AuditRuleBuilder()
+        .withIdentifier('PM-1')
+        .withName('Old name 1')
+        .withOrigin('packmind')
+        .build();
+      const existingRule2 = new AuditRuleBuilder()
+        .withIdentifier('PM-2')
+        .withName('Old name 2')
+        .withOrigin('packmind')
+        .build();
+      const existingRule3 = new AuditRuleBuilder()
+        .withIdentifier('PM-3')
+        .withName('Old name 3')
+        .withOrigin('packmind')
+        .build();
       await auditRuleGateway.save(existingRule1);
       await auditRuleGateway.save(existingRule2);
       await auditRuleGateway.save(existingRule3);
 
       const practices: PackmindPractice[] = [
-        { identifier: 'PM-1', name: 'Updated name 1', measurable: true, conditionExpression: 'cycle time > 5 jours', severity: 'warning' },
-        { identifier: 'PM-2', name: 'Updated name 2', measurable: true, conditionExpression: 'lead time > 10 jours', severity: 'error' },
-        { identifier: 'PM-3', name: 'Updated name 3', measurable: true, conditionExpression: 'throughput < 5', severity: 'warning' },
-        { identifier: 'PM-4', name: 'New rule 4', measurable: true, conditionExpression: 'velocity < 10', severity: 'info' },
-        { identifier: 'PM-5', name: 'New rule 5', measurable: true, conditionExpression: 'scope creep > 5', severity: 'error' },
+        {
+          identifier: 'PM-1',
+          name: 'Updated name 1',
+          measurable: true,
+          conditionExpression: 'cycle time > 5 jours',
+          severity: 'warning',
+        },
+        {
+          identifier: 'PM-2',
+          name: 'Updated name 2',
+          measurable: true,
+          conditionExpression: 'lead time > 10 jours',
+          severity: 'error',
+        },
+        {
+          identifier: 'PM-3',
+          name: 'Updated name 3',
+          measurable: true,
+          conditionExpression: 'throughput < 5',
+          severity: 'warning',
+        },
+        {
+          identifier: 'PM-4',
+          name: 'New rule 4',
+          measurable: true,
+          conditionExpression: 'velocity < 10',
+          severity: 'info',
+        },
+        {
+          identifier: 'PM-5',
+          name: 'New rule 5',
+          measurable: true,
+          conditionExpression: 'scope creep > 5',
+          severity: 'error',
+        },
       ];
       const packmindGateway = new StubPackmindGateway(practices);
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       const result = await usecase.execute({ token: 'valid-token' });
 
@@ -106,20 +200,35 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
 
-      const cachedRule1 = new AuditRuleBuilder().withIdentifier('PM-1').withOrigin('packmind').build();
-      const cachedRule2 = new AuditRuleBuilder().withIdentifier('PM-2').withOrigin('packmind').build();
-      const cachedRule3 = new AuditRuleBuilder().withIdentifier('PM-3').withOrigin('packmind').build();
+      const cachedRule1 = new AuditRuleBuilder()
+        .withIdentifier('PM-1')
+        .withOrigin('packmind')
+        .build();
+      const cachedRule2 = new AuditRuleBuilder()
+        .withIdentifier('PM-2')
+        .withOrigin('packmind')
+        .build();
+      const cachedRule3 = new AuditRuleBuilder()
+        .withIdentifier('PM-3')
+        .withOrigin('packmind')
+        .build();
       await auditRuleGateway.save(cachedRule1);
       await auditRuleGateway.save(cachedRule2);
       await auditRuleGateway.save(cachedRule3);
 
       const packmindGateway = new UnreachablePackmindGateway();
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       const result = await usecase.execute({ token: 'valid-token' });
 
       expect(result.fromCache).toBe(true);
-      expect(result.warning).toBe('Packmind est injoignable. Les regles en cache sont utilisees.');
+      expect(result.warning).toBe(
+        'Packmind est injoignable. Les regles en cache sont utilisees.',
+      );
       expect(result.createdRulesCount).toBe(0);
       expect(result.updatedRulesCount).toBe(0);
     });
@@ -128,7 +237,11 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
       const packmindGateway = new UnreachablePackmindGateway();
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       await expect(usecase.execute({ token: 'valid-token' })).rejects.toThrow(
         "Packmind est injoignable et aucune regle n'a ete synchronisee precedemment.",
@@ -141,7 +254,11 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
       const packmindGateway = new FailingPackmindGateway();
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       await expect(usecase.execute({ token: 'invalid-token' })).rejects.toThrow(
         'Le token Packmind est invalide. Veuillez verifier votre configuration.',
@@ -152,7 +269,11 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
       const packmindGateway = new StubPackmindGateway([]);
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       await expect(usecase.execute({ token: '' })).rejects.toThrow(
         "Aucun token Packmind configure. Veuillez renseigner votre token d'authentification.",
@@ -165,7 +286,11 @@ describe('Import Packmind Rules (acceptance)', () => {
       const auditRuleGateway = new StubAuditRuleGateway();
       const checklistItemGateway = new StubChecklistItemGateway();
       const packmindGateway = new StubPackmindGateway([]);
-      const usecase = new SyncPackmindRulesUsecase(auditRuleGateway, checklistItemGateway, packmindGateway);
+      const usecase = new SyncPackmindRulesUsecase(
+        auditRuleGateway,
+        checklistItemGateway,
+        packmindGateway,
+      );
 
       await expect(usecase.execute({ token: 'valid-token' })).rejects.toThrow(
         'Aucune pratique trouvee dans votre espace Packmind.',

@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { StatusThreshold } from '@modules/analytics/entities/status-threshold/status-threshold.js';
 import { NegativeThresholdError } from '@modules/analytics/entities/status-threshold/status-threshold.errors.js';
+import { StatusThreshold } from '@modules/analytics/entities/status-threshold/status-threshold.js';
+import { describe, expect, it } from 'vitest';
 
 describe('StatusThreshold', () => {
   it('creates a status threshold with valid data', () => {

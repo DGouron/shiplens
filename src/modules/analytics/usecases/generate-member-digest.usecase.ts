@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
-import { MemberDigestDataGateway, type MemberCycleContext } from '../entities/member-digest/member-digest-data.gateway.js';
-import { AiTextGeneratorGateway, type AiProvider } from '../entities/sprint-report/ai-text-generator.gateway.js';
+import {
+  type MemberCycleContext,
+  MemberDigestDataGateway,
+} from '../entities/member-digest/member-digest-data.gateway.js';
+import {
+  type AiProvider,
+  AiTextGeneratorGateway,
+} from '../entities/sprint-report/ai-text-generator.gateway.js';
 
 interface GenerateMemberDigestParams {
   cycleId: string;
@@ -51,17 +57,19 @@ export class GenerateMemberDigestUsecase
 
   private buildPrompt(context: MemberCycleContext): string {
     const issuesList = context.issues
-      .map(function (issue) {
-        return `- ${issue.title} (${issue.statusName}, ${issue.points ?? 0} pts, ${issue.timeInCurrentStatusHours}h dans ce statut)`;
-      })
+      .map(
+        (issue) =>
+          `- ${issue.title} (${issue.statusName}, ${issue.points ?? 0} pts, ${issue.timeInCurrentStatusHours}h dans ce statut)`,
+      )
       .join('\n');
 
     const blockedList =
       context.blockedIssues.length > 0
         ? context.blockedIssues
-            .map(function (issue) {
-              return `- ${issue.title} (${issue.statusName}, bloquee depuis ${issue.durationHours}h)`;
-            })
+            .map(
+              (issue) =>
+                `- ${issue.title} (${issue.statusName}, bloquee depuis ${issue.durationHours}h)`,
+            )
             .join('\n')
         : 'Aucune issue bloquee.';
 

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { BottleneckAnalysisController } from '@modules/analytics/interface-adapters/controllers/bottleneck-analysis.controller.js';
-import { AnalyzeBottlenecksByStatusUsecase } from '@modules/analytics/usecases/analyze-bottlenecks-by-status.usecase.js';
 import { BottleneckAnalysisPresenter } from '@modules/analytics/interface-adapters/presenters/bottleneck-analysis.presenter.js';
 import { StubBottleneckAnalysisDataGateway } from '@modules/analytics/testing/good-path/stub.bottleneck-analysis-data.gateway.js';
+import { AnalyzeBottlenecksByStatusUsecase } from '@modules/analytics/usecases/analyze-bottlenecks-by-status.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('BottleneckAnalysisController', () => {
   let gateway: StubBottleneckAnalysisDataGateway;

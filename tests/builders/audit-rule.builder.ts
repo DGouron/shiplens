@@ -1,5 +1,5 @@
-import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 import { AuditRule } from '@modules/audit/entities/audit-rule/audit-rule.js';
+import { EntityBuilder } from '@shared/foundation/testing/entity-builder.js';
 
 interface AuditRuleBuilderProps {
   identifier: string;
@@ -17,7 +17,10 @@ const defaultProps: AuditRuleBuilderProps = {
   origin: 'manual',
 };
 
-export class AuditRuleBuilder extends EntityBuilder<AuditRuleBuilderProps, AuditRule> {
+export class AuditRuleBuilder extends EntityBuilder<
+  AuditRuleBuilderProps,
+  AuditRule
+> {
   constructor() {
     super(defaultProps);
   }

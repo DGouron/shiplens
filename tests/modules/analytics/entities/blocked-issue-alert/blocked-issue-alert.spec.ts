@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { BlockedIssueAlert } from '@modules/analytics/entities/blocked-issue-alert/blocked-issue-alert.js';
+import { describe, expect, it } from 'vitest';
 
 describe('BlockedIssueAlert', () => {
   it('creates an active alert with warning severity', () => {

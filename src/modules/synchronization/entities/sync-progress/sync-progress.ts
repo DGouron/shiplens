@@ -1,5 +1,5 @@
-import { type SyncProgressProps } from './sync-progress.schema.js';
 import { syncProgressGuard } from './sync-progress.guard.js';
+import { type SyncProgressProps } from './sync-progress.schema.js';
 
 export class SyncProgress {
   private constructor(private readonly props: SyncProgressProps) {}
@@ -33,9 +33,7 @@ export class SyncProgress {
     if (this.props.totalIssues === 0) {
       return 100;
     }
-    return Math.round(
-      (this.props.syncedIssues / this.props.totalIssues) * 100,
-    );
+    return Math.round((this.props.syncedIssues / this.props.totalIssues) * 100);
   }
 
   get canResume(): boolean {

@@ -1,4 +1,4 @@
-import { z, type ZodType } from 'zod';
+import { type ZodType, z } from 'zod';
 
 interface FilterResult<T> {
   valid: T[];
@@ -29,7 +29,9 @@ export function createGuard<T>(
     parse: (data: unknown): T => {
       const result = schema.safeParse(data);
       if (!result.success) {
-        throw new Error(`[${instigator}] Validation failed: ${result.error.message}`);
+        throw new Error(
+          `[${instigator}] Validation failed: ${result.error.message}`,
+        );
       }
       return result.data;
     },
@@ -45,7 +47,9 @@ export function createGuard<T>(
     parseCollection: (data: unknown): T[] => {
       const result = arraySchema.safeParse(data);
       if (!result.success) {
-        throw new Error(`[${instigator}] Collection validation failed: ${result.error.message}`);
+        throw new Error(
+          `[${instigator}] Collection validation failed: ${result.error.message}`,
+        );
       }
       return result.data;
     },

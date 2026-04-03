@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { TeamSettingsController } from '@modules/analytics/interface-adapters/controllers/team-settings.controller.js';
-import { GetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/get-team-excluded-statuses.usecase.js';
-import { SetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/set-team-excluded-statuses.usecase.js';
-import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
 import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubBlockedIssueAlertGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-alert.gateway.js';
+import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
+import { GetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/get-team-excluded-statuses.usecase.js';
+import { SetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/set-team-excluded-statuses.usecase.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('TeamSettingsController', () => {
   let settingsGateway: StubTeamSettingsGateway;
@@ -16,8 +16,15 @@ describe('TeamSettingsController', () => {
     availableStatusesGateway = new StubAvailableStatusesGateway();
     const alertGateway = new StubBlockedIssueAlertGateway();
     const getUsecase = new GetTeamExcludedStatusesUsecase(settingsGateway);
-    const setUsecase = new SetTeamExcludedStatusesUsecase(settingsGateway, alertGateway);
-    controller = new TeamSettingsController(getUsecase, setUsecase, availableStatusesGateway);
+    const setUsecase = new SetTeamExcludedStatusesUsecase(
+      settingsGateway,
+      alertGateway,
+    );
+    controller = new TeamSettingsController(
+      getUsecase,
+      setUsecase,
+      availableStatusesGateway,
+    );
   });
 
   it('returns empty statuses by default', async () => {
@@ -42,10 +49,18 @@ describe('TeamSettingsController', () => {
   });
 
   it('returns available statuses for a team', async () => {
-    availableStatusesGateway.statuses.set('team-1', ['Backlog', 'In Progress', 'In Review', 'Done', 'Todo']);
+    availableStatusesGateway.statuses.set('team-1', [
+      'Backlog',
+      'In Progress',
+      'In Review',
+      'Done',
+      'Todo',
+    ]);
 
     const result = await controller.getAvailable('team-1');
 
-    expect(result).toEqual({ statuses: ['Backlog', 'In Progress', 'In Review', 'Done', 'Todo'] });
+    expect(result).toEqual({
+      statuses: ['Backlog', 'In Progress', 'In Review', 'Done', 'Todo'],
+    });
   });
 });

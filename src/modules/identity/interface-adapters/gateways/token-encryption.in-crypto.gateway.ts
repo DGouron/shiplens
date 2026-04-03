@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
+import { Injectable } from '@nestjs/common';
 import { TokenEncryptionGateway } from '../../entities/linear-workspace-connection/token-encryption.gateway.js';
 
 const ALGORITHM = 'aes-256-gcm';
@@ -14,7 +14,9 @@ export class TokenEncryptionInCryptoGateway extends TokenEncryptionGateway {
     super();
     const key = Buffer.from(encryptionKeyHex, 'hex');
     if (key.length !== 32) {
-      throw new Error('La clé de chiffrement doit faire 32 bytes (64 caractères hex).');
+      throw new Error(
+        'La clé de chiffrement doit faire 32 bytes (64 caractères hex).',
+      );
     }
     this.key = key;
   }
@@ -23,7 +25,10 @@ export class TokenEncryptionInCryptoGateway extends TokenEncryptionGateway {
     const iv = randomBytes(IV_LENGTH);
     const cipher = createCipheriv(ALGORITHM, this.key, iv);
 
-    const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+    const encrypted = Buffer.concat([
+      cipher.update(plaintext, 'utf8'),
+      cipher.final(),
+    ]);
     const authTag = cipher.getAuthTag();
 
     const combined = Buffer.concat([iv, authTag, encrypted]);
@@ -40,7 +45,10 @@ export class TokenEncryptionInCryptoGateway extends TokenEncryptionGateway {
     const decipher = createDecipheriv(ALGORITHM, this.key, iv);
     decipher.setAuthTag(authTag);
 
-    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    const decrypted = Buffer.concat([
+      decipher.update(encrypted),
+      decipher.final(),
+    ]);
     return decrypted.toString('utf8');
   }
 }

@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/prisma/prisma.service.js';
-import { CycleMetricsDataGateway, type TrendData } from '../../entities/cycle-snapshot/cycle-metrics-data.gateway.js';
-import { type CycleSnapshotProps, type CycleIssue } from '../../entities/cycle-snapshot/cycle-snapshot.schema.js';
+import {
+  CycleMetricsDataGateway,
+  type TrendData,
+} from '../../entities/cycle-snapshot/cycle-metrics-data.gateway.js';
+import {
+  type CycleIssue,
+  type CycleSnapshotProps,
+} from '../../entities/cycle-snapshot/cycle-snapshot.schema.js';
 
 @Injectable()
 export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
@@ -9,7 +15,10 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
     super();
   }
 
-  async getSnapshotData(cycleId: string, teamId: string): Promise<CycleSnapshotProps> {
+  async getSnapshotData(
+    cycleId: string,
+    teamId: string,
+  ): Promise<CycleSnapshotProps> {
     const cycle = await this.prisma.cycle.findFirstOrThrow({
       where: { externalId: cycleId, teamId },
     });
@@ -60,7 +69,9 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
     return {
       cycleId: cycle.externalId,
       teamId: cycle.teamId,
-      cycleName: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : 'Cycle sans nom'),
+      cycleName:
+        cycle.name ??
+        (cycle.number ? `Cycle ${cycle.number}` : 'Cycle sans nom'),
       startsAt: cycle.startsAt,
       endsAt: cycle.endsAt,
       issues: cycleIssues,

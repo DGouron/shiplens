@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { CycleIssuesPresenter } from '@modules/analytics/interface-adapters/presenters/cycle-issues.presenter.js';
+import { describe, expect, it } from 'vitest';
 
 describe('CycleIssuesPresenter', () => {
   const presenter = new CycleIssuesPresenter();
