@@ -1,6 +1,6 @@
 # Voir le profil cycle d'un membre
 
-## Status: ready
+## Status: implemented
 
 ## Contexte
 Le tech lead pilote son cycle avec des donnees equipe, mais n'a aucune visibilite individuelle. Pour comprendre ce que fait un membre, ce qui le bloque et s'il estime correctement, il doit ouvrir chaque issue dans Linear. Il a besoin d'une vue synthetique par membre directement dans le rapport de cycle.

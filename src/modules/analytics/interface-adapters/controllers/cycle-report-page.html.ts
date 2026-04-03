@@ -593,6 +593,9 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           <select class="custom-select" id="cycleSelector" disabled>
             <option value="">Chargement des cycles...</option>
           </select>
+          <select class="custom-select" id="memberSelector" disabled style="min-width:200px">
+            <option value="">Toute l'equipe</option>
+          </select>
         </div>
       </div>
 
@@ -603,6 +606,13 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           <span class="section-title">Metriques</span>
         </div>
         <div id="metricsContent" class="loading">Selectionnez un cycle pour voir les metriques.</div>
+      </div>
+
+      <div class="glass" id="memberMetricsSection" style="display:none">
+        <div class="section-head">
+          <span class="section-title">Metriques membre</span>
+        </div>
+        <div id="memberMetricsContent"></div>
       </div>
 
       <div class="glass" id="bottlenecksSection">
@@ -628,6 +638,14 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         </div>
         <div class="section-subtitle">Ecart entre l'estimation en points et le cycle time reel — par equipe et par developpeur.</div>
         <div id="estimationContent" class="loading">Selectionnez un cycle pour voir la precision d'estimation.</div>
+      </div>
+
+      <div class="glass" id="digestSection" style="display:none">
+        <div class="section-head">
+          <span class="section-title">Digest IA membre</span>
+          <button class="btn btn-accent" id="digestBtn">Generer le digest</button>
+        </div>
+        <div id="digestContent" class="report-empty">Selectionnez un membre pour generer un digest.</div>
       </div>
 
       <div class="glass" id="reportSection">
@@ -663,6 +681,11 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     /* ── APP LOGIC ── */
     const API = window.location.origin;
     let currentReport = null;
+    let currentIssues = [];
+    let currentAlerts = [];
+    let currentBottlenecks = null;
+    let currentEstimation = null;
+    let selectedMember = null;
 
     function showError(message) {
       document.getElementById('errorContainer').innerHTML =
@@ -718,6 +741,14 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       const teamId = document.getElementById('teamId').value.trim();
       clearError();
       currentReport = null;
+      selectedMember = null;
+      currentIssues = [];
+      currentAlerts = [];
+      currentBottlenecks = null;
+      currentEstimation = null;
+      document.getElementById('memberSelector').value = '';
+      document.getElementById('memberMetricsSection').style.display = 'none';
+      document.getElementById('digestSection').style.display = 'none';
       document.getElementById('generateBtn').disabled = false;
       document.getElementById('detectBtn').disabled = false;
       document.getElementById('exportBtn').disabled = true;
@@ -728,6 +759,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       loadBottlenecks(cycleId, teamId);
       loadBlockedIssues(teamId);
       loadEstimationAccuracy(teamId, cycleId);
+      loadCycleIssues(cycleId, teamId);
     });
 
     async function loadTeam() {
@@ -796,6 +828,79 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       }
     }
 
+    function renderBottlenecks() {
+      const container = document.getElementById('bottlenecksContent');
+      if (!currentBottlenecks) return;
+      const data = currentBottlenecks;
+
+      if (data.statusDistribution.length === 0) {
+        container.innerHTML = '<div class="report-empty">Aucune donnee de goulot disponible</div>';
+        return;
+      }
+
+      let html = '';
+
+      if (selectedMember) {
+        const memberBreakdown = data.assigneeBreakdown.find(function(a) { return a.assigneeName === selectedMember; });
+        if (memberBreakdown && memberBreakdown.statusMedians.length > 0) {
+          html += '<table><thead><tr><th>Statut</th><th>Temps median</th></tr></thead><tbody>';
+          memberBreakdown.statusMedians.forEach(function(median) {
+            html += '<tr><td>' + escapeHtml(median.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(median.medianHours) + '</td></tr>';
+          });
+          html += '</tbody></table>';
+        } else {
+          html += '<div class="report-empty">Aucune donnee de goulot pour ce membre</div>';
+        }
+      } else {
+        html += '<table><thead><tr><th>Statut</th><th>Temps median</th></tr></thead><tbody>';
+        data.statusDistribution.forEach(function(entry) {
+          let highlight = entry.statusName === data.bottleneckStatus ? ' class="bottleneck-highlight"' : '';
+          html += '<tr' + highlight + '><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.medianHours) + '</td></tr>';
+        });
+        html += '</tbody></table>';
+
+        html += '<div class="subsection"><div class="subsection-title">Comparaison avec le cycle precedent</div><div class="section-subtitle">Evolution du temps median par statut entre les deux derniers cycles.</div>';
+        if (data.cycleComparison) {
+          html += '<table><thead><tr><th>Statut</th><th>Cycle precedent</th><th>Cycle actuel</th><th>Evolution</th></tr></thead><tbody>';
+          data.cycleComparison.forEach(function(entry) {
+            let evolutionValue = parseFloat(entry.evolution);
+            let evolutionClass = evolutionValue > 0 ? 'evolution-negative' : evolutionValue < 0 ? 'evolution-positive' : '';
+            html += '<tr><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.previousMedianHours) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.currentMedianHours) + '</td><td class="' + evolutionClass + '">' + escapeHtml(entry.evolution) + '</td></tr>';
+          });
+          html += '</tbody></table>';
+        } else {
+          html += '<div class="report-empty">Pas assez de cycles pour comparer</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="subsection"><div class="subsection-title">Breakdown par assignee</div><div class="section-subtitle">Temps median par statut pour chaque membre de l\\'equipe.</div>';
+        if (data.assigneeBreakdown.length > 0) {
+          let statusSet = {};
+          data.assigneeBreakdown.forEach(function(assignee) {
+            assignee.statusMedians.forEach(function(median) { statusSet[median.statusName] = true; });
+          });
+          let allStatuses = Object.keys(statusSet);
+          html += '<table><thead><tr><th>Assignee</th>';
+          allStatuses.forEach(function(status) { html += '<th>' + escapeHtml(status) + '</th>'; });
+          html += '</tr></thead><tbody>';
+          data.assigneeBreakdown.forEach(function(assignee) {
+            let medianMap = {};
+            assignee.statusMedians.forEach(function(median) { medianMap[median.statusName] = median.medianHours; });
+            html += '<tr><td>' + escapeHtml(assignee.assigneeName) + '</td>';
+            allStatuses.forEach(function(status) {
+              let value = medianMap[status] || '—';
+              html += '<td style="font-variant-numeric:tabular-nums">' + escapeHtml(value) + '</td>';
+            });
+            html += '</tr>';
+          });
+          html += '</tbody></table>';
+        }
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
     async function loadBottlenecks(cycleId, teamId) {
       const container = document.getElementById('bottlenecksContent');
       container.className = 'loading';
@@ -811,66 +916,52 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Goulots non disponibles') + '</div>';
           return;
         }
-        var data = await response.json();
+        currentBottlenecks = await response.json();
         container.className = '';
-
-        if (data.statusDistribution.length === 0) {
-          container.innerHTML = '<div class="report-empty">Aucune donnee de goulot disponible</div>';
-          return;
-        }
-
-        var html = '';
-
-        html += '<table><thead><tr><th>Statut</th><th>Temps median</th></tr></thead><tbody>';
-        data.statusDistribution.forEach(function(entry) {
-          var highlight = entry.statusName === data.bottleneckStatus ? ' class="bottleneck-highlight"' : '';
-          html += '<tr' + highlight + '><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.medianHours) + '</td></tr>';
-        });
-        html += '</tbody></table>';
-
-        html += '<div class="subsection"><div class="subsection-title">Comparaison avec le cycle precedent</div><div class="section-subtitle">Evolution du temps median par statut entre les deux derniers cycles.</div>';
-        if (data.cycleComparison) {
-          html += '<table><thead><tr><th>Statut</th><th>Cycle precedent</th><th>Cycle actuel</th><th>Evolution</th></tr></thead><tbody>';
-          data.cycleComparison.forEach(function(entry) {
-            var evolutionValue = parseFloat(entry.evolution);
-            var evolutionClass = evolutionValue > 0 ? 'evolution-negative' : evolutionValue < 0 ? 'evolution-positive' : '';
-            html += '<tr><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.previousMedianHours) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.currentMedianHours) + '</td><td class="' + evolutionClass + '">' + escapeHtml(entry.evolution) + '</td></tr>';
-          });
-          html += '</tbody></table>';
-        } else {
-          html += '<div class="report-empty">Pas assez de cycles pour comparer</div>';
-        }
-        html += '</div>';
-
-        html += '<div class="subsection"><div class="subsection-title">Breakdown par assignee</div><div class="section-subtitle">Temps median par statut pour chaque membre de l\\'equipe.</div>';
-        if (data.assigneeBreakdown.length > 0) {
-          var statusSet = {};
-          data.assigneeBreakdown.forEach(function(assignee) {
-            assignee.statusMedians.forEach(function(median) { statusSet[median.statusName] = true; });
-          });
-          var allStatuses = Object.keys(statusSet);
-          html += '<table><thead><tr><th>Assignee</th>';
-          allStatuses.forEach(function(status) { html += '<th>' + escapeHtml(status) + '</th>'; });
-          html += '</tr></thead><tbody>';
-          data.assigneeBreakdown.forEach(function(assignee) {
-            var medianMap = {};
-            assignee.statusMedians.forEach(function(median) { medianMap[median.statusName] = median.medianHours; });
-            html += '<tr><td>' + escapeHtml(assignee.assigneeName) + '</td>';
-            allStatuses.forEach(function(status) {
-              var value = medianMap[status] || '—';
-              html += '<td style="font-variant-numeric:tabular-nums">' + escapeHtml(value) + '</td>';
-            });
-            html += '</tr>';
-          });
-          html += '</tbody></table>';
-        }
-        html += '</div>';
-
-        container.innerHTML = html;
+        renderBottlenecks();
       } catch (error) {
         container.className = '';
         container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
       }
+    }
+
+    function renderBlockedIssues() {
+      const container = document.getElementById('blockedIssuesContent');
+      let alerts = currentAlerts.slice();
+
+      if (selectedMember) {
+        const memberExternalIds = currentIssues
+          .filter(function(issue) { return issue.assigneeName === selectedMember; })
+          .map(function(issue) { return issue.externalId; });
+        alerts = alerts.filter(function(alert) { return memberExternalIds.indexOf(alert.issueExternalId) !== -1; });
+      }
+
+      if (alerts.length === 0) {
+        container.innerHTML = '<div class="report-empty">Aucune issue bloquee detectee</div>';
+        return;
+      }
+
+      alerts.sort(function(a, b) {
+        if (a.severity === 'critical' && b.severity !== 'critical') return -1;
+        if (a.severity !== 'critical' && b.severity === 'critical') return 1;
+        return 0;
+      });
+
+      let html = '';
+      alerts.forEach(function(alert) {
+        let severityClass = alert.severity === 'critical' ? 'severity-critical' : 'severity-warning';
+        html += '<div class="alert-card">' +
+          '<div class="alert-header">' +
+          '<a href="' + escapeHtml(alert.issueUrl) + '" target="_blank" class="alert-link">' + escapeHtml(alert.issueTitle) + '</a>' +
+          '</div>' +
+          '<div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;">' +
+          statusBadge(alert.statusName) +
+          '<span class="severity-badge ' + severityClass + '">' + escapeHtml(alert.severity) + '</span>' +
+          '<span style="color:var(--text-muted);font-size:0.82rem;">' + escapeHtml(alert.durationHours) + '</span>' +
+          '</div>' +
+          '</div>';
+      });
+      container.innerHTML = html;
     }
 
     async function loadBlockedIssues(teamId) {
@@ -886,36 +977,10 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Issues bloquees non disponibles') + '</div>';
           return;
         }
-        var allAlerts = await response.json();
-        var alerts = teamId ? allAlerts.filter(function(a) { return a.teamId === teamId; }) : allAlerts;
+        let allAlerts = await response.json();
+        currentAlerts = teamId ? allAlerts.filter(function(a) { return a.teamId === teamId; }) : allAlerts;
         container.className = '';
-
-        if (alerts.length === 0) {
-          container.innerHTML = '<div class="report-empty">Aucune issue bloquee detectee</div>';
-          return;
-        }
-
-        alerts.sort(function(a, b) {
-          if (a.severity === 'critical' && b.severity !== 'critical') return -1;
-          if (a.severity !== 'critical' && b.severity === 'critical') return 1;
-          return 0;
-        });
-
-        var html = '';
-        alerts.forEach(function(alert) {
-          var severityClass = alert.severity === 'critical' ? 'severity-critical' : 'severity-warning';
-          html += '<div class="alert-card">' +
-            '<div class="alert-header">' +
-            '<a href="' + escapeHtml(alert.issueUrl) + '" target="_blank" class="alert-link">' + escapeHtml(alert.issueTitle) + '</a>' +
-            '</div>' +
-            '<div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;">' +
-            statusBadge(alert.statusName) +
-            '<span class="severity-badge ' + severityClass + '">' + escapeHtml(alert.severity) + '</span>' +
-            '<span style="color:var(--text-muted);font-size:0.82rem;">' + escapeHtml(alert.durationHours) + '</span>' +
-            '</div>' +
-            '</div>';
-        });
-        container.innerHTML = html;
+        renderBlockedIssues();
       } catch (error) {
         container.className = '';
         container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
@@ -944,6 +1009,63 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       }
     }
 
+    function renderEstimation() {
+      const container = document.getElementById('estimationContent');
+      if (!currentEstimation) return;
+      const data = currentEstimation;
+
+      if (data.teamScore.issueCount === 0) {
+        container.innerHTML = '<div class="report-empty">Pas assez de donnees pour calculer la precision</div>';
+        return;
+      }
+
+      let html = '';
+
+      if (selectedMember) {
+        const memberScore = data.developerScores.find(function(dev) { return dev.developerName === selectedMember; });
+        if (memberScore) {
+          let memberClassification = 'classification-' + memberScore.classification;
+          let memberLabel = memberScore.classification === 'well-estimated' ? 'Bien estimee' : memberScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+          html += '<div class="metric-card" style="margin-bottom:1rem;">' +
+            '<div class="metric-value">' + memberScore.averageRatio.toFixed(2) + '</div>' +
+            '<div class="metric-label">Score ' + escapeHtml(selectedMember) + ' <span class="severity-badge ' + memberClassification + '">' + escapeHtml(memberLabel) + '</span></div>' +
+            '</div>';
+          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Score</th><th>Classification</th></tr></thead><tbody>';
+          html += '<tr><td>' + escapeHtml(memberScore.developerName) + '</td>' +
+            '<td style="font-variant-numeric:tabular-nums">' + memberScore.issueCount + '</td>' +
+            '<td style="font-variant-numeric:tabular-nums">' + memberScore.averageRatio.toFixed(2) + '</td>' +
+            '<td><span class="severity-badge ' + memberClassification + '">' + escapeHtml(memberLabel) + '</span></td></tr>';
+          html += '</tbody></table>';
+        } else {
+          html += '<div class="report-empty">Aucune donnee d\\'estimation pour ce membre</div>';
+        }
+      } else {
+        let classificationClass = 'classification-' + data.teamScore.classification;
+        let classificationLabel = data.teamScore.classification === 'well-estimated' ? 'Bien estimee' : data.teamScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+
+        html += '<div class="metric-card" style="margin-bottom:1rem;">' +
+          '<div class="metric-value">' + data.teamScore.averageRatio.toFixed(2) + '</div>' +
+          '<div class="metric-label">Score equipe <span class="severity-badge ' + classificationClass + '">' + escapeHtml(classificationLabel) + '</span></div>' +
+          '</div>';
+
+        if (data.developerScores.length > 0) {
+          html += '<div class="subsection"><div class="subsection-title">Breakdown par developpeur</div><div class="section-subtitle">Score de precision et tendances d\\'estimation par membre.</div>';
+          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Score</th><th>Classification</th></tr></thead><tbody>';
+          data.developerScores.forEach(function(dev) {
+            let devClassification = 'classification-' + dev.classification;
+            let devLabel = dev.classification === 'well-estimated' ? 'Bien estimee' : dev.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+            html += '<tr><td>' + escapeHtml(dev.developerName) + '</td>' +
+              '<td style="font-variant-numeric:tabular-nums">' + dev.issueCount + '</td>' +
+              '<td style="font-variant-numeric:tabular-nums">' + dev.averageRatio.toFixed(2) + '</td>' +
+              '<td><span class="severity-badge ' + devClassification + '">' + escapeHtml(devLabel) + '</span></td></tr>';
+          });
+          html += '</tbody></table></div>';
+        }
+      }
+
+      container.innerHTML = html;
+    }
+
     async function loadEstimationAccuracy(teamId, cycleId) {
       const container = document.getElementById('estimationContent');
       container.className = 'loading';
@@ -959,44 +1081,139 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Precision d\\'estimation non disponible') + '</div>';
           return;
         }
-        var data = await response.json();
+        currentEstimation = await response.json();
         container.className = '';
-
-        if (data.teamScore.issueCount === 0) {
-          container.innerHTML = '<div class="report-empty">Pas assez de donnees pour calculer la precision</div>';
-          return;
-        }
-
-        var classificationClass = 'classification-' + data.teamScore.classification;
-        var classificationLabel = data.teamScore.classification === 'well-estimated' ? 'Bien estimee' : data.teamScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
-
-        var html = '';
-
-        html += '<div class="metric-card" style="margin-bottom:1rem;">' +
-          '<div class="metric-value">' + data.teamScore.averageRatio.toFixed(2) + '</div>' +
-          '<div class="metric-label">Score equipe <span class="severity-badge ' + classificationClass + '">' + escapeHtml(classificationLabel) + '</span></div>' +
-          '</div>';
-
-        if (data.developerScores.length > 0) {
-          html += '<div class="subsection"><div class="subsection-title">Breakdown par developpeur</div><div class="section-subtitle">Score de precision et tendances d\\'estimation par membre.</div>';
-          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Score</th><th>Classification</th></tr></thead><tbody>';
-          data.developerScores.forEach(function(dev) {
-            var devClassification = 'classification-' + dev.classification;
-            var devLabel = dev.classification === 'well-estimated' ? 'Bien estimee' : dev.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
-            html += '<tr><td>' + escapeHtml(dev.developerName) + '</td>' +
-              '<td style="font-variant-numeric:tabular-nums">' + dev.issueCount + '</td>' +
-              '<td style="font-variant-numeric:tabular-nums">' + dev.averageRatio.toFixed(2) + '</td>' +
-              '<td><span class="severity-badge ' + devClassification + '">' + escapeHtml(devLabel) + '</span></td></tr>';
-          });
-          html += '</tbody></table></div>';
-        }
-
-        container.innerHTML = html;
+        renderEstimation();
       } catch (error) {
         container.className = '';
         container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
       }
     }
+
+    async function loadCycleIssues(cycleId, teamId) {
+      try {
+        const response = await fetch(
+          API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/issues?teamId=' + encodeURIComponent(teamId)
+        );
+        if (!response.ok) {
+          currentIssues = [];
+          return;
+        }
+        const data = await response.json();
+        currentIssues = data.issues || [];
+
+        const memberSelector = document.getElementById('memberSelector');
+        const names = {};
+        currentIssues.forEach(function(issue) {
+          if (issue.assigneeName && issue.assigneeName !== 'Non assigne') {
+            names[issue.assigneeName] = true;
+          }
+        });
+        const uniqueNames = Object.keys(names).sort();
+        memberSelector.innerHTML = '<option value="">Toute l\\'equipe</option>';
+        uniqueNames.forEach(function(name) {
+          const option = document.createElement('option');
+          option.value = name;
+          option.textContent = name;
+          memberSelector.appendChild(option);
+        });
+        memberSelector.disabled = uniqueNames.length === 0;
+      } catch (error) {
+        currentIssues = [];
+      }
+    }
+
+    function renderMemberMetrics() {
+      const container = document.getElementById('memberMetricsContent');
+      if (!selectedMember) {
+        document.getElementById('memberMetricsSection').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('memberMetricsSection').style.display = '';
+      const memberIssues = currentIssues.filter(function(issue) { return issue.assigneeName === selectedMember; });
+
+      if (memberIssues.length === 0) {
+        container.innerHTML = '<div class="report-empty">Aucune issue pour ce membre sur ce cycle</div>';
+        return;
+      }
+
+      const memberExternalIds = memberIssues.map(function(issue) { return issue.externalId; });
+      const blockedCount = currentAlerts.filter(function(alert) { return memberExternalIds.indexOf(alert.issueExternalId) !== -1; }).length;
+
+      let inProgressCount = 0;
+      let doneCount = 0;
+      let completedPoints = 0;
+
+      memberIssues.forEach(function(issue) {
+        const lower = issue.statusName.toLowerCase();
+        if (lower === 'done' || lower === 'completed') {
+          doneCount++;
+          const raw = parseInt(issue.points);
+          if (!isNaN(raw)) completedPoints += raw;
+        } else if (lower.indexOf('progress') !== -1 || lower.indexOf('started') !== -1) {
+          inProgressCount++;
+        }
+      });
+
+      container.innerHTML = '<div class="metrics-grid" style="grid-template-columns:repeat(4,1fr)">' +
+        metricCard(String(inProgressCount), 'En cours', 'Issues actuellement en cours pour ce membre.') +
+        metricCard(String(blockedCount), 'Bloquees', 'Issues bloquees au-dela du seuil configure.') +
+        metricCard(String(doneCount), 'Terminees', 'Issues completees sur ce cycle.') +
+        metricCard(String(completedPoints), 'Points completes', 'Total des points des issues terminees.') +
+        '</div>';
+    }
+
+    document.getElementById('memberSelector').addEventListener('change', function() {
+      selectedMember = this.value || null;
+
+      document.getElementById('digestSection').style.display = selectedMember ? '' : 'none';
+      document.getElementById('digestContent').className = 'report-empty';
+      document.getElementById('digestContent').textContent = 'Cliquez sur le bouton pour generer le digest.';
+
+      renderMemberMetrics();
+      renderBottlenecks();
+      renderBlockedIssues();
+      renderEstimation();
+    });
+
+    document.getElementById('digestBtn').addEventListener('click', async function() {
+      const cycleId = document.getElementById('cycleSelector').value;
+      const teamId = document.getElementById('teamId').value.trim();
+      if (!cycleId || !teamId || !selectedMember) return;
+
+      const btn = document.getElementById('digestBtn');
+      const digestEl = document.getElementById('digestContent');
+      btn.disabled = true;
+      btn.textContent = 'Generation en cours...';
+      digestEl.className = 'loading';
+      digestEl.textContent = 'Le digest est en cours de generation par l\\'IA...';
+
+      try {
+        const response = await fetch(
+          API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/member-digest',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId: teamId, memberName: selectedMember, provider: 'Anthropic' }),
+          }
+        );
+        if (!response.ok) {
+          const err = await response.json().catch(function() { return {}; });
+          throw new Error(err.message || 'Le digest n\\'a pas pu etre genere');
+        }
+        const data = await response.json();
+        digestEl.className = 'report-content';
+        digestEl.textContent = data.digest;
+        btn.textContent = 'Regenerer le digest';
+        btn.disabled = false;
+      } catch (error) {
+        digestEl.className = 'report-empty';
+        digestEl.textContent = 'Le digest n\\'a pas pu etre genere';
+        btn.textContent = 'Reessayer';
+        btn.disabled = false;
+      }
+    });
 
     document.getElementById('detectBtn').addEventListener('click', function() {
       var teamId = document.getElementById('teamId').value.trim();

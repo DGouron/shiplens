@@ -69,11 +69,15 @@ import { TeamSettingsController } from './interface-adapters/controllers/team-se
 import { SettingsPageController } from './interface-adapters/controllers/settings-page.controller.js';
 import { GetTeamExcludedStatusesUsecase } from './usecases/get-team-excluded-statuses.usecase.js';
 import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-statuses.usecase.js';
+import { MemberDigestController } from './interface-adapters/controllers/member-digest.controller.js';
+import { GenerateMemberDigestUsecase } from './usecases/generate-member-digest.usecase.js';
+import { MemberDigestDataGateway } from './entities/member-digest/member-digest-data.gateway.js';
+import { MemberDigestDataInPrismaGateway } from './interface-adapters/gateways/member-digest-data.in-prisma.gateway.js';
 import { AuditModule } from '../audit/audit.module.js';
 
 @Module({
   imports: [AuditModule],
-  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController, DurationPredictionController, TeamSettingsController, SettingsPageController],
+  controllers: [CycleMetricsController, SprintReportController, ReportExportController, CycleReportPageController, WorkspaceDashboardController, BottleneckAnalysisController, BlockedIssuesController, EstimationAccuracyController, DurationPredictionController, TeamSettingsController, SettingsPageController, MemberDigestController],
   providers: [
     CalculateCycleMetricsUsecase,
     CycleMetricsPresenter,
@@ -162,6 +166,11 @@ import { AuditModule } from '../audit/audit.module.js';
     {
       provide: DurationPredictionDataGateway,
       useClass: DurationPredictionDataInPrismaGateway,
+    },
+    GenerateMemberDigestUsecase,
+    {
+      provide: MemberDigestDataGateway,
+      useClass: MemberDigestDataInPrismaGateway,
     },
   ],
   exports: [SprintReportGateway],
