@@ -170,7 +170,6 @@ export const settingsPageHtml = `<!DOCTYPE html>
     .custom-select:focus { outline: none; border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
     .custom-select:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    input[type="text"] { display: none; }
 
     .glass {
       background: var(--bg-surface);
