@@ -362,12 +362,9 @@ export const settingsPageHtml = `<!DOCTYPE html>
     <div class="container">
       <div class="page-header">
         <h1 class="page-title">Settings</h1>
-        <div>
-          <input type="text" id="teamId" />
-          <select class="custom-select" id="teamSelector" disabled>
-            <option value="">Chargement des equipes...</option>
-          </select>
-        </div>
+        <select class="custom-select" id="teamSelector" disabled>
+          <option value="">Chargement des equipes...</option>
+        </select>
       </div>
 
       <div id="errorContainer"></div>
@@ -422,26 +419,34 @@ export const settingsPageHtml = `<!DOCTYPE html>
       setTimeout(function() { toast.style.display = 'none'; }, 2500);
     }
 
-    var urlParams = new URLSearchParams(window.location.search);
-    var initialTeamId = urlParams.get('teamId');
-    if (initialTeamId) {
-      document.getElementById('teamId').value = initialTeamId;
-      loadTeams();
-    }
+    loadTeams();
 
     async function loadTeams() {
-      var teamId = document.getElementById('teamId').value.trim();
-      if (!teamId) return;
       clearError();
-
       try {
-        var response = await fetch(API + '/analytics/teams/' + encodeURIComponent(teamId) + '/cycles');
-        if (!response.ok) throw new Error('Equipe introuvable');
+        var response = await fetch(API + '/dashboard/data');
+        if (!response.ok) throw new Error('Impossible de charger les equipes');
+        var data = await response.json();
+        if (data.status) {
+          showError(data.message || 'Aucune equipe disponible');
+          return;
+        }
         var selector = document.getElementById('teamSelector');
-        selector.innerHTML = '<option value="' + escapeHtml(teamId) + '">' + escapeHtml(teamId) + '</option>';
+        selector.innerHTML = '<option value="">Selectionnez une equipe...</option>';
+        data.teams.forEach(function(team) {
+          var option = document.createElement('option');
+          option.value = team.teamId;
+          option.textContent = team.teamName;
+          selector.appendChild(option);
+        });
         selector.disabled = false;
-        selector.value = teamId;
-        loadExcludedStatuses(teamId);
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var initialTeamId = urlParams.get('teamId');
+        if (initialTeamId) {
+          selector.value = initialTeamId;
+          loadExcludedStatuses(initialTeamId);
+        }
       } catch (error) {
         showError(error.message);
       }

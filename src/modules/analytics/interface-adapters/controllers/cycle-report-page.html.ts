@@ -577,7 +577,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         <span class="nav-crumb nav-crumb-active">Rapport de cycle</span>
       </div>
       <div class="nav-right">
-        <a href="/settings" class="nav-crumb">Settings</a>
+        <a href="/settings" class="nav-crumb" id="settingsLink">Settings</a>
         <div class="theme-toggle" id="themeToggle" title="Changer de theme">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>
@@ -708,6 +708,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     const initialTeamId = urlParams.get('teamId');
     if (initialTeamId) {
       document.getElementById('teamId').value = initialTeamId;
+      document.getElementById('settingsLink').href = '/settings?teamId=' + encodeURIComponent(initialTeamId);
       loadTeam();
     }
 
