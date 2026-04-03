@@ -36,10 +36,10 @@ export class CycleMetricsPresenter
       completionRate: `${input.completionRate}%`,
       scopeCreep: `${input.scopeCreep} issues ajoutees`,
       averageCycleTime: input.averageCycleTimeInDays !== null
-        ? `${input.averageCycleTimeInDays} jours`
+        ? `${parseFloat(input.averageCycleTimeInDays.toFixed(1))} jours`
         : 'Non disponible',
       averageLeadTime: input.averageLeadTimeInDays !== null
-        ? `${input.averageLeadTimeInDays} jours`
+        ? `${parseFloat(input.averageLeadTimeInDays.toFixed(1))} jours`
         : 'Non disponible',
     };
 

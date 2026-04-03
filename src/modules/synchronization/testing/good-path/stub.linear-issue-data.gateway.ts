@@ -3,12 +3,20 @@ import { type PaginatedIssues, type CycleData, type StateTransitionData, type Is
 
 const PAGE_SIZE = 50;
 
+const STATUS_POOL: Array<{ name: string; type: string }> = [
+  { name: 'Backlog', type: 'backlog' },
+  { name: 'Todo', type: 'unstarted' },
+  { name: 'In Progress', type: 'started' },
+  { name: 'Done', type: 'completed' },
+];
+
 function generateIssues(teamId: string, count: number): IssueData[] {
   return Array.from({ length: count }, (_, index) => ({
     externalId: `issue-${teamId}-${index + 1}`,
     teamId,
     title: `Issue ${index + 1}`,
-    statusName: ['Backlog', 'Todo', 'In Progress', 'Done'][index % 4],
+    statusName: STATUS_POOL[index % 4].name,
+    statusType: STATUS_POOL[index % 4].type,
     points: index % 3 === 0 ? index + 1 : null,
     labelIds: JSON.stringify(index % 2 === 0 ? ['label-1'] : []),
     assigneeName: index % 2 === 0 ? 'Alice Martin' : null,
@@ -22,6 +30,7 @@ function generateCycles(teamId: string): CycleData[] {
     externalId: `cycle-${teamId}-${index + 1}`,
     teamId,
     name: `Sprint ${index + 1}`,
+    number: index + 1,
     startsAt: `2026-0${index + 1}-01T00:00:00Z`,
     endsAt: `2026-0${index + 1}-14T00:00:00Z`,
     issueExternalIds: JSON.stringify(
@@ -32,16 +41,17 @@ function generateCycles(teamId: string): CycleData[] {
 
 function generateTransitions(teamId: string, issueExternalIds: string[]): StateTransitionData[] {
   const transitions: StateTransitionData[] = [];
-  const statuses = ['Backlog', 'Todo', 'In Progress', 'Done'];
 
   for (const issueExternalId of issueExternalIds.slice(0, 5)) {
-    for (let statusIndex = 0; statusIndex < statuses.length; statusIndex++) {
+    for (let statusIndex = 0; statusIndex < STATUS_POOL.length; statusIndex++) {
       transitions.push({
         externalId: `transition-${issueExternalId}-${statusIndex}`,
         issueExternalId,
         teamId,
-        fromStatusName: statusIndex === 0 ? null : statuses[statusIndex - 1],
-        toStatusName: statuses[statusIndex],
+        fromStatusName: statusIndex === 0 ? null : STATUS_POOL[statusIndex - 1].name,
+        fromStatusType: statusIndex === 0 ? null : STATUS_POOL[statusIndex - 1].type,
+        toStatusName: STATUS_POOL[statusIndex].name,
+        toStatusType: STATUS_POOL[statusIndex].type,
         occurredAt: `2026-01-${String(statusIndex + 15).padStart(2, '0')}T10:00:00Z`,
       });
     }

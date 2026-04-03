@@ -22,6 +22,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
       where: {
         externalId: { in: issueExternalIds },
         teamId,
+        deletedAt: null,
       },
     });
 
@@ -38,15 +39,11 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
       );
 
       const startedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'In Progress' ||
-          transition.toStatusName === 'Started',
+        (transition) => transition.toStatusType === 'started',
       );
 
       const completedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'Done' ||
-          transition.toStatusName === 'Completed',
+        (transition) => transition.toStatusType === 'completed',
       );
 
       return {
@@ -63,7 +60,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
     return {
       cycleId: cycle.externalId,
       teamId: cycle.teamId,
-      cycleName: cycle.name ?? `Cycle ${cycle.externalId}`,
+      cycleName: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : 'Cycle sans nom'),
       startsAt: cycle.startsAt,
       endsAt: cycle.endsAt,
       issues: cycleIssues,
@@ -94,6 +91,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
         where: {
           externalId: { in: issueExternalIds },
           teamId,
+          deletedAt: null,
         },
       });
 
@@ -109,8 +107,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
           transitions.some(
             (transition) =>
               transition.issueExternalId === issue.externalId &&
-              (transition.toStatusName === 'Done' ||
-                transition.toStatusName === 'Completed'),
+              transition.toStatusType === 'completed',
           ),
         )
         .reduce((sum, issue) => sum + (issue.points ?? 0), 0);

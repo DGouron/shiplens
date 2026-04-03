@@ -10,7 +10,7 @@ import {
 interface LinearGraphqlIssue {
   id: string;
   title: string;
-  state: { name: string };
+  state: { name: string; type: string };
   estimate: number | null;
   labels: { nodes: Array<{ id: string }> };
   assignee: { name: string } | null;
@@ -30,13 +30,30 @@ interface LinearGraphqlIssuesResponse {
   };
 }
 
+interface LinearGraphqlPageInfo {
+  hasNextPage: boolean;
+  endCursor: string | null;
+}
+
 interface LinearGraphqlCycle {
   id: string;
   name: string | null;
   number: number | null;
   startsAt: string;
   endsAt: string;
-  issues: { nodes: Array<{ id: string }> };
+  issues: {
+    nodes: Array<{ id: string }>;
+    pageInfo: LinearGraphqlPageInfo;
+  };
+}
+
+interface LinearGraphqlCycleIssuesResponse {
+  cycle: {
+    issues: {
+      nodes: Array<{ id: string }>;
+      pageInfo: LinearGraphqlPageInfo;
+    };
+  };
 }
 
 interface LinearGraphqlCyclesResponse {
@@ -49,8 +66,8 @@ interface LinearGraphqlCyclesResponse {
 
 interface LinearGraphqlHistoryEntry {
   id: string;
-  fromState: { name: string } | null;
-  toState: { name: string } | null;
+  fromState: { name: string; type: string } | null;
+  toState: { name: string; type: string } | null;
   createdAt: string;
 }
 
@@ -87,7 +104,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
           issues(first: $first${afterArg}) {
             nodes {
               id title
-              state { name }
+              state { name type }
               estimate
               labels { nodes { id } }
               assignee { name }
@@ -107,6 +124,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
         teamId,
         title: issue.title,
         statusName: issue.state.name,
+        statusType: issue.state.type,
         points: issue.estimate,
         labelIds: JSON.stringify(issue.labels.nodes.map((label) => label.id)),
         assigneeName: issue.assignee?.name ?? null,
@@ -126,10 +144,13 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
       accessToken,
       `query($teamId: String!) {
         team(id: $teamId) {
-          cycles {
+          cycles(includeArchived: true) {
             nodes {
               id name number startsAt endsAt
-              issues { nodes { id } }
+              issues(first: 50) {
+                nodes { id }
+                pageInfo { hasNextPage endCursor }
+              }
             }
           }
         }
@@ -137,16 +158,58 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
       { teamId },
     );
 
-    return body.team.cycles.nodes.map((cycle) => ({
-      externalId: cycle.id,
-      teamId,
-      name: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : null),
-      startsAt: cycle.startsAt,
-      endsAt: cycle.endsAt,
-      issueExternalIds: JSON.stringify(
-        cycle.issues.nodes.map((issue) => issue.id),
-      ),
-    }));
+    const cycles: CycleData[] = [];
+
+    for (const cycle of body.team.cycles.nodes) {
+      const issueIds = cycle.issues.nodes.map((issue) => issue.id);
+
+      let { hasNextPage } = cycle.issues.pageInfo;
+      let cursor = cycle.issues.pageInfo.endCursor;
+
+      while (hasNextPage && cursor) {
+        const page = await this.fetchCycleIssueIds(accessToken, cycle.id, cursor);
+        issueIds.push(...page.issueIds);
+        hasNextPage = page.hasNextPage;
+        cursor = page.endCursor;
+      }
+
+      cycles.push({
+        externalId: cycle.id,
+        teamId,
+        name: cycle.name,
+        number: cycle.number,
+        startsAt: cycle.startsAt,
+        endsAt: cycle.endsAt,
+        issueExternalIds: JSON.stringify(issueIds),
+      });
+    }
+
+    return cycles;
+  }
+
+  private async fetchCycleIssueIds(
+    accessToken: string,
+    cycleId: string,
+    cursor: string,
+  ): Promise<{ issueIds: string[]; hasNextPage: boolean; endCursor: string | null }> {
+    const body = await this.graphql<LinearGraphqlCycleIssuesResponse>(
+      accessToken,
+      `query($cycleId: String!, $after: String!) {
+        cycle(id: $cycleId) {
+          issues(first: 50, after: $after) {
+            nodes { id }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      }`,
+      { cycleId, after: cursor },
+    );
+
+    return {
+      issueIds: body.cycle.issues.nodes.map((issue) => issue.id),
+      hasNextPage: body.cycle.issues.pageInfo.hasNextPage,
+      endCursor: body.cycle.issues.pageInfo.endCursor,
+    };
   }
 
   async getIssueHistory(
@@ -162,7 +225,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
         `query($issueId: String!) {
           issue(id: $issueId) {
             history {
-              nodes { id fromState { name } toState { name } createdAt }
+              nodes { id fromState { name type } toState { name type } createdAt }
             }
           }
         }`,
@@ -179,7 +242,9 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
           issueExternalId,
           teamId,
           fromStatusName: entry.fromState?.name ?? null,
+          fromStatusType: entry.fromState?.type ?? null,
           toStatusName: entry.toState?.name ?? '',
+          toStatusType: entry.toState?.type ?? '',
           occurredAt: entry.createdAt,
         });
       }

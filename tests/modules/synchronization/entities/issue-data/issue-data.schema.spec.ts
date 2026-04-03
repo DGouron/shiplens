@@ -13,6 +13,7 @@ describe('IssueDataSchema', () => {
       teamId: 'team-1',
       title: 'Fix login bug',
       statusName: 'In Progress',
+      statusType: 'started',
       points: 3,
       labelIds: '["label-1","label-2"]',
       assigneeName: 'Alice Martin',
@@ -29,6 +30,7 @@ describe('IssueDataSchema', () => {
       teamId: 'team-1',
       title: 'Fix login bug',
       statusName: 'In Progress',
+      statusType: 'started',
       points: null,
       labelIds: '[]',
       assigneeName: null,
@@ -45,6 +47,7 @@ describe('IssueDataSchema', () => {
       teamId: 'team-1',
       title: '',
       statusName: 'In Progress',
+      statusType: 'started',
       points: null,
       labelIds: '[]',
       assigneeName: null,
@@ -62,6 +65,7 @@ describe('CycleDataSchema', () => {
       externalId: 'cycle-1',
       teamId: 'team-1',
       name: 'Sprint 1',
+      number: 1,
       startsAt: '2026-01-01T00:00:00Z',
       endsAt: '2026-01-14T00:00:00Z',
       issueExternalIds: '["issue-1","issue-2"]',
@@ -70,11 +74,12 @@ describe('CycleDataSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts null name', () => {
+  it('accepts null name and number', () => {
     const result = cycleDataSchema.safeParse({
       externalId: 'cycle-1',
       teamId: 'team-1',
       name: null,
+      number: null,
       startsAt: '2026-01-01T00:00:00Z',
       endsAt: '2026-01-14T00:00:00Z',
       issueExternalIds: '[]',
@@ -91,7 +96,9 @@ describe('StateTransitionDataSchema', () => {
       issueExternalId: 'issue-1',
       teamId: 'team-1',
       fromStatusName: 'Todo',
+      fromStatusType: 'unstarted',
       toStatusName: 'In Progress',
+      toStatusType: 'started',
       occurredAt: '2026-01-15T10:00:00Z',
     });
 
@@ -104,7 +111,9 @@ describe('StateTransitionDataSchema', () => {
       issueExternalId: 'issue-1',
       teamId: 'team-1',
       fromStatusName: null,
+      fromStatusType: null,
       toStatusName: 'Backlog',
+      toStatusType: 'backlog',
       occurredAt: '2026-01-15T10:00:00Z',
     });
 
@@ -121,6 +130,7 @@ describe('PaginatedIssuesSchema', () => {
           teamId: 'team-1',
           title: 'Fix bug',
           statusName: 'Todo',
+          statusType: 'unstarted',
           points: null,
           labelIds: '[]',
           assigneeName: null,
