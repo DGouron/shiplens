@@ -176,7 +176,8 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
       cycles.push({
         externalId: cycle.id,
         teamId,
-        name: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : null),
+        name: cycle.name,
+        number: cycle.number,
         startsAt: cycle.startsAt,
         endsAt: cycle.endsAt,
         issueExternalIds: JSON.stringify(issueIds),

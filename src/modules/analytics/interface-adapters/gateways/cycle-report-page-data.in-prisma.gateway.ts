@@ -25,7 +25,7 @@ export class CycleReportPageDataInPrismaGateway extends CycleReportPageDataGatew
       return {
         externalId: cycle.externalId,
         teamId: cycle.teamId,
-        name: cycle.name ?? `Cycle ${cycle.externalId}`,
+        name: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : 'Cycle sans nom'),
         startsAt: cycle.startsAt,
         endsAt: cycle.endsAt,
         issueCount: issueExternalIds.length,

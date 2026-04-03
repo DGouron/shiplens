@@ -17,6 +17,7 @@ export const cycleDataSchema = z.object({
   externalId: z.string().min(1),
   teamId: z.string().min(1),
   name: z.string().nullable(),
+  number: z.number().int().nullable(),
   startsAt: z.string().min(1),
   endsAt: z.string().min(1),
   issueExternalIds: z.string(),

@@ -248,6 +248,7 @@ describe('ProcessWebhookEventUsecase', () => {
           externalId: 'cycle-1',
           teamId: 'team-1',
           name: 'Sprint 1',
+          number: 1,
           startsAt: '2026-03-31T00:00:00Z',
           endsAt: '2026-04-14T00:00:00Z',
           issueExternalIds: 'issue-1,issue-2',

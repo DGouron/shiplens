@@ -65,6 +65,7 @@ describe('CycleDataSchema', () => {
       externalId: 'cycle-1',
       teamId: 'team-1',
       name: 'Sprint 1',
+      number: 1,
       startsAt: '2026-01-01T00:00:00Z',
       endsAt: '2026-01-14T00:00:00Z',
       issueExternalIds: '["issue-1","issue-2"]',
@@ -73,11 +74,12 @@ describe('CycleDataSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts null name', () => {
+  it('accepts null name and number', () => {
     const result = cycleDataSchema.safeParse({
       externalId: 'cycle-1',
       teamId: 'team-1',
       name: null,
+      number: null,
       startsAt: '2026-01-01T00:00:00Z',
       endsAt: '2026-01-14T00:00:00Z',
       issueExternalIds: '[]',
