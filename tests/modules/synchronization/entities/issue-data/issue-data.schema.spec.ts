@@ -13,6 +13,7 @@ describe('IssueDataSchema', () => {
       teamId: 'team-1',
       title: 'Fix login bug',
       statusName: 'In Progress',
+      statusType: 'started',
       points: 3,
       labelIds: '["label-1","label-2"]',
       assigneeName: 'Alice Martin',
@@ -29,6 +30,7 @@ describe('IssueDataSchema', () => {
       teamId: 'team-1',
       title: 'Fix login bug',
       statusName: 'In Progress',
+      statusType: 'started',
       points: null,
       labelIds: '[]',
       assigneeName: null,
@@ -45,6 +47,7 @@ describe('IssueDataSchema', () => {
       teamId: 'team-1',
       title: '',
       statusName: 'In Progress',
+      statusType: 'started',
       points: null,
       labelIds: '[]',
       assigneeName: null,
@@ -91,7 +94,9 @@ describe('StateTransitionDataSchema', () => {
       issueExternalId: 'issue-1',
       teamId: 'team-1',
       fromStatusName: 'Todo',
+      fromStatusType: 'unstarted',
       toStatusName: 'In Progress',
+      toStatusType: 'started',
       occurredAt: '2026-01-15T10:00:00Z',
     });
 
@@ -104,7 +109,9 @@ describe('StateTransitionDataSchema', () => {
       issueExternalId: 'issue-1',
       teamId: 'team-1',
       fromStatusName: null,
+      fromStatusType: null,
       toStatusName: 'Backlog',
+      toStatusType: 'backlog',
       occurredAt: '2026-01-15T10:00:00Z',
     });
 
@@ -121,6 +128,7 @@ describe('PaginatedIssuesSchema', () => {
           teamId: 'team-1',
           title: 'Fix bug',
           statusName: 'Todo',
+          statusType: 'unstarted',
           points: null,
           labelIds: '[]',
           assigneeName: null,

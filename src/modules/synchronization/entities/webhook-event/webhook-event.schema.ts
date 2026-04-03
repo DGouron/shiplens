@@ -29,12 +29,14 @@ export const webhookIssueDataSchema = z.object({
   teamId: z.string().min(1),
   title: z.string().min(1),
   statusName: z.string().min(1),
+  statusType: z.string().min(1),
   points: z.number().nullable(),
   labelIds: z.string(),
   assigneeName: z.string().nullable(),
   createdAt: z.string().min(1),
   updatedAt: z.string().min(1),
   previousStatusName: z.string().optional(),
+  previousStatusType: z.string().optional(),
 });
 
 export const webhookIssueDeleteDataSchema = z.object({

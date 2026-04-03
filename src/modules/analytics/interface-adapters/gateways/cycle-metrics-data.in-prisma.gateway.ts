@@ -38,15 +38,11 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
       );
 
       const startedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'In Progress' ||
-          transition.toStatusName === 'Started',
+        (transition) => transition.toStatusType === 'started',
       );
 
       const completedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'Done' ||
-          transition.toStatusName === 'Completed',
+        (transition) => transition.toStatusType === 'completed',
       );
 
       return {
@@ -109,8 +105,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
           transitions.some(
             (transition) =>
               transition.issueExternalId === issue.externalId &&
-              (transition.toStatusName === 'Done' ||
-                transition.toStatusName === 'Completed'),
+              transition.toStatusType === 'completed',
           ),
         )
         .reduce((sum, issue) => sum + (issue.points ?? 0), 0);
