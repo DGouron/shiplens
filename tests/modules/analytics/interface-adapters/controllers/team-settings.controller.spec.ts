@@ -4,6 +4,7 @@ import { GetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/get-
 import { SetTeamExcludedStatusesUsecase } from '@modules/analytics/usecases/set-team-excluded-statuses.usecase.js';
 import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
 import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
+import { StubBlockedIssueAlertGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-alert.gateway.js';
 
 describe('TeamSettingsController', () => {
   let settingsGateway: StubTeamSettingsGateway;
@@ -13,8 +14,9 @@ describe('TeamSettingsController', () => {
   beforeEach(() => {
     settingsGateway = new StubTeamSettingsGateway();
     availableStatusesGateway = new StubAvailableStatusesGateway();
+    const alertGateway = new StubBlockedIssueAlertGateway();
     const getUsecase = new GetTeamExcludedStatusesUsecase(settingsGateway);
-    const setUsecase = new SetTeamExcludedStatusesUsecase(settingsGateway);
+    const setUsecase = new SetTeamExcludedStatusesUsecase(settingsGateway, alertGateway);
     controller = new TeamSettingsController(getUsecase, setUsecase, availableStatusesGateway);
   });
 
