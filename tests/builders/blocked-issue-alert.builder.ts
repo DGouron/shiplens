@@ -7,6 +7,7 @@ const defaultProps: BlockedIssueAlertProps = {
   issueExternalId: 'issue-1',
   issueTitle: 'Fix login bug',
   issueUuid: 'uuid-1',
+  teamId: 'team-1',
   statusName: 'In Review',
   severity: 'warning',
   durationHours: 50,
@@ -40,6 +41,11 @@ export class BlockedIssueAlertBuilder extends EntityBuilder<
 
   withIssueUuid(issueUuid: string): this {
     this.props.issueUuid = issueUuid;
+    return this;
+  }
+
+  withTeamId(teamId: string): this {
+    this.props.teamId = teamId;
     return this;
   }
 

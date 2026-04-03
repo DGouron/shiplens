@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { WorkspaceDashboardDataGateway } from '../entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
 import { WorkspaceNotConnectedError, NoTeamsSynchronizedError } from '../entities/workspace-dashboard/workspace-dashboard.errors.js';
@@ -36,11 +36,15 @@ const LATE_SYNC_THRESHOLD_HOURS = 24;
 export class GetWorkspaceDashboardUsecase
   implements Usecase<void, WorkspaceDashboardResult>
 {
+  private readonly logger = new Logger(GetWorkspaceDashboardUsecase.name);
+
   constructor(
     private readonly dashboardDataGateway: WorkspaceDashboardDataGateway,
   ) {}
 
   async execute(): Promise<WorkspaceDashboardResult> {
+    this.logger.log('Workspace dashboard generation started');
+
     const isConnected = await this.dashboardDataGateway.isWorkspaceConnected();
     if (!isConnected) {
       throw new WorkspaceNotConnectedError();
@@ -108,6 +112,8 @@ export class GetWorkspaceDashboardUsecase
     );
 
     const isLate = this.isSynchronizationLate(mostRecentSyncDate);
+
+    this.logger.log(`Workspace dashboard generated — teams: ${teamDashboards.length}`);
 
     return {
       teamDashboards,

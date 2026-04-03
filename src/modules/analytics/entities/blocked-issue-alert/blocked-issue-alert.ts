@@ -25,6 +25,10 @@ export class BlockedIssueAlert {
     return this.props.issueUuid;
   }
 
+  get teamId(): string {
+    return this.props.teamId;
+  }
+
   get statusName(): string {
     return this.props.statusName;
   }

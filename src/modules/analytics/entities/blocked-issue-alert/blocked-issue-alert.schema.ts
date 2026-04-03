@@ -5,6 +5,7 @@ export const blockedIssueAlertSchema = z.object({
   issueExternalId: z.string().min(1),
   issueTitle: z.string().min(1),
   issueUuid: z.string().min(1),
+  teamId: z.string(),
   statusName: z.string().min(1),
   severity: z.enum(['warning', 'critical']),
   durationHours: z.number().positive(),

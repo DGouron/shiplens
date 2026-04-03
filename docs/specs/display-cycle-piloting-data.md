@@ -1,6 +1,15 @@
 # Afficher les donnees de pilotage dans le rapport de cycle
 
-## Status: ready
+## Status: implemented
+
+## Implementation
+
+- **Bounded Context** : Analytics
+- **Artefacts** : cycle-report-page.html.ts (template HTML modifie)
+- **Sections ajoutees** : Goulots d'etranglement, Issues bloquees, Precision d'estimation
+- **Section supprimee** : Issues du cycle (tableau brut)
+- **APIs consommees** : GET bottlenecks, GET blocked-issues, POST blocked-issues/detect, GET estimation-accuracy
+- **Decisions** : Chargement independant par section (erreur partielle toleree), tri des alertes par severite cote client
 
 ## Contexte
 La page rapport de cycle affiche 6 metriques de base et un tableau d'issues, mais les donnees critiques de pilotage — goulots d'etranglement, issues bloquees, precision d'estimation — restent invisibles. Les APIs existent et sont implementees, mais aucun visuel ne les exploite. Le tech lead ne peut pas piloter son cycle sans ces donnees.

@@ -60,6 +60,10 @@ for MODULE in $MODIFIED_MODULES; do
   for SPEC_FILE in $SPEC_FILES; do
     SPEC_NAME=$(basename "$SPEC_FILE")
 
+    if grep -q "^## Status: ready" "$SPEC_FILE" 2>/dev/null; then
+      continue
+    fi
+
     if ! grep -q "^## Status: implemented" "$SPEC_FILE" 2>/dev/null; then
       if echo "$STAGED_FILES" | grep -q "$(basename "$SPEC_FILE")" 2>/dev/null; then
         continue

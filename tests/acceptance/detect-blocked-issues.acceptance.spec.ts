@@ -6,6 +6,7 @@ import { GetAlertHistoryUsecase } from '@modules/analytics/usecases/get-alert-hi
 import { StubStatusThresholdGateway } from '@modules/analytics/testing/good-path/stub.status-threshold.gateway.js';
 import { StubBlockedIssueAlertGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-alert.gateway.js';
 import { StubBlockedIssueDetectionDataGateway } from '@modules/analytics/testing/good-path/stub.blocked-issue-detection-data.gateway.js';
+import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
 import { StatusThresholdBuilder } from '../builders/status-threshold.builder.js';
 import { BlockedIssueAlertBuilder } from '../builders/blocked-issue-alert.builder.js';
 
@@ -13,6 +14,7 @@ describe('Detect Blocked Issues (acceptance)', () => {
   let thresholdGateway: StubStatusThresholdGateway;
   let alertGateway: StubBlockedIssueAlertGateway;
   let detectionDataGateway: StubBlockedIssueDetectionDataGateway;
+  let teamSettingsGateway: StubTeamSettingsGateway;
   let detectBlockedIssues: DetectBlockedIssuesUsecase;
   let setStatusThreshold: SetStatusThresholdUsecase;
   let getBlockedIssues: GetBlockedIssuesUsecase;
@@ -22,10 +24,12 @@ describe('Detect Blocked Issues (acceptance)', () => {
     thresholdGateway = new StubStatusThresholdGateway();
     alertGateway = new StubBlockedIssueAlertGateway();
     detectionDataGateway = new StubBlockedIssueDetectionDataGateway();
+    teamSettingsGateway = new StubTeamSettingsGateway();
     detectBlockedIssues = new DetectBlockedIssuesUsecase(
       thresholdGateway,
       alertGateway,
       detectionDataGateway,
+      teamSettingsGateway,
     );
     setStatusThreshold = new SetStatusThresholdUsecase(thresholdGateway);
     getBlockedIssues = new GetBlockedIssuesUsecase(alertGateway);

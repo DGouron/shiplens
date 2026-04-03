@@ -493,6 +493,77 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* ── PILOTING SECTIONS ── */
+    .severity-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.65rem;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .severity-critical { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .severity-warning { background: rgba(245,158,11,0.12); color: var(--warning); }
+
+    .classification-well-estimated { background: rgba(16,185,129,0.12); color: var(--success); }
+    .classification-over-estimated { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .classification-under-estimated { background: rgba(239,68,68,0.12); color: var(--danger); }
+
+    .bottleneck-highlight {
+      background: rgba(99,102,241,0.06);
+      border-left: 3px solid var(--accent-1);
+    }
+
+    .evolution-positive { color: var(--success); }
+    .evolution-negative { color: var(--danger); }
+
+    .subsection { margin-top: 1.5rem; }
+    .section-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .subsection-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .alert-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.5rem;
+      transition: all var(--transition);
+    }
+    .alert-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .alert-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .alert-link {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: color var(--transition);
+    }
+    .alert-link:hover { color: var(--accent-1); }
   </style>
 </head>
 <body>
@@ -506,6 +577,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         <span class="nav-crumb nav-crumb-active">Rapport de cycle</span>
       </div>
       <div class="nav-right">
+        <a href="/settings" class="nav-crumb" id="settingsLink">Settings</a>
         <div class="theme-toggle" id="themeToggle" title="Changer de theme">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>
@@ -533,11 +605,29 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         <div id="metricsContent" class="loading">Selectionnez un cycle pour voir les metriques.</div>
       </div>
 
-      <div class="glass" id="issuesSection">
+      <div class="glass" id="bottlenecksSection">
         <div class="section-head">
-          <span class="section-title">Issues du cycle</span>
+          <span class="section-title">Goulots d'etranglement</span>
         </div>
-        <div id="issuesContent" class="loading">Selectionnez un cycle pour voir les issues.</div>
+        <div class="section-subtitle">Temps median passe dans chaque statut du workflow — identifie ou les issues s'accumulent.</div>
+        <div id="bottlenecksContent" class="loading">Selectionnez un cycle pour voir les goulots.</div>
+      </div>
+
+      <div class="glass" id="blockedIssuesSection">
+        <div class="section-head">
+          <span class="section-title">Issues bloquees</span>
+          <button class="btn" id="detectBtn" disabled>Relancer la detection</button>
+        </div>
+        <div class="section-subtitle">Issues restees dans le meme statut au-dela du seuil configure — triees par severite.</div>
+        <div id="blockedIssuesContent" class="loading">Selectionnez un cycle pour voir les issues bloquees.</div>
+      </div>
+
+      <div class="glass" id="estimationSection">
+        <div class="section-head">
+          <span class="section-title">Precision d'estimation</span>
+        </div>
+        <div class="section-subtitle">Ecart entre l'estimation en points et le cycle time reel — par equipe et par developpeur.</div>
+        <div id="estimationContent" class="loading">Selectionnez un cycle pour voir la precision d'estimation.</div>
       </div>
 
       <div class="glass" id="reportSection">
@@ -618,6 +708,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     const initialTeamId = urlParams.get('teamId');
     if (initialTeamId) {
       document.getElementById('teamId').value = initialTeamId;
+      document.getElementById('settingsLink').href = '/settings?teamId=' + encodeURIComponent(initialTeamId);
       loadTeam();
     }
 
@@ -628,12 +719,15 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       clearError();
       currentReport = null;
       document.getElementById('generateBtn').disabled = false;
+      document.getElementById('detectBtn').disabled = false;
       document.getElementById('exportBtn').disabled = true;
       document.getElementById('copyBtn').disabled = true;
       document.getElementById('reportContent').className = 'report-empty';
       document.getElementById('reportContent').textContent = 'Aucun rapport genere pour ce cycle.';
       loadMetrics(cycleId, teamId);
-      loadIssues(cycleId, teamId);
+      loadBottlenecks(cycleId, teamId);
+      loadBlockedIssues(teamId);
+      loadEstimationAccuracy(teamId, cycleId);
     });
 
     async function loadTeam() {
@@ -657,6 +751,11 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           selector.appendChild(option);
         });
         selector.disabled = false;
+
+        if (data.cycles.length > 0) {
+          selector.value = data.cycles[0].externalId;
+          selector.dispatchEvent(new Event('change'));
+        }
       } catch (error) {
         showError(error.message);
       }
@@ -697,43 +796,212 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       }
     }
 
-    async function loadIssues(cycleId, teamId) {
-      const container = document.getElementById('issuesContent');
+    async function loadBottlenecks(cycleId, teamId) {
+      const container = document.getElementById('bottlenecksContent');
       container.className = 'loading';
-      container.textContent = 'Chargement des issues...';
+      container.textContent = 'Chargement des goulots...';
 
       try {
         const response = await fetch(
-          API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/issues?teamId=' + encodeURIComponent(teamId)
+          API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/bottlenecks?teamId=' + encodeURIComponent(teamId) + '&includeComparison=true'
         );
         if (!response.ok) {
           const err = await response.json().catch(function() { return {}; });
-          throw new Error(err.message || 'Erreur lors du chargement des issues');
+          container.className = '';
+          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Goulots non disponibles') + '</div>';
+          return;
         }
-        const data = await response.json();
-
+        var data = await response.json();
         container.className = '';
-        if (data.issues.length === 0) {
-          container.innerHTML = '<div class="report-empty">Aucune issue dans ce cycle.</div>';
+
+        if (data.statusDistribution.length === 0) {
+          container.innerHTML = '<div class="report-empty">Aucune donnee de goulot disponible</div>';
           return;
         }
 
-        let html = '<table><thead><tr><th>Titre</th><th>Statut</th><th>Points</th><th>Assignee</th></tr></thead><tbody>';
-        data.issues.forEach(function(issue) {
-          html += '<tr>' +
-            '<td>' + escapeHtml(issue.title) + '</td>' +
-            '<td>' + statusBadge(issue.statusName) + '</td>' +
-            '<td style="font-variant-numeric:tabular-nums">' + escapeHtml(issue.points != null ? String(issue.points) : '—') + '</td>' +
-            '<td>' + escapeHtml(issue.assigneeName || '—') + '</td>' +
-            '</tr>';
+        var html = '';
+
+        html += '<table><thead><tr><th>Statut</th><th>Temps median</th></tr></thead><tbody>';
+        data.statusDistribution.forEach(function(entry) {
+          var highlight = entry.statusName === data.bottleneckStatus ? ' class="bottleneck-highlight"' : '';
+          html += '<tr' + highlight + '><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.medianHours) + '</td></tr>';
         });
         html += '</tbody></table>';
+
+        html += '<div class="subsection"><div class="subsection-title">Comparaison avec le cycle precedent</div><div class="section-subtitle">Evolution du temps median par statut entre les deux derniers cycles.</div>';
+        if (data.cycleComparison) {
+          html += '<table><thead><tr><th>Statut</th><th>Cycle precedent</th><th>Cycle actuel</th><th>Evolution</th></tr></thead><tbody>';
+          data.cycleComparison.forEach(function(entry) {
+            var evolutionValue = parseFloat(entry.evolution);
+            var evolutionClass = evolutionValue > 0 ? 'evolution-negative' : evolutionValue < 0 ? 'evolution-positive' : '';
+            html += '<tr><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.previousMedianHours) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.currentMedianHours) + '</td><td class="' + evolutionClass + '">' + escapeHtml(entry.evolution) + '</td></tr>';
+          });
+          html += '</tbody></table>';
+        } else {
+          html += '<div class="report-empty">Pas assez de cycles pour comparer</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="subsection"><div class="subsection-title">Breakdown par assignee</div><div class="section-subtitle">Temps median par statut pour chaque membre de l\\'equipe.</div>';
+        if (data.assigneeBreakdown.length > 0) {
+          var statusSet = {};
+          data.assigneeBreakdown.forEach(function(assignee) {
+            assignee.statusMedians.forEach(function(median) { statusSet[median.statusName] = true; });
+          });
+          var allStatuses = Object.keys(statusSet);
+          html += '<table><thead><tr><th>Assignee</th>';
+          allStatuses.forEach(function(status) { html += '<th>' + escapeHtml(status) + '</th>'; });
+          html += '</tr></thead><tbody>';
+          data.assigneeBreakdown.forEach(function(assignee) {
+            var medianMap = {};
+            assignee.statusMedians.forEach(function(median) { medianMap[median.statusName] = median.medianHours; });
+            html += '<tr><td>' + escapeHtml(assignee.assigneeName) + '</td>';
+            allStatuses.forEach(function(status) {
+              var value = medianMap[status] || '—';
+              html += '<td style="font-variant-numeric:tabular-nums">' + escapeHtml(value) + '</td>';
+            });
+            html += '</tr>';
+          });
+          html += '</tbody></table>';
+        }
+        html += '</div>';
+
         container.innerHTML = html;
       } catch (error) {
         container.className = '';
         container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
       }
     }
+
+    async function loadBlockedIssues(teamId) {
+      const container = document.getElementById('blockedIssuesContent');
+      container.className = 'loading';
+      container.textContent = 'Chargement des issues bloquees...';
+
+      try {
+        const response = await fetch(API + '/analytics/blocked-issues');
+        if (!response.ok) {
+          const err = await response.json().catch(function() { return {}; });
+          container.className = '';
+          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Issues bloquees non disponibles') + '</div>';
+          return;
+        }
+        var allAlerts = await response.json();
+        var alerts = teamId ? allAlerts.filter(function(a) { return a.teamId === teamId; }) : allAlerts;
+        container.className = '';
+
+        if (alerts.length === 0) {
+          container.innerHTML = '<div class="report-empty">Aucune issue bloquee detectee</div>';
+          return;
+        }
+
+        alerts.sort(function(a, b) {
+          if (a.severity === 'critical' && b.severity !== 'critical') return -1;
+          if (a.severity !== 'critical' && b.severity === 'critical') return 1;
+          return 0;
+        });
+
+        var html = '';
+        alerts.forEach(function(alert) {
+          var severityClass = alert.severity === 'critical' ? 'severity-critical' : 'severity-warning';
+          html += '<div class="alert-card">' +
+            '<div class="alert-header">' +
+            '<a href="' + escapeHtml(alert.issueUrl) + '" target="_blank" class="alert-link">' + escapeHtml(alert.issueTitle) + '</a>' +
+            '</div>' +
+            '<div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;">' +
+            statusBadge(alert.statusName) +
+            '<span class="severity-badge ' + severityClass + '">' + escapeHtml(alert.severity) + '</span>' +
+            '<span style="color:var(--text-muted);font-size:0.82rem;">' + escapeHtml(alert.durationHours) + '</span>' +
+            '</div>' +
+            '</div>';
+        });
+        container.innerHTML = html;
+      } catch (error) {
+        container.className = '';
+        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    async function detectBlockedIssues(teamId) {
+      const btn = document.getElementById('detectBtn');
+      btn.disabled = true;
+      btn.textContent = 'Detection en cours...';
+
+      try {
+        const response = await fetch(API + '/analytics/blocked-issues/detect', { method: 'POST' });
+        if (!response.ok) {
+          const err = await response.json().catch(function() { return {}; });
+          throw new Error(err.message || 'Erreur lors de la detection');
+        }
+        await loadBlockedIssues(teamId);
+        btn.textContent = 'Relancer la detection';
+        btn.disabled = false;
+      } catch (error) {
+        const container = document.getElementById('blockedIssuesContent');
+        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
+        btn.textContent = 'Relancer la detection';
+        btn.disabled = false;
+      }
+    }
+
+    async function loadEstimationAccuracy(teamId, cycleId) {
+      const container = document.getElementById('estimationContent');
+      container.className = 'loading';
+      container.textContent = 'Chargement de la precision d\\'estimation...';
+
+      try {
+        const response = await fetch(
+          API + '/api/analytics/teams/' + encodeURIComponent(teamId) + '/cycles/' + encodeURIComponent(cycleId) + '/estimation-accuracy'
+        );
+        if (!response.ok) {
+          const err = await response.json().catch(function() { return {}; });
+          container.className = '';
+          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Precision d\\'estimation non disponible') + '</div>';
+          return;
+        }
+        var data = await response.json();
+        container.className = '';
+
+        if (data.teamScore.issueCount === 0) {
+          container.innerHTML = '<div class="report-empty">Pas assez de donnees pour calculer la precision</div>';
+          return;
+        }
+
+        var classificationClass = 'classification-' + data.teamScore.classification;
+        var classificationLabel = data.teamScore.classification === 'well-estimated' ? 'Bien estimee' : data.teamScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+
+        var html = '';
+
+        html += '<div class="metric-card" style="margin-bottom:1rem;">' +
+          '<div class="metric-value">' + data.teamScore.averageRatio.toFixed(2) + '</div>' +
+          '<div class="metric-label">Score equipe <span class="severity-badge ' + classificationClass + '">' + escapeHtml(classificationLabel) + '</span></div>' +
+          '</div>';
+
+        if (data.developerScores.length > 0) {
+          html += '<div class="subsection"><div class="subsection-title">Breakdown par developpeur</div><div class="section-subtitle">Score de precision et tendances d\\'estimation par membre.</div>';
+          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Score</th><th>Classification</th></tr></thead><tbody>';
+          data.developerScores.forEach(function(dev) {
+            var devClassification = 'classification-' + dev.classification;
+            var devLabel = dev.classification === 'well-estimated' ? 'Bien estimee' : dev.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+            html += '<tr><td>' + escapeHtml(dev.developerName) + '</td>' +
+              '<td style="font-variant-numeric:tabular-nums">' + dev.issueCount + '</td>' +
+              '<td style="font-variant-numeric:tabular-nums">' + dev.averageRatio.toFixed(2) + '</td>' +
+              '<td><span class="severity-badge ' + devClassification + '">' + escapeHtml(devLabel) + '</span></td></tr>';
+          });
+          html += '</tbody></table></div>';
+        }
+
+        container.innerHTML = html;
+      } catch (error) {
+        container.className = '';
+        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    document.getElementById('detectBtn').addEventListener('click', function() {
+      var teamId = document.getElementById('teamId').value.trim();
+      detectBlockedIssues(teamId);
+    });
 
     document.getElementById('generateBtn').addEventListener('click', async function() {
       const cycleId = document.getElementById('cycleSelector').value;

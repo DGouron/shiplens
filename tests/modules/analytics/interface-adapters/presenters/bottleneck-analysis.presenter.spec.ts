@@ -30,7 +30,7 @@ describe('BottleneckAnalysisPresenter', () => {
 
     expect(dto.statusDistribution).toEqual([
       { statusName: 'Backlog', medianHours: '4h' },
-      { statusName: 'Todo', medianHours: '2.5h' },
+      { statusName: 'Todo', medianHours: '3h' },
       { statusName: 'In Progress', medianHours: '24h' },
       { statusName: 'In Review', medianHours: '36h' },
     ]);
@@ -49,7 +49,7 @@ describe('BottleneckAnalysisPresenter', () => {
         assigneeName: 'Alice',
         statusMedians: [
           { statusName: 'In Progress', medianHours: '20h' },
-          { statusName: 'In Review', medianHours: '60h' },
+          { statusName: 'In Review', medianHours: '2.5j' },
         ],
       },
     ]);
@@ -78,7 +78,7 @@ describe('BottleneckAnalysisPresenter', () => {
     expect(dto.cycleComparison).toEqual([
       {
         statusName: 'In Review',
-        previousMedianHours: '48h',
+        previousMedianHours: '2.0j',
         currentMedianHours: '36h',
         evolution: '-25%',
       },

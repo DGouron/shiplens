@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { BottleneckAnalysisDataGateway } from '../entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
 import { BottleneckAnalysis } from '../entities/bottleneck-analysis/bottleneck-analysis.js';
@@ -38,11 +38,15 @@ export interface BottleneckAnalysisResult {
 export class AnalyzeBottlenecksByStatusUsecase
   implements Usecase<AnalyzeBottlenecksParams, BottleneckAnalysisResult>
 {
+  private readonly logger = new Logger(AnalyzeBottlenecksByStatusUsecase.name);
+
   constructor(
     private readonly bottleneckDataGateway: BottleneckAnalysisDataGateway,
   ) {}
 
   async execute(params: AnalyzeBottlenecksParams): Promise<BottleneckAnalysisResult> {
+    this.logger.log(`[${params.cycleId}] Bottleneck analysis started`);
+
     const hasSyncData = await this.bottleneckDataGateway.hasSynchronizedData(params.teamId);
     if (!hasSyncData) {
       throw new NoSynchronizedDataError();
@@ -73,11 +77,15 @@ export class AnalyzeBottlenecksByStatusUsecase
       previousCycleMedians,
     });
 
-    return {
+    const result = {
       statusDistribution: analysis.statusDistribution,
       bottleneckStatus: analysis.bottleneckStatus,
       assigneeBreakdown: analysis.assigneeBreakdown,
       cycleComparison: analysis.cycleComparison,
     };
+
+    this.logger.log(`[${params.cycleId}] Bottleneck analysis completed — bottleneck: ${result.bottleneckStatus}, statuses: ${result.statusDistribution.length}, assignees: ${result.assigneeBreakdown.length}`);
+
+    return result;
   }
 }
