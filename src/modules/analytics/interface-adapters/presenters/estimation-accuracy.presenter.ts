@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { type Presenter } from '@shared/foundation/presenter/presenter.js';
-import { type EstimationAccuracy, type IssueRatio, type DeveloperScore, type LabelScore, type TeamScore } from '../../entities/estimation-accuracy/estimation-accuracy.js';
+import {
+  type DeveloperScore,
+  type EstimationAccuracy,
+  type IssueRatio,
+  type LabelScore,
+  type TeamScore,
+} from '../../entities/estimation-accuracy/estimation-accuracy.js';
 
 export interface EstimationAccuracyDto {
   issues: IssueRatio[];
