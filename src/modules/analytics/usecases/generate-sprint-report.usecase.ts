@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { SprintReportDataGateway, type SprintContext, type TrendContext } from '../entities/sprint-report/sprint-report-data.gateway.js';
@@ -36,6 +36,8 @@ const MINIMUM_TREND_CYCLES = 3;
 export class GenerateSprintReportUsecase
   implements Usecase<GenerateSprintReportParams, SprintReport>
 {
+  private readonly logger = new Logger(GenerateSprintReportUsecase.name);
+
   constructor(
     private readonly sprintReportDataGateway: SprintReportDataGateway,
     private readonly aiTextGeneratorGateway: AiTextGeneratorGateway,
@@ -46,6 +48,8 @@ export class GenerateSprintReportUsecase
   ) {}
 
   async execute(params: GenerateSprintReportParams): Promise<SprintReport> {
+    this.logger.log(`[${params.cycleId}] Report generation started — language: ${params.language}, provider: ${params.provider}`);
+
     if (!SUPPORTED_LANGUAGES.includes(params.language)) {
       throw new UnsupportedLanguageError();
     }
@@ -81,12 +85,19 @@ export class GenerateSprintReportUsecase
     }
 
     const prompt = this.buildPrompt(sprintContext, trendContext, params.language, ruleEvaluations);
+    this.logger.log(`[${params.cycleId}] Calling AI provider: ${params.provider}...`);
     const generatedText = await this.aiTextGeneratorGateway.generate(
       prompt,
       params.provider,
     );
+    this.logger.log(`[${params.cycleId}] AI response received`);
 
-    const parsedSections = JSON.parse(generatedText) as Record<string, unknown>;
+    const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      this.logger.error(`[${params.cycleId}] No JSON found in AI response: ${generatedText.substring(0, 200)}`);
+      throw new Error("La reponse de l'IA ne contient pas de JSON valide.");
+    }
+    const parsedSections = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
 
     let auditSection: AuditSection | null = null;
     if (hasAuditRules) {
@@ -115,6 +126,7 @@ export class GenerateSprintReportUsecase
     });
 
     await this.sprintReportGateway.save(report);
+    this.logger.log(`[${params.cycleId}] Report generated and saved — ${sprintContext.cycleName}`);
 
     return report;
   }

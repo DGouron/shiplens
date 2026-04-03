@@ -11,6 +11,7 @@ import { SprintReportDataGateway } from './entities/sprint-report/sprint-report-
 import { SprintReportDataInPrismaGateway } from './interface-adapters/gateways/sprint-report-data.in-prisma.gateway.js';
 import { AiTextGeneratorGateway } from './entities/sprint-report/ai-text-generator.gateway.js';
 import { AiTextGeneratorWithProviderGateway } from './interface-adapters/gateways/ai-text-generator.with-provider.gateway.js';
+import { AiTextGeneratorWithClaudeCliGateway } from './interface-adapters/gateways/ai-text-generator.with-claude-cli.gateway.js';
 import { CycleReportPageController } from './interface-adapters/controllers/cycle-report-page.controller.js';
 import { ListTeamCyclesUsecase } from './usecases/list-team-cycles.usecase.js';
 import { GetCycleIssuesUsecase } from './usecases/get-cycle-issues.usecase.js';
@@ -80,7 +81,9 @@ import { AuditModule } from '../audit/audit.module.js';
     },
     {
       provide: AiTextGeneratorGateway,
-      useClass: AiTextGeneratorWithProviderGateway,
+      useClass: process.env['ANTHROPIC_API_KEY']
+        ? AiTextGeneratorWithProviderGateway
+        : AiTextGeneratorWithClaudeCliGateway,
     },
     {
       provide: SprintReportGateway,
