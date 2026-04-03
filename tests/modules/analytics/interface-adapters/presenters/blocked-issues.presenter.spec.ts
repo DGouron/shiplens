@@ -20,7 +20,7 @@ describe('BlockedIssuesPresenter', () => {
     const result = presenter.present([alert]);
 
     expect(result).toHaveLength(1);
-    expect(result[0].durationHours).toBe('50h');
+    expect(result[0].durationHours).toBe('2.1j');
     expect(result[0].issueUrl).toBe('https://linear.app/issue/abc-123');
     expect(result[0].severity).toBe('warning');
   });

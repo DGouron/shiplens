@@ -67,4 +67,48 @@ describe('CycleReportPageController', () => {
     expect(result).toContain('<!DOCTYPE html>');
     expect(result).toContain('Shiplens');
   });
+
+  it('HTML page contains bottlenecks section', () => {
+    const result = controller.getPage();
+
+    expect(result).toContain('id="bottlenecksSection"');
+    expect(result).toContain("Goulots d'etranglement");
+  });
+
+  it('HTML page contains blocked issues section', () => {
+    const result = controller.getPage();
+
+    expect(result).toContain('id="blockedIssuesSection"');
+    expect(result).toContain('Issues bloquees');
+    expect(result).toContain('Relancer la detection');
+  });
+
+  it('HTML page contains estimation section', () => {
+    const result = controller.getPage();
+
+    expect(result).toContain('id="estimationSection"');
+    expect(result).toContain("Precision d'estimation");
+  });
+
+  it('HTML page does not contain issues table section', () => {
+    const result = controller.getPage();
+
+    expect(result).not.toContain('id="issuesSection"');
+    expect(result).not.toContain('Issues du cycle');
+  });
+
+  it('HTML page contains piloting JS functions', () => {
+    const result = controller.getPage();
+
+    expect(result).toContain('function loadBottlenecks');
+    expect(result).toContain('function loadBlockedIssues');
+    expect(result).toContain('function detectBlockedIssues');
+    expect(result).toContain('function loadEstimationAccuracy');
+  });
+
+  it('HTML page does not contain loadIssues function', () => {
+    const result = controller.getPage();
+
+    expect(result).not.toContain('function loadIssues');
+  });
 });
