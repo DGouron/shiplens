@@ -40,8 +40,8 @@ export class WorkspaceDashboardDataInPrismaGateway extends WorkspaceDashboardDat
       return null;
     }
 
-    const issueExternalIds = activeCycle.issueExternalIds
-      ? activeCycle.issueExternalIds.split(',').filter(Boolean)
+    const issueExternalIds: string[] = activeCycle.issueExternalIds
+      ? JSON.parse(activeCycle.issueExternalIds)
       : [];
 
     if (issueExternalIds.length === 0) {
@@ -105,8 +105,8 @@ export class WorkspaceDashboardDataInPrismaGateway extends WorkspaceDashboardDat
     const velocities: number[] = [];
 
     for (const cycle of completedCycles) {
-      const issueExternalIds = cycle.issueExternalIds
-        ? cycle.issueExternalIds.split(',').filter(Boolean)
+      const issueExternalIds: string[] = cycle.issueExternalIds
+        ? JSON.parse(cycle.issueExternalIds)
         : [];
 
       if (issueExternalIds.length === 0) {

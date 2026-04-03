@@ -147,9 +147,8 @@ describe('View Workspace Dashboard (acceptance)', () => {
       };
 
       const result = await usecase.execute();
-      const team = result.teamDashboards[0];
 
-      expect(team.velocityTrend).toBe('hausse');
+      expect(result.teamDashboards[0].velocityTrend).toBe('hausse');
     });
 
     it('velocity trend insuffisant when less than 3 previous cycles', async () => {
@@ -174,9 +173,8 @@ describe('View Workspace Dashboard (acceptance)', () => {
       };
 
       const result = await usecase.execute();
-      const team = result.teamDashboards[0];
 
-      expect(team.velocityTrend).toBe('insuffisant');
+      expect(result.teamDashboards[0].velocityTrend).toBe('insuffisant');
     });
   });
 

@@ -34,9 +34,34 @@ describe('WorkspaceDashboardController', () => {
 
     const result = await controller.getDashboardData();
 
+    expect('teams' in result).toBe(true);
+    if (!('teams' in result)) return;
     expect(result.teams).toHaveLength(1);
     expect(result.teams[0].teamName).toBe('Frontend');
     expect(result.teams[0].completionRate).toBe('80%');
+  });
+
+  it('returns empty state when workspace is not connected', async () => {
+    gateway.workspaceConnected = false;
+
+    const result = await controller.getDashboardData();
+
+    expect(result).toEqual({
+      status: 'not_connected',
+      message: 'Aucun workspace connecté. Veuillez connecter votre workspace Linear.',
+    });
+  });
+
+  it('returns empty state when no teams are synchronized', async () => {
+    gateway.workspaceConnected = true;
+    gateway.teams = [];
+
+    const result = await controller.getDashboardData();
+
+    expect(result).toEqual({
+      status: 'no_teams',
+      message: 'Aucune équipe synchronisée. Veuillez d\'abord sélectionner des équipes à synchroniser.',
+    });
   });
 
   it('returns HTML page content', () => {

@@ -15,7 +15,7 @@ export class EstimationAccuracyDataInPrismaGateway extends EstimationAccuracyDat
     });
 
     const issueExternalIds = cycle.issueExternalIds
-      ? cycle.issueExternalIds.split(',').filter(Boolean)
+      ? JSON.parse(cycle.issueExternalIds)
       : [];
 
     const issues = await this.prisma.issue.findMany({

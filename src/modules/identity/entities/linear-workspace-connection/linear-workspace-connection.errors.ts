@@ -25,3 +25,9 @@ export class NoLinearConnectionError extends BusinessRuleViolation {
     super('Aucun workspace Linear n\'est connecté.');
   }
 }
+
+export class InvalidLinearApiKeyError extends BusinessRuleViolation {
+  constructor() {
+    super('La clé API Linear est invalide ou inaccessible.');
+  }
+}

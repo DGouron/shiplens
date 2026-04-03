@@ -24,6 +24,7 @@
 - Derive types from Zod schemas: `type X = z.infer<typeof xSchema>`
 - Use discriminated unions for state modeling
 - Use type narrowing (`typeof`, `instanceof`, `in`, discriminant checks) over casts
+- **Never** use `var` — use `const` by default, `let` only when reassignment is needed (applies to inline JS/HTML too)
 
 ## NestJS
 

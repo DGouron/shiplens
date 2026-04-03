@@ -23,7 +23,7 @@ export class SprintReportDataInPrismaGateway extends SprintReportDataGateway {
     });
 
     const issueExternalIds = cycle.issueExternalIds
-      ? cycle.issueExternalIds.split(',').filter(Boolean)
+      ? JSON.parse(cycle.issueExternalIds)
       : [];
 
     const issues = await this.prisma.issue.findMany({
@@ -99,7 +99,7 @@ export class SprintReportDataInPrismaGateway extends SprintReportDataGateway {
 
     for (const cycle of previousCycles) {
       const issueExternalIds = cycle.issueExternalIds
-        ? cycle.issueExternalIds.split(',').filter(Boolean)
+        ? JSON.parse(cycle.issueExternalIds)
         : [];
 
       const issues = await this.prisma.issue.findMany({
