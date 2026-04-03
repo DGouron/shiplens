@@ -751,6 +751,11 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           selector.appendChild(option);
         });
         selector.disabled = false;
+
+        if (data.cycles.length > 0) {
+          selector.value = data.cycles[0].externalId;
+          selector.dispatchEvent(new Event('change'));
+        }
       } catch (error) {
         showError(error.message);
       }
@@ -839,14 +844,21 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
         html += '<div class="subsection"><div class="subsection-title">Breakdown par assignee</div><div class="section-subtitle">Temps median par statut pour chaque membre de l\\'equipe.</div>';
         if (data.assigneeBreakdown.length > 0) {
-          var allStatuses = data.assigneeBreakdown[0].statusMedians.map(function(s) { return s.statusName; });
+          var statusSet = {};
+          data.assigneeBreakdown.forEach(function(assignee) {
+            assignee.statusMedians.forEach(function(median) { statusSet[median.statusName] = true; });
+          });
+          var allStatuses = Object.keys(statusSet);
           html += '<table><thead><tr><th>Assignee</th>';
           allStatuses.forEach(function(status) { html += '<th>' + escapeHtml(status) + '</th>'; });
           html += '</tr></thead><tbody>';
           data.assigneeBreakdown.forEach(function(assignee) {
+            var medianMap = {};
+            assignee.statusMedians.forEach(function(median) { medianMap[median.statusName] = median.medianHours; });
             html += '<tr><td>' + escapeHtml(assignee.assigneeName) + '</td>';
-            assignee.statusMedians.forEach(function(median) {
-              html += '<td style="font-variant-numeric:tabular-nums">' + escapeHtml(median.medianHours) + '</td>';
+            allStatuses.forEach(function(status) {
+              var value = medianMap[status] || '—';
+              html += '<td style="font-variant-numeric:tabular-nums">' + escapeHtml(value) + '</td>';
             });
             html += '</tr>';
           });
