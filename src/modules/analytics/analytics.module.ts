@@ -63,6 +63,8 @@ import { DurationPredictionDataGateway } from './entities/duration-prediction/du
 import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
 import { TeamSettingsGateway } from './entities/team-settings/team-settings.gateway.js';
 import { TeamSettingsInFileGateway } from './interface-adapters/gateways/team-settings.in-file.gateway.js';
+import { AvailableStatusesGateway } from './entities/team-settings/available-statuses.gateway.js';
+import { AvailableStatusesInPrismaGateway } from './interface-adapters/gateways/available-statuses.in-prisma.gateway.js';
 import { TeamSettingsController } from './interface-adapters/controllers/team-settings.controller.js';
 import { SettingsPageController } from './interface-adapters/controllers/settings-page.controller.js';
 import { GetTeamExcludedStatusesUsecase } from './usecases/get-team-excluded-statuses.usecase.js';
@@ -143,6 +145,10 @@ import { AuditModule } from '../audit/audit.module.js';
     {
       provide: TeamSettingsGateway,
       useClass: TeamSettingsInFileGateway,
+    },
+    {
+      provide: AvailableStatusesGateway,
+      useClass: AvailableStatusesInPrismaGateway,
     },
     CalculateEstimationAccuracyUsecase,
     GetEstimationTrendUsecase,

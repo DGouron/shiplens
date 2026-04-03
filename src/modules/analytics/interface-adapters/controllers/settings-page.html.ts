@@ -224,58 +224,54 @@ export const settingsPageHtml = `<!DOCTYPE html>
     .btn:hover { border-color: var(--border-hover); background: var(--bg-hover); color: var(--text-primary); }
     .btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    .status-input {
-      appearance: none;
-      -webkit-appearance: none;
+    .status-toggle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .status-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
       background: var(--bg-elevated);
-      color: var(--text-primary);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 0.55rem 0.85rem;
-      font-size: 0.85rem;
-      font-family: inherit;
-      transition: all var(--transition);
-      flex: 1;
-    }
-    .status-input:focus { outline: none; border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-    .status-input::placeholder { color: var(--text-dim); }
-
-    .add-form {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .chip-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.75rem;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      transition: all var(--transition);
-    }
-
-    .chip-remove {
-      background: none;
-      border: none;
-      color: var(--text-muted);
       cursor: pointer;
-      font-size: 1rem;
-      line-height: 1;
-      padding: 0;
-      transition: color var(--transition);
+      transition: all var(--transition);
     }
-    .chip-remove:hover { color: var(--danger); }
+    .status-toggle:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-hover);
+    }
+
+    .status-toggle-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .status-toggle-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+      background: rgba(16,185,129,0.12);
+      color: var(--success);
+    }
+
+    .status-toggle.excluded {
+      opacity: 0.7;
+    }
+    .status-toggle.excluded .status-toggle-name {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .status-toggle.excluded .status-toggle-label {
+      background: rgba(239,68,68,0.12);
+      color: var(--danger);
+    }
 
     .empty-state {
       color: var(--text-muted);
@@ -455,88 +451,68 @@ export const settingsPageHtml = `<!DOCTYPE html>
       var teamId = this.value;
       if (!teamId) return;
       clearError();
-      loadExcludedStatuses(teamId);
+      loadStatusSettings(teamId);
     });
 
-    async function loadExcludedStatuses(teamId) {
+    async function loadStatusSettings(teamId) {
       var container = document.getElementById('excludedStatusesContent');
       container.className = 'loading';
       container.textContent = 'Chargement...';
 
       try {
-        var response = await fetch(API + '/settings/teams/' + encodeURIComponent(teamId) + '/excluded-statuses');
-        if (!response.ok) throw new Error('Impossible de charger les statuts exclus');
-        var data = await response.json();
-        currentExcluded = data.statuses;
-        renderExcludedStatuses(teamId);
+        var responses = await Promise.all([
+          fetch(API + '/settings/teams/' + encodeURIComponent(teamId) + '/available-statuses'),
+          fetch(API + '/settings/teams/' + encodeURIComponent(teamId) + '/excluded-statuses'),
+        ]);
+        if (!responses[0].ok || !responses[1].ok) throw new Error('Impossible de charger les statuts');
+        var availableData = await responses[0].json();
+        var excludedData = await responses[1].json();
+        currentExcluded = excludedData.statuses;
+        renderStatusToggles(teamId, availableData.statuses, currentExcluded);
       } catch (error) {
         container.className = '';
         container.innerHTML = '<div class="error-msg">' + escapeHtml(error.message) + '</div>';
       }
     }
 
-    function renderExcludedStatuses(teamId) {
+    function renderStatusToggles(teamId, availableStatuses, excludedStatuses) {
       var container = document.getElementById('excludedStatusesContent');
       container.className = '';
 
-      var html = '<div class="add-form">' +
-        '<input type="text" class="status-input" id="newStatusInput" placeholder="Nom du statut a exclure (ex: Todo, Candidate)" />' +
-        '<button class="btn" id="addStatusBtn">Ajouter</button>' +
-        '</div>';
-
-      if (currentExcluded.length === 0) {
-        html += '<div class="empty-state">Aucun statut exclu — toutes les issues seront analysees</div>';
-      } else {
-        html += '<div class="chip-list">';
-        currentExcluded.forEach(function(status) {
-          html += '<div class="chip">' +
-            '<span>' + escapeHtml(status) + '</span>' +
-            '<button class="chip-remove" data-status="' + escapeHtml(status) + '" title="Retirer">&times;</button>' +
-            '</div>';
-        });
-        html += '</div>';
-      }
-
-      container.innerHTML = html;
-
-      document.getElementById('addStatusBtn').addEventListener('click', function() {
-        addStatus(teamId);
-      });
-
-      document.getElementById('newStatusInput').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') addStatus(teamId);
-      });
-
-      container.querySelectorAll('.chip-remove').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          removeStatus(teamId, btn.getAttribute('data-status'));
-        });
-      });
-    }
-
-    async function addStatus(teamId) {
-      var input = document.getElementById('newStatusInput');
-      var status = input.value.trim();
-      if (!status) return;
-      if (currentExcluded.includes(status)) {
-        showError('Ce statut est deja exclu');
+      if (availableStatuses.length === 0) {
+        container.innerHTML = '<div class="empty-state">Aucun statut synchronise pour cette equipe.</div>';
         return;
       }
 
-      clearError();
-      currentExcluded.push(status);
-      await saveExcludedStatuses(teamId);
-      showToast(status + ' exclu');
+      var html = '<div class="status-toggle-list">';
+      availableStatuses.forEach(function(status) {
+        var isExcluded = excludedStatuses.includes(status);
+        var toggleClass = isExcluded ? 'status-toggle excluded' : 'status-toggle';
+        html += '<div class="' + toggleClass + '" data-status="' + escapeHtml(status) + '">' +
+          '<span class="status-toggle-name">' + escapeHtml(status) + '</span>' +
+          '<span class="status-toggle-label">' + (isExcluded ? 'Exclu' : 'Analyse') + '</span>' +
+          '</div>';
+      });
+      html += '</div>';
+
+      container.innerHTML = html;
+
+      container.querySelectorAll('.status-toggle').forEach(function(toggle) {
+        toggle.addEventListener('click', function() {
+          var status = toggle.getAttribute('data-status');
+          toggleStatus(teamId, status, availableStatuses);
+        });
+      });
     }
 
-    async function removeStatus(teamId, status) {
+    async function toggleStatus(teamId, status, availableStatuses) {
       clearError();
-      currentExcluded = currentExcluded.filter(function(s) { return s !== status; });
-      await saveExcludedStatuses(teamId);
-      showToast(status + ' retire');
-    }
+      if (currentExcluded.includes(status)) {
+        currentExcluded = currentExcluded.filter(function(s) { return s !== status; });
+      } else {
+        currentExcluded.push(status);
+      }
 
-    async function saveExcludedStatuses(teamId) {
       try {
         var response = await fetch(
           API + '/settings/teams/' + encodeURIComponent(teamId) + '/excluded-statuses',
@@ -547,7 +523,7 @@ export const settingsPageHtml = `<!DOCTYPE html>
           }
         );
         if (!response.ok) throw new Error('Erreur lors de la sauvegarde');
-        renderExcludedStatuses(teamId);
+        renderStatusToggles(teamId, availableStatuses, currentExcluded);
       } catch (error) {
         showError(error.message);
       }
