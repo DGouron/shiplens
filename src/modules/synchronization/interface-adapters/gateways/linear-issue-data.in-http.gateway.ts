@@ -33,6 +33,7 @@ interface LinearGraphqlIssuesResponse {
 interface LinearGraphqlCycle {
   id: string;
   name: string | null;
+  number: number | null;
   startsAt: string;
   endsAt: string;
   issues: { nodes: Array<{ id: string }> };
@@ -127,7 +128,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
         team(id: $teamId) {
           cycles {
             nodes {
-              id name startsAt endsAt
+              id name number startsAt endsAt
               issues { nodes { id } }
             }
           }
@@ -139,7 +140,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
     return body.team.cycles.nodes.map((cycle) => ({
       externalId: cycle.id,
       teamId,
-      name: cycle.name,
+      name: cycle.name ?? (cycle.number ? `Cycle ${cycle.number}` : null),
       startsAt: cycle.startsAt,
       endsAt: cycle.endsAt,
       issueExternalIds: JSON.stringify(

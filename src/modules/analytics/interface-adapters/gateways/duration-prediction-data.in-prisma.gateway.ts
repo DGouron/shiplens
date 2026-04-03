@@ -42,7 +42,7 @@ export class DurationPredictionDataInPrismaGateway extends DurationPredictionDat
     });
 
     const completedIssueExternalIds = completedCycles
-      .flatMap((cycle) => cycle.issueExternalIds.split(',').filter(Boolean));
+      .flatMap((cycle) => JSON.parse(cycle.issueExternalIds) as string[]);
 
     const uniqueIssueExternalIds = [...new Set(completedIssueExternalIds)];
 

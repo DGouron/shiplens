@@ -15,7 +15,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
     });
 
     const issueExternalIds = cycle.issueExternalIds
-      ? cycle.issueExternalIds.split(',').filter(Boolean)
+      ? JSON.parse(cycle.issueExternalIds)
       : [];
 
     const issues = await this.prisma.issue.findMany({
@@ -87,7 +87,7 @@ export class CycleMetricsDataInPrismaGateway extends CycleMetricsDataGateway {
 
     for (const cycle of previousCycles) {
       const issueExternalIds = cycle.issueExternalIds
-        ? cycle.issueExternalIds.split(',').filter(Boolean)
+        ? JSON.parse(cycle.issueExternalIds)
         : [];
 
       const issues = await this.prisma.issue.findMany({
