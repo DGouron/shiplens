@@ -27,7 +27,7 @@ Being allergic to code comments, only add them if vital for understanding. This 
 
 ## Technical Standards
 
-See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, TypeScript, testing, architecture, language, anti-overengineering.
+See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, TypeScript, testing, architecture, anti-overengineering.
 
 ## Commits
 
@@ -35,6 +35,11 @@ See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, Typ
 - **Types**: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`
 - **Scope**: Optional, in parentheses (e.g. `feat(auth): add login endpoint`)
 - **Never mention Claude**: No `Co-Authored-By: Claude` or AI mentions
+
+## Language
+
+- **English everywhere**: code, tests, commits, logs, documentation, error messages, UI texts, comments — no exceptions
+- **i18n later**: UI texts will be internationalized (EN/FR) via i18n — until then, English is the only language
 
 ## Testing
 
@@ -176,5 +181,7 @@ export class SomethingModule {}
 | `/worktree` | Manage Git worktrees for parallel branches |
 | `/skill-creator` | Create or modify a skill |
 | `/auto-review` | Self-review before PR (5 sequential audits) |
+| `/tribal-knowledge` | Discover implicit team conventions (tribal knowledge) in a codebase |
+| `/wiki` | Sync DDD docs to GitHub wiki |
 | `/security` | Secret detection scan before commit |
 | `/status` | Full project health diagnostic (read-only) |

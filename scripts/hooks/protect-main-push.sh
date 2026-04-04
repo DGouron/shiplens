@@ -17,6 +17,11 @@ if ! is_push_command; then
   exit 0
 fi
 
+# Allow pushes to wiki repos (GitHub wikis only use master)
+if echo "$COMMAND" | grep -qE "wiki"; then
+  exit 0
+fi
+
 pushes_to_protected_branch() {
   echo "$COMMAND" | grep -qE "git push.*(origin\s+(main|master)|origin/main|origin/master)"
 }

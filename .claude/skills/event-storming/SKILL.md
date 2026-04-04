@@ -47,6 +47,19 @@ Display the agent result as-is.
 Documents are written by the agent in `docs/ddd/event-storming/`.
 The agent enriches `docs/ddd/ubiquitous-language.md` with the discovered terms.
 
+### Step 4: Sync to wiki
+
+After the agent completes, invoke the `/wiki` skill to push the updated DDD documentation to the GitHub wiki.
+
+- If a specific BC was analyzed: `/wiki <bounded-context>`
+- If audit/global mode: `/wiki` (full sync)
+
+## Rules
+
+- All generated documentation must be in **English** (project language rule)
+- When spawning the event-storming agent, explicitly instruct it to write in English
+- Always sync to wiki after generating or updating event storming docs
+
 ## Invocation Examples
 
 ```

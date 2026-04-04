@@ -143,11 +143,21 @@ ACCEPTANCE CRITERIA :
    - Change status from `drafted` or `planned` to `implemented`
    - Update the date
 
-### Step 6: SHIP (MANDATORY)
+### Step 6: UPDATE EVENT STORMING (MANDATORY)
+
+After implementation, update the domain documentation for affected bounded contexts.
+
+1. **Detect affected BCs**: Look at the spec's bounded context and the files modified during implementation. Any module under `src/modules/<bc-name>/` that was created or modified counts.
+2. **Run event storming**: Invoke `/event-storming <bc-name>` for each affected BC. If multiple BCs were modified, run one per BC.
+3. The event storming skill will automatically sync to the wiki via `/wiki`.
+
+This step ensures domain documentation stays in sync with the code after every feature.
+
+### Step 7: SHIP (MANDATORY)
 
 Use the `/ship` skill for commit + push. NEVER commit manually.
 
-The complete workflow is: implement -> update spec -> update tracker -> /ship.
+The complete workflow is: implement -> update spec -> update tracker -> event storming -> /ship.
 
 ---
 
