@@ -5,6 +5,7 @@ import { BlockedIssueDetectionDataGateway } from './entities/blocked-issue-alert
 import { BottleneckAnalysisDataGateway } from './entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
 import { CycleReportPageDataGateway } from './entities/cycle-report-page/cycle-report-page-data.gateway.js';
 import { CycleMetricsDataGateway } from './entities/cycle-snapshot/cycle-metrics-data.gateway.js';
+import { DriftingIssueDetectionDataGateway } from './entities/drifting-issue/drifting-issue-detection-data.gateway.js';
 import { DurationPredictionDataGateway } from './entities/duration-prediction/duration-prediction-data.gateway.js';
 import { EstimationAccuracyDataGateway } from './entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { MemberDigestDataGateway } from './entities/member-digest/member-digest-data.gateway.js';
@@ -20,6 +21,7 @@ import { BlockedIssuesController } from './interface-adapters/controllers/blocke
 import { BottleneckAnalysisController } from './interface-adapters/controllers/bottleneck-analysis.controller.js';
 import { CycleMetricsController } from './interface-adapters/controllers/cycle-metrics.controller.js';
 import { CycleReportPageController } from './interface-adapters/controllers/cycle-report-page.controller.js';
+import { DriftingIssuesController } from './interface-adapters/controllers/drifting-issues.controller.js';
 import { DurationPredictionController } from './interface-adapters/controllers/duration-prediction.controller.js';
 import { EstimationAccuracyController } from './interface-adapters/controllers/estimation-accuracy.controller.js';
 import { MemberDigestController } from './interface-adapters/controllers/member-digest.controller.js';
@@ -36,6 +38,7 @@ import { BlockedIssueDetectionDataInPrismaGateway } from './interface-adapters/g
 import { BottleneckAnalysisDataInPrismaGateway } from './interface-adapters/gateways/bottleneck-analysis-data.in-prisma.gateway.js';
 import { CycleMetricsDataInPrismaGateway } from './interface-adapters/gateways/cycle-metrics-data.in-prisma.gateway.js';
 import { CycleReportPageDataInPrismaGateway } from './interface-adapters/gateways/cycle-report-page-data.in-prisma.gateway.js';
+import { DriftingIssueDetectionDataInPrismaGateway } from './interface-adapters/gateways/drifting-issue-detection-data.in-prisma.gateway.js';
 import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
 import { EstimationAccuracyDataInPrismaGateway } from './interface-adapters/gateways/estimation-accuracy-data.in-prisma.gateway.js';
 import { MemberDigestDataInPrismaGateway } from './interface-adapters/gateways/member-digest-data.in-prisma.gateway.js';
@@ -49,6 +52,7 @@ import { BlockedIssuesPresenter } from './interface-adapters/presenters/blocked-
 import { BottleneckAnalysisPresenter } from './interface-adapters/presenters/bottleneck-analysis.presenter.js';
 import { CycleIssuesPresenter } from './interface-adapters/presenters/cycle-issues.presenter.js';
 import { CycleMetricsPresenter } from './interface-adapters/presenters/cycle-metrics.presenter.js';
+import { DriftingIssuesPresenter } from './interface-adapters/presenters/drifting-issues.presenter.js';
 import { DurationPredictionPresenter } from './interface-adapters/presenters/duration-prediction.presenter.js';
 import { EstimationAccuracyPresenter } from './interface-adapters/presenters/estimation-accuracy.presenter.js';
 import { ReportDetailPresenter } from './interface-adapters/presenters/report-detail.presenter.js';
@@ -60,6 +64,7 @@ import { AnalyzeBottlenecksByStatusUsecase } from './usecases/analyze-bottleneck
 import { CalculateCycleMetricsUsecase } from './usecases/calculate-cycle-metrics.usecase.js';
 import { CalculateEstimationAccuracyUsecase } from './usecases/calculate-estimation-accuracy.usecase.js';
 import { DetectBlockedIssuesUsecase } from './usecases/detect-blocked-issues.usecase.js';
+import { DetectDriftingIssuesUsecase } from './usecases/detect-drifting-issues.usecase.js';
 import { GenerateMemberDigestUsecase } from './usecases/generate-member-digest.usecase.js';
 import { GenerateSprintReportUsecase } from './usecases/generate-sprint-report.usecase.js';
 import { GetAlertHistoryUsecase } from './usecases/get-alert-history.usecase.js';
@@ -90,6 +95,7 @@ import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-sta
     TeamSettingsController,
     SettingsPageController,
     MemberDigestController,
+    DriftingIssuesController,
   ],
   providers: [
     CalculateCycleMetricsUsecase,
@@ -184,6 +190,12 @@ import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-sta
     {
       provide: MemberDigestDataGateway,
       useClass: MemberDigestDataInPrismaGateway,
+    },
+    DetectDriftingIssuesUsecase,
+    DriftingIssuesPresenter,
+    {
+      provide: DriftingIssueDetectionDataGateway,
+      useClass: DriftingIssueDetectionDataInPrismaGateway,
     },
   ],
   exports: [SprintReportGateway],

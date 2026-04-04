@@ -1,47 +1,47 @@
-# Consulter la page rapport d'un cycle
+# View cycle report page
 
 ## Status: implemented
 
-## Contexte
-Le tech lead veut plonger dans le détail d'un cycle précis pour comprendre ce qui s'est passé, partager les résultats avec ses stakeholders et identifier les axes d'amélioration. Aujourd'hui, ces informations sont éparpillées entre Linear, des tableurs et des notes manuelles. Shiplens centralise tout sur une page dédiée par cycle.
+## Context
+The tech lead wants to dive into the details of a specific cycle to understand what happened, share results with stakeholders and identify areas for improvement. Today, this information is scattered across Linear, spreadsheets and manual notes. Shiplens centralizes everything on a dedicated page per cycle.
 
 ## Rules
-- L'utilisateur peut sélectionner n'importe quel cycle passé ou actif de l'équipe via un sélecteur
-- Le rapport généré par l'IA est affiché en premier, en haut de page
-- Les métriques détaillées sont affichées sous le rapport : vélocité, cycle time, scope creep, taux de complétion
-- La liste complète des issues du cycle est affichée avec le statut final de chaque issue
-- Un graphique de progression montre l'avancement au fil du temps sur le cycle
-- L'utilisateur peut exporter le rapport en Markdown ou le copier dans le presse-papier
-- Le sélecteur de cycle affiche les cycles du plus récent au plus ancien
+- The user can select any past or active team cycle via a selector
+- The AI-generated report is displayed first, at the top of the page
+- Detailed metrics are displayed below the report: velocity, cycle time, scope creep, completion rate
+- The full list of cycle issues is displayed with the final status of each issue
+- A progress chart shows advancement over time during the cycle
+- The user can export the report as Markdown or copy it to the clipboard
+- The cycle selector displays cycles from most recent to oldest
 
 ## Scenarios
-- page nominale: {équipe sélectionnée, cycle passé avec rapport généré, 40 issues} → rapport IA affiché + métriques (vélocité, cycle time, scope creep, taux de complétion) + liste des 40 issues avec statuts + graphique de progression
-- changement de cycle: {page affichée, sélection d'un autre cycle} → contenu mis à jour avec les données du nouveau cycle sélectionné
-- cycle sans rapport: {cycle sélectionné, aucun rapport généré} → section rapport vide avec mention "Aucun rapport généré pour ce cycle" + métriques et issues affichées normalement
-- export markdown: {rapport affiché, clic export Markdown} → fichier Markdown téléchargé contenant le rapport
-- copie presse-papier: {rapport affiché, clic copier} → contenu du rapport copié dans le presse-papier + confirmation "Rapport copié"
-- cycle actif en cours: {cycle actif sélectionné, données partielles} → métriques affichées avec mention "Cycle en cours" + graphique de progression partiel
-- cycle sans issues: {cycle sélectionné, 0 issue} → métriques à zéro + liste vide avec mention "Aucune issue dans ce cycle"
-- données non synchronisées: {cycle sélectionné, données non synchronisées} → reject "Les données de ce cycle ne sont pas encore synchronisées. Veuillez lancer la synchronisation."
-- export sans rapport: {aucun rapport généré, clic export} → reject "Aucun rapport à exporter. Veuillez d'abord générer un rapport pour ce cycle."
-- scope creep élevé: {cycle avec plus de 30% d'issues ajoutées après le début} → métrique scope creep affichée en alerte
+- nominal page: {selected team, past cycle with generated report, 40 issues} -> AI report displayed + metrics (velocity, cycle time, scope creep, completion rate) + list of 40 issues with statuses + progress chart
+- cycle change: {page displayed, another cycle selected} -> content updated with the newly selected cycle's data
+- cycle without report: {selected cycle, no report generated} -> empty report section with note "Aucun rapport généré pour ce cycle" + metrics and issues displayed normally
+- markdown export: {report displayed, Markdown export clicked} -> Markdown file downloaded containing the report
+- clipboard copy: {report displayed, copy clicked} -> report content copied to clipboard + confirmation "Rapport copié"
+- active cycle in progress: {active cycle selected, partial data} -> metrics displayed with note "Cycle en cours" + partial progress chart
+- cycle without issues: {selected cycle, 0 issues} -> metrics at zero + empty list with note "Aucune issue dans ce cycle"
+- data not synchronized: {selected cycle, data not synchronized} -> reject "Les données de ce cycle ne sont pas encore synchronisées. Veuillez lancer la synchronisation."
+- export without report: {no report generated, export clicked} -> reject "Aucun rapport à exporter. Veuillez d'abord générer un rapport pour ce cycle."
+- high scope creep: {cycle with more than 30% of issues added after start} -> scope creep metric displayed as alert
 
-## Hors scope
-- Comparaison côte à côte de deux cycles
-- Modification du rapport généré par l'IA
-- Export en PDF ou autres formats que Markdown
-- Ajout ou suppression d'issues depuis cette page
-- Génération du rapport depuis cette page (couvert par la spec de génération de rapport)
-- Envoi automatique du rapport par email ou notification
+## Out of scope
+- Side-by-side comparison of two cycles
+- Editing the AI-generated report
+- Export to PDF or formats other than Markdown
+- Adding or removing issues from this page
+- Report generation from this page (covered by the report generation spec)
+- Automatic report sending by email or notification
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Cycle | Période de travail définie pour une équipe (équivalent de sprint dans Linear) |
-| Rapport IA | Document structuré généré automatiquement résumant l'activité du cycle |
-| Vélocité | Volume de travail accompli pendant le cycle |
-| Cycle time | Durée moyenne entre le début et la fin du travail sur une issue |
-| Scope creep | Pourcentage d'issues ajoutées au cycle après son démarrage |
-| Taux de complétion | Pourcentage d'issues terminées sur le total d'issues du cycle |
-| Graphique de progression | Visualisation de l'avancement du cycle au fil du temps |
-| Statut final | État d'une issue à la clôture du cycle (terminée, en cours, bloquée, annulée) |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Cycle | Defined work period for a team (equivalent to sprint in Linear) |
+| AI report | Automatically generated structured document summarizing the cycle's activity |
+| Velocity | Volume of work accomplished during the cycle |
+| Cycle time | Average duration between start and completion of work on an issue |
+| Scope creep | Percentage of issues added to the cycle after its start |
+| Completion rate | Percentage of completed issues out of the total cycle issues |
+| Progress chart | Visualization of cycle advancement over time |
+| Final status | State of an issue at cycle closure (completed, in progress, blocked, cancelled) |

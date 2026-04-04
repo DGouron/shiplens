@@ -24,6 +24,7 @@ describe('TeamSettingsController', () => {
       getUsecase,
       setUsecase,
       availableStatusesGateway,
+      settingsGateway,
     );
   });
 

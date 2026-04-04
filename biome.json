@@ -28,7 +28,8 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noExplicitAny": "error"
+        "noExplicitAny": "error",
+        "noConsole": "error"
       },
       "style": {
         "noNonNullAssertion": "error",

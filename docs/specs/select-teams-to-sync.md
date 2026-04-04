@@ -1,34 +1,34 @@
-# Sélectionner les équipes à synchroniser
+# Select teams to synchronize
 
 ## Status: implemented
 
-## Contexte
-Une fois connecté à Linear, l'utilisateur doit choisir quelles équipes et projets il souhaite suivre dans Shiplens. Sans cette sélection, Shiplens ne sait pas quelles données importer.
+## Context
+Once connected to Linear, the user must choose which teams and projects they want to track in Shiplens. Without this selection, Shiplens does not know which data to import.
 
 ## Rules
-- L'utilisateur doit avoir un workspace Linear connecté pour accéder à la sélection
-- Au moins une équipe doit être sélectionnée pour lancer la synchronisation
-- La sélection peut être modifiée à tout moment
-- Seuls les projets actifs sont proposés à la sélection
-- Le nombre estimé d'issues à synchroniser est affiché avant confirmation
+- The user must have a connected Linear workspace to access the selection
+- At least one team must be selected to start synchronization
+- The selection can be modified at any time
+- Only active projects are offered for selection
+- The estimated number of issues to synchronize is displayed before confirmation
 
 ## Scenarios
-- sélection nominale: {workspace connecté, 2 équipes cochées, 3 projets cochés} → sélection sauvegardée + estimation "~150 issues à synchroniser"
-- aucune équipe sélectionnée: {workspace connecté, aucune équipe cochée, confirmation} → reject "Veuillez sélectionner au moins une équipe."
-- modification de sélection: {sélection existante, retrait d'une équipe, ajout d'une autre} → sélection mise à jour + nouvelle estimation affichée
-- workspace non connecté: {pas de workspace connecté, accès à la sélection} → reject "Veuillez d'abord connecter votre workspace Linear."
-- workspace sans équipe: {workspace connecté, aucune équipe dans Linear} → reject "Aucune équipe trouvée dans votre workspace Linear."
-- tous les projets d'une équipe archivés: {workspace connecté, équipe dont tous les projets sont archivés} → équipe affichée sans projet sélectionnable
+- nominal selection: {workspace connected, 2 teams checked, 3 projects checked} -> selection saved + estimate "~150 issues to synchronize"
+- no team selected: {workspace connected, no team checked, confirmation} -> reject "Please select at least one team."
+- selection modification: {existing selection, one team removed, another added} -> selection updated + new estimate displayed
+- workspace not connected: {no workspace connected, access to selection} -> reject "Please connect your Linear workspace first."
+- workspace without teams: {workspace connected, no teams in Linear} -> reject "No teams found in your Linear workspace."
+- all projects of a team archived: {workspace connected, team with all projects archived} -> team displayed without selectable project
 
-## Hors scope
-- Filtrage des issues individuelles
-- Lancement automatique de la synchronisation après sélection
-- Sélection d'équipes provenant de plusieurs workspaces
+## Out of scope
+- Filtering individual issues
+- Automatic synchronization launch after selection
+- Selecting teams from multiple workspaces
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Équipe | Team Linear — unité organisationnelle regroupant des membres et des projets |
-| Projet | Regroupement d'issues au sein d'une équipe, avec un objectif et une échéance |
-| Projet actif | Projet non archivé et non terminé dans Linear |
-| Estimation | Nombre approximatif d'issues qui seront importées selon la sélection courante |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Team | Linear Team — organizational unit grouping members and projects |
+| Project | Grouping of issues within a team, with a goal and a deadline |
+| Active project | Non-archived and non-completed project in Linear |
+| Estimate | Approximate number of issues that will be imported based on the current selection |

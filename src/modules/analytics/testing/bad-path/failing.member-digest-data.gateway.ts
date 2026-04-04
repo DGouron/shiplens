@@ -1,3 +1,4 @@
+import { GatewayError } from '@shared/foundation/gateway-error.js';
 import {
   type MemberCycleContext,
   MemberDigestDataGateway,
@@ -9,6 +10,6 @@ export class FailingMemberDigestDataGateway extends MemberDigestDataGateway {
     _teamId: string,
     _memberName: string,
   ): Promise<MemberCycleContext> {
-    throw new Error('Database error');
+    throw new GatewayError('Database error');
   }
 }

@@ -1,47 +1,47 @@
-# Voir les tendances de sante d'un membre
+# View member health trends
 
 ## Status: ready
 
-## Contexte
-Les outils de gestion de projet montrent ce qui est fait, pas comment ca se passe. Un developpeur qui sous-estime systematiquement, dont les PRs trainent en review ou dont le cycle time derive cycle apres cycle envoie des signaux invisibles sur Linear. Le tech lead a besoin de ces signaux pour intervenir avant que les problemes ne s'installent.
+## Context
+Project management tools show what is done, not how things are going. A developer who systematically underestimates, whose PRs linger in review, or whose cycle time drifts cycle after cycle sends invisible signals on Linear. The tech lead needs these signals to intervene before problems take hold.
 
 ## Rules
-- Le tableau de sante d'un membre affiche 5 signaux calcules sur les N derniers cycles termines
-- Signal 1 — Evolution du score d'estimation : tendance hausse/baisse/stable du score de precision
-- Signal 2 — Ratio de sous-estimation : pourcentage d'issues sous-estimees par cycle, avec tendance
-- Signal 3 — Cycle time moyen : evolution du temps moyen de traitement par cycle, avec tendance
-- Signal 4 — Tickets en derive par cycle : nombre de tickets ayant depasse la duree attendue, avec tendance
-- Signal 5 — Temps median en review : evolution du temps passe en review par cycle, avec tendance
-- Chaque signal affiche la valeur du dernier cycle, la tendance sur N cycles (hausse/baisse/stable) et un indicateur visuel de sante (vert/orange/rouge)
-- La tendance est calculee a partir d'un minimum de 3 cycles termines
-- Si moins de 3 cycles sont disponibles, le signal affiche la valeur brute sans tendance avec la mention "Pas assez d'historique"
-- Un signal est vert si la tendance est favorable (score estimation en hausse, sous-estimation en baisse, cycle time en baisse, derives en baisse, temps review en baisse)
-- Un signal est rouge si la tendance est defavorable depuis 2 cycles consecutifs ou plus
-- Un signal est orange dans les autres cas (tendance mixte ou premier ecart)
-- Le tableau de sante est accessible depuis le profil cycle du membre (spec view-member-cycle-profile)
+- A member's health dashboard displays 5 signals computed over the last N completed cycles
+- Signal 1 — Estimation score evolution: rising/falling/stable trend of the accuracy score
+- Signal 2 — Underestimation ratio: percentage of underestimated issues per cycle, with trend
+- Signal 3 — Average cycle time: evolution of average processing time per cycle, with trend
+- Signal 4 — Drifting tickets per cycle: number of tickets that exceeded expected duration, with trend
+- Signal 5 — Median review time: evolution of time spent in review per cycle, with trend
+- Each signal displays the last cycle value, the trend over N cycles (rising/falling/stable) and a visual health indicator (green/orange/red)
+- Trend is computed from a minimum of 3 completed cycles
+- If fewer than 3 cycles are available, the signal displays the raw value without trend with the note "Not enough history"
+- A signal is green if the trend is favorable (estimation score rising, underestimation falling, cycle time falling, drifts falling, review time falling)
+- A signal is red if the trend has been unfavorable for 2 or more consecutive cycles
+- A signal is orange in other cases (mixed trend or first deviation)
+- The health dashboard is accessible from the member's cycle profile (spec view-member-cycle-profile)
 
 ## Scenarios
-- sante nominale: {Alice, 4 cycles termines, score estimation 60% -> 65% -> 70% -> 75%} -> signal estimation vert + tendance hausse + valeur "75%"
-- sous-estimation chronique: {Bob, 3 cycles, ratio sous-estimation 40% -> 45% -> 50%} -> signal sous-estimation rouge + tendance hausse + valeur "50%"
-- cycle time qui derive: {Alice, 3 cycles, cycle time moyen 1.2j -> 1.5j -> 2.1j} -> signal cycle time rouge + tendance hausse + valeur "2.1j"
-- review qui traine: {Charlie, 3 cycles, temps median review 8h -> 12h -> 24h} -> signal review rouge + tendance hausse + valeur "24h"
-- amelioration derives: {Alice, 3 cycles, tickets en derive 4 -> 2 -> 1} -> signal derive vert + tendance baisse + valeur "1"
-- tendance mixte: {Bob, 4 cycles, cycle time 1.5j -> 2j -> 1.2j -> 1.8j} -> signal cycle time orange + tendance mixte
-- historique insuffisant: {nouveau membre, 1 cycle termine} -> 5 signaux affiches avec valeur brute + "Pas assez d'historique"
-- aucun cycle termine: {membre sans historique} -> tableau affiche "Aucune donnee disponible pour ce membre"
-- membre sans issue estimee: {Charlie, 3 cycles, aucune issue avec points} -> signal estimation et sous-estimation affiches "Non applicable" + autres signaux calcules normalement
+- nominal health: {Alice, 4 completed cycles, estimation score 60% -> 65% -> 70% -> 75%} -> estimation signal green + rising trend + value "75%"
+- chronic underestimation: {Bob, 3 cycles, underestimation ratio 40% -> 45% -> 50%} -> underestimation signal red + rising trend + value "50%"
+- drifting cycle time: {Alice, 3 cycles, average cycle time 1.2d -> 1.5d -> 2.1d} -> cycle time signal red + rising trend + value "2.1d"
+- lingering review: {Charlie, 3 cycles, median review time 8h -> 12h -> 24h} -> review signal red + rising trend + value "24h"
+- drift improvement: {Alice, 3 cycles, drifting tickets 4 -> 2 -> 1} -> drift signal green + falling trend + value "1"
+- mixed trend: {Bob, 4 cycles, cycle time 1.5d -> 2d -> 1.2d -> 1.8d} -> cycle time signal orange + mixed trend
+- insufficient history: {new member, 1 completed cycle} -> 5 signals displayed with raw value + "Not enough history"
+- no completed cycles: {member without history} -> dashboard displays "No data available for this member"
+- member without estimated issues: {Charlie, 3 cycles, no issues with points} -> estimation and underestimation signals display "Not applicable" + other signals computed normally
 
-## Hors scope
-- Graphique temporel multi-courbes (exploration visuelle)
-- Comparaison entre membres
-- Recommandations automatiques basees sur les signaux
-- Alertes ou notifications sur degradation de sante
-- Signaux au niveau equipe (uniquement par membre)
+## Out of scope
+- Multi-curve temporal chart (visual exploration)
+- Comparison between members
+- Automatic recommendations based on signals
+- Alerts or notifications on health degradation
+- Team-level signals (individual member only)
 
-## Glossaire
-| Terme | Definition |
-|-------|------------|
-| Signal de sante | Indicateur calcule sur N cycles revelant une tendance positive ou negative dans le travail d'un membre |
-| Tendance | Direction d'evolution d'un signal sur les derniers cycles : hausse, baisse ou stable |
-| Indicateur de sante | Code couleur (vert/orange/rouge) synthetisant si la tendance est favorable, mixte ou defavorable |
-| Derive | Ticket dont le temps reel de traitement depasse la duree attendue selon son estimation (cf. spec detect-drifting-issues) |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Health signal | Indicator computed over N cycles revealing a positive or negative trend in a member's work |
+| Trend | Direction of a signal's evolution over recent cycles: rising, falling or stable |
+| Health indicator | Color code (green/orange/red) summarizing whether the trend is favorable, mixed or unfavorable |
+| Drift | Ticket whose actual processing time exceeds the expected duration based on its estimate (cf. spec detect-drifting-issues) |

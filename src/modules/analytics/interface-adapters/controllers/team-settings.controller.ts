@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { AvailableStatusesGateway } from '../../entities/team-settings/available-statuses.gateway.js';
+import { TeamSettingsGateway } from '../../entities/team-settings/team-settings.gateway.js';
 import { GetTeamExcludedStatusesUsecase } from '../../usecases/get-team-excluded-statuses.usecase.js';
 import { SetTeamExcludedStatusesUsecase } from '../../usecases/set-team-excluded-statuses.usecase.js';
 
@@ -9,6 +10,7 @@ export class TeamSettingsController {
     private readonly getExcludedStatuses: GetTeamExcludedStatusesUsecase,
     private readonly setExcludedStatuses: SetTeamExcludedStatusesUsecase,
     private readonly availableStatusesGateway: AvailableStatusesGateway,
+    private readonly teamSettingsGateway: TeamSettingsGateway,
   ) {}
 
   @Get('teams/:teamId/excluded-statuses')
@@ -37,5 +39,21 @@ export class TeamSettingsController {
     const statuses =
       await this.availableStatusesGateway.getDistinctStatusNames(teamId);
     return { statuses };
+  }
+
+  @Get('teams/:teamId/timezone')
+  async getTimezone(
+    @Param('teamId') teamId: string,
+  ): Promise<{ timezone: string }> {
+    const timezone = await this.teamSettingsGateway.getTimezone(teamId);
+    return { timezone };
+  }
+
+  @Put('teams/:teamId/timezone')
+  async setTimezone(
+    @Param('teamId') teamId: string,
+    @Body() body: { timezone: string },
+  ): Promise<void> {
+    await this.teamSettingsGateway.setTimezone(teamId, body.timezone);
   }
 }

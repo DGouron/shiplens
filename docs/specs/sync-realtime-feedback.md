@@ -4,25 +4,25 @@ priority: low
 origin: debug-workflow fix/sync-data-accuracy-v2
 ---
 
-# Sync — Feedback temps réel de la progression
+# Sync — Real-time progress feedback
 
-## Contexte
+## Context
 
-La sync Linear pagine par batch de 50 issues/cycle. Pour un cycle de 500 issues, ça fait ~10 requêtes. L'utilisateur n'a aucun feedback visuel pendant ce temps.
+The Linear sync paginates in batches of 50 issues/cycle. For a cycle with 500 issues, that's ~10 requests. The user has no visual feedback during this time.
 
-## Besoin
+## Need
 
-Afficher la progression de la sync en temps réel :
-- Nombre d'issues récupérées / total estimé
-- Cycle en cours de traitement
-- Étape actuelle (issues, cycles, transitions)
+Display sync progress in real time:
+- Number of issues fetched / estimated total
+- Cycle currently being processed
+- Current step (issues, cycles, transitions)
 
-## Contraintes à explorer
+## Constraints to explore
 
-- Mécanisme de push : SSE, WebSocket, ou polling ?
-- Impact sur l'architecture : le gateway HTTP est actuellement fire-and-forget
-- Rate limit Linear : le batch de 50 est plus lent que 1 grosse requête, mais plus prévisible
+- Push mechanism: SSE, WebSocket, or polling?
+- Architecture impact: the HTTP gateway is currently fire-and-forget
+- Linear rate limit: batching by 50 is slower than 1 large request, but more predictable
 
-## Décisions à prendre
+## Decisions to make
 
-- À spécifier avec `/product-manager` quand le sujet sera priorisé
+- To be specified with `/product-manager` when the topic is prioritized

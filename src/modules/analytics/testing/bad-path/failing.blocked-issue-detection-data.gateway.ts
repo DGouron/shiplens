@@ -1,3 +1,4 @@
+import { GatewayError } from '@shared/foundation/gateway-error.js';
 import {
   BlockedIssueDetectionDataGateway,
   type IssueWithCurrentStatus,
@@ -5,10 +6,10 @@ import {
 
 export class FailingBlockedIssueDetectionDataGateway extends BlockedIssueDetectionDataGateway {
   async hasSynchronizedData(): Promise<boolean> {
-    throw new Error('Gateway error: unable to check synchronized data');
+    throw new GatewayError('Gateway error: unable to check synchronized data');
   }
 
   async getIssuesWithCurrentStatus(): Promise<IssueWithCurrentStatus[]> {
-    throw new Error('Gateway error: unable to fetch issues');
+    throw new GatewayError('Gateway error: unable to fetch issues');
   }
 }

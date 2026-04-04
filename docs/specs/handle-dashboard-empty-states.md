@@ -1,28 +1,28 @@
-# Afficher les états vides du dashboard
+# Handle dashboard empty states
 
 ## Status: implemented
 
-## Contexte
-Quand un utilisateur ouvre le dashboard pour la première fois, il se prend une erreur 500 au lieu d'un écran explicatif. Que le workspace ne soit pas connecté ou qu'aucune équipe ne soit synchronisée, le dashboard doit guider l'utilisateur vers l'action suivante au lieu de crasher.
+## Context
+When a user opens the dashboard for the first time, they get a 500 error instead of an explanatory screen. Whether the workspace is not connected or no team is synchronized, the dashboard must guide the user toward the next action instead of crashing.
 
 ## Rules
-- Le dashboard ne retourne jamais d'erreur quand aucune donnée n'est disponible
-- Si aucun workspace n'est connecté, le dashboard retourne un état "non connecté" avec un message guidant vers la connexion
-- Si aucune équipe n'est synchronisée, le dashboard retourne un état "aucune équipe" avec un message guidant vers la sélection d'équipes
-- L'état "non connecté" est prioritaire sur l'état "aucune équipe" : on vérifie la connexion d'abord
-- Le message guide est en français et indique l'action concrète à effectuer
+- The dashboard never returns an error when no data is available
+- If no workspace is connected, the dashboard returns a "not connected" state with a message guiding toward connection
+- If no team is synchronized, the dashboard returns a "no teams" state with a message guiding toward team selection
+- The "not connected" state takes priority over the "no teams" state: connection is checked first
+- The guidance message is in French and indicates the concrete action to perform
 
 ## Scenarios
-- workspace non connecté: {aucun workspace connecté} → status "not_connected" + message "Aucun workspace connecté. Veuillez connecter votre workspace Linear."
-- aucune équipe synchronisée: {workspace connecté, aucune équipe synchronisée} → status "no_teams" + message "Aucune équipe synchronisée. Veuillez d'abord sélectionner des équipes à synchroniser."
-- workspace connecté avec équipes: {workspace connecté, 2 équipes synchronisées avec cycles actifs} → données du dashboard normales (comportement inchangé)
+- workspace not connected: {no workspace connected} -> status "not_connected" + message "Aucun workspace connecté. Veuillez connecter votre workspace Linear."
+- no synchronized team: {workspace connected, no team synchronized} -> status "no_teams" + message "Aucune équipe synchronisée. Veuillez d'abord sélectionner des équipes à synchroniser."
+- workspace connected with teams: {workspace connected, 2 synchronized teams with active cycles} -> normal dashboard data (behavior unchanged)
 
-## Hors scope
-- Modification du HTML/frontend du dashboard (rendu côté client)
-- Ajout de liens cliquables dans les messages
-- Onboarding multi-étapes ou wizard de configuration
+## Out of scope
+- Modifying the dashboard HTML/frontend (client-side rendering)
+- Adding clickable links in messages
+- Multi-step onboarding or configuration wizard
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| État vide | Réponse du dashboard quand les prérequis ne sont pas remplis, contenant un statut et un message guide |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Empty state | Dashboard response when prerequisites are not met, containing a status and a guidance message |

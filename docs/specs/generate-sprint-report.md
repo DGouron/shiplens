@@ -1,56 +1,56 @@
-# Générer un rapport de sprint par IA
+# Generate an AI-powered sprint report
 
 ## Status: implemented
 
-## Contexte
-Le tech lead passe plus de 30 minutes à rédiger manuellement un bilan de sprint pour ses stakeholders. Shiplens génère automatiquement un rapport structuré et rédigé par IA à partir des métriques du sprint, des issues et des résultats d'audit, dans un ton professionnel accessible aux non-techniques.
+## Context
+The tech lead spends over 30 minutes manually writing a sprint summary for their stakeholders. Shiplens automatically generates a structured, AI-written report from sprint metrics, issues and audit results, in a professional tone accessible to non-technical readers.
 
 ## Rules
-- Le rapport contient obligatoirement : un résumé exécutif, une analyse des tendances, les faits saillants, les risques et warnings, et des recommandations actionnables
-- Le résumé exécutif fait entre 3 et 5 phrases sur la santé globale du sprint
-- L'analyse des tendances compare la vélocité du sprint à l'historique des sprints précédents
-- Les recommandations sont concrètes et actionnables, pas des généralités vagues
-- Le rapport est rédigé dans la langue choisie par l'utilisateur (français ou anglais au minimum)
-- Le rapport ne dépasse pas une longueur raisonnable pour rester lisible d'un coup d'oeil
-- L'utilisateur choisit le fournisseur d'IA utilisé pour la génération
-- Le rapport ne peut être généré que sur un sprint dont les données sont synchronisées
+- The report must contain: an executive summary, a trends analysis, highlights, risks and warnings, and actionable recommendations
+- The executive summary is between 3 and 5 sentences about the overall sprint health
+- The trends analysis compares the sprint velocity to the history of previous sprints
+- Recommendations are concrete and actionable, not vague generalities
+- The report is written in the language chosen by the user (French or English at minimum)
+- The report does not exceed a reasonable length to remain readable at a glance
+- The user chooses the AI provider used for generation
+- The report can only be generated for a sprint whose data is synchronized
 
 ## Scenarios
-- génération nominale: {sprint synchronisé, 45 issues, langue "FR", fournisseur "OpenAI"} → rapport généré en français + résumé exécutif + tendances + faits saillants + risques + recommandations
-- génération en anglais: {sprint synchronisé, 30 issues, langue "EN", fournisseur "Anthropic"} → rapport généré en anglais
-- génération avec fournisseur self-hosted: {sprint synchronisé, langue "FR", fournisseur "Ollama"} → rapport généré via le fournisseur local
-- sprint sans données: {sprint non synchronisé} → reject "Les données de ce sprint ne sont pas encore synchronisées. Veuillez lancer la synchronisation d'abord."
-- sprint vide: {sprint synchronisé, 0 issue} → reject "Ce sprint ne contient aucune issue. Impossible de générer un rapport."
-- fournisseur indisponible: {sprint synchronisé, fournisseur inaccessible} → reject "Le fournisseur d'IA sélectionné est indisponible. Veuillez réessayer ou choisir un autre fournisseur."
-- tendances sans historique: {sprint synchronisé, aucun sprint précédent} → rapport généré sans section tendances + mention "Pas d'historique disponible pour comparer la vélocité"
-- langue non supportée: {sprint synchronisé, langue "JP"} → reject "Cette langue n'est pas encore supportée. Langues disponibles : français, anglais."
+- nominal generation: {synchronized sprint, 45 issues, language "FR", provider "OpenAI"} -> report generated in French + executive summary + trends + highlights + risks + recommendations
+- generation in English: {synchronized sprint, 30 issues, language "EN", provider "Anthropic"} -> report generated in English
+- generation with self-hosted provider: {synchronized sprint, language "FR", provider "Ollama"} -> report generated via the local provider
+- sprint without data: {non-synchronized sprint} -> reject "This sprint's data is not yet synchronized. Please run synchronization first."
+- empty sprint: {synchronized sprint, 0 issues} -> reject "This sprint contains no issues. Cannot generate a report."
+- provider unavailable: {synchronized sprint, unreachable provider} -> reject "The selected AI provider is unavailable. Please retry or choose another provider."
+- trends without history: {synchronized sprint, no previous sprint} -> report generated without trends section + mention "No history available to compare velocity"
+- unsupported language: {synchronized sprint, language "JP"} -> reject "This language is not yet supported. Available languages: French, English."
 
-## Hors scope
-- Modification manuelle du rapport après génération
-- Envoi automatique du rapport (couvert par l'export)
-- Personnalisation du prompt IA par l'utilisateur
-- Comparaison côte à côte de plusieurs rapports
-- Génération de rapports sur autre chose qu'un sprint (projet, milestone)
+## Out of scope
+- Manual modification of the report after generation
+- Automatic sending of the report (covered by export)
+- User customization of the AI prompt
+- Side-by-side comparison of multiple reports
+- Report generation for anything other than a sprint (project, milestone)
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Rapport de sprint | Document structuré résumant l'activité, la santé et les tendances d'un sprint |
-| Résumé exécutif | Paragraphe court donnant une vue d'ensemble de la santé du sprint |
-| Tendances | Comparaison de la vélocité actuelle avec les sprints précédents |
-| Faits saillants | Issues notables, achievements ou événements marquants du sprint |
-| Recommandations | Suggestions concrètes d'amélioration pour les prochains sprints |
-| Fournisseur d'IA | Service externe utilisé pour la génération du texte (OpenAI, Anthropic, Ollama) |
-| Vélocité | Volume de travail accompli par l'équipe pendant un sprint |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Sprint report | Structured document summarizing the activity, health and trends of a sprint |
+| Executive summary | Short paragraph giving an overview of the sprint health |
+| Trends | Comparison of current velocity with previous sprints |
+| Highlights | Notable issues, achievements or significant events of the sprint |
+| Recommendations | Concrete improvement suggestions for upcoming sprints |
+| AI provider | External service used for text generation (OpenAI, Anthropic, Ollama) |
+| Velocity | Volume of work completed by the team during a sprint |
 
 ## Implementation
 
 ### Bounded Context
 Analytics (`src/modules/analytics/`)
 
-### Artefacts
-| Type | Fichier |
-|------|---------|
+### Artifacts
+| Type | File |
+|------|------|
 | Entity | `entities/sprint-report/sprint-report.ts` |
 | Schema | `entities/sprint-report/sprint-report.schema.ts` |
 | Guard | `entities/sprint-report/sprint-report.guard.ts` |
@@ -64,13 +64,13 @@ Analytics (`src/modules/analytics/`)
 | Gateway AI | `interface-adapters/gateways/ai-text-generator.with-provider.gateway.ts` |
 
 ### Endpoints
-| Methode | Route | Use Case |
-|---------|-------|----------|
+| Method | Route | Use Case |
+|--------|-------|----------|
 | POST | `/analytics/cycles/:cycleId/report` | GenerateSprintReportUsecase |
 
-### Decisions architecturales
-- Rapport non persiste (genere a la demande) — pas de migration Prisma
-- Un seul AiTextGeneratorGateway qui dispatche vers OpenAI/Anthropic/Ollama via parametre runtime
-- SprintReportDataGateway separe de CycleMetricsDataGateway (donnees differentes : sync status + issues brutes)
-- Prompt construit dans le use case (orchestration domaine)
-- Langues supportees en liste simple (FR, EN) dans le use case
+### Architectural decisions
+- Report not persisted (generated on demand) — no Prisma migration
+- A single AiTextGeneratorGateway that dispatches to OpenAI/Anthropic/Ollama via runtime parameter
+- SprintReportDataGateway separate from CycleMetricsDataGateway (different data: sync status + raw issues)
+- Prompt built in the use case (domain orchestration)
+- Supported languages in a simple list (FR, EN) in the use case

@@ -1,3 +1,4 @@
+import { GatewayError } from '@shared/foundation/gateway-error.js';
 import {
   type ActiveCycleData,
   type TeamSummary,
@@ -6,22 +7,22 @@ import { WorkspaceDashboardDataGateway } from '../../entities/workspace-dashboar
 
 export class FailingWorkspaceDashboardDataGateway extends WorkspaceDashboardDataGateway {
   async isWorkspaceConnected(): Promise<boolean> {
-    throw new Error('Gateway failure: isWorkspaceConnected');
+    throw new GatewayError('Gateway failure: isWorkspaceConnected');
   }
 
   async getSynchronizedTeams(): Promise<TeamSummary[]> {
-    throw new Error('Gateway failure: getSynchronizedTeams');
+    throw new GatewayError('Gateway failure: getSynchronizedTeams');
   }
 
   async getActiveCycle(): Promise<ActiveCycleData | null> {
-    throw new Error('Gateway failure: getActiveCycle');
+    throw new GatewayError('Gateway failure: getActiveCycle');
   }
 
   async getPreviousCycleVelocities(): Promise<number[]> {
-    throw new Error('Gateway failure: getPreviousCycleVelocities');
+    throw new GatewayError('Gateway failure: getPreviousCycleVelocities');
   }
 
   async getLastSyncDate(): Promise<Date | null> {
-    throw new Error('Gateway failure: getLastSyncDate');
+    throw new GatewayError('Gateway failure: getLastSyncDate');
   }
 }

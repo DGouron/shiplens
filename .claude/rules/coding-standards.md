@@ -13,6 +13,9 @@
 - **No barrel exports** — no `index.ts` re-export files, direct imports only
   - ✅ `import { createGuard } from '@shared/foundation/guard/guard.js'`
   - ❌ `import { createGuard } from '@shared/foundation'`
+- **Inline type imports** — always `import { type X }`, never `import type X`
+  - ✅ `import { type ArgumentsHost, Catch } from '@nestjs/common'`
+  - ❌ `import type { ArgumentsHost } from '@nestjs/common'`
 
 ## TypeScript
 
@@ -34,6 +37,16 @@
 - Presenters transform domain → DTO — all formatting logic here
 - Module wiring: `{ provide: AbstractGateway, useClass: ConcreteGateway }`
 
+## Error Handling
+
+- **3-tier error hierarchy** — never create error classes outside this:
+  - `BusinessRuleViolation` — domain invariant violations → HTTP 422
+  - `ApplicationRuleViolation` — precondition/config errors → HTTP 422
+  - `GatewayError` — I/O failures (DB, API, filesystem) → HTTP 500
+- Error classes in `entities/<entity>/<entity>.errors.ts` — never outside
+- Controllers never catch errors — global filters handle them
+- **Zero `console.log`** — use NestJS `Logger` exclusively (enforced by Biome `noConsole`)
+
 ## Testing
 
 - **Framework**: Vitest — run with `pnpm test`
@@ -44,7 +57,10 @@
   - Pattern: `new UserBuilder().withEmail("x@y.com").build()`
   - Builders extend `EntityBuilder<Props, Entity>` from `shared/foundation/testing/entity-builder.ts`
 - **Mocks**: only for I/O boundaries (gateways, APIs, DB) — never for internal logic
-- Test stubs go in `testing/good-path/` and `testing/bad-path/` within the module
+- **Good-path stubs**: `stub.<gateway>.gateway.ts` in `testing/good-path/`, concrete class extending the abstract gateway
+- **Bad-path stubs**: `failing.<gateway>.gateway.ts` in `testing/bad-path/`, always `throw new GatewayError(...)` — never `throw new Error(...)` (enforced by hook)
+  - Exception: domain-specific errors (e.g. `AiProviderUnavailableError`) when the stub intentionally simulates a business error
+- **Acceptance tests**: `.acceptance.spec.ts` suffix + `(acceptance)` label in root `describe`
 - One behavior per test — start with nominal case, add edge cases incrementally
 - Tests written in **English** only
 
@@ -63,6 +79,18 @@
   - `shared/foundation/`: pure technical abstractions, zero dependency on `main/`
   - `shared/domain/`: cross-BC business concepts (Shared Kernel)
   - `shared/infrastructure/prisma/`: PrismaService + PrismaModule
+
+## Zod Schemas
+
+- Prefer `z.nullable()` over `z.optional()` — absent fields are `null`, not `undefined`
+- Derive types with `z.infer<typeof schema>` in the same `.schema.ts` file
+- Guards in separate `.guard.ts` files using `createGuard(schema, 'EntityName')`
+
+## Code Idioms
+
+- `for...of` for imperative accumulation with `Map` — functional methods (`.map`, `.filter`, `.reduce`) for pure transforms
+- Concrete gateway files use `.in-<source>.` infix: `.in-prisma.`, `.in-http.`, `.in-crypto.`, `.in-filesystem.`
+- Commit scope aligns with bounded context name: `feat(analytics)`, `fix(sync)`, `docs(audit)`
 
 ## Anti-Overengineering
 
