@@ -1,6 +1,6 @@
 # Detecter les tickets en derive
 
-## Status: ready
+## Status: implemented
 
 ## Contexte
 Un ticket estime a 1 point qui traine toute la journee sans etre termine est un signal d'alerte. Aujourd'hui, la detection d'issues bloquees ne repere que les tickets stagnant dans un statut. Elle ne detecte pas les tickets qui avancent mais trop lentement par rapport a leur estimation. Le tech lead a besoin de ce signal pour intervenir tot dans le cycle.
@@ -45,3 +45,33 @@ Un ticket estime a 1 point qui traine toute la journee sans etre termine est un 
 | Grille de correspondance | Table fixe associant un nombre de points Fibonacci a une duree maximum attendue en heures ouvrees |
 | Heures ouvrees | Heures de travail comptabilisees du lundi au vendredi, de 9h a 18h |
 | A redecouper | Signal preventif pour les tickets estimes a 8 points ou plus, consideres trop gros pour etre livres en un bloc |
+
+## Implementation
+
+### Bounded Context
+Analytics
+
+### Artifacts
+- **Entity** : `DriftingIssue` — analyse de derive calculee a la volee
+- **Domain logic** : `business-hours.ts` (calcul heures ouvrees avec fuseau), `drift-grid.ts` (grille fixe Fibonacci)
+- **Use case** : `DetectDriftingIssuesUsecase` — orchestre fetch issues, calcul heures ouvrees, detection
+- **Gateway port** : `DriftingIssueDetectionDataGateway` — issues en cours avec points et startedAt
+- **Gateway impl** : `DriftingIssueDetectionDataInPrismaGateway`
+- **Presenter** : `DriftingIssuesPresenter`
+- **Controller** : `DriftingIssuesController` — GET /analytics/drifting-issues/:teamId + GET drift-grid/entries
+- **Settings** : fuseau horaire configurable par equipe (default Europe/Paris), grille en lecture seule
+
+### Endpoints
+| Methode | Route | Use case |
+|---------|-------|----------|
+| GET | /analytics/drifting-issues/:teamId | DetectDriftingIssuesUsecase |
+| GET | /analytics/drifting-issues/drift-grid/entries | Grille fixe (pas de use case) |
+| GET | /settings/teams/:teamId/timezone | TeamSettingsGateway.getTimezone |
+| PUT | /settings/teams/:teamId/timezone | TeamSettingsGateway.setTimezone |
+
+### Decisions architecturales
+- Calcul a la volee, pas de persistance (pas d'historique d'alertes de derive)
+- Pas de scheduler (hors scope : pas de notifications)
+- Heures ouvrees = fonction pure prenant un fuseau en parametre
+- Grille fixe en constante dans le code, pas en DB
+- Fuseau horaire dans TeamSettings existant (fichier JSON), default Europe/Paris
