@@ -1027,13 +1027,13 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           let memberClassification = 'classification-' + memberScore.classification;
           let memberLabel = memberScore.classification === 'well-estimated' ? 'Bien estimee' : memberScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
           html += '<div class="metric-card" style="margin-bottom:1rem;">' +
-            '<div class="metric-value">' + memberScore.averageRatio.toFixed(2) + '</div>' +
+            '<div class="metric-value">' + memberScore.daysPerPoint.toFixed(1) + ' <small>jours/point</small></div>' +
             '<div class="metric-label">Score ' + escapeHtml(selectedMember) + ' <span class="severity-badge ' + memberClassification + '">' + escapeHtml(memberLabel) + '</span></div>' +
             '</div>';
-          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Score</th><th>Classification</th></tr></thead><tbody>';
+          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Jours/point</th><th>Classification</th></tr></thead><tbody>';
           html += '<tr><td>' + escapeHtml(memberScore.developerName) + '</td>' +
             '<td style="font-variant-numeric:tabular-nums">' + memberScore.issueCount + '</td>' +
-            '<td style="font-variant-numeric:tabular-nums">' + memberScore.averageRatio.toFixed(2) + '</td>' +
+            '<td style="font-variant-numeric:tabular-nums">' + memberScore.daysPerPoint.toFixed(1) + '</td>' +
             '<td><span class="severity-badge ' + memberClassification + '">' + escapeHtml(memberLabel) + '</span></td></tr>';
           html += '</tbody></table>';
         } else {
@@ -1044,19 +1044,20 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         let classificationLabel = data.teamScore.classification === 'well-estimated' ? 'Bien estimee' : data.teamScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
 
         html += '<div class="metric-card" style="margin-bottom:1rem;">' +
-          '<div class="metric-value">' + data.teamScore.averageRatio.toFixed(2) + '</div>' +
+          '<div class="metric-value">' + data.teamScore.daysPerPoint.toFixed(1) + ' <small>jours/point</small></div>' +
           '<div class="metric-label">Score equipe <span class="severity-badge ' + classificationClass + '">' + escapeHtml(classificationLabel) + '</span></div>' +
           '</div>';
+        html += '<p style="color:#64748b;font-size:0.85rem;margin:0 0 1.5rem 0;">Ce score represente le nombre moyen de jours necessaires pour completer 1 story point. Par exemple, un score de 5.0 signifie qu\\'une issue estimee a 2 points a pris en moyenne 10 jours. Plus la valeur est stable d\\'un cycle a l\\'autre, meilleure est la calibration des estimations.</p>';
 
         if (data.developerScores.length > 0) {
           html += '<div class="subsection"><div class="subsection-title">Breakdown par developpeur</div><div class="section-subtitle">Score de precision et tendances d\\'estimation par membre.</div>';
-          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Score</th><th>Classification</th></tr></thead><tbody>';
+          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Jours/point</th><th>Classification</th></tr></thead><tbody>';
           data.developerScores.forEach(function(dev) {
             let devClassification = 'classification-' + dev.classification;
             let devLabel = dev.classification === 'well-estimated' ? 'Bien estimee' : dev.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
             html += '<tr><td>' + escapeHtml(dev.developerName) + '</td>' +
               '<td style="font-variant-numeric:tabular-nums">' + dev.issueCount + '</td>' +
-              '<td style="font-variant-numeric:tabular-nums">' + dev.averageRatio.toFixed(2) + '</td>' +
+              '<td style="font-variant-numeric:tabular-nums">' + dev.daysPerPoint.toFixed(1) + '</td>' +
               '<td><span class="severity-badge ' + devClassification + '">' + escapeHtml(devLabel) + '</span></td></tr>';
           });
           html += '</tbody></table></div>';
