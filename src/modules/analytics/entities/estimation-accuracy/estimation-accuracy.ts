@@ -12,6 +12,7 @@ export interface IssueRatio {
   points: number;
   cycleTimeInDays: number;
   ratio: number;
+  daysPerPoint: number;
   classification: EstimationClassification;
 }
 
@@ -19,6 +20,7 @@ export interface DeveloperScore {
   developerName: string;
   issueCount: number;
   averageRatio: number;
+  daysPerPoint: number;
   classification: EstimationClassification;
 }
 
@@ -26,13 +28,20 @@ export interface LabelScore {
   labelName: string;
   issueCount: number;
   averageRatio: number;
+  daysPerPoint: number;
   classification: EstimationClassification;
 }
 
 export interface TeamScore {
   issueCount: number;
   averageRatio: number;
+  daysPerPoint: number;
   classification: EstimationClassification;
+}
+
+function toDaysPerPoint(ratio: number): number {
+  if (ratio === 0) return 0;
+  return 1 / ratio;
 }
 
 function classify(ratio: number): EstimationClassification {
@@ -81,6 +90,7 @@ export class EstimationAccuracy {
         points: issue.points,
         cycleTimeInDays: issue.cycleTimeInDays,
         ratio,
+        daysPerPoint: toDaysPerPoint(ratio),
         classification: classify(ratio),
       };
     });
@@ -105,6 +115,7 @@ export class EstimationAccuracy {
         developerName,
         issueCount: issues.length,
         averageRatio: average,
+        daysPerPoint: toDaysPerPoint(average),
         classification: classify(average),
       };
     });
@@ -130,6 +141,7 @@ export class EstimationAccuracy {
         labelName,
         issueCount: issues.length,
         averageRatio: average,
+        daysPerPoint: toDaysPerPoint(average),
         classification: classify(average),
       };
     });
@@ -140,6 +152,7 @@ export class EstimationAccuracy {
     return {
       issueCount: this.props.issues.length,
       averageRatio: average,
+      daysPerPoint: toDaysPerPoint(average),
       classification: classify(average),
     };
   }
