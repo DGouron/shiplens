@@ -1,22 +1,22 @@
 # Definition of Done (DoD)
 
-Une feature est "done" quand elle satisfait TOUS les criteres suivants :
+A feature is "done" when it satisfies ALL of the following criteria:
 
 ## Checklist
 
-- [ ] **Tous les scenarios de la spec couverts** par des tests qui passent
-- [ ] **TDD respecte** : chaque comportement a un test ecrit AVANT le code
-- [ ] **Tests verts** : `pnpm test` passe sans erreur
-- [ ] **Zero violation architecture** : dependency rule respectee
-- [ ] **Zero `any`, `as`, `!`** dans le code
-- [ ] **Noms complets** : pas d'abreviations
-- [ ] **Messages d'erreur en francais** pour l'utilisateur final
-- [ ] **Tests en anglais**
-- [ ] **Migration Prisma** si schema modifie (backup fait avant)
-- [ ] **Code review** : self-review ou pair-review effectuee
+- [ ] **All spec scenarios covered** by passing tests
+- [ ] **TDD followed**: each behavior has a test written BEFORE the code
+- [ ] **Tests green**: `pnpm test` passes without errors
+- [ ] **Zero architecture violations**: dependency rule respected
+- [ ] **Zero `any`, `as`, `!`** in the code
+- [ ] **Full names**: no abbreviations
+- [ ] **Error messages in French** for the end user
+- [ ] **Tests in English**
+- [ ] **Prisma migration** if schema was modified (backup done first)
+- [ ] **Code review**: self-review or pair-review completed
 
-## Regles
+## Rules
 
-- Une feature non-done ne doit PAS etre livree
-- Si un critere echoue, corriger avant de declarer "done"
-- Le DoD est un contrat qualite, pas une suggestion
+- A non-done feature must NOT be shipped
+- If a criterion fails, fix it before declaring "done"
+- The DoD is a quality contract, not a suggestion

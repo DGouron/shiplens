@@ -1,88 +1,88 @@
-# Instructions Projet — Shiplens
+# Project Instructions — Shiplens
 
 ## Tooling
 
-Le projet utilise pnpm, non npm ni yarn.
+This project uses pnpm, not npm or yarn.
 
-## Comportement
+## Behavior
 
-Important : Chaque réponse commencera par "J'ai lu les règles.". Cela démontrera que tu as bien suivis nos règles.
+Important: Every response must start with "J'ai lu les règles." to demonstrate that you have followed our rules.
 
-Tu dois toujours me challenger quand c'est pertinant et être cash sans prendre de pincette, sinon ça me blèsse.
+Always challenge me when relevant and be blunt — no sugarcoating, otherwise it hurts me.
 
-Tu dois toujours évaluer le scope de ce qui t'es demander et me dire si c'est trop large ou vague, sinon je serais triste.
+Always evaluate the scope of what is asked and tell me if it's too broad or vague, otherwise I'll be sad.
 
-Etant allergique aux commentaires technique dans le code, tu n'en mettra uniquement que si c'est vital pour la compréhension du code. Ce qui veux dire, que tu as déjà mis un nom de fonction, de fichier, de variable, de dossier qui crie l'intention.
+Being allergic to code comments, only add them if vital for understanding. This means you have already named your function, file, variable, and folder to scream the intent.
 
-## Philosophie code
+## Code Philosophy
 
-- **KISS** : La solution la plus simple qui marche. Si le code donne mal à la tête, il a échoué.
-- **Lisible comme de la prose** : Si tu dois relire une ligne deux fois, réécris-la. (Clean Code, Uncle Bob)
-- **Pas de sur-abstraction** : 3 lignes claires > 1 abstraction maline. YAGNI prime.
+- **KISS**: The simplest solution that works. If the code gives a headache, it failed.
+- **Readable as prose**: If you have to read a line twice, rewrite it. (Clean Code, Uncle Bob)
+- **No over-abstraction**: 3 clear lines > 1 clever abstraction. YAGNI rules.
 
 ## Quality Gates
 
-- **Zéro erreur TypeScript** : `npx tsc --noEmit` doit passer sans aucune erreur avant tout commit. Si des erreurs pré-existantes sont détectées, les corriger dans le même commit ou un commit dédié.
-- **Zéro erreur Biome** : `pnpm lint:ci` doit passer sans aucune erreur avant tout commit.
+- **Zero TypeScript errors**: `npx tsc --noEmit` must pass with zero errors before any commit. If pre-existing errors are detected, fix them in the same commit or a dedicated one.
+- **Zero Biome errors**: `pnpm lint:ci` must pass with zero errors before any commit.
 
-## Standards techniques
+## Technical Standards
 
-Voir `.claude/rules/coding-standards.md` pour les règles détaillées : naming, imports, TypeScript, testing, architecture, langue, anti-overengineering.
+See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, TypeScript, testing, architecture, language, anti-overengineering.
 
 ## Commits
 
-- **Format** : Conventional Commits (https://www.conventionalcommits.org/)
-- **Types** : `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`
-- **Scope** : Optionnel, entre parenthèses (ex: `feat(auth): add login endpoint`)
-- **Ne jamais mentionner Claude** : Pas de `Co-Authored-By: Claude` ni mention de l'IA
+- **Format**: Conventional Commits (https://www.conventionalcommits.org/)
+- **Types**: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`
+- **Scope**: Optional, in parentheses (e.g. `feat(auth): add login endpoint`)
+- **Never mention Claude**: No `Co-Authored-By: Claude` or AI mentions
 
 ## Testing
 
-- **Framework** : Vitest + unplugin-swc
-- **Approche** : TDD Detroit School (Inside-Out, state-based)
-- **Règle absolue** : Jamais de code prod sans test rouge d'abord
-- **Preuve obligatoire** : Toujours fournir la preuve que le travail fonctionne
-- **Mocks** : Uniquement pour les I/O externes (gateways, API, DB) — jamais pour la logique interne
-- **Workflow** : Utiliser le skill `/tdd` pour le guidage RED-GREEN-REFACTOR
-- **Commande** : `pnpm test` (unit), `pnpm test:e2e` (Playwright)
+- **Framework**: Vitest + unplugin-swc
+- **Approach**: TDD Detroit School (Inside-Out, state-based)
+- **Absolute rule**: Never write production code without a failing test first
+- **Proof required**: Always provide proof that the work functions
+- **Mocks**: Only for external I/O (gateways, API, DB) — never for internal logic
+- **Workflow**: Use the `/tdd` skill for RED-GREEN-REFACTOR guidance
+- **Commands**: `pnpm test` (unit), `pnpm test:e2e` (Playwright)
 
-### Structure des tests
+### Test Structure
 
-- **Emplacement** : Tests en miroir dans `/tests/`
-- **Exemple** : `src/modules/auth/entities/user/user.ts` → `tests/modules/auth/entities/user/user.spec.ts`
+- **Location**: Mirror structure in `/tests/`
+- **Example**: `src/modules/auth/entities/user/user.ts` → `tests/modules/auth/entities/user/user.spec.ts`
 
 ### Test Data Builders
 
-- **Emplacement** : `/tests/builders/`
-- **Convention** : `<entity>.builder.ts` — classe extends `EntityBuilder<Props, Entity>`
-- **Base class** : `src/shared/foundation/testing/entity-builder.ts`
-- **Usage** : Toujours utiliser les builders dans les tests, jamais `new Entity()` directement
-- **Pattern** : `new UserBuilder().withEmail("x@y.com").build()`
+- **Location**: `/tests/builders/`
+- **Convention**: `<entity>.builder.ts` — class extends `EntityBuilder<Props, Entity>`
+- **Base class**: `src/shared/foundation/testing/entity-builder.ts`
+- **Usage**: Always use builders in tests, never `new Entity()` directly
+- **Pattern**: `new UserBuilder().withEmail("x@y.com").build()`
 
 ## Architecture
 
-- **Style** : Screaming Architecture + Clean Architecture (Uncle Bob)
-- **DDD** : Niveau stratégique uniquement (Bounded Contexts, Ubiquitous Language)
-- **Framework** : NestJS 11
-- **BDD** : SQLite via Prisma ORM
-- **Modules** : Organisés en bounded contexts (`src/modules/<context-name>/`)
-- **Workflow** : Utiliser le skill `/architecture` pour créer des composants
+- **Style**: Screaming Architecture + Clean Architecture (Uncle Bob)
+- **DDD**: Strategic level only (Bounded Contexts, Ubiquitous Language)
+- **Framework**: NestJS 11
+- **Database**: SQLite via Prisma ORM
+- **Modules**: Organized as bounded contexts (`src/modules/<context-name>/`)
+- **Workflow**: Use the `/architecture` skill to create components
 
-### Principes
+### Principles
 
-- Les définitions **Clean Architecture priment** sur DDD tactique
-- Dependency Rule : dépendances vers l'intérieur uniquement
-- **abstract classes comme DI tokens** : Les interfaces TS disparaissent au runtime → inutilisables comme tokens NestJS
+- **Clean Architecture definitions take precedence** over tactical DDD
+- Dependency Rule: dependencies point inward only
+- **Abstract classes as DI tokens**: TS interfaces vanish at runtime → unusable as NestJS tokens
 
-### Injection de dépendances
+### Dependency Injection
 
-Via NestJS native DI (`@Inject`). Les gateway ports sont des abstract classes (servent de contrat ET de token d'injection).
+Via NestJS native DI (`@Inject`). Gateway ports are abstract classes (serve as both contract AND injection token).
 
 ### Shared Layers
 
-- `shared/foundation/` : Abstractions techniques cross-BC **pures** (guard, usecase, presenter, business-rule-violation, application-rule-violation, gateway-error, entity-builder). **Aucune dépendance vers `main/`**.
-- `shared/domain/` : Concepts métier cross-BC — Shared Kernel DDD
-- `shared/infrastructure/prisma/` : PrismaService + PrismaModule (@Global)
+- `shared/foundation/`: Pure cross-BC technical abstractions (guard, usecase, presenter, business-rule-violation, application-rule-violation, gateway-error, entity-builder). **Zero dependencies on `main/`**.
+- `shared/domain/`: Cross-BC business concepts — DDD Shared Kernel
+- `shared/infrastructure/prisma/`: PrismaService + PrismaModule (@Global)
 
 ### Use Case Pattern (NestJS)
 
@@ -119,59 +119,62 @@ export abstract class SomethingGateway {
 export class SomethingModule {}
 ```
 
-## Base de données (Prisma + SQLite)
+## Database (Prisma + SQLite)
 
-### Migrations — Workflow obligatoire
+### Migrations — Mandatory Workflow
 
-**INTERDIT :**
-- `prisma db push` — pas d'historique de migration
-- `prisma db push --force-reset` — supprime toutes les données
+**FORBIDDEN:**
+- `prisma db push` — no migration history
+- `prisma db push --force-reset` — deletes all data
 - `prisma migrate reset --force`
-- Opérations SQL destructives directes
+- Direct destructive SQL operations
 
-**PROCÉDURE OBLIGATOIRE :**
-1. `pnpm db:backup` — toujours en premier
-2. `pnpm db:migrate --name description` — test local
-3. Vérifier le SQL généré dans `prisma/migrations/`
-4. Tester l'application localement
+**MANDATORY PROCEDURE:**
+1. `pnpm db:backup` — always first
+2. `pnpm db:migrate --name description` — test locally
+3. Review generated SQL in `prisma/migrations/`
+4. Test the application locally
 5. `git add prisma/migrations/`
 6. `git commit -m "feat: ..."`
-7. `pnpm db:deploy` — production uniquement
+7. `pnpm db:deploy` — production only
 
-**Règle d'or** : Pas de backup, pas de migration. Pas d'exception.
+**Golden rule**: No backup, no migration. No exceptions.
 
 ## Spec-Driven Development (SDD)
 
-### Pipeline de feature
+### Feature Pipeline
 
-1. `/product-manager` — Spec DSL custom dans `docs/specs/`
-2. `/implement-feature` — Orchestre planner + implementer TDD
+1. `/product-manager` — Custom DSL spec in `docs/specs/`
+2. `/implement-feature` — Orchestrates planner + TDD implementer
 3. `/ship` — Commit + push
 
-### Double boucle
+### Double Loop
 
-- **Boucle externe (SDD)** : Spec (Rules + Scenarios) -> tests d'acceptance (restent RED pendant l'impl)
-- **Boucle interne (TDD)** : RED-GREEN-REFACTOR par incrément, fait passer la boucle externe au vert
+- **Outer loop (SDD)**: Spec (Rules + Scenarios) → acceptance tests (stay RED during implementation)
+- **Inner loop (TDD)**: RED-GREEN-REFACTOR incrementally, turns the outer loop GREEN
 
-### Artefacts
+### Artifacts
 
-- `docs/specs/` — Specs DSL (source de vérité)
+- `docs/specs/` — DSL Specs (source of truth)
 - `docs/ddd/` — Event Storming, Context Maps
-- `docs/business-rules/` — Règles métier extraites du code
+- `docs/business-rules/` — Business rules extracted from code
 
-## Skills disponibles
+## Available Skills
 
-| Skill | Quand l'utiliser |
-|-------|------------------|
-| `/product-manager` | Définir une feature, rédiger specs INVEST + DSL custom |
-| `/implement-feature` | Implémenter une feature complète (orchestre planner + implementer) |
-| `/tdd` | Écrire ou modifier du code (RED-GREEN-REFACTOR) |
-| `/architecture` | Créer module, entité, use case, presenter, gateway... |
-| `/ddd` | Découper le domaine, définir l'ubiquitous language |
-| `/event-storming` | Session Event Storming Big Picture sur un bounded context |
-| `/business-rules-extractor` | Extraire les règles métier d'un module |
-| `/refactor` | Refactoring structuré (Mikado, Strangler Fig, Parallel Change) |
-| `/debug-workflow` | Investigation progressive de bugs + plan de branches |
-| `/ship` | Commit + push (vérifie les tests avant) |
-| `/worktree` | Gérer les worktrees Git pour branches parallèles |
-| `/skill-creator` | Créer ou modifier un skill |
+| Skill | When to use |
+|-------|-------------|
+| `/product-manager` | Define a feature, write INVEST specs + custom DSL |
+| `/implement-feature` | Implement a complete feature (orchestrates planner + implementer) |
+| `/tdd` | Write or modify code (RED-GREEN-REFACTOR) |
+| `/architecture` | Create module, entity, use case, presenter, gateway... |
+| `/ddd` | Slice the domain, define ubiquitous language |
+| `/event-storming` | Big Picture Event Storming session on a bounded context |
+| `/business-rules-extractor` | Extract business rules from a module |
+| `/refactor` | Structured refactoring (Mikado, Strangler Fig, Parallel Change) |
+| `/debug-workflow` | Progressive bug investigation + branch plan |
+| `/ship` | Commit + push (runs tests first) |
+| `/worktree` | Manage Git worktrees for parallel branches |
+| `/skill-creator` | Create or modify a skill |
+| `/auto-review` | Self-review before PR (5 sequential audits) |
+| `/security` | Secret detection scan before commit |
+| `/status` | Full project health diagnostic (read-only) |

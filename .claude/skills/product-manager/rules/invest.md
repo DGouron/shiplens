@@ -1,35 +1,35 @@
-# Criteres INVEST
+# INVEST Criteria
 
-Chaque spec doit passer les 6 criteres INVEST avant d'etre consideree prete.
+Each spec must pass all 6 INVEST criteria before being considered ready.
 
-| Critere | Question | Seuil |
-|---------|----------|-------|
-| **I** — Independent | Cette spec peut-elle etre implementee sans dependre d'une autre en cours ? | Oui = OK |
-| **N** — Negotiable | Le "comment" est-il libre ? Seul le "quoi" est fixe ? | Pas de code impose = OK |
-| **V** — Valuable | L'utilisateur final tire-t-il un benefice direct ? | Benefice identifiable = OK |
-| **E** — Estimable | Peut-on estimer la complexite sans ambiguite ? | Pas de zone grise = OK |
-| **S** — Small | Implementable en 1-3 sessions TDD ? | Moins de 15 fichiers = OK |
-| **T** — Testable | Chaque rule a-t-elle un scenario associe ? | 100% couvert = OK |
+| Criterion | Question | Threshold |
+|-----------|----------|-----------|
+| **I** — Independent | Can this spec be implemented without depending on another in progress? | Yes = OK |
+| **N** — Negotiable | Is the "how" free? Only the "what" is fixed? | No imposed code = OK |
+| **V** — Valuable | Does the end user gain a direct benefit? | Identifiable benefit = OK |
+| **E** — Estimable | Can complexity be estimated without ambiguity? | No gray areas = OK |
+| **S** — Small | Implementable in 1-3 TDD sessions? | Less than 15 files = OK |
+| **T** — Testable | Does each rule have an associated scenario? | 100% covered = OK |
 
-## Comment evaluer
+## How to Evaluate
 
-Pour chaque critere, repondre par :
-- **OK** : le critere est satisfait
-- **WARN** : le critere est limite, a surveiller
-- **KO** : le critere n'est pas satisfait — bloquer et corriger
+For each criterion, respond with:
+- **OK**: the criterion is satisfied
+- **WARN**: the criterion is borderline, needs monitoring
+- **KO**: the criterion is not satisfied — block and fix
 
-## Resultat attendu
+## Expected Output
 
 ```
-Evaluation INVEST :
+INVEST Evaluation:
   I — Independent : OK
   N — Negotiable  : OK
   V — Valuable    : OK
-  E — Estimable   : WARN — le scope du calcul de prix n'est pas clair
+  E — Estimable   : WARN — the pricing scope is unclear
   S — Small       : OK
   T — Testable    : OK
 
-Verdict : PRET (ou BLOQUER si un KO)
+Verdict: READY (or BLOCKED if any KO)
 ```
 
-Un seul **KO** = la spec retourne en clarification.
+A single **KO** = the spec goes back to clarification.

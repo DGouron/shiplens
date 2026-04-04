@@ -1,18 +1,18 @@
-# Format de Spec
+# Spec Format
 
-Chaque spec dans `docs/specs/` suit ce format :
+Each spec in `docs/specs/` follows this format:
 
 ```markdown
-# [Titre — verbe d'action + objet]
+# [Title — action verb + object]
 
-## Contexte
+## Context
 
-[Pourquoi cette feature existe — le probleme utilisateur, 2-3 phrases max]
+[Why this feature exists — the user problem, 2-3 sentences max]
 
 ## Rules
 
-- [invariant metier 1]
-- [invariant metier 2]
+- [business invariant 1]
+- [business invariant 2]
 - ...
 
 ## Scenarios
@@ -22,23 +22,23 @@ Chaque spec dans `docs/specs/` suit ce format :
 - [edge case 2]: {inputs} → outputs
 - ...
 
-## Hors scope
+## Out of scope
 
-- [ce qu'on ne fait PAS]
+- [what we are NOT doing]
 
-## Glossaire
+## Glossary
 
-| Terme | Definition |
-|-------|------------|
-| [mot metier] | [sens precis dans ce contexte] |
+| Term | Definition |
+|------|------------|
+| [domain term] | [precise meaning in this context] |
 ```
 
-## Regles
+## Rules
 
-- **Titre** : verbe d'action + objet (ex: "Creer un envoi", "Filtrer les colis")
-- **Contexte** : max 3 phrases, centrees sur le probleme utilisateur
-- **Rules** : invariants metier en langage naturel, pas de technique
-- **Scenarios** : minimum 1 nominal + 1 edge case, format DSL compact (voir `rules/spec-dsl.md`)
-- **Hors scope** : obligatoire — cadre ce qu'on ne fait PAS
-- **Glossaire** : obligatoire si termes metier specifiques
-- **Pas de code** dans la spec — jamais de noms de classes, fichiers, ou patterns techniques
+- **Title**: action verb + object (e.g., "Create a shipment", "Filter parcels")
+- **Context**: max 3 sentences, focused on the user problem
+- **Rules**: business invariants in natural language, no technical details
+- **Scenarios**: minimum 1 nominal + 1 edge case, compact DSL format (see `rules/spec-dsl.md`)
+- **Out of scope**: mandatory — frames what we are NOT doing
+- **Glossary**: mandatory if domain-specific terms exist
+- **No code** in the spec — never class names, file names, or technical patterns

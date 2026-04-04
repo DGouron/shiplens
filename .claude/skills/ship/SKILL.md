@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Ship - Commit et Push en une commande. Enchaine staging, commit conventionnel et push. Verifie les quality gates avant tout commit.
+description: Ship - Commit and Push in one command. Chains staging, conventional commit, and push. Checks quality gates before any commit.
 triggers:
   - "ship"
   - "/ship"
@@ -12,30 +12,30 @@ triggers:
 
 ## Activation
 
-Ce skill s'active avec `/ship`. Il enchaine verification, commit et push.
+This skill is activated with `/ship`. It chains verification, commit, and push.
 
-## Arguments optionnels
+## Optional arguments
 
 ```
 /ship              # Commit + push
-/ship no-push      # Commit uniquement, sans push
+/ship no-push      # Commit only, no push
 ```
 
 ## Workflow
 
-### Etape 0 : Quality Gates (BLOQUANT)
+### Step 0: Quality Gates (BLOCKING)
 
-**AVANT tout commit**, executer :
+**BEFORE any commit**, run:
 
 ```bash
 pnpm test
 ```
 
-**Si les tests echouent** : afficher les erreurs et **STOP**. Ne pas committer tant que les tests ne passent pas.
+**If tests fail**: display the errors and **STOP**. Do not commit until all tests pass.
 
 ---
 
-### Etape 1 : Analyse
+### Step 1: Analysis
 
 ```bash
 git status --short
@@ -43,19 +43,19 @@ git branch --show-current
 git log --oneline -5
 ```
 
-**Gardes** :
-- Si branche = `main` : **STOP**, refuser de push directement
-- Si rien a committer ni pusher : informer et arreter
+**Guards**:
+- If branch = `main`: **STOP**, refuse to push directly
+- If nothing to commit or push: inform and stop
 
-### Etape 2 : Staging
+### Step 2: Staging
 
-- Si des fichiers ne sont pas staged, les lister et les ajouter
-- **JAMAIS** de fichiers `.env`, credentials, secrets
-- Utiliser `git add <fichiers specifiques>` (pas `git add -A`)
+- If files are not staged, list them and add them
+- **NEVER** include `.env`, credentials, or secrets
+- Use `git add <specific files>` (not `git add -A`)
 
-### Etape 3 : Commit
+### Step 3: Commit
 
-Deduire le message depuis les changements :
+Infer the message from the changes:
 
 ```
 <type>(<scope>): <description>
@@ -63,37 +63,37 @@ Deduire le message depuis les changements :
 
 | Type | Usage |
 |------|-------|
-| `feat` | Nouvelle fonctionnalite |
-| `fix` | Correction de bug |
+| `feat` | New feature |
+| `fix` | Bug fix |
 | `refactor` | Refactoring |
-| `test` | Tests uniquement |
+| `test` | Tests only |
 | `chore` | Maintenance |
 
-**Regles** :
-- Header max **72 caracteres**
-- Description en minuscules, sans point final
-- **JAMAIS** de mention Claude, Anthropic, Co-Authored-By
+**Rules**:
+- Header max **72 characters**
+- Description in lowercase, no trailing period
+- **NEVER** mention Claude, Anthropic, Co-Authored-By
 
-### Etape 4 : Push (sauf si `no-push`)
+### Step 4: Push (unless `no-push`)
 
 ```bash
 git push origin <branch>
 ```
 
-### Etape 5 : Resume
+### Step 5: Summary
 
 ```
 SHIP
 
-Branche : <branch>
+Branch  : <branch>
 Commit  : <type>(<scope>): <description>
 Push    : origin/<branch>
-Tests   : tous verts
+Tests   : all green
 ```
 
-## Securite
+## Security
 
-- **JAMAIS** de `--force` push
-- **JAMAIS** de push sur `main`
-- **JAMAIS** de `--no-verify`
-- **JAMAIS** de mention Claude/Anthropic dans les commits
+- **NEVER** use `--force` push
+- **NEVER** push to `main`
+- **NEVER** use `--no-verify`
+- **NEVER** mention Claude/Anthropic in commits

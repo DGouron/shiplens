@@ -1,6 +1,6 @@
 ---
 name: worktree
-description: Gestion des worktrees Git pour travailler sur plusieurs branches en parallele. Creer, lister, supprimer et synchroniser les worktrees. Isole les features en cours pour eviter les conflits.
+description: Git worktree management for working on multiple branches in parallel. Create, list, remove, and synchronize worktrees. Isolates in-progress features to avoid conflicts.
 triggers:
   - "worktree"
   - "parallel.*branch"
@@ -9,131 +9,131 @@ triggers:
   - "git worktree"
 ---
 
-# Commande /worktree - Gestion des worktrees Git
+# Command /worktree - Git Worktree Management
 
-Gere les worktrees Git pour travailler sur plusieurs branches en parallele dans differentes sessions Claude Code.
+Manages Git worktrees for working on multiple branches in parallel across different Claude Code sessions.
 
-## Regles de securite ABSOLUES
+## ABSOLUTE Security Rules
 
-- JAMAIS de push direct sur `main`
-- JAMAIS de commit direct sur `main`
-- Seule action autorisee sur `main` : `git pull origin main`
-- TOUJOURS creer une branche de travail
-
----
-
-## Sous-commandes
-
-### `/worktree` ou `/worktree list`
-Liste tous les worktrees existants avec leur branche et statut.
-
-### `/worktree add <nom> [--from <branche>]`
-Cree un nouveau worktree.
-- Par defaut, base sur `main`
-- Chemin : `.worktrees/<nom>`
-
-### `/worktree remove <nom>`
-Supprime un worktree (demande confirmation si non propre).
-
-### `/worktree sync [nom]`
-Synchronise le worktree avec `main` (pull only).
-
-### `/worktree connect <nom>`
-Change le repertoire de travail vers le worktree specifie.
+- NEVER push directly to `main`
+- NEVER commit directly to `main`
+- Only allowed action on `main`: `git pull origin main`
+- ALWAYS create a working branch
 
 ---
 
-## Architecture des worktrees
+## Subcommands
+
+### `/worktree` or `/worktree list`
+Lists all existing worktrees with their branch and status.
+
+### `/worktree add <name> [--from <branch>]`
+Creates a new worktree.
+- By default, based on `main`
+- Path: `.worktrees/<name>`
+
+### `/worktree remove <name>`
+Removes a worktree (asks for confirmation if not clean).
+
+### `/worktree sync [name]`
+Synchronizes the worktree with `main` (pull only).
+
+### `/worktree connect <name>`
+Changes the working directory to the specified worktree.
+
+---
+
+## Worktree Architecture
 
 ```
-shiplens/                        <- Worktree principal
+shiplens/                        <- Main worktree
 ├── src/
 ├── tests/
 └── .worktrees/
-    ├── feature-shipping/        <- Worktree feature
+    ├── feature-shipping/        <- Feature worktree
     │   ├── src/
     │   └── tests/
-    └── bugfix-tracking/         <- Worktree bugfix
+    └── bugfix-tracking/         <- Bugfix worktree
         ├── src/
         └── tests/
 ```
 
 ---
 
-## Workflow dans un worktree
+## Workflow Inside a Worktree
 
 ```bash
-# 1. Creer le worktree
+# 1. Create the worktree
 git worktree add .worktrees/feature-shipping -b feature/shipping main
 
-# 2. Travailler dans le worktree
+# 2. Work inside the worktree
 cd .worktrees/feature-shipping
 
-# 3. Installer les dependances
+# 3. Install dependencies
 pnpm install
 
-# 4. Travailler, committer...
+# 4. Work, commit...
 git add .
 git commit -m "feat(shipping): add shipment entity"
 
-# 5. Push la branche
+# 5. Push the branch
 git push origin feature/shipping
 
-# 6. Une fois merge, nettoyer
+# 6. Once merged, clean up
 cd ../..
 git worktree remove .worktrees/feature-shipping
 ```
 
 ---
 
-## Synchronisation
+## Synchronization
 
 ```bash
-# Sync un worktree avec main
-cd .worktrees/<nom>
+# Sync a worktree with main
+cd .worktrees/<name>
 git fetch origin
 git rebase origin/main
 ```
 
 ---
 
-## Template de sortie
+## Output Template
 
-### Liste des worktrees
+### Worktree List
 
 ```
 WORKTREES
 
-| Usage | Chemin | Branche |
-|-------|--------|---------|
-| principal | shiplens/ | main |
+| Usage | Path | Branch |
+|-------|------|--------|
+| main | shiplens/ | main |
 | feature | .worktrees/feature-shipping | feature/shipping |
 ```
 
-### Creation de worktree
+### Worktree Creation
 
 ```
-WORKTREE CREE
+WORKTREE CREATED
 
-Nom     : <nom>
-Chemin  : <chemin>
-Branche : <branche> (basee sur main)
+Name    : <name>
+Path    : <path>
+Branch  : <branch> (based on main)
 
-Installer les dependances :
-   cd <chemin> && pnpm install
+Install dependencies:
+   cd <path> && pnpm install
 
-Lancer une session :
-   cd <chemin> && claude
+Start a session:
+   cd <path> && claude
 ```
 
 ---
 
-## Regles
+## Rules
 
-- **JAMAIS** push direct sur `main`
-- **JAMAIS** creer un worktree dans le repertoire source
-- **TOUJOURS** utiliser `.worktrees/` comme repertoire parent
-- **TOUJOURS** utiliser des chemins absolus dans les commandes affichees
-- **TOUJOURS** rappeler de lancer `pnpm install` apres creation
-- **VERIFIER** que la branche n'est pas deja checkout dans un autre worktree
-- **Apres un context reset** : toujours verifier qu'on est dans le bon worktree avant d'editer
+- **NEVER** push directly to `main`
+- **NEVER** create a worktree inside the source directory
+- **ALWAYS** use `.worktrees/` as the parent directory
+- **ALWAYS** use absolute paths in displayed commands
+- **ALWAYS** remind to run `pnpm install` after creation
+- **CHECK** that the branch is not already checked out in another worktree
+- **After a context reset**: always verify you are in the correct worktree before editing
