@@ -17,6 +17,11 @@ if ! is_commit_command; then
   exit 0
 fi
 
+# Allow commits in wiki repos (GitHub wikis only use master)
+if echo "$COMMAND" | grep -qE "wiki"; then
+  exit 0
+fi
+
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$HOOK_DIR/../.." && pwd)}"
 CURRENT_BRANCH=$(cd "$PROJECT_DIR" && git branch --show-current 2>/dev/null || true)
 

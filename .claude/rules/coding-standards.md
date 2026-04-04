@@ -64,11 +64,6 @@
   - `shared/domain/`: cross-BC business concepts (Shared Kernel)
   - `shared/infrastructure/prisma/`: PrismaService + PrismaModule
 
-## Language
-
-- **French**: error messages, UI texts (end-user facing)
-- **English**: tests, code, commits, logs, technical errors, code comments
-
 ## Anti-Overengineering
 
 - **KISS**: simplest solution that works — if code gives a headache, it failed
