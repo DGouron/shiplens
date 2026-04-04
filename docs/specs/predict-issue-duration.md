@@ -1,63 +1,63 @@
-# Prédire la durée probable d'une issue
+# Predict probable issue duration
 
 ## Status: implemented
 
-## Contexte
-Quand un PO priorise le backlog ou planifie un cycle, il n'a aucune visibilité sur le temps que prendra réellement chaque issue. Une prédiction basée sur l'historique de l'équipe lui permet de prendre des décisions de planification plus éclairées.
+## Context
+When a PO prioritizes the backlog or plans a cycle, they have no visibility on how long each issue will actually take. A prediction based on the team's history allows them to make more informed planning decisions.
 
 ## Rules
-- La prédiction nécessite au minimum 2 cycles d'historique terminés pour s'activer
-- La prédiction se base sur les issues similaires déjà complétées par l'équipe
-- Les critères de similarité sont : le label, le type, la complexité en points et le développeur assigné
-- Chaque prédiction fournit trois valeurs : optimiste, probable et pessimiste
-- La prédiction est recalculée quand les caractéristiques de l'issue changent
-- Seules les issues du cycle en cours sont concernées par la prédiction
-- L'approche de calcul est statistique : médiane des cycle times des issues similaires
+- Prediction requires at least 2 completed history cycles to activate
+- Prediction is based on similar issues already completed by the team
+- Similarity criteria are: label, type, complexity in points, and assigned developer
+- Each prediction provides three values: optimistic, probable, and pessimistic
+- Prediction is recalculated when the issue characteristics change
+- Only issues from the current cycle are subject to prediction
+- The calculation approach is statistical: median of cycle times of similar issues
 
 ## Scenarios
-- prédiction nominale: {issue avec label "bug", 3 points, historique de 15 bugs similaires complétés} → durée optimiste + durée probable + durée pessimiste
-- prédiction avec peu de données: {issue avec label "feature", 5 points, seulement 3 issues similaires dans l'historique} → prédiction affichée avec mention "confiance faible"
-- historique insuffisant: {moins de 2 cycles terminés} → reject "Pas assez d'historique pour activer les prédictions. Minimum 2 cycles terminés requis."
-- aucune issue similaire: {issue avec un label jamais vu dans l'historique} → reject "Aucune issue similaire trouvée dans l'historique. Impossible de prédire la durée."
-- issue sans points: {issue du cycle en cours sans estimation en points} → prédiction basée sur les autres critères disponibles (label, type, assigné)
-- issue non assignée: {issue du cycle en cours sans développeur assigné} → prédiction basée sur la moyenne de l'équipe pour les critères restants
-- recalcul après modification: {issue dont le label passe de "feature" à "bug"} → prédiction recalculée avec le nouveau label
-- issue hors cycle: {issue dans le backlog, pas dans un cycle en cours} → aucune prédiction affichée
+- nominal prediction: {issue with label "bug", 3 points, history of 15 similar completed bugs} -> optimistic duration + probable duration + pessimistic duration
+- prediction with little data: {issue with label "feature", 5 points, only 3 similar issues in history} -> prediction displayed with mention "low confidence"
+- insufficient history: {fewer than 2 completed cycles} -> reject "Not enough history to activate predictions. Minimum 2 completed cycles required."
+- no similar issues: {issue with a label never seen in history} -> reject "No similar issues found in history. Cannot predict duration."
+- issue without points: {current cycle issue without point estimation} -> prediction based on other available criteria (label, type, assignee)
+- unassigned issue: {current cycle issue without assigned developer} -> prediction based on team average for remaining criteria
+- recalculation after modification: {issue whose label changes from "feature" to "bug"} -> prediction recalculated with the new label
+- issue outside cycle: {issue in backlog, not in a current cycle} -> no prediction displayed
 
-## Hors scope
-- Prédiction par intelligence artificielle (phase ultérieure)
-- Prise en compte du contenu textuel de la description pour la prédiction
-- Prédiction de la durée totale d'un cycle
-- Suggestions automatiques de réaffectation d'issues
+## Out of scope
+- Artificial intelligence prediction (later phase)
+- Taking into account the description text content for prediction
+- Predicting the total duration of a cycle
+- Automatic issue reassignment suggestions
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Prédiction | Estimation calculée de la durée probable d'une issue, basée sur l'historique |
-| Intervalle de confiance | Trio de valeurs (optimiste, probable, pessimiste) encadrant la durée prédite |
-| Issue similaire | Issue déjà complétée partageant des critères communs avec l'issue à prédire |
-| Confiance faible | Indication que la prédiction repose sur un échantillon réduit d'issues similaires |
-| Cycle time | Durée entre le passage en cours de traitement et la complétion d'une issue |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Prediction | Calculated estimate of the probable duration of an issue, based on history |
+| Confidence interval | Trio of values (optimistic, probable, pessimistic) framing the predicted duration |
+| Similar issue | Already completed issue sharing common criteria with the issue to predict |
+| Low confidence | Indication that the prediction relies on a small sample of similar issues |
+| Cycle time | Duration between moving to in-progress and completion of an issue |
 
 ## Implementation
 
-- **Bounded Context** : Analytics
-- **Entity** : `DurationPrediction` — logique statistique P25/P50/P75 pour optimiste/probable/pessimiste
-- **Use Case** : `PredictIssueDurationUsecase`
-- **Controller** : `DurationPredictionController`
-- **Gateway** : `DurationPredictionDataInPrismaGateway`
-- **Presenter** : `DurationPredictionPresenter`
+- **Bounded Context**: Analytics
+- **Entity**: `DurationPrediction` — P25/P50/P75 statistical logic for optimistic/probable/pessimistic
+- **Use Case**: `PredictIssueDurationUsecase`
+- **Controller**: `DurationPredictionController`
+- **Gateway**: `DurationPredictionDataInPrismaGateway`
+- **Presenter**: `DurationPredictionPresenter`
 
 ### Endpoints
 
-| Méthode | Route | Use Case |
-|---------|-------|----------|
+| Method | Route | Use Case |
+|--------|-------|----------|
 | GET | `/api/analytics/teams/:teamId/issues/:issueExternalId/duration-prediction` | PredictIssueDuration |
 
-### Décisions
+### Decisions
 
-- Pas de migration Prisma — toutes les données existent déjà (Issue, Cycle, StateTransition, Label)
-- "Type" d'issue traité via les labels (pas de champ type dans le modèle Issue)
-- Prédiction stateless, calculée à la volée à chaque appel GET
-- Confiance binaire : < 5 issues similaires = low, >= 5 = high
-- Percentiles : P25 (optimiste), P50 (probable), P75 (pessimiste)
+- No Prisma migration — all data already exists (Issue, Cycle, StateTransition, Label)
+- Issue "type" handled via labels (no type field in the Issue model)
+- Stateless prediction, calculated on the fly on each GET call
+- Binary confidence: < 5 similar issues = low, >= 5 = high
+- Percentiles: P25 (optimistic), P50 (probable), P75 (pessimistic)

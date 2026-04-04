@@ -1,45 +1,45 @@
-# Synchroniser les issues et cycles depuis Linear
+# Synchronize issues and cycles from Linear
 
 ## Status: implemented
 
-## Contexte
-Shiplens analyse la donnée Linear pour produire des insights. Avant toute analyse, le système doit importer les issues, cycles et leurs transitions d'état pour les équipes sélectionnées. Ce sont les données volumineuses et critiques pour les analytics.
+## Context
+Shiplens analyzes Linear data to produce insights. Before any analysis, the system must import issues, cycles and their state transitions for the selected teams. These are the high-volume, analytics-critical data.
 
 ## Rules
-- Seules les équipes explicitement sélectionnées par l'utilisateur sont synchronisées
-- La synchronisation importe les issues avec leurs propriétés : titre, statut, points, labels, assignee, dates
-- La synchronisation importe les cycles avec leurs dates et le périmètre d'issues associé
-- Les transitions d'état des issues (changements de statut horodatés) sont importées — elles sont essentielles aux analyses
-- La synchronisation est relançable sans créer de doublons
-- La synchronisation reprend là où elle s'est arrêtée après une interruption
-- La synchronisation respecte les contraintes de débit imposées par le fournisseur de données
-- L'utilisateur peut suivre la progression de la synchronisation en cours
+- Only teams explicitly selected by the user are synchronized
+- Synchronization imports issues with their properties: title, status, points, labels, assignee, dates
+- Synchronization imports cycles with their dates and associated issue scope
+- Issue state transitions (timestamped status changes) are imported — they are essential for analytics
+- Synchronization can be re-run without creating duplicates
+- Synchronization resumes where it left off after an interruption
+- Synchronization respects the rate limits imposed by the data provider
+- The user can track the progress of an ongoing synchronization
 
 ## Scenarios
-- import des issues: {workspace connecté, 1 équipe avec 150 issues} → 150 issues importées avec titre, statut, points, labels, assignee
-- import des cycles: {workspace connecté, 1 équipe avec 5 cycles} → 5 cycles importés avec dates et issues rattachées
-- import des transitions d'état: {issue avec 4 changements de statut} → 4 transitions horodatées importées
-- progression visible: {sync en cours, 200 issues sur 500 importées} → progression "40%"
-- relance sans doublons: {sync déjà complétée, relancée} → aucune donnée dupliquée + statut "synchronisé"
-- reprise après interruption: {sync interrompue à 60%} → relance reprend là où elle s'est arrêtée + statut "synchronisé" à la fin
-- débit fournisseur saturé: {trop de requêtes en peu de temps} → sync ralentie automatiquement + reprend sans perte de données
-- aucune équipe sélectionnée: {workspace connecté, 0 équipe sélectionnée} → reject "Veuillez sélectionner au moins une équipe avant de lancer la synchronisation."
-- workspace non connecté: {aucun workspace Linear connecté} → reject "Veuillez d'abord connecter votre workspace Linear."
-- équipe sans issue: {workspace connecté, équipe sélectionnée sans aucune issue} → statut "synchronisé" + 0 issue importée
+- issue import: {connected workspace, 1 team with 150 issues} -> 150 issues imported with title, status, points, labels, assignee
+- cycle import: {connected workspace, 1 team with 5 cycles} -> 5 cycles imported with dates and associated issues
+- state transition import: {issue with 4 status changes} -> 4 timestamped transitions imported
+- visible progress: {sync in progress, 200 out of 500 issues imported} -> progress "40%"
+- re-run without duplicates: {sync already completed, re-run} -> no duplicate data + status "synchronized"
+- resume after interruption: {sync interrupted at 60%} -> re-run resumes where it left off + status "synchronized" at the end
+- provider rate limit saturated: {too many requests in a short time} -> sync automatically throttled + resumes without data loss
+- no team selected: {connected workspace, 0 teams selected} -> reject "Veuillez sélectionner au moins une équipe avant de lancer la synchronisation."
+- workspace not connected: {no Linear workspace connected} -> reject "Veuillez d'abord connecter votre workspace Linear."
+- team without issues: {connected workspace, selected team with no issues} -> status "synchronized" + 0 issues imported
 
-## Hors scope
-- Import des données de référence (labels, statuts, membres) — couvert par sync-linear-reference-data
-- Synchronisation en temps réel — couvert par sync-linear-realtime
-- Transformation ou analyse des données importées
-- Import de données hors des équipes sélectionnées
+## Out of scope
+- Import of reference data (labels, statuses, members) — covered by sync-linear-reference-data
+- Real-time synchronization — covered by sync-linear-realtime
+- Transformation or analysis of imported data
+- Import of data outside the selected teams
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Issue | Tâche ou ticket de travail dans Linear |
-| Cycle | Période de travail itérative (sprint) dans Linear, avec date de début et de fin |
-| Transition d'état | Changement de statut d'une issue (ex: "En cours" → "Terminé"), horodaté |
-| Synchronisation initiale | Import complet de l'historique des données Linear pour les équipes sélectionnées |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Issue | Task or work ticket in Linear |
+| Cycle | Iterative work period (sprint) in Linear, with start and end dates |
+| State transition | Status change of an issue (e.g. "In Progress" -> "Done"), timestamped |
+| Initial synchronization | Full import of Linear data history for the selected teams |
 
 ## Implementation
 

@@ -1,67 +1,67 @@
-# Calculer les métriques d'un cycle terminé
+# Calculate metrics for a completed cycle
 
 ## Status: implemented
 
-## Contexte
-À la fin d'un cycle, le tech lead a besoin d'un bilan chiffré pour comprendre ce qui s'est réellement passé. Sans métriques fiables, les rétrospectives restent subjectives et les mêmes problèmes se répètent cycle après cycle.
+## Context
+At the end of a cycle, the tech lead needs a quantified summary to understand what actually happened. Without reliable metrics, retrospectives remain subjective and the same problems repeat cycle after cycle.
 
 ## Rules
-- Les métriques ne sont calculables que pour un cycle dont le statut est terminé
-- La vélocité compare les points complétés aux points planifiés au démarrage du cycle
-- Le cycle time se mesure entre le passage en cours de traitement et la complétion
-- Le lead time se mesure entre la création de l'issue et sa complétion
-- Le scope creep ne comptabilise que les issues ajoutées après la date de début du cycle
-- Le taux de complétion se base sur le périmètre initial du cycle, pas sur le périmètre final
-- La tendance nécessite au moins 3 cycles terminés pour être affichée
+- Metrics can only be calculated for a cycle whose status is completed
+- Velocity compares completed points to points planned at cycle start
+- Cycle time is measured between entering the in-progress state and completion
+- Lead time is measured between issue creation and its completion
+- Scope creep only counts issues added after the cycle start date
+- Completion rate is based on the initial cycle scope, not the final scope
+- The trend requires at least 3 completed cycles to be displayed
 
 ## Scenarios
-- métriques nominales: {cycle terminé avec 8 issues complétées sur 10 planifiées, 21 points complétés sur 25 planifiés} → vélocité "21/25 points" + throughput "8 issues" + taux de complétion "80%"
-- cycle time et lead time: {cycle terminé, issues avec historique de transitions complet} → cycle time moyen calculé + lead time moyen calculé
-- scope creep détecté: {cycle terminé, 10 issues au démarrage, 13 issues à la fin} → scope creep "3 issues ajoutées"
-- tendance avec historique suffisant: {cycle terminé, 3 cycles précédents disponibles} → comparaison avec les 3 derniers cycles affichée
-- tendance sans historique suffisant: {cycle terminé, moins de 3 cycles précédents} → reject "Pas assez d'historique pour afficher la tendance. Minimum 3 cycles terminés requis."
-- cycle non terminé: {cycle en cours} → reject "Les métriques ne sont disponibles que pour les cycles terminés."
-- cycle sans issue: {cycle terminé, aucune issue} → reject "Ce cycle ne contient aucune issue. Impossible de calculer les métriques."
-- issue sans transition de statut: {cycle terminé, issue jamais passée en cours de traitement} → issue exclue du calcul du cycle time
+- nominal metrics: {completed cycle with 8 issues completed out of 10 planned, 21 points completed out of 25 planned} -> velocity "21/25 points" + throughput "8 issues" + completion rate "80%"
+- cycle time and lead time: {completed cycle, issues with complete transition history} -> average cycle time calculated + average lead time calculated
+- scope creep detected: {completed cycle, 10 issues at start, 13 issues at end} -> scope creep "3 issues added"
+- trend with sufficient history: {completed cycle, 3 previous cycles available} -> comparison with the last 3 cycles displayed
+- trend without sufficient history: {completed cycle, fewer than 3 previous cycles} -> reject "Pas assez d'historique pour afficher la tendance. Minimum 3 cycles terminés requis."
+- uncompleted cycle: {cycle in progress} -> reject "Les métriques ne sont disponibles que pour les cycles terminés."
+- cycle without issues: {completed cycle, no issues} -> reject "Ce cycle ne contient aucune issue. Impossible de calculer les métriques."
+- issue without status transition: {completed cycle, issue never entered in-progress state} -> issue excluded from cycle time calculation
 
-## Hors scope
-- Métriques en temps réel pendant un cycle en cours
-- Objectifs ou cibles de performance à atteindre
-- Comparaison entre équipes
-- Export des métriques
+## Out of scope
+- Real-time metrics during an ongoing cycle
+- Performance goals or targets to achieve
+- Comparison between teams
+- Metrics export
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Cycle | Période de travail définie avec une date de début et de fin (sprint dans Linear) |
-| Vélocité | Rapport entre les points complétés et les points planifiés au démarrage |
-| Throughput | Nombre total d'issues complétées dans le cycle |
-| Cycle time | Durée entre le moment où une issue passe en cours de traitement et sa complétion |
-| Lead time | Durée entre la création d'une issue et sa complétion |
-| Scope creep | Issues ajoutées au cycle après sa date de début |
-| Taux de complétion | Pourcentage d'issues terminées par rapport au périmètre initial du cycle |
-| Tendance | Évolution d'une métrique comparée aux 3 derniers cycles terminés |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Cycle | Defined work period with a start and end date (sprint in Linear) |
+| Velocity | Ratio between completed points and points planned at start |
+| Throughput | Total number of issues completed in the cycle |
+| Cycle time | Duration between the moment an issue enters in-progress state and its completion |
+| Lead time | Duration between issue creation and its completion |
+| Scope creep | Issues added to the cycle after its start date |
+| Completion rate | Percentage of completed issues relative to the initial cycle scope |
+| Trend | Evolution of a metric compared to the last 3 completed cycles |
 
 ## Implementation
 
 ### Bounded Context
-Analytics (nouveau module)
+Analytics (new module)
 
 ### Artefacts
-- **Entity** : `CycleSnapshot` — logique pure de calcul des métriques (velocity, throughput, completion rate, scope creep, cycle time, lead time)
-- **Use Case** : `CalculateCycleMetricsUsecase` — orchestre la récupération des données et la création du snapshot
-- **Controller** : `CycleMetricsController` — expose l'endpoint HTTP
-- **Presenter** : `CycleMetricsPresenter` — transforme le domaine en DTO formaté
-- **Gateway Port** : `CycleMetricsDataGateway` — abstract class, lecture seule sur Issue/Cycle/StateTransition
-- **Gateway Impl** : `CycleMetricsDataInPrismaGateway` — implémentation Prisma
+- **Entity** : `CycleSnapshot` — pure calculation logic for metrics (velocity, throughput, completion rate, scope creep, cycle time, lead time)
+- **Use Case** : `CalculateCycleMetricsUsecase` — orchestrates data retrieval and snapshot creation
+- **Controller** : `CycleMetricsController` — exposes the HTTP endpoint
+- **Presenter** : `CycleMetricsPresenter` — transforms domain to formatted DTO
+- **Gateway Port** : `CycleMetricsDataGateway` — abstract class, read-only on Issue/Cycle/StateTransition
+- **Gateway Impl** : `CycleMetricsDataInPrismaGateway` — Prisma implementation
 
 ### Endpoints
-| Méthode | Route | Use Case |
-|---------|-------|----------|
+| Method | Route | Use Case |
+|--------|-------|----------|
 | GET | `/analytics/cycles/:cycleId/metrics?teamId=xxx` | CalculateCycleMetricsUsecase |
 
-### Décisions architecturales
-- Cycle terminé = `endsAt < now()` (pas de champ status en base)
-- Périmètre initial = issues dont `createdAt <= cycle.startsAt`
-- Pas de migration Prisma (lecture des tables existantes)
-- Issue complétée = statusName contient "Done" ou "Completed"
+### Architectural decisions
+- Completed cycle = `endsAt < now()` (no status field in database)
+- Initial scope = issues where `createdAt <= cycle.startsAt`
+- No Prisma migration (reads existing tables)
+- Completed issue = statusName contains "Done" or "Completed"

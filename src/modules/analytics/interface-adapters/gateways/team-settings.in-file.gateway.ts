@@ -1,10 +1,18 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Injectable } from '@nestjs/common';
-import { TeamSettingsGateway } from '../../entities/team-settings/team-settings.gateway.js';
+import {
+  DEFAULT_TIMEZONE,
+  TeamSettingsGateway,
+} from '../../entities/team-settings/team-settings.gateway.js';
+
+interface TeamSettingsEntry {
+  excludedStatuses: string[];
+  timezone?: string;
+}
 
 interface TeamSettingsFile {
-  [teamId: string]: { excludedStatuses: string[] };
+  [teamId: string]: TeamSettingsEntry;
 }
 
 @Injectable()
@@ -18,7 +26,25 @@ export class TeamSettingsInFileGateway extends TeamSettingsGateway {
 
   async setExcludedStatuses(teamId: string, statuses: string[]): Promise<void> {
     const settings = await this.readSettings();
-    settings[teamId] = { excludedStatuses: statuses };
+    settings[teamId] = {
+      ...settings[teamId],
+      excludedStatuses: statuses,
+    };
+    await this.writeSettings(settings);
+  }
+
+  async getTimezone(teamId: string): Promise<string> {
+    const settings = await this.readSettings();
+    return settings[teamId]?.timezone ?? DEFAULT_TIMEZONE;
+  }
+
+  async setTimezone(teamId: string, timezone: string): Promise<void> {
+    const settings = await this.readSettings();
+    settings[teamId] = {
+      ...settings[teamId],
+      excludedStatuses: settings[teamId]?.excludedStatuses ?? [],
+      timezone,
+    };
     await this.writeSettings(settings);
   }
 

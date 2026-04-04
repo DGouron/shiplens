@@ -1,64 +1,64 @@
-# Exporter et consulter les rapports de sprint
+# Export and view sprint reports
 
 ## Status: implemented
 
-## Contexte
-Une fois le rapport de sprint généré, le tech lead a besoin de le partager facilement avec ses stakeholders via Slack, Notion ou email. Il doit aussi pouvoir retrouver les rapports passés pour suivre l'évolution de son équipe dans le temps.
+## Context
+Once the sprint report is generated, the tech lead needs to share it easily with stakeholders via Slack, Notion or email. They must also be able to find past reports to track their team's evolution over time.
 
 ## Rules
-- Le rapport est consultable directement dans le dashboard web de Shiplens
-- Le rapport peut être copié en Markdown ou en texte brut en un clic
-- Tous les rapports générés sont conservés et consultables dans un historique
-- L'historique affiche les rapports du plus récent au plus ancien
-- Un rapport appartient à un sprint précis et à une équipe précise
+- The report is viewable directly in the Shiplens web dashboard
+- The report can be copied in Markdown or plain text with one click
+- All generated reports are stored and viewable in a history
+- The history displays reports from most recent to oldest
+- A report belongs to a specific sprint and a specific team
 
 ## Scenarios
-- affichage dans le dashboard: {rapport généré pour le sprint 12} → rapport affiché dans le dashboard avec son contenu complet
-- copie en Markdown: {rapport affiché, clic "Copier en Markdown"} → contenu Markdown dans le presse-papier + confirmation "Rapport copié en Markdown"
-- copie en texte brut: {rapport affiché, clic "Copier en texte brut"} → contenu texte brut dans le presse-papier + confirmation "Rapport copié en texte brut"
-- consultation de l'historique: {3 rapports générés pour l'équipe} → liste des 3 rapports triés du plus récent au plus ancien
-- aucun rapport dans l'historique: {équipe sans rapport généré} → message "Aucun rapport n'a encore été généré pour cette équipe."
-- ouverture d'un rapport depuis l'historique: {clic sur un rapport passé} → rapport affiché avec son contenu complet
-- presse-papier indisponible: {navigateur bloque l'accès au presse-papier} → reject "Impossible de copier dans le presse-papier. Vérifiez les permissions de votre navigateur."
+- display in dashboard: {report generated for sprint 12} -> report displayed in the dashboard with its full content
+- copy as Markdown: {report displayed, click "Copy as Markdown"} -> Markdown content in the clipboard + confirmation "Report copied as Markdown"
+- copy as plain text: {report displayed, click "Copy as plain text"} -> plain text content in the clipboard + confirmation "Report copied as plain text"
+- view history: {3 reports generated for the team} -> list of 3 reports sorted from most recent to oldest
+- no report in history: {team with no generated report} -> message "No report has been generated for this team yet."
+- open a report from history: {click on a past report} -> report displayed with its full content
+- clipboard unavailable: {browser blocks clipboard access} -> reject "Unable to copy to clipboard. Check your browser permissions."
 
-## Hors scope
-- Export en PDF
-- Envoi automatique par email ou Slack
-- Suppression ou archivage de rapports
-- Comparaison côte à côte de plusieurs rapports
-- Édition du rapport après génération
+## Out of scope
+- PDF export
+- Automatic sending by email or Slack
+- Report deletion or archiving
+- Side-by-side comparison of multiple reports
+- Editing the report after generation
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Rapport de sprint | Document structuré résumant l'activité, la santé et les tendances d'un sprint |
-| Dashboard | Interface web principale de Shiplens où l'utilisateur consulte ses données |
-| Historique des rapports | Liste chronologique de tous les rapports générés pour une équipe |
-| Markdown | Format de texte enrichi utilisé dans des outils comme Notion, GitHub ou Slack |
-| Texte brut | Version du rapport sans aucun formatage, utilisable dans un email ou n'importe quel outil |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Sprint report | Structured document summarizing the activity, health and trends of a sprint |
+| Dashboard | Main Shiplens web interface where the user views their data |
+| Report history | Chronological list of all reports generated for a team |
+| Markdown | Rich text format used in tools like Notion, GitHub or Slack |
+| Plain text | Version of the report without any formatting, usable in email or any tool |
 
 ## Implementation
 
 ### Bounded Context
-Analytics (existant)
+Analytics (existing)
 
-### Artefacts
-- **Entity** : SprintReport (évolution — ajout id, generatedAt)
-- **Gateway port** : SprintReportGateway (save, findByTeamId, findById)
-- **Gateway impl** : SprintReportInPrismaGateway
-- **Use cases** : ListTeamReportsUsecase, GetReportUsecase, GenerateSprintReportUsecase (évolution — ajout save)
-- **Presenters** : ReportHistoryPresenter, ReportDetailPresenter
-- **Controller** : ReportExportController
-- **Migration** : add-sprint-report-model (modèle Prisma SprintReport)
+### Artifacts
+- **Entity**: SprintReport (evolution — added id, generatedAt)
+- **Gateway port**: SprintReportGateway (save, findByTeamId, findById)
+- **Gateway impl**: SprintReportInPrismaGateway
+- **Use cases**: ListTeamReportsUsecase, GetReportUsecase, GenerateSprintReportUsecase (evolution — added save)
+- **Presenters**: ReportHistoryPresenter, ReportDetailPresenter
+- **Controller**: ReportExportController
+- **Migration**: add-sprint-report-model (Prisma SprintReport model)
 
 ### Endpoints
-| Méthode | Route | Use Case |
-|---------|-------|----------|
+| Method | Route | Use Case |
+|--------|-------|----------|
 | GET | /analytics/teams/:teamId/reports | ListTeamReportsUsecase |
 | GET | /analytics/reports/:reportId | GetReportUsecase |
 
-### Décisions architecturales
-- Deux gateways distincts : SprintReportDataGateway (données pour générer) vs SprintReportGateway (persister/lire)
-- Markdown et plain text rendus dans le presenter (ReportDetailPresenter), pas dans le domaine
-- Scénarios clipboard = frontend pur — le backend fournit les deux formats via le DTO
-- Controller séparé (ReportExportController) pour les GET endpoints, distinct du SprintReportController existant
+### Architectural decisions
+- Two distinct gateways: SprintReportDataGateway (data for generation) vs SprintReportGateway (persist/read)
+- Markdown and plain text rendered in the presenter (ReportDetailPresenter), not in the domain
+- Clipboard scenarios = frontend only — the backend provides both formats via the DTO
+- Separate controller (ReportExportController) for GET endpoints, distinct from the existing SprintReportController

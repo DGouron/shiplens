@@ -1,41 +1,41 @@
-# Connecter son workspace Linear
+# Connect your Linear workspace
 
 ## Status: implemented
 
-## Contexte
-L'utilisateur doit relier son espace de travail Linear à Shiplens pour que l'application puisse accéder à ses données. Sans cette connexion, aucune fonctionnalité de suivi n'est disponible.
+## Context
+The user must link their Linear workspace to Shiplens so the application can access their data. Without this connection, no tracking functionality is available.
 
 ## Rules
-- Un utilisateur ne peut avoir qu'un seul workspace Linear connecté à la fois
-- Les identifiants de connexion ne sont jamais exposés en clair
-- La session Linear reste active sans intervention manuelle de l'utilisateur
-- La déconnexion supprime toute trace d'accès au workspace côté Linear et côté Shiplens
+- A user can only have one Linear workspace connected at a time
+- Connection credentials are never exposed in plain text
+- The Linear session remains active without manual user intervention
+- Disconnection removes all workspace access traces on both the Linear and Shiplens sides
 
 ## Scenarios
-- connexion réussie: {utilisateur authentifié, autorisation Linear accordée} → statut "connecté" + nom du workspace affiché
-- autorisation refusée: {utilisateur authentifié, autorisation Linear refusée} → reject "La connexion à Linear a été refusée. Veuillez réessayer."
-- permissions insuffisantes: {utilisateur authentifié, permissions partielles accordées} → reject "Les permissions accordées sont insuffisantes. Veuillez autoriser tous les accès demandés."
-- session expirée: {session Linear arrivée à expiration} → renouvellement automatique + statut "connecté" maintenu
-- renouvellement impossible: {session Linear expirée, renouvellement échoué} → statut "déconnecté" + reject "Votre session Linear a expiré. Veuillez vous reconnecter."
-- déconnexion: {utilisateur connecté, demande de déconnexion} → statut "déconnecté" + accès révoqué côté Linear
-- workspace déjà connecté: {utilisateur connecté, tentative de connexion d'un autre workspace} → remplacement de l'ancien workspace + statut "connecté" au nouveau
+- successful connection: {authenticated user, Linear authorization granted} -> status "connected" + workspace name displayed
+- authorization denied: {authenticated user, Linear authorization denied} -> reject "La connexion à Linear a été refusée. Veuillez réessayer."
+- insufficient permissions: {authenticated user, partial permissions granted} -> reject "Les permissions accordées sont insuffisantes. Veuillez autoriser tous les accès demandés."
+- expired session: {Linear session expired} -> automatic renewal + "connected" status maintained
+- renewal impossible: {Linear session expired, renewal failed} -> status "disconnected" + reject "Votre session Linear a expiré. Veuillez vous reconnecter."
+- disconnection: {connected user, disconnection request} -> status "disconnected" + access revoked on Linear side
+- workspace already connected: {connected user, attempt to connect another workspace} -> previous workspace replaced + status "connected" to the new one
 
-## Hors scope
-- Connexion à plusieurs workspaces simultanément
-- Connexion à d'autres outils que Linear
-- Gestion des rôles ou permissions internes à Linear
+## Out of scope
+- Connecting multiple workspaces simultaneously
+- Connecting to tools other than Linear
+- Managing roles or permissions internal to Linear
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Workspace | Espace de travail Linear d'une organisation |
-| Session | Lien actif entre Shiplens et le workspace Linear de l'utilisateur |
-| Déconnexion | Rupture complète du lien, avec suppression des accès des deux côtés |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Workspace | Linear workspace of an organization |
+| Session | Active link between Shiplens and the user's Linear workspace |
+| Disconnection | Complete severing of the link, with access removal on both sides |
 
 ## Implementation
 
-| Artefact | Chemin |
-|----------|--------|
+| Artefact | Path |
+|----------|------|
 | Bounded Context | `src/modules/identity/` |
 | Entity | `entities/linear-workspace-connection/linear-workspace-connection.ts` |
 | Use Cases | `usecases/get-connection-status.usecase.ts`, `usecases/connect-linear-workspace.usecase.ts`, `usecases/disconnect-linear-workspace.usecase.ts`, `usecases/refresh-linear-session.usecase.ts` |
@@ -43,12 +43,12 @@ L'utilisateur doit relier son espace de travail Linear à Shiplens pour que l'ap
 | Presenter | `interface-adapters/presenters/connection-status.presenter.ts` |
 | Gateways | `interface-adapters/gateways/linear-workspace-connection.in-prisma.gateway.ts`, `interface-adapters/gateways/linear-api.in-http.gateway.ts`, `interface-adapters/gateways/token-encryption.in-crypto.gateway.ts` |
 | Migration | `prisma/migrations/20260330212207_add_linear_workspace_connection/` |
-| Tests acceptance | `tests/acceptance/connect-linear-workspace.acceptance.spec.ts` |
+| Acceptance tests | `tests/acceptance/connect-linear-workspace.acceptance.spec.ts` |
 
 ### Endpoints
 
-| Methode | Route | Use Case |
-|---------|-------|----------|
+| Method | Route | Use Case |
+|--------|-------|----------|
 | GET | `/linear/status` | GetConnectionStatus |
 | POST | `/linear/connect` | ConnectLinearWorkspace |
 | POST | `/linear/disconnect` | DisconnectLinearWorkspace |
@@ -56,9 +56,9 @@ L'utilisateur doit relier son espace de travail Linear à Shiplens pour que l'ap
 
 ### Decisions
 
-- Single-tenant : un seul workspace en base (pas de multi-user)
-- Tokens chiffrés AES-256-GCM avant persistance, l'entité ne manipule que des tokens chiffrés
-- 3 gateway ports distincts (persistance, API Linear, encryption)
-- Pas de refresh automatique par guard/middleware (YAGNI) — endpoint explicite
-- Scopes stockés en string délimité (contrainte SQLite)
+- Single-tenant: one workspace in the database (no multi-user)
+- Tokens encrypted with AES-256-GCM before persistence, the entity only handles encrypted tokens
+- 3 distinct gateway ports (persistence, Linear API, encryption)
+- No automatic refresh via guard/middleware (YAGNI) — explicit endpoint
+- Scopes stored as delimited string (SQLite constraint)
 - Requires env vars: `LINEAR_CLIENT_ID`, `LINEAR_CLIENT_SECRET`, `ENCRYPTION_KEY`

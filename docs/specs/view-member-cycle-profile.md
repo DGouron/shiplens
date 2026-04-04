@@ -1,46 +1,46 @@
-# Voir le profil cycle d'un membre
+# View member cycle profile
 
 ## Status: implemented
 
-## Contexte
-Le tech lead pilote son cycle avec des donnees equipe, mais n'a aucune visibilite individuelle. Pour comprendre ce que fait un membre, ce qui le bloque et s'il estime correctement, il doit ouvrir chaque issue dans Linear. Il a besoin d'une vue synthetique par membre directement dans le rapport de cycle.
+## Context
+The tech lead manages their cycle with team-level data, but has no individual visibility. To understand what a member is working on, what's blocking them and whether they estimate correctly, they have to open each issue in Linear. They need a synthetic per-member view directly in the cycle report.
 
 ## Rules
-- Un filtre membre (dropdown) s'ajoute dans la page rapport de cycle, a cote du selecteur de cycle
-- La liste des membres se derive des assignees presents dans le cycle selectionne
-- Par defaut aucun membre n'est selectionne — les sections affichent les donnees equipe
-- Quand un membre est selectionne, les sections de pilotage se filtrent sur ce membre uniquement
-- La section goulots affiche le temps median par statut du membre selectionne (extrait du breakdown assignee)
-- La section issues bloquees affiche uniquement les alertes concernant les issues assignees au membre selectionne
-- La section estimation affiche le score de precision du membre selectionne et ses sur/sous-estimations
-- Des metriques individuelles s'affichent : nombre d'issues en cours, bloquees, terminees et points completes sur le cycle
-- Une section digest IA apparait uniquement quand un membre est selectionne
-- Le digest resume en langage naturel les issues en cours du membre, ses blocages eventuels et le temps passe dans chaque statut
-- Le digest est genere a la demande via un bouton (pas automatiquement a la selection du membre)
-- Le digest utilise la meme infrastructure IA que le rapport de sprint (AiTextGeneratorGateway)
+- A member filter (dropdown) is added to the cycle report page, next to the cycle selector
+- The member list is derived from the assignees present in the selected cycle
+- By default no member is selected — sections display team-level data
+- When a member is selected, the management sections filter on that member only
+- The bottlenecks section displays the selected member's median time per status (extracted from the assignee breakdown)
+- The blocked issues section displays only alerts concerning the selected member's assigned issues
+- The estimation section displays the selected member's accuracy score and their over/underestimations
+- Individual metrics are displayed: number of issues in progress, blocked, completed, and points completed on the cycle
+- An AI digest section appears only when a member is selected
+- The digest summarizes in natural language the member's in-progress issues, potential blockers and time spent in each status
+- The digest is generated on demand via a button (not automatically on member selection)
+- The digest uses the same AI infrastructure as the sprint report (AiTextGeneratorGateway)
 
 ## Scenarios
-- selection membre: {dropdown, 3 assignees dans le cycle} -> liste Alice, Bob, Charlie
-- filtrage metriques: {Alice selectionnee, 4 issues dont 2 terminees, 1 en cours, 1 bloquee} -> metriques affichees : 1 en cours, 1 bloquee, 2 terminees + points completes
-- filtrage goulots: {Alice selectionnee} -> temps median par statut d'Alice uniquement
-- filtrage issues bloquees: {Alice selectionnee, 1 alerte sur son issue} -> seule l'alerte d'Alice affichee
-- filtrage estimation: {Alice selectionnee, score 72%} -> score Alice + 2 sur-estimations, 1 sous-estimation
-- retour vue equipe: {deselection du membre (option "Toute l'equipe")} -> sections reviennent aux donnees equipe agregees
-- digest nominal: {Alice selectionnee, clic "Generer le digest", 3 issues en cours} -> resume IA : "Alice travaille sur X, bloquee sur Y depuis 2 jours, Z en review"
-- aucune issue en cours: {Bob selectionne, 0 issue en cours} -> digest affiche "Aucune issue en cours pour ce membre"
-- membre sans issue: {Charlie selectionne, 0 issue sur le cycle} -> metriques a zero + digest non disponible
-- erreur generation digest: {API IA indisponible} -> message "Le digest n'a pas pu etre genere" + metriques restent visibles
+- member selection: {dropdown, 3 assignees in the cycle} -> list Alice, Bob, Charlie
+- metrics filtering: {Alice selected, 4 issues of which 2 completed, 1 in progress, 1 blocked} -> metrics displayed: 1 in progress, 1 blocked, 2 completed + points completed
+- bottlenecks filtering: {Alice selected} -> median time per status for Alice only
+- blocked issues filtering: {Alice selected, 1 alert on her issue} -> only Alice's alert displayed
+- estimation filtering: {Alice selected, score 72%} -> Alice's score + 2 overestimations, 1 underestimation
+- return to team view: {member deselected (option "Whole team")} -> sections return to aggregated team data
+- nominal digest: {Alice selected, click "Generate digest", 3 in-progress issues} -> AI summary: "Alice is working on X, blocked on Y for 2 days, Z in review"
+- no in-progress issues: {Bob selected, 0 in-progress issues} -> digest displays "No in-progress issues for this member"
+- member without issues: {Charlie selected, 0 issues on the cycle} -> metrics at zero + digest not available
+- digest generation error: {AI API unavailable} -> message "The digest could not be generated" + metrics remain visible
 
-## Hors scope
-- Historique du membre sur plusieurs cycles (spec historique velocite separee)
-- Tickets "bouillants" avec bouton investiguer (Github/Gitlab)
-- Comparaison entre membres
-- Photo ou avatar du membre
-- Persistence du digest en base (genere a la volee)
+## Out of scope
+- Member history across multiple cycles (separate velocity history spec)
+- "Hot" tickets with investigate button (Github/Gitlab)
+- Comparison between members
+- Member photo or avatar
+- Digest persistence in database (generated on the fly)
 
-## Glossaire
-| Terme | Definition |
-|-------|------------|
-| Profil cycle | Vue synthetique des metriques et du travail d'un membre sur un cycle donne |
-| Digest | Resume en langage naturel du travail en cours d'un membre, genere par IA |
-| Filtre membre | Dropdown permettant de restreindre les donnees de la page a un seul assignee |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Cycle profile | Synthetic view of a member's metrics and work on a given cycle |
+| Digest | Natural language summary of a member's in-progress work, generated by AI |
+| Member filter | Dropdown to restrict page data to a single assignee |

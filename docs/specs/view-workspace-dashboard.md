@@ -1,46 +1,46 @@
-# Consulter le tableau de bord du workspace
+# View workspace dashboard
 
 ## Status: implemented
 
-## Contexte
-Le tech lead ouvre Shiplens pour avoir une vue d'ensemble instantanée de son workspace. Aujourd'hui, il doit naviguer dans Linear équipe par équipe pour reconstituer mentalement l'état global. Shiplens affiche un dashboard centralisé avec les indicateurs clés de chaque équipe et un accès rapide aux rapports.
+## Context
+The tech lead opens Shiplens to get an instant overview of their workspace. Today, they have to navigate Linear team by team to mentally reconstruct the global state. Shiplens displays a centralized dashboard with key indicators for each team and quick access to reports.
 
 ## Rules
-- Le dashboard affiche toutes les équipes du workspace ayant un cycle actif
-- Chaque équipe affiche son cycle actif en cours avec ses KPIs : tendance vélocité, taux de complétion, nombre d'issues bloquées
-- La tendance vélocité compare le cycle actif aux cycles précédents de la même équipe
-- Le taux de complétion représente le ratio entre issues terminées et issues totales du cycle actif
-- Le dernier rapport de sprint généré est accessible en un clic depuis chaque équipe
-- Le statut de synchronisation Linear est visible en permanence : date de dernière synchronisation et prochaine synchronisation prévue
-- Le dashboard priorise l'affichage desktop mais reste utilisable sur mobile
+- The dashboard displays all workspace teams that have an active cycle
+- Each team displays its current active cycle with its KPIs: velocity trend, completion rate, number of blocked issues
+- Velocity trend compares the active cycle to previous cycles of the same team
+- Completion rate represents the ratio between completed issues and total issues of the active cycle
+- The latest generated sprint report is accessible in one click from each team
+- The Linear synchronization status is permanently visible: last synchronization date and next planned synchronization
+- The dashboard prioritizes desktop display but remains usable on mobile
 
 ## Scenarios
-- dashboard nominal: {workspace connecté, 3 équipes avec cycles actifs, données synchronisées} → 3 cartes équipe affichées + KPIs par équipe (tendance vélocité, taux de complétion, issues bloquées) + statut synchronisation visible
-- équipe sans cycle actif: {workspace connecté, 1 équipe sans cycle actif parmi 3 équipes} → 2 cartes équipe avec KPIs + 1 carte équipe avec mention "Aucun cycle actif"
-- accès au rapport depuis le dashboard: {équipe avec dernier rapport généré} → clic sur le rapport → navigation vers la page du rapport complet
-- équipe sans rapport: {équipe avec cycle actif, aucun rapport généré} → carte équipe affichée sans lien vers un rapport + mention "Aucun rapport disponible"
-- aucune équipe synchronisée: {workspace connecté, aucune équipe synchronisée} → reject "Aucune équipe synchronisée. Veuillez d'abord sélectionner des équipes à synchroniser."
-- workspace non connecté: {aucun workspace connecté} → reject "Aucun workspace connecté. Veuillez connecter votre workspace Linear."
-- synchronisation en retard: {dernière synchronisation > 24h} → statut synchronisation affiché en alerte + mention "Synchronisation en retard"
-- toutes les issues bloquées: {équipe avec 100% d'issues bloquées} → KPI issues bloquées affiché en alerte sur la carte équipe
+- nominal dashboard: {connected workspace, 3 teams with active cycles, synchronized data} -> 3 team cards displayed + KPIs per team (velocity trend, completion rate, blocked issues) + synchronization status visible
+- team without active cycle: {connected workspace, 1 team without active cycle among 3 teams} -> 2 team cards with KPIs + 1 team card with note "Aucun cycle actif"
+- report access from dashboard: {team with latest report generated} -> click on the report -> navigation to the full report page
+- team without report: {team with active cycle, no report generated} -> team card displayed without report link + note "Aucun rapport disponible"
+- no synchronized teams: {connected workspace, no synchronized teams} -> reject "Aucune équipe synchronisée. Veuillez d'abord sélectionner des équipes à synchroniser."
+- workspace not connected: {no workspace connected} -> reject "Aucun workspace connecté. Veuillez connecter votre workspace Linear."
+- synchronization overdue: {last synchronization > 24h} -> synchronization status displayed as alert + note "Synchronisation en retard"
+- all issues blocked: {team with 100% blocked issues} -> blocked issues KPI displayed as alert on the team card
 
-## Hors scope
-- Personnalisation de l'ordre ou de la disposition des cartes équipe
-- Filtrage ou recherche d'équipes sur le dashboard
-- Création ou modification de cycles depuis le dashboard
-- Affichage d'équipes provenant de plusieurs workspaces
-- Notifications en temps réel sur les changements de KPIs
+## Out of scope
+- Customization of team card order or layout
+- Team filtering or search on the dashboard
+- Cycle creation or modification from the dashboard
+- Display of teams from multiple workspaces
+- Real-time notifications on KPI changes
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Dashboard | Page d'accueil affichant une vue d'ensemble du workspace |
-| Carte équipe | Bloc visuel résumant l'état du cycle actif d'une équipe |
-| Cycle actif | Cycle (sprint) en cours pour une équipe donnée |
-| Tendance vélocité | Évolution de la vélocité du cycle actif par rapport aux cycles précédents |
-| Taux de complétion | Pourcentage d'issues terminées sur le total d'issues du cycle |
-| Issues bloquées | Issues du cycle marquées comme bloquées dans Linear |
-| Statut de synchronisation | Indicateur montrant quand la dernière synchronisation a eu lieu et quand la prochaine est prévue |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Dashboard | Home page displaying a workspace overview |
+| Team card | Visual block summarizing the active cycle state of a team |
+| Active cycle | Cycle (sprint) currently in progress for a given team |
+| Velocity trend | Evolution of the active cycle's velocity compared to previous cycles |
+| Completion rate | Percentage of completed issues out of the total cycle issues |
+| Blocked issues | Cycle issues marked as blocked in Linear |
+| Synchronization status | Indicator showing when the last synchronization occurred and when the next one is planned |
 
 ## Implementation
 
