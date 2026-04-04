@@ -1,6 +1,6 @@
 ---
 name: event-storming
-description: "Lance une session Event Storming Big Picture sur un bounded context ou l'ensemble du backend. Decouvre les domain events, commands, entities, frontieres de contexte. Produit un document structure dans docs/ddd/."
+description: "Runs a Big Picture Event Storming session on a bounded context or the entire backend. Discovers domain events, commands, entities, context boundaries. Produces a structured document in docs/ddd/."
 triggers:
   - "event.?storming"
   - "domain.*events"
@@ -10,47 +10,47 @@ triggers:
 
 # Event Storming
 
-Lance une session Event Storming Big Picture sur un bounded context ou l'ensemble du backend.
+Runs a Big Picture Event Storming session on a bounded context or the entire backend.
 
 ## Activation
 
-- `/event-storming <bounded-context>` — analyse un BC existant dans le code
-- `/event-storming audit` — analyse globale de tous les BCs
-- `/event-storming explore <brief>` — exploration pre-code depuis un brief fonctionnel
+- `/event-storming <bounded-context>` — analyze an existing BC in the code
+- `/event-storming audit` — global analysis of all BCs
+- `/event-storming explore <brief>` — pre-code exploration from a functional brief
 
 ## Workflow
 
-### Etape 1 : Parser l'input
+### Step 1: Parse the input
 
-Determiner le mode :
-- **Mode cible** : nom du BC fourni -> analyse ce module dans le code
-- **Mode audit** : "audit" ou "global" -> analyse tous les modules
-- **Mode exploration** : "explore" + brief -> propose des BCs, entites, events AVANT le code
+Determine the mode:
+- **Target mode**: BC name provided -> analyze this module in the code
+- **Audit mode**: "audit" or "global" -> analyze all modules
+- **Exploration mode**: "explore" + brief -> propose BCs, entities, events BEFORE writing code
 
-### Etape 2 : Lancer l'agent
+### Step 2: Launch the agent
 
-Spawner l'agent `event-storming` avec ce prompt :
+Spawn the `event-storming` agent with this prompt:
 
 ```
-Mode : <cible|audit|exploration>
-Bounded Context : <nom ou "tous">
-Brief : <brief fonctionnel si mode exploration>
+Mode: <target|audit|exploration>
+Bounded Context: <name or "all">
+Brief: <functional brief if exploration mode>
 
-Executer l'Event Storming Big Picture selon ta mission.
+Execute the Big Picture Event Storming according to your mission.
 ```
 
-Utiliser `subagent_type: "event-storming"` et `model: "opus"`.
+Use `subagent_type: "event-storming"` and `model: "opus"`.
 
-### Etape 3 : Restituer
+### Step 3: Present
 
-Afficher le resultat de l'agent tel quel.
-Les documents sont ecrits par l'agent dans `docs/ddd/event-storming/`.
-L'agent enrichit `docs/ddd/ubiquitous-language.md` avec les termes decouverts.
+Display the agent result as-is.
+Documents are written by the agent in `docs/ddd/event-storming/`.
+The agent enriches `docs/ddd/ubiquitous-language.md` with the discovered terms.
 
-## Exemples d'invocation
+## Invocation Examples
 
 ```
 /event-storming shipping
 /event-storming audit
-/event-storming explore "Le systeme doit permettre de suivre des colis en temps reel"
+/event-storming explore "The system must allow tracking packages in real time"
 ```

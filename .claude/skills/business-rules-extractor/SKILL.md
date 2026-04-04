@@ -1,6 +1,6 @@
 ---
 name: business-rules-extractor
-description: "Extrait les regles metier d'un module backend et produit deux tableaux : vue Product (concepts metier) et vue Dev (type + source). Sauvegarde dans docs/business-rules/."
+description: "Extracts business rules from a backend module and produces two tables: Product view (business concepts) and Dev view (type + source). Saves to docs/business-rules/."
 triggers:
   - "business.*rules"
   - "règles.*métier"
@@ -10,45 +10,45 @@ triggers:
 
 # Business Rules Extractor
 
-Extrait les regles metier d'un module backend et produit deux tableaux : vue Product (concepts metier) et vue Dev (type + source).
+Extracts business rules from a backend module and produces two tables: Product view (business concepts) and Dev view (type + source).
 
 ## Activation
 
 - `/business-rules-extractor <module>`
-- "extraire les regles metier de..."
-- "quelles sont les regles de..."
-- "business rules du module..."
+- "extract the business rules from..."
+- "what are the rules of..."
+- "business rules of the module..."
 
 ## Workflow
 
-### Etape 1 : Parser l'input
+### Step 1: Parse the input
 
-Extraire du message utilisateur :
-- **Module** : nom du module (obligatoire)
-- **Focus** : sous-domaine cible (optionnel)
+Extract from the user message:
+- **Module**: module name (required)
+- **Focus**: target subdomain (optional)
 
-### Etape 2 : Lancer l'agent
+### Step 2: Launch the agent
 
-Spawner l'agent `business-rules-extractor` avec ce prompt :
+Spawn the `business-rules-extractor` agent with this prompt:
 
 ```
-Module : <module>
-Focus : <focus ou "complet">
+Module: <module>
+Focus: <focus or "complete">
 
-Extraire toutes les regles metier du module selon ta mission.
+Extract all business rules from the module according to your mission.
 ```
 
-Utiliser `subagent_type: "business-rules-extractor"` et `model: "sonnet"`.
+Use `subagent_type: "business-rules-extractor"` and `model: "sonnet"`.
 
-### Etape 3 : Sauvegarder
+### Step 3: Save
 
-Sauvegarder le resultat dans `docs/business-rules/<module>.md`.
+Save the result in `docs/business-rules/<module>.md`.
 
-### Etape 4 : Restituer
+### Step 4: Present
 
-Afficher le resultat de l'agent tel quel — ne pas resumer, ne pas reformater.
+Display the agent result as-is — do not summarize, do not reformat.
 
-## Exemples d'invocation
+## Invocation Examples
 
 ```
 /business-rules-extractor shipping

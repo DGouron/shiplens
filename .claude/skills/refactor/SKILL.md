@@ -1,10 +1,9 @@
 ---
 name: refactor
 description: >
-  Refactoring structure avec patterns Mikado, Strangler Fig et Parallel Change.
-  Decompose un refactoring bloque en arbre de prerequis, produit un plan de branches
-  independantes, et execute en TDD. Prend en entree des P3 du debug-workflow ou une
-  demande directe de restructuration.
+  Structured refactoring with Mikado, Strangler Fig, and Parallel Change patterns.
+  Decomposes a blocked refactoring into a prerequisite tree, produces an independent branch plan,
+  and executes in TDD. Takes P3 items from debug-workflow or a direct restructuring request as input.
 triggers:
   - "refactor"
   - "mikado"
@@ -18,11 +17,11 @@ triggers:
   - "migrate.*"
 ---
 
-# Refactoring Structuré
+# Structured Refactoring
 
-## Philosophie
+## Philosophy
 
-Un refactoring n'est pas un nettoyage cosmétique. C'est une transformation structurelle qui modifie le design sans changer le comportement observable. Chaque étape doit laisser le système dans un état fonctionnel — tests verts, application qui tourne.
+A refactoring is not a cosmetic cleanup. It is a structural transformation that changes the design without altering observable behavior. Each step must leave the system in a working state — green tests, running application.
 
 > "Make the change easy, then make the easy change." — Kent Beck
 
@@ -30,176 +29,176 @@ Un refactoring n'est pas un nettoyage cosmétique. C'est une transformation stru
 
 ## Activation
 
-Ce skill s'active quand :
-- Le `/debug-workflow` produit des P3 (code smell, tech debt)
-- L'utilisateur demande une restructuration ("extraire ce gateway", "migrer vers...")
-- L'architecture viole la Dependency Rule
-- Un module est devenu trop gros ou trop couplé
+This skill activates when:
+- `/debug-workflow` produces P3 items (code smell, tech debt)
+- The user requests a restructuring ("extract this gateway", "migrate to...")
+- The architecture violates the Dependency Rule
+- A module has become too large or too coupled
 
 ---
 
-## Étape 1 : DIAGNOSTIC
+## Step 1: DIAGNOSTIC
 
-Avant tout refactoring, répondre à ces questions :
+Before any refactoring, answer these questions:
 
-1. **Quel est le problème concret ?** Pas "le code est sale" mais "l'entity Shipment contient de la logique de pricing qui devrait être dans son propre use case"
-2. **Quel est le comportement actuel ?** Lister les tests existants qui couvrent le code cible
-3. **Quel est le comportement cible ?** Même comportement observable, structure différente
-4. **Quels fichiers sont impactés ?** Lister tous les fichiers qui devront changer
-5. **Y a-t-il des tests ?** Si non, en écrire AVANT de refactorer (golden master tests)
+1. **What is the concrete problem?** Not "the code is dirty" but "the Shipment entity contains pricing logic that should be in its own use case"
+2. **What is the current behavior?** List the existing tests that cover the target code
+3. **What is the target behavior?** Same observable behavior, different structure
+4. **Which files are impacted?** List all files that will need to change
+5. **Are there tests?** If not, write them BEFORE refactoring (golden master tests)
 
-**Présenter le diagnostic à l'utilisateur et attendre validation.**
+**Present the diagnostic to the user and wait for validation.**
 
 ---
 
-## Étape 2 : CHOISIR LE PATTERN
+## Step 2: CHOOSE THE PATTERN
 
 ### Mikado Method
 
-**Quand** : Le refactoring est bloqué — changer A nécessite de changer B, qui nécessite C. Les dépendances forment un arbre.
+**When**: The refactoring is blocked — changing A requires changing B, which requires C. The dependencies form a tree.
 
-**Comment** :
-1. Tenter le changement cible
-2. Observer ce qui casse
-3. Annuler le changement (`git checkout .`)
-4. Traiter les prérequis en remontant l'arbre (feuilles d'abord)
-5. Chaque prérequis est un commit indépendant, tests verts
-6. Quand tous les prérequis sont traités, le changement cible passe naturellement
+**How**:
+1. Attempt the target change
+2. Observe what breaks
+3. Revert the change (`git checkout .`)
+4. Handle prerequisites by climbing the tree (leaves first)
+5. Each prerequisite is an independent commit, green tests
+6. When all prerequisites are handled, the target change passes naturally
 
-**Arbre Mikado** :
+**Mikado Tree**:
 
 ```
-[Changement cible : Extraire PricingUsecase de ShipmentEntity]
-├── [Prérequis : Créer PricingGateway abstract class]
-│   └── [Prérequis : Définir PricingData interface]
-├── [Prérequis : Déplacer calculatePrice() vers PricingUsecase]
-│   └── [Prérequis : Tests de calculatePrice() indépendants]
-└── [Prérequis : Modifier ShipmentEntity pour déléguer à PricingUsecase]
+[Target change: Extract PricingUsecase from ShipmentEntity]
+├── [Prerequisite: Create PricingGateway abstract class]
+│   └── [Prerequisite: Define PricingData interface]
+├── [Prerequisite: Move calculatePrice() to PricingUsecase]
+│   └── [Prerequisite: Independent tests for calculatePrice()]
+└── [Prerequisite: Modify ShipmentEntity to delegate to PricingUsecase]
 ```
 
-**Règle** : chaque feuille de l'arbre = 1 commit, tests verts, comportement inchangé.
+**Rule**: each leaf of the tree = 1 commit, green tests, unchanged behavior.
 
 ### Strangler Fig
 
-**Quand** : Remplacer progressivement un composant sans casser l'existant. L'ancien et le nouveau coexistent pendant la migration.
+**When**: Progressively replace a component without breaking the existing one. The old and new coexist during the migration.
 
-**Comment** :
-1. Créer le nouveau composant à côté de l'ancien
-2. Rediriger un premier consommateur vers le nouveau
-3. Vérifier (tests verts)
-4. Rediriger les consommateurs suivants un par un
-5. Quand l'ancien n'a plus de consommateurs, le supprimer
+**How**:
+1. Create the new component alongside the old one
+2. Redirect a first consumer to the new one
+3. Verify (green tests)
+4. Redirect the remaining consumers one by one
+5. When the old one has no more consumers, delete it
 
-**Cas typiques en Clean Architecture** :
-- Migrer un gateway InMemory vers InPrisma
-- Remplacer un use case monolithique par plusieurs use cases ciblés
-- Migrer un module legacy vers un nouveau bounded context
+**Typical cases in Clean Architecture**:
+- Migrate an InMemory gateway to InPrisma
+- Replace a monolithic use case with several targeted use cases
+- Migrate a legacy module to a new bounded context
 
-**Règle** : l'ancien composant n'est supprimé QUE quand zéro import le référence.
+**Rule**: the old component is deleted ONLY when zero imports reference it.
 
 ### Parallel Change (Expand-Contract)
 
-**Quand** : Changer l'interface d'un composant utilisé par plusieurs consommateurs. Ne pas tout casser d'un coup.
+**When**: Change the interface of a component used by multiple consumers. Don't break everything at once.
 
-**Comment** :
-1. **Expand** : ajouter la nouvelle interface à côté de l'ancienne (le composant supporte les deux)
-2. **Migrate** : migrer les consommateurs un par un vers la nouvelle interface
-3. **Contract** : supprimer l'ancienne interface quand plus personne ne l'utilise
+**How**:
+1. **Expand**: add the new interface alongside the old one (the component supports both)
+2. **Migrate**: migrate consumers one by one to the new interface
+3. **Contract**: remove the old interface when no one uses it anymore
 
-**Cas typiques** :
-- Changer la signature d'une méthode de gateway
-- Modifier le schéma d'une entity (ajouter/renommer un champ)
-- Refactorer un DTO de controller
+**Typical cases**:
+- Change the signature of a gateway method
+- Modify an entity schema (add/rename a field)
+- Refactor a controller DTO
 
-**Règle** : jamais de big-bang migration. Un consommateur à la fois.
+**Rule**: never a big-bang migration. One consumer at a time.
 
 ### Extract (Clean Architecture specific)
 
-**Quand** : La Dependency Rule est violée ou un composant a trop de responsabilités.
+**When**: The Dependency Rule is violated or a component has too many responsibilities.
 
-**Patterns fréquents** :
-- **Extract Gateway** : logique I/O dans un use case → créer un gateway port + implémentation
-- **Extract Use Case** : controller fait de la logique métier → extraire dans un use case
-- **Extract Entity** : un entity gère deux concepts → séparer en deux entities
-- **Extract Bounded Context** : un module est devenu trop gros → le découper
+**Common patterns**:
+- **Extract Gateway**: I/O logic in a use case → create a gateway port + implementation
+- **Extract Use Case**: controller has business logic → extract into a use case
+- **Extract Entity**: an entity manages two concepts → split into two entities
+- **Extract Bounded Context**: a module has become too large → split it
 
 ---
 
-## Étape 3 : PLANIFIER
+## Step 3: PLAN
 
-Produire un plan de refactoring qui respecte :
+Produce a refactoring plan that follows:
 
-1. **Chaque étape = tests verts** — jamais d'étape intermédiaire rouge
-2. **Chaque étape = un commit** — rollback possible à chaque point
-3. **Ordre feuilles-d'abord** (Mikado) — les prérequis avant la cible
-4. **Branches indépendantes** si possible (même règles que debug-workflow Phase 3)
+1. **Each step = green tests** — never an intermediate red step
+2. **Each step = one commit** — rollback possible at each point
+3. **Leaves-first order** (Mikado) — prerequisites before the target
+4. **Independent branches** if possible (same rules as debug-workflow Phase 3)
 
-Format du plan :
+Plan format:
 
 ```
 REFACTORING PLAN:
   pattern: [Mikado | Strangler Fig | Parallel Change | Extract]
-  target: [description du changement cible]
-  reason: [pourquoi ce refactoring est nécessaire]
+  target: [description of the target change]
+  reason: [why this refactoring is necessary]
 
   STEPS:
-    1. [description] — [fichiers impactés] — [type: prerequisite | migration | cleanup]
+    1. [description] — [impacted files] — [type: prerequisite | migration | cleanup]
     2. ...
 
   RISKS:
-    - [risque identifié] — [mitigation]
+    - [identified risk] — [mitigation]
 
   GOLDEN MASTER TESTS:
-    - [tests à écrire AVANT si couverture insuffisante]
+    - [tests to write BEFORE if coverage is insufficient]
 ```
 
-**Présenter le plan à l'utilisateur et attendre validation.**
+**Present the plan to the user and wait for validation.**
 
 ---
 
-## Étape 4 : EXÉCUTER
+## Step 4: EXECUTE
 
-Pour chaque étape du plan, appliquer `/tdd` :
+For each step of the plan, apply `/tdd`:
 
-1. Si test existant couvre le comportement → vérifier qu'il est vert
-2. Si pas de test → écrire un test de non-régression AVANT la modification (RED → GREEN pour le golden master, puis refactor)
-3. Appliquer la modification
-4. Vérifier que TOUS les tests passent (`pnpm test`)
-5. Committer
+1. If an existing test covers the behavior → verify it is green
+2. If no test exists → write a non-regression test BEFORE the modification (RED → GREEN for the golden master, then refactor)
+3. Apply the modification
+4. Verify that ALL tests pass (`pnpm test`)
+5. Commit
 
-**Si une étape casse quelque chose d'inattendu** :
-- STOP — ne pas cascader les corrections
-- Revenir en arrière (`git checkout .`)
-- Ajouter le nouveau prérequis découvert à l'arbre Mikado
-- Reprendre depuis les feuilles
+**If a step breaks something unexpected**:
+- STOP — do not cascade corrections
+- Revert (`git checkout .`)
+- Add the newly discovered prerequisite to the Mikado tree
+- Resume from the leaves
 
 ---
 
-## Étape 5 : VALIDER
+## Step 5: VALIDATE
 
-Après toutes les étapes :
-1. Full test suite : `pnpm test`
-2. Vérifier que le comportement observable n'a PAS changé
-3. Vérifier que la structure cible est atteinte
-4. Si un test d'acceptance existe pour la feature impactée, le relancer
+After all steps:
+1. Full test suite: `pnpm test`
+2. Verify that observable behavior has NOT changed
+3. Verify that the target structure is achieved
+4. If an acceptance test exists for the impacted feature, rerun it
 
 ---
 
 ## Anti-patterns
 
-- Refactorer sans tests → on ne sait pas si on a cassé quelque chose
-- Big-bang refactoring → tout changer d'un coup, prier que ça marche
-- Refactorer ET ajouter une feature en même temps → un commit fait UNE chose
-- Refactorer du code qui n'a pas de problème → YAGNI s'applique au refactoring aussi
-- Créer une abstraction "au cas où" → refactorer VERS les patterns quand la douleur émerge, pas avant
+- Refactoring without tests → you don't know if you broke something
+- Big-bang refactoring → change everything at once, pray it works
+- Refactoring AND adding a feature at the same time → one commit does ONE thing
+- Refactoring code that has no problem → YAGNI applies to refactoring too
+- Creating an abstraction "just in case" → refactor TOWARD patterns when pain emerges, not before
 
 ---
 
-## Intégration avec les autres skills
+## Integration with Other Skills
 
-| Depuis | Vers `/refactor` | Contexte |
-|--------|-------------------|----------|
-| `/debug-workflow` | P3 items | Le debug identifie de la dette, `/refactor` la traite |
-| `/architecture` | Violation Dependency Rule | L'architecture montre un couplage, `/refactor` le corrige |
-| `/event-storming` | BC trop gros | L'ES révèle qu'un module devrait être découpé |
-| `/implement-feature` | Code qui résiste | L'implémentation révèle qu'un refactoring préalable est nécessaire |
+| From | To `/refactor` | Context |
+|------|----------------|---------|
+| `/debug-workflow` | P3 items | Debug identifies debt, `/refactor` addresses it |
+| `/architecture` | Dependency Rule violation | Architecture shows coupling, `/refactor` fixes it |
+| `/event-storming` | BC too large | ES reveals a module should be split |
+| `/implement-feature` | Resistant code | Implementation reveals a prerequisite refactoring is needed |

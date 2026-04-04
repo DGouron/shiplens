@@ -1,19 +1,19 @@
 ---
 name: architecture
-description: Guide Clean Architecture (Uncle Bob) pour NestJS. Utiliser pour créer module, entité, use case, presenter, controller, gateway, guard. Contient les patterns tactiques et conventions de structure.
+description: Clean Architecture (Uncle Bob) guide for NestJS. Use to create modules, entities, use cases, presenters, controllers, gateways, guards. Contains tactical patterns and structure conventions.
 ---
 
-# Clean Architecture - Guide Tactique (NestJS)
+# Clean Architecture - Tactical Guide (NestJS)
 
 ## Activation
 
-Ce skill s'active pour toute création ou modification de composants architecturaux :
+This skill activates for any creation or modification of architectural components:
 - Entities, Use Cases, Presenters
 - Controllers, Gateways, Guards
 - DTOs, Services
-- Structure de modules
+- Module structure
 
-## Principe fondamental
+## Core Principle
 
 > "The architecture should scream the intent of the system." — Uncle Bob
 
@@ -27,20 +27,20 @@ Ce skill s'active pour toute création ou modification de composants architectur
 └─────────────────────────────────────┘
 ```
 
-**Dependency Rule** : Les dépendances pointent vers l'intérieur. Le domaine ne connaît pas l'infrastructure.
+**Dependency Rule**: Dependencies point inward. The domain knows nothing about infrastructure.
 
 ---
 
-## Structure d'un module
+## Module Structure
 
 ```
 src/modules/<bounded-context>/
-├── <context>.module.ts            # NestJS module (wiring DI)
+├── <context>.module.ts            # NestJS module (DI wiring)
 ├── entities/
 │   └── <entity>/
-│       ├── <entity>.ts            # Entité pure (private constructor, static create)
+│       ├── <entity>.ts            # Pure entity (private constructor, static create)
 │       ├── <entity>.schema.ts     # Zod schema
-│       ├── <entity>.guard.ts      # Validation aux frontières
+│       ├── <entity>.guard.ts      # Boundary validation
 │       ├── <entity>.gateway.ts    # Port = abstract class (DI token)
 │       └── <entity>.errors.ts     # BusinessRuleViolation
 ├── usecases/
@@ -51,7 +51,7 @@ src/modules/<bounded-context>/
 │   ├── presenters/
 │   │   └── <feature>.presenter.ts    # Domain → DTO
 │   └── gateways/
-│       └── <entity>.in-prisma.gateway.ts  # Implémentation Prisma
+│       └── <entity>.in-prisma.gateway.ts  # Prisma implementation
 └── testing/
     ├── good-path/
     │   └── stub.<entity>.gateway.ts
@@ -61,11 +61,11 @@ src/modules/<bounded-context>/
 
 ---
 
-## Composants
+## Components
 
 ### Entity
 
-Logique métier pure, indépendante de tout framework.
+Pure business logic, independent of any framework.
 
 ```typescript
 export class Something {
@@ -83,7 +83,7 @@ export class Something {
 
 ### Use Case
 
-Orchestration d'une action métier. Un use case = une intention utilisateur. `@Injectable` avec `execute()`.
+Orchestration of a business action. One use case = one user intention. `@Injectable` with `execute()`.
 
 ```typescript
 @Injectable()
@@ -99,7 +99,7 @@ export class CreateSomethingUsecase implements Usecase<CreateParams, void> {
 
 ### Presenter
 
-Transforme les données métier en DTO pour réponse API. Contient TOUTE la logique de présentation.
+Transforms business data into DTOs for API responses. Contains ALL presentation logic.
 
 ```typescript
 export class SomethingPresenter implements Presenter<Something[], SomethingListDto> {
@@ -117,7 +117,7 @@ export class SomethingPresenter implements Presenter<Something[], SomethingListD
 
 ### Controller (NestJS)
 
-Reçoit les requêtes HTTP, appelle le Use Case, retourne via Presenter.
+Receives HTTP requests, calls the Use Case, returns via Presenter.
 
 ```typescript
 @Controller('somethings')
@@ -143,7 +143,7 @@ export class SomethingController {
 
 ### Gateway
 
-Port (abstract class) dans entities, implémentation (Prisma) dans interface-adapters.
+Port (abstract class) in entities, implementation (Prisma) in interface-adapters.
 
 ```typescript
 // entities/something/something.gateway.ts (PORT = DI TOKEN)
@@ -170,7 +170,7 @@ export class SomethingInPrismaGateway extends SomethingGateway {
 
 ### Guard
 
-Validation aux frontières avec Zod + createGuard.
+Boundary validation with Zod + createGuard.
 
 ```typescript
 export const somethingGuard = createGuard<SomethingProps>(SomethingPropsSchema, 'Something')
@@ -217,10 +217,10 @@ Stubs extend the abstract gateway class.
 
 ---
 
-## Anti-patterns à éviter
+## Anti-patterns to avoid
 
-- ❌ Logique métier dans les Controllers
-- ❌ Logique de présentation dans les Use Cases
-- ❌ Entités qui connaissent l'infrastructure (Prisma, NestJS)
-- ❌ Dépendances qui pointent vers l'extérieur
-- ❌ Interfaces TS comme DI tokens (disparaissent au runtime)
+- No business logic in Controllers
+- No presentation logic in Use Cases
+- No entities aware of infrastructure (Prisma, NestJS)
+- No dependencies pointing outward
+- No TS interfaces as DI tokens (they vanish at runtime)

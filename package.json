@@ -1,10 +1,10 @@
 {
   "name": "shiplens",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Turn Linear project data into actionable insights",
+  "author": "Damien Gouron",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "biome format --write src/ tests/",

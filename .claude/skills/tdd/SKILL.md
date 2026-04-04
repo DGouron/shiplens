@@ -1,29 +1,29 @@
 ---
 name: tdd
-description: Guide interactif pour le TDD Detroit School. Utiliser dès que l'utilisateur demande d'écrire ou modifier du code - nouvelle feature, bug fix, debug, refactoring, modification. Active un workflow RED-GREEN-REFACTOR avec validation à chaque étape.
+description: Interactive guide for TDD Detroit School. Use whenever the user asks to write or modify code - new feature, bug fix, debug, refactoring, modification. Activates a RED-GREEN-REFACTOR workflow with validation at each step.
 ---
 
 # TDD Interactive Guide - Detroit School
 
-## Philosophie Detroit School
+## Detroit School Philosophy
 
-**State-based testing** : On teste le résultat observable, pas les interactions internes.
+**State-based testing**: We test the observable result, not internal interactions.
 
-| Principe | Explication |
-|----------|-------------|
-| **Tester l'état** | Vérifier le résultat final, pas comment on y arrive |
-| **Inside-Out** | Commencer par le domaine, remonter vers l'extérieur |
-| **Mocks minimaux** | Uniquement pour les I/O externes (gateways, API, DB) |
-| **Tests robustes** | Résistants au refactoring interne |
+| Principle | Explanation |
+|-----------|-------------|
+| **Test the state** | Verify the final result, not how we got there |
+| **Inside-Out** | Start from the domain, work outward |
+| **Minimal mocks** | Only for external I/O (gateways, API, DB) |
+| **Robust tests** | Resistant to internal refactoring |
 
-**Quand mocker :**
-- ✅ Gateways (API, base de données, fichiers)
-- ✅ Services externes (email, paiement)
-- ❌ Logique métier interne
-- ❌ Collaborations entre objets du domaine
+**When to mock:**
+- ✅ Gateways (API, database, files)
+- ✅ External services (email, payment)
+- ❌ Internal business logic
+- ❌ Collaborations between domain objects
 
 ```typescript
-// ✅ Detroit : on teste l'état final
+// ✅ Detroit: we test the final state
 it("should add item to cart", () => {
   const cart = new Cart()
   cart.add(product)
@@ -32,7 +32,7 @@ it("should add item to cart", () => {
   expect(cart.total).toBe(10)
 })
 
-// ❌ London : on teste les interactions (à éviter)
+// ❌ London: we test interactions (avoid this)
 it("should call inventory.reserve", () => {
   const inventory = mock<Inventory>()
   cart.add(product)
@@ -42,168 +42,222 @@ it("should call inventory.reserve", () => {
 
 ---
 
-## Manifeste TDD
+## TDD Manifesto
 
-| Principe | Signification |
-|----------|---------------|
-| **Baby steps** | Petits pas pour feedback rapide et régulier |
-| **Continuous refactoring** | On améliore maintenant, pas "plus tard" |
-| **Evolutionary design** | On développe le nécessaire et suffisant |
-| **Executable documentation** | Les tests SONT la documentation vivante |
-| **Minimalist code** | Simple et fonctionnel > surdimensionné |
+| Principle | Meaning |
+|-----------|---------|
+| **Baby steps** | Small steps for fast and regular feedback |
+| **Continuous refactoring** | Improve now, not "later" |
+| **Evolutionary design** | Develop what is necessary and sufficient |
+| **Executable documentation** | Tests ARE the living documentation |
+| **Minimalist code** | Simple and functional > over-engineered |
 
-## Principe du test minimal
+## Minimal Test Principle
 
 > "The simplest thing that could possibly work." — Kent Beck
 
 > "As the tests get more specific, the code gets more generic." — Robert C. Martin
 
-**Règles :**
-1. **Un seul comportement par test**
-2. **Du naïf au complet** : cas simple d'abord, edge cases après
-3. **Pas d'anticipation** : un cycle à la fois
+**Rules:**
+1. **One behavior per test**
+2. **From naive to complete**: simple case first, edge cases after
+3. **No anticipation**: one cycle at a time
+
+---
+
+## Transformation Priority Premise (Robert C. Martin)
+
+The Transformation Priority Premise is an Uncle Bob principle that guides the transition from RED to GREEN. The idea: when writing the minimal code to make a test pass, we apply **transformations** to the code — and these transformations have a natural **priority order**.
+
+**Always choose the highest transformation in the list (the simplest).** Skipping steps often leads to a suboptimal design.
+
+### List of transformations (from simplest to most complex)
+
+| Priority | Transformation | Description | Example |
+|----------|---------------|-------------|---------|
+| 1 | `{} → nil` | No code → return null/undefined | `return undefined` |
+| 2 | `nil → constant` | Return a hardcoded value | `return []` |
+| 3 | `constant → variable` | Replace the constant with a parameter | `return items` instead of `return []` |
+| 4 | `unconditional → conditional` | Add a branch | `if (age < 18) return false` |
+| 5 | `scalar → collection` | Move from a single value to an array | `string → string[]` |
+| 6 | `statement → recursion/iteration` | Loop over the collection | `items.map(transform)` |
+| 7 | `value → mutated value` | Transform the accumulated value | `items.reduce(accumulate)` |
+
+### When to apply it
+
+The Transformation Priority Premise is a **guide**, not an absolute rule. It is particularly useful when:
+
+- The transition to GREEN seems to require "a lot of code at once" → sign that transformations are being skipped
+- You hesitate between multiple implementations to make the test pass → choose the highest transformation
+- You are working on **algorithmic logic** (parsers, calculations, data transformations, complex validations)
+
+It is less relevant for simple orchestration code (calling a gateway and returning the result).
+
+### Concrete example — a presenter that formats tags
+
+```
+// RED: test "should return empty list when no tags"
+// GREEN via {} → constant:
+return [];
+
+// RED: test "should return formatted tag for single item"
+// GREEN via constant → variable:
+return [formatTag(tags[0])];
+
+// RED: test "should return formatted tags for multiple items"
+// GREEN via scalar → collection + iteration:
+return tags.map(formatTag);
+```
+
+If we had jumped straight to `map()` on the first test, it works — but we would have **guessed** the design instead of **discovering** it through tests.
+
+### Warning sign
+
+If during the GREEN phase you find yourself writing more than 3-5 lines of code, you are probably skipping transformations. Options:
+1. Go back and add a simpler intermediate test
+2. Check which transformation you are applying in the list
 
 ---
 
 ## Activation
 
-Ce skill s'active dès que l'utilisateur demande de toucher au code :
-- Nouvelles features : "Implémente...", "Ajoute...", "Crée..."
-- Bug fixes : "Corrige...", "Fix...", "Répare..."
-- Debug : "Pourquoi ça...", "Ça ne marche pas..."
-- Modifications : "Modifie...", "Change...", "Met à jour..."
-- Refactoring : "Refactor...", "Améliore...", "Nettoie..."
+This skill activates whenever the user asks to touch code:
+- New features: "Implement...", "Add...", "Create..."
+- Bug fixes: "Fix...", "Repair..."
+- Debug: "Why does...", "It doesn't work..."
+- Modifications: "Modify...", "Change...", "Update..."
+- Refactoring: "Refactor...", "Improve...", "Clean up..."
 
 ---
 
-## Workflow obligatoire
+## Mandatory Workflow
 
-À chaque cycle, suivre ces 3 phases avec **arrêt et validation utilisateur** entre chaque.
+At each cycle, follow these 3 phases with **stop and user validation** between each.
 
-### 🔴 Phase RED
+### 🔴 RED Phase
 
-**Objectif** : Écrire UN test qui échoue
+**Objective**: Write ONE failing test
 
-**Actions** :
-1. Annoncer : "RED: Je vais tester [comportement précis]"
-2. Identifier le plus petit test possible (baby step)
-3. Proposer le test SANS l'écrire
-4. Attendre validation
-5. Écrire le test après validation
-6. Exécuter `pnpm test` pour confirmer l'échec
-7. Demander : "Le test échoue comme attendu. On passe en GREEN ?"
+**Actions**:
+1. Announce: "RED: I will test [specific behavior]"
+2. Identify the smallest possible test (baby step)
+3. Propose the test WITHOUT writing it
+4. Wait for validation
+5. Write the test after validation
+6. Run `pnpm test` to confirm failure
+7. Ask: "The test fails as expected. Shall we move to GREEN?"
 
-**Template :**
+**Template:**
 ```
-🔴 RED - Proposition de test
+🔴 RED - Test Proposal
 
-Comportement à tester : [description]
-Fichier : [path]
+Behavior to test: [description]
+File: [path]
 
-Test proposé :
-[code du test - state-based, vérifie le résultat]
+Proposed test:
+[test code - state-based, verifies the result]
 
-Ce test vérifie que [explication de l'état attendu].
-On valide ce test ?
+This test verifies that [explanation of the expected state].
+Shall we validate this test?
 ```
 
 ---
 
-### 🟢 Phase GREEN
+### 🟢 GREEN Phase
 
-**Objectif** : Faire passer le test avec le code MINIMAL
+**Objective**: Make the test pass with MINIMAL code
 
-**Actions** :
-1. Annoncer : "GREEN: Je vais faire passer le test avec le minimum de code"
-2. Proposer l'implémentation minimale SANS l'écrire
-3. Attendre validation
-4. Écrire le code après validation
-5. Exécuter `pnpm test` pour confirmer le succès
-6. Demander : "Le test passe. On refactor ou prochain cycle ?"
+**Actions**:
+1. Announce: "GREEN: I will make the test pass with the minimum code"
+2. Propose the minimal implementation WITHOUT writing it
+3. Wait for validation
+4. Write the code after validation
+5. Run `pnpm test` to confirm success
+6. Ask: "The test passes. Shall we refactor or move to next cycle?"
 
-**Règles** :
-- Code MINIMAL qui fait passer le test
-- Pas d'optimisation prématurée
-- Valeurs en dur acceptées si suffisantes
-
----
-
-### 🔵 Phase REFACTOR
-
-**Objectif** : Simplifier sans changer le comportement
-
-**Principes** :
-- **KISS** : La solution la plus simple
-- **YAGNI** : Supprimer ce qui n'est pas nécessaire
-- **DRY** : Factoriser uniquement si duplication réelle
-
-**Actions** :
-1. Annoncer : "REFACTOR: Analyse des opportunités de simplification"
-2. Chercher : code mort, abstractions prématurées, complexité accidentelle
-3. Proposer les refactorings un par un
-4. Attendre validation pour chaque
-5. Exécuter `pnpm test` après chaque refactoring
-6. Demander : "Refactor terminé. Prochain cycle RED ?"
-
-**Ordre de priorité** : Supprimer > Simplifier > Réorganiser
+**Rules**:
+- MINIMAL code that makes the test pass
+- No premature optimization
+- Hardcoded values are acceptable if sufficient
 
 ---
 
-## Cas particulier : Debug / Bug Fix
+### 🔵 REFACTOR Phase
 
-1. **Comprendre** : Comportement attendu vs actuel
-2. **RED** : Test qui reproduit le bug (doit échouer)
-3. **GREEN** : Corriger pour que le test passe
-4. **REFACTOR** : Nettoyer si nécessaire
+**Objective**: Simplify without changing behavior
 
----
+**Principles**:
+- **KISS**: The simplest solution
+- **YAGNI**: Remove what is not necessary
+- **DRY**: Factor out only if real duplication exists
 
-## Checkpoints obligatoires
+**Actions**:
+1. Announce: "REFACTOR: Analyzing simplification opportunities"
+2. Look for: dead code, premature abstractions, accidental complexity
+3. Propose refactorings one by one
+4. Wait for validation for each
+5. Run `pnpm test` after each refactoring
+6. Ask: "Refactor complete. Next RED cycle?"
 
-Jamais passer à la phase suivante sans :
-- ✅ Validation explicite de l'utilisateur
-- ✅ Tests exécutés et résultat conforme
-
-## Specs et tickets : pas de code prédéterminé
-
-Le TDD repose sur la **découverte progressive du design**. Les specs/tickets ne doivent PAS contenir :
-
-| Interdit | Pourquoi |
-|----------|----------|
-| Noms de tests | Le test émerge du besoin, pas l'inverse |
-| Noms de fichiers | L'architecture se révèle par itération |
-| Signatures de méthodes | Le design naît du code le plus simple |
-
-Le cycle RED-GREEN-REFACTOR fait émerger le design. Le ticket décrit le QUOI (comportement), pas le COMMENT (implémentation).
+**Priority order**: Remove > Simplify > Reorganize
 
 ---
 
-## Deux modes de fonctionnement
+## Special Case: Debug / Bug Fix
 
-Le TDD a deux modes qui coexistent selon le contexte :
-
-### Mode interactif (ce skill)
-
-Quand **toi** tu codes. Claude guide, propose, et attend ta validation entre chaque phase RED/GREEN/REFACTOR. Tu gardes le controle sur chaque decision.
-
-Declenchement : `/tdd` ou quand tu demandes de coder directement.
-
-### Mode autonome (feature-implementer agent)
-
-Quand **l'agent** code. Il utilise les memes principes TDD mais sans validation humaine entre chaque phase. Les acceptance criteria de la spec servent de validation a la place de l'humain. L'agent boucle seul, se relit, et produit un rapport.
-
-Declenchement : `/implement-feature` qui lance l'agent `feature-implementer`.
-
-Les deux modes respectent les memes regles : baby steps, code minimal en GREEN, tests d'etat (Detroit School), mocks uniquement pour les I/O.
+1. **Understand**: Expected behavior vs actual
+2. **RED**: Test that reproduces the bug (must fail)
+3. **GREEN**: Fix so the test passes
+4. **REFACTOR**: Clean up if necessary
 
 ---
 
-## Anti-patterns à bloquer
+## Mandatory Checkpoints
 
-- ❌ Code prod sans test rouge
-- ❌ Plusieurs tests d'un coup
-- ❌ Implémenter plus que nécessaire en GREEN
-- ❌ Refactorer sans tests verts
-- ❌ Passer une phase sans validation
-- ❌ Mocker la logique métier interne
-- ❌ Prédéterminer le code dans les specs/tickets
+Never move to the next phase without:
+- ✅ Explicit user validation
+- ✅ Tests executed and result as expected
+
+## Specs and tickets: no predetermined code
+
+TDD relies on **progressive design discovery**. Specs/tickets must NOT contain:
+
+| Forbidden | Why |
+|-----------|-----|
+| Test names | The test emerges from the need, not the other way around |
+| File names | Architecture reveals itself through iteration |
+| Method signatures | Design is born from the simplest code |
+
+The RED-GREEN-REFACTOR cycle makes the design emerge. The ticket describes the WHAT (behavior), not the HOW (implementation).
+
+---
+
+## Two Operating Modes
+
+TDD has two modes that coexist depending on context:
+
+### Interactive mode (this skill)
+
+When **you** code. Claude guides, proposes, and waits for your validation between each RED/GREEN/REFACTOR phase. You keep control over every decision.
+
+Trigger: `/tdd` or when you ask to code directly.
+
+### Autonomous mode (feature-implementer agent)
+
+When **the agent** codes. It uses the same TDD principles but without human validation between each phase. The acceptance criteria from the spec serve as validation instead of the human. The agent loops alone, reviews itself, and produces a report.
+
+Trigger: `/implement-feature` which launches the `feature-implementer` agent.
+
+Both modes follow the same rules: baby steps, minimal code in GREEN, state-based tests (Detroit School), mocks only for I/O.
+
+---
+
+## Anti-patterns to Block
+
+- ❌ Production code without a failing test
+- ❌ Multiple tests at once
+- ❌ Implementing more than necessary in GREEN
+- ❌ Refactoring without green tests
+- ❌ Skipping a phase without validation
+- ❌ Mocking internal business logic
+- ❌ Predetermining code in specs/tickets

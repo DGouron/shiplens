@@ -1,19 +1,19 @@
 # Definition of Ready (DoR)
 
-Une spec est "ready" quand elle satisfait TOUS les criteres suivants :
+A spec is "ready" when it satisfies ALL of the following criteria:
 
 ## Checklist
 
-- [ ] **Contexte clair** : le probleme utilisateur est explicite
-- [ ] **Criteres d'acceptance** : au moins 1 scenario nominal + 1 edge case (format DSL)
-- [ ] **Hors scope defini** : ce qu'on ne fait PAS est documente
-- [ ] **INVEST valide** : les 6 criteres passes sans KO
-- [ ] **Glossaire present** : si termes metier specifiques
-- [ ] **Pas de dependance bloquante** : implementable immediatement
-- [ ] **Validation utilisateur** : la spec a ete relue et approuvee
+- [ ] **Clear context**: the user problem is explicit
+- [ ] **Acceptance criteria**: at least 1 nominal scenario + 1 edge case (DSL format)
+- [ ] **Out of scope defined**: what we are NOT doing is documented
+- [ ] **INVEST validated**: all 6 criteria passed without KO
+- [ ] **Glossary present**: if domain-specific terms exist
+- [ ] **No blocking dependency**: implementable immediately
+- [ ] **User validation**: the spec has been reviewed and approved
 
-## Regles
+## Rules
 
-- Une spec non-ready ne doit PAS etre passee a `/implement-feature`
-- Si un critere manque, retourner en phase challenge avec le PM
-- Le DoR est un filtre de qualite, pas une formalite
+- A non-ready spec must NOT be passed to `/implement-feature`
+- If a criterion is missing, return to the challenge phase with the PM
+- The DoR is a quality filter, not a formality

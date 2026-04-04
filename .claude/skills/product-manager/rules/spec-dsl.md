@@ -1,60 +1,60 @@
-# DSL de Spec Shiplens
+# Shiplens Spec DSL
 
-## Pourquoi un DSL custom
+## Why a Custom DSL
 
-- Meilleur ratio signal/tokens que Gherkin (~40% plus compact)
-- Pas de binding layer (Cucumber) necessaire
-- Directement traduisible en test sans ambiguite
-- Lisible humain ET parsable agent
+- Better signal/token ratio than Gherkin (~40% more compact)
+- No binding layer (Cucumber) needed
+- Directly translatable into tests without ambiguity
+- Human-readable AND agent-parsable
 
-## Structure d'un scenario
+## Scenario Structure
 
 ```
 - <label>: {<inputs>} → <outputs>
 ```
 
-- **label** : nom court du scenario (ex: `valid`, `no recipient`, `weight exceeds limit`)
-- **inputs** : donnees d'entree en notation objet
-- **outputs** : resultat attendu (statut, valeur retournee, erreur)
+- **label**: short scenario name (e.g., `valid`, `no recipient`, `weight exceeds limit`)
+- **inputs**: input data in object notation
+- **outputs**: expected result (status, returned value, error)
 
 ## Conventions
 
-- `→ reject "message"` : le systeme refuse avec ce message d'erreur (en francais)
-- `→ status "<value>"` : l'entite resultante a ce statut
-- `→ <property> "<value>"` : l'entite resultante a cette propriete
-- `+` pour combiner plusieurs sorties : `→ status "pending" + tracking "SL-*"`
-- `*` comme wildcard dans les valeurs
+- `→ reject "message"`: the system refuses with this error message (in French)
+- `→ status "<value>"`: the resulting entity has this status
+- `→ <property> "<value>"`: the resulting entity has this property
+- `+` to combine multiple outputs: `→ status "pending" + tracking "SL-*"`
+- `*` as wildcard in values
 
-## Exemple complet
+## Full Example
 
 ```markdown
-# Creer un envoi
+# Create a shipment
 
-## Contexte
-L'expediteur doit pouvoir creer un envoi avec un destinataire et un colis.
+## Context
+The sender must be able to create a shipment with a recipient and a parcel.
 
 ## Rules
-- envoi requires: adresse expediteur, adresse destinataire, poids colis
-- nouvel envoi status: "pending"
-- numero de suivi format: "SL-XXXXXXXX"
-- destinataire est obligatoire
-- poids max: 30kg
+- shipment requires: sender address, recipient address, parcel weight
+- new shipment status: "pending"
+- tracking number format: "SL-XXXXXXXX"
+- recipient is required
+- max weight: 30kg
 
 ## Scenarios
-- valid: {expediteur: "123 Rue A", destinataire: "456 Rue B", poids: 2.5kg} → status "pending" + tracking "SL-*"
-- no recipient: {expediteur: "123 Rue A"} → reject "Le destinataire est obligatoire"
-- overweight: {expediteur: "123 Rue A", destinataire: "456 Rue B", poids: 35kg} → reject "Le poids ne peut pas depasser 30kg"
+- valid: {sender: "123 Rue A", recipient: "456 Rue B", weight: 2.5kg} → status "pending" + tracking "SL-*"
+- no recipient: {sender: "123 Rue A"} → reject "Le destinataire est obligatoire"
+- overweight: {sender: "123 Rue A", recipient: "456 Rue B", weight: 35kg} → reject "Le poids ne peut pas depasser 30kg"
 
-## Hors scope
-- Calcul du prix de l'envoi
-- Choix du transporteur
+## Out of scope
+- Shipment price calculation
+- Carrier selection
 ```
 
-## Regles
+## Rules
 
-- **Rules** = invariants metier (ce que le business-rules-extractor retrouvera dans le code)
-- **Scenarios** = exemples concrets (ce que les tests verifieront)
-- Un scenario = un comportement. Pas de mega-scenarios
+- **Rules** = business invariants (what the business-rules-extractor will find in the code)
+- **Scenarios** = concrete examples (what tests will verify)
+- One scenario = one behavior. No mega-scenarios
 - Minimum 1 nominal + 1 edge case
-- Messages d'erreur toujours en francais
-- Pas de jargon technique dans les rules ni scenarios
+- Error messages always in French
+- No technical jargon in rules or scenarios

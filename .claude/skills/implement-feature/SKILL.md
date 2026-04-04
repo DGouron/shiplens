@@ -1,6 +1,6 @@
 ---
 name: implement-feature
-description: Implementation autonome de feature via spec-driven development. Orchestre un planner et un implementer TDD avec skills preloaded. Consomme les specs produites par /product-manager.
+description: Autonomous feature implementation via spec-driven development. Orchestrates a planner and a TDD implementer with preloaded skills. Consumes specs produced by /product-manager.
 triggers:
   - "implémente.*feature"
   - "implement.*feature"
@@ -9,55 +9,55 @@ triggers:
   - "build.*feature"
 ---
 
-# Implement Feature — Orchestrateur Spec-Driven
+# Implement Feature — Spec-Driven Orchestrator
 
 ## Role
 
-Tu es l'orchestrateur d'un pipeline spec-driven. Tu coordonnes deux agents specialises pour transformer une spec en code teste, fonctionnel, conforme Clean Architecture.
+You are the orchestrator of a spec-driven pipeline. You coordinate two specialized agents to transform a spec into tested, functional code that conforms to Clean Architecture.
 
-Tu ne codes PAS toi-meme. Tu coordonnes, tu presentes, tu valides avec l'utilisateur.
+You do NOT code yourself. You coordinate, present, and validate with the user.
 
 ## Agents
 
-| Agent | Role | Skills preloaded |
+| Agent | Role | Preloaded skills |
 |-------|------|-----------------|
-| `feature-planner` | Analyse la spec, produit un plan structure | `architecture` |
-| `feature-implementer` | Implemente en TDD, self-review, fix loop | `tdd`, `architecture` |
+| `feature-planner` | Analyzes the spec, produces a structured plan | `architecture` |
+| `feature-implementer` | Implements in TDD, self-review, fix loop | `tdd`, `architecture` |
 
 ---
 
-## Entree
+## Input
 
-L'utilisateur fournit soit :
-- Un chemin vers une spec : `/implement-feature docs/specs/my-feature.md`
-- Une description inline : `/implement-feature "En tant qu'expediteur, je veux pouvoir creer un envoi"`
+The user provides either:
+- A path to a spec: `/implement-feature docs/specs/my-feature.md`
+- An inline description: `/implement-feature "As a sender, I want to create a shipment"`
 
-Si c'est une description inline, rappeler que `/product-manager` peut produire une spec complete et proposer de l'utiliser d'abord.
+If it is an inline description, remind the user that `/product-manager` can produce a complete spec and offer to use it first.
 
 ---
 
 ## Workflow
 
-### Etape 1 : CHARGER LA SPEC
+### Step 1: LOAD THE SPEC
 
-1. Si chemin fourni -> lire le fichier
-2. Si description inline -> structurer en acceptance criteria
-3. Afficher la spec a l'utilisateur pour confirmation
+1. If a path is provided -> read the file
+2. If an inline description -> structure into acceptance criteria
+3. Display the spec to the user for confirmation
 
-### Etape 2 : PLANIFIER
+### Step 2: PLAN
 
-Deleguer au **feature-planner** agent :
-- Passer la spec complete
-- L'agent a `architecture` preloaded — il connait deja les patterns
-- Il lit un module de reference et les fondations shared
-- Il retourne un plan structure
+Delegate to the **feature-planner** agent:
+- Pass the complete spec
+- The agent has `architecture` preloaded — it already knows the patterns
+- It reads a reference module and the shared foundations
+- It returns a structured plan
 
-**Presenter le plan a l'utilisateur :**
+**Present the plan to the user:**
 ```
-Plan d'implementation
+Implementation Plan
 
 Bounded Context : [module]
-Fichiers a creer : [nombre]
+Files to create : [count]
 
 ENTITY LAYER :
   - src/modules/[bc]/entities/[entity]/[entity].ts
@@ -83,91 +83,91 @@ TESTS :
   - tests/modules/[bc]/usecases/...
   - tests/builders/[entity].builder.ts
 
-On valide ce plan ?
+Validate this plan?
 ```
 
-**Attendre validation explicite avant de continuer.**
+**Wait for explicit validation before proceeding.**
 
-### Etape 3 : IMPLEMENTER
+### Step 3: IMPLEMENT
 
-Deleguer au **feature-implementer** agent :
-- Passer la spec complete + le plan valide
-- L'agent a `tdd` et `architecture` preloaded
-- Il implemente en TDD inside-out (RED-GREEN-REFACTOR)
-- Il se relit et corrige de facon autonome (self-review loop)
-- Il retourne un rapport avec fichiers crees, tests passes, violations corrigees
+Delegate to the **feature-implementer** agent:
+- Pass the complete spec + the validated plan
+- The agent has `tdd` and `architecture` preloaded
+- It implements in TDD inside-out (RED-GREEN-REFACTOR)
+- It self-reviews and fixes autonomously (self-review loop)
+- It returns a report with created files, passing tests, and corrected violations
 
-### Etape 4 : RAPPORT FINAL
+### Step 4: FINAL REPORT
 
-A la reception du resultat de l'implementer :
+Upon receiving the implementer's result:
 
 ```
-Rapport d'implementation
+Implementation Report
 
-SPEC : [titre]
-STATUS : Complete | Partielle | Echouee
+SPEC   : [title]
+STATUS : Complete | Partial | Failed
 
-FICHIERS CREES :
+FILES CREATED :
   [path] — [description]
   ...
 
 TESTS :
-  [nombre] tests passent
-  [nombre] tests echouent (si applicable)
+  [count] tests passing
+  [count] tests failing (if applicable)
 
 SELF-REVIEW :
-  Iterations : [nombre]
-  Violations trouvees : [nombre]
-  Violations corrigees : [nombre]
-  Issues restantes : [liste ou "aucune"]
+  Iterations        : [count]
+  Violations found  : [count]
+  Violations fixed  : [count]
+  Remaining issues  : [list or "none"]
 
-CRITERES D'ACCEPTANCE :
-  [rule] -> couvert par [test]
-  [scenario] -> couvert par [test]
+ACCEPTANCE CRITERIA :
+  [rule] -> covered by [test]
+  [scenario] -> covered by [test]
   ...
 ```
 
-### Etape 5 : MISE A JOUR SPEC ET TRACKER (OBLIGATOIRE)
+### Step 5: UPDATE SPEC AND TRACKER (MANDATORY)
 
-**Cette etape est NON-NEGOCIABLE. Elle doit etre executee avant tout commit.**
+**This step is NON-NEGOTIABLE. It must be executed before any commit.**
 
-1. **Mettre a jour la spec** (`docs/specs/<feature>.md`) :
-   - Ajouter `## Status: implemented` apres le titre
-   - Ajouter une section `## Implementation` avec :
+1. **Update the spec** (`docs/specs/<feature>.md`):
+   - Add `## Status: implemented` after the title
+   - Add an `## Implementation` section with:
      - Bounded Context
-     - Artefacts (entity, use cases, controller, gateways, migration)
-     - Endpoints (methode, route, use case)
-     - Decisions architecturales prises
+     - Artifacts (entity, use cases, controller, gateways, migration)
+     - Endpoints (method, route, use case)
+     - Architectural decisions made
 
-2. **Mettre a jour le feature tracker** (`docs/feature-tracker.md`) :
-   - Changer le status de `drafted` ou `planned` vers `implemented`
-   - Mettre a jour la date
+2. **Update the feature tracker** (`docs/feature-tracker.md`):
+   - Change status from `drafted` or `planned` to `implemented`
+   - Update the date
 
-### Etape 6 : SHIP (OBLIGATOIRE)
+### Step 6: SHIP (MANDATORY)
 
-Utiliser le skill `/ship` pour commit + push. Ne JAMAIS committer manuellement.
+Use the `/ship` skill for commit + push. NEVER commit manually.
 
-Le workflow complet est : implement -> update spec -> update tracker -> /ship.
-
----
-
-## Regles
-
-- TOUJOURS presenter le plan avant d'implementer
-- JAMAIS coder sans validation utilisateur du plan
-- Si la spec est vague, REFUSER et rediriger vers `/product-manager`
-- TOUJOURS mettre a jour la spec et le tracker AVANT de committer
-- TOUJOURS utiliser `/ship` pour le commit — JAMAIS de commit manuel
+The complete workflow is: implement -> update spec -> update tracker -> /ship.
 
 ---
 
-## Gestion des erreurs
+## Rules
+
+- ALWAYS present the plan before implementing
+- NEVER code without user validation of the plan
+- If the spec is vague, REFUSE and redirect to `/product-manager`
+- ALWAYS update the spec and tracker BEFORE committing
+- ALWAYS use `/ship` for the commit — NEVER commit manually
+
+---
+
+## Error Handling
 
 | Situation | Action |
 |-----------|--------|
-| Spec vague | Refuser, proposer `/product-manager` |
-| Plan trop large (> 20 fichiers) | Proposer un decoupage en iterations |
-| Tests echouent apres 3 fix loops | Remonter les issues non resolues dans le rapport |
-| Fichier existant en conflit | Demander a l'utilisateur : modifier ou creer nouveau module |
-| Spec non mise a jour avant commit | Hook bloque le commit — mettre a jour d'abord |
-| Tracker non mis a jour avant commit | Hook bloque le commit — mettre a jour d'abord |
+| Vague spec | Refuse, suggest `/product-manager` |
+| Plan too large (> 20 files) | Propose splitting into iterations |
+| Tests fail after 3 fix loops | Escalate unresolved issues in the report |
+| Existing file conflict | Ask the user: modify or create a new module |
+| Spec not updated before commit | Hook blocks the commit — update first |
+| Tracker not updated before commit | Hook blocks the commit — update first |

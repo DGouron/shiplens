@@ -1,30 +1,30 @@
 ---
 name: ddd
-description: Guide DDD stratégique pour ce projet. Utiliser pour découper le domaine en bounded contexts, définir l'ubiquitous language, créer un nouveau module métier, analyser les frontières entre contextes. Les patterns tactiques suivent Clean Architecture (voir skill architecture).
+description: Strategic DDD guide for this project. Use to slice the domain into bounded contexts, define ubiquitous language, create a new business module, analyze boundaries between contexts. Tactical patterns follow Clean Architecture (see architecture skill).
 ---
 
-# Domain-Driven Design - Guide Stratégique
+# Domain-Driven Design - Strategic Guide
 
 ## Activation
 
-Ce skill s'active pour les décisions de haut niveau sur le domaine :
-- Découpage en Bounded Contexts
-- Définition de l'Ubiquitous Language
-- Création d'un nouveau module métier
-- Analyse des relations entre contextes
+This skill activates for high-level domain decisions:
+- Slicing into Bounded Contexts
+- Defining Ubiquitous Language
+- Creating a new business module
+- Analyzing relationships between contexts
 
-## Clarification importante
+## Important Clarification
 
-> **Les définitions Clean Architecture priment sur les définitions DDD tactique.**
+> **Clean Architecture definitions take precedence over tactical DDD definitions.**
 
-On utilise DDD uniquement au niveau **stratégique** (découpage domaine, langage). Les patterns tactiques (Entities, Use Cases, Gateways, Presenters) suivent **Clean Architecture**.
+DDD is used only at the **strategic** level (domain slicing, language). Tactical patterns (Entities, Use Cases, Gateways, Presenters) follow **Clean Architecture**.
 
-| Ce qu'on prend du DDD | Ce qu'on NE prend PAS |
+| What we take from DDD | What we DO NOT take |
 |-----------------------|-----------------------|
 | Bounded Contexts | Aggregates |
-| Ubiquitous Language | Repositories (on a Gateways) |
+| Ubiquitous Language | Repositories (we have Gateways) |
 | Context Mapping | Domain Events |
-| Découpage modules | Value Objects complexes |
+| Module slicing | Complex Value Objects |
 
 ---
 
@@ -32,31 +32,31 @@ On utilise DDD uniquement au niveau **stratégique** (découpage domaine, langag
 
 > "A Bounded Context delimits the applicability of a particular model." — Eric Evans
 
-Un Bounded Context = un module NestJS dans `src/modules/<context-name>/`
+One Bounded Context = one NestJS module in `src/modules/<context-name>/`
 
-Chaque BC est un **module autonome** avec ses propres providers, controllers, et gateways.
+Each BC is a **self-contained module** with its own providers, controllers, and gateways.
 
-### Identifier un Bounded Context
+### Identifying a Bounded Context
 
-**Signes qu'un nouveau BC est nécessaire :**
-- Un même terme a des significations différentes selon le contexte
-- Une équipe différente pourrait gérer cette partie
-- Le modèle devient trop complexe
-- Les règles métier divergent
+**Signs that a new BC is needed:**
+- The same term has different meanings depending on the context
+- A different team could manage this part
+- The model is becoming too complex
+- Business rules diverge
 
 ---
 
-## Communication entre Bounded Contexts
+## Communication Between Bounded Contexts
 
-Les BC communiquent **via injection de dépendances NestJS** et exports de module.
+BCs communicate **via NestJS dependency injection** and module exports.
 
-### Règles de communication
+### Communication Rules
 
-| ✅ Autorisé | ❌ Interdit |
-|-------------|-------------|
-| Importer un module NestJS exporté | Importer directement un fichier interne d'un autre BC |
-| Passer des données (DTO, primitifs) | Partager des entités mutables |
-| Injecter un use case exporté | Accéder au gateway interne d'un autre BC |
+| Allowed | Forbidden |
+|---------|-----------|
+| Import an exported NestJS module | Directly import an internal file from another BC |
+| Pass data (DTOs, primitives) | Share mutable entities |
+| Inject an exported use case | Access another BC's internal gateway |
 
 ---
 
@@ -64,43 +64,43 @@ Les BC communiquent **via injection de dépendances NestJS** et exports de modul
 
 > "Use the model as the backbone of a language." — Eric Evans
 
-Le vocabulaire métier doit être :
-- **Cohérent** : même terme = même concept dans un contexte donné
-- **Explicite** : pas d'ambiguïté
-- **Partagé** : compris par devs ET métier
+Business vocabulary must be:
+- **Consistent**: same term = same concept within a given context
+- **Explicit**: no ambiguity
+- **Shared**: understood by both developers AND business stakeholders
 
 ---
 
-## Workflow : Créer un nouveau Bounded Context
+## Workflow: Creating a New Bounded Context
 
-### Étape 1 : Identifier le domaine
+### Step 1: Identify the Domain
 
 ```
-🎯 DDD - Identification
+DDD - Identification
 
-Nouveau domaine identifié : [nom]
+New domain identified: [name]
 
-Questions à valider :
-1. Quel problème métier résout-il ?
-2. Quels sont les termes spécifiques ?
-3. Quelles entités principales ?
-4. Quels BC existants vont l'utiliser ?
+Questions to validate:
+1. What business problem does it solve?
+2. What are the specific terms?
+3. What are the main entities?
+4. Which existing BCs will use it?
 ```
 
-### Étape 2 : Définir le langage (glossaire)
+### Step 2: Define the Language (glossary)
 
-### Étape 3 : Définir l'API publique (exports NestJS module)
+### Step 3: Define the Public API (NestJS module exports)
 
-### Étape 4 : Créer la structure
+### Step 4: Create the Structure
 
-Après validation → **Basculer sur le skill Architecture** pour les détails tactiques.
+After validation -> **Switch to the Architecture skill** for tactical details.
 
 ---
 
-## Anti-patterns à éviter
+## Anti-patterns to avoid
 
-- ❌ Un seul gros module "domain" fourre-tout
-- ❌ Mélanger les vocabulaires de plusieurs contextes
-- ❌ Dépendances circulaires entre contextes
-- ❌ Importer les fichiers internes d'un autre BC
-- ❌ Nommer les modules par aspect technique ("services", "models")
+- No single catch-all "domain" module
+- No mixing vocabularies from multiple contexts
+- No circular dependencies between contexts
+- No importing internal files from another BC
+- No naming modules by technical aspect ("services", "models")

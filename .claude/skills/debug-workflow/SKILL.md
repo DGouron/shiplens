@@ -1,8 +1,8 @@
 ---
 name: debug-workflow
 description: >
-  Workflow structure de debugging progressif. Decouverte de bugs, classification par priorite,
-  et plan de branches independantes sans regressions. Adapte au stack Shiplens (NestJS 11, Prisma, Vitest).
+  Structured progressive debugging workflow. Bug discovery, priority classification,
+  and independent branch plan without regressions. Adapted to the Shiplens stack (NestJS 11, Prisma, Vitest).
 triggers:
   - "debug"
   - "bug.*hunt"
