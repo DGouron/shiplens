@@ -10,7 +10,7 @@
 
 **Do not open a public issue for security vulnerabilities.**
 
-Send an email to **damien.gouron@gmail.com** with:
+Use [GitHub Security Advisories](https://github.com/DGouron/shiplens/security/advisories/new) to privately report a vulnerability. Include:
 
 - Description of the vulnerability
 - Steps to reproduce
