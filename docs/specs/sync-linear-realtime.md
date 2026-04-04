@@ -1,30 +1,30 @@
-# Maintenir les données Linear à jour en temps réel
+# Keep Linear data up to date in real time
 
 ## Status: implemented
 
-## Contexte
-Après l'import initial, les données évoluent dans Linear en continu. Shiplens doit recevoir et intégrer ces changements en temps réel pour que les analyses restent fiables et à jour.
+## Context
+After the initial import, data keeps evolving in Linear. Shiplens must receive and integrate these changes in real time so that analyses remain reliable and up to date.
 
 ## Rules
-- Seules les notifications provenant de Linear et dont l'authenticité est vérifiée sont traitées
-- Les types d'événements traités sont : création, modification et suppression d'issue ; création et modification de cycle ; création de commentaire
-- Un événement dont le traitement échoue est réessayé automatiquement
-- Un événement qui échoue de manière répétée est isolé pour analyse manuelle
-- Les événements concernant des équipes non sélectionnées sont ignorés
-- Un même événement reçu plusieurs fois ne produit qu'une seule modification
+- Only notifications originating from Linear whose authenticity is verified are processed
+- The event types handled are: issue creation, modification and deletion; cycle creation and modification; comment creation
+- An event whose processing fails is automatically retried
+- An event that fails repeatedly is isolated for manual analysis
+- Events concerning non-selected teams are ignored
+- The same event received multiple times produces only one modification
 
 ## Scenarios
-- issue créée dans Linear: {nouvelle issue dans une équipe suivie} → issue ajoutée dans Shiplens
-- issue modifiée dans Linear: {statut d'une issue passe de "En cours" à "Terminé"} → issue mise à jour + transition d'état enregistrée
-- issue supprimée dans Linear: {issue archivée ou supprimée} → issue marquée comme supprimée dans Shiplens
-- cycle créé dans Linear: {nouveau cycle dans une équipe suivie} → cycle ajouté dans Shiplens
-- commentaire ajouté dans Linear: {nouveau commentaire sur une issue suivie} → commentaire ajouté dans Shiplens
-- notification d'origine non vérifiée: {notification reçue sans preuve d'authenticité valide} → reject "Notification ignorée : origine non vérifiée."
-- événement sur une équipe non suivie: {issue créée dans une équipe non sélectionnée} → événement ignoré silencieusement
-- échec temporaire de traitement: {erreur passagère lors du traitement d'un événement} → événement réessayé automatiquement + traité avec succès
-- échec répété de traitement: {événement échoue après plusieurs tentatives} → événement isolé pour analyse + alerte générée
-- événement reçu en doublon: {même événement reçu deux fois} → une seule modification appliquée
-- type d'événement non supporté: {événement Linear d'un type non géré} → événement ignoré silencieusement
+- issue created in Linear: {new issue in a tracked team} -> issue added in Shiplens
+- issue modified in Linear: {issue status changes from "In Progress" to "Done"} -> issue updated + state transition recorded
+- issue deleted in Linear: {issue archived or deleted} -> issue marked as deleted in Shiplens
+- cycle created in Linear: {new cycle in a tracked team} -> cycle added in Shiplens
+- comment added in Linear: {new comment on a tracked issue} -> comment added in Shiplens
+- unverified notification origin: {notification received without valid authenticity proof} -> reject "Notification ignorée : origine non vérifiée."
+- event on a non-tracked team: {issue created in a non-selected team} -> event silently ignored
+- temporary processing failure: {transient error while processing an event} -> event automatically retried + processed successfully
+- repeated processing failure: {event fails after multiple attempts} -> event isolated for analysis + alert generated
+- duplicate event received: {same event received twice} -> only one modification applied
+- unsupported event type: {Linear event of an unhandled type} -> event silently ignored
 
 ## Implementation
 
@@ -51,17 +51,17 @@ Synchronization
 - Soft delete d'issue via champ deletedAt
 - Secret webhook via env var `LINEAR_WEBHOOK_SIGNING_SECRET`
 
-## Hors scope
-- Import initial de l'historique (couvert par la spec sync initiale)
-- Analyse ou transformation des données reçues
-- Notifications vers l'utilisateur en cas de changement dans Linear
-- Gestion de la reconnexion du workspace Linear
+## Out of scope
+- Initial history import (covered by the initial sync spec)
+- Analysis or transformation of received data
+- User notifications on Linear changes
+- Linear workspace reconnection management
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Sync incrémentale | Mise à jour continue des données après l'import initial |
-| Événement | Notification envoyée par Linear lorsqu'une donnée change |
-| Transition d'état | Changement de statut d'une issue, horodaté |
-| Événement isolé | Événement non traitable mis de côté pour investigation manuelle |
-| Équipe suivie | Équipe sélectionnée par l'utilisateur lors de la configuration |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Incremental sync | Continuous data update after the initial import |
+| Event | Notification sent by Linear when data changes |
+| State transition | Status change of an issue, timestamped |
+| Isolated event | Unprocessable event set aside for manual investigation |
+| Tracked team | Team selected by the user during configuration |

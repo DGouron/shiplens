@@ -1,46 +1,46 @@
-# Identifier les goulots d'étranglement par statut
+# Identify bottlenecks by status
 
 ## Status: implemented
 
-## Contexte
-Le tech lead veut comprendre quelles étapes du workflow ralentissent systématiquement la livraison. Sans cette visibilité, les améliorations de processus se font à l'aveugle — on optimise là où ça ne coince pas.
+## Context
+The tech lead wants to understand which workflow steps systematically slow down delivery. Without this visibility, process improvements are done blindly — optimizing where things aren't stuck.
 
 ## Rules
-- Le temps passé dans chaque statut est calculé à partir des transitions d'état des issues
-- La distribution du temps couvre l'intégralité du workflow : Backlog, Todo, In Progress, In Review, Done
-- Le statut goulot est celui avec le temps médian le plus élevé sur la période analysée
-- La comparaison entre cycles permet de mesurer l'évolution d'un statut dans le temps
-- Le breakdown par assignee montre la répartition individuelle du temps par statut
-- Seules les issues terminées (Done) sont prises en compte dans le calcul
+- Time spent in each status is calculated from issue state transitions
+- Time distribution covers the entire workflow: Backlog, Todo, In Progress, In Review, Done
+- The bottleneck status is the one with the highest median time over the analyzed period
+- Comparison between cycles measures how a status evolves over time
+- The breakdown by assignee shows individual time distribution per status
+- Only completed issues (Done) are included in the calculation
 
 ## Scenarios
-- distribution nominale: {10 issues terminées sur le cycle en cours} → temps médian par statut (Backlog, Todo, In Progress, In Review, Done) + statut goulot identifié
-- identification du goulot: {médiane In Review = 36h, médiane In Progress = 12h, médiane Todo = 4h} → goulot "In Review"
-- comparaison entre cycles: {cycle 1 : médiane In Review = 48h, cycle 2 : médiane In Review = 30h} → évolution "-37%" pour In Review
-- breakdown par assignee: {3 développeurs sur le cycle} → temps médian par statut pour chaque assignee
-- assignee souvent bloqué en review: {Alice : médiane In Review = 60h, Bob : médiane In Review = 20h} → Alice identifiée avec le temps en review le plus élevé
-- aucune issue terminée: {cycle en cours, 0 issue en Done} → reject "Aucune issue terminée sur cette période. L'analyse nécessite au moins une issue complétée."
-- cycle unique sans comparaison: {un seul cycle disponible} → distribution affichée sans comparaison + mention "Pas assez de cycles pour comparer l'évolution."
-- aucune donnée synchronisée: {aucune donnée Linear importée} → reject "Veuillez d'abord synchroniser vos données Linear."
+- nominal distribution: {10 completed issues in the current cycle} -> median time per status (Backlog, Todo, In Progress, In Review, Done) + bottleneck status identified
+- bottleneck identification: {median In Review = 36h, median In Progress = 12h, median Todo = 4h} -> bottleneck "In Review"
+- comparison between cycles: {cycle 1: median In Review = 48h, cycle 2: median In Review = 30h} -> evolution "-37%" for In Review
+- breakdown by assignee: {3 developers in the cycle} -> median time per status for each assignee
+- assignee often blocked in review: {Alice: median In Review = 60h, Bob: median In Review = 20h} -> Alice identified with the highest review time
+- no completed issues: {current cycle, 0 issues in Done} -> reject "Aucune issue terminée sur cette période. L'analyse nécessite au moins une issue complétée."
+- single cycle without comparison: {only one cycle available} -> distribution displayed without comparison + mention "Pas assez de cycles pour comparer l'évolution."
+- no synchronized data: {no Linear data imported} -> reject "Veuillez d'abord synchroniser vos données Linear."
 
-## Hors scope
-- Analyse des issues non terminées (en cours ou abandonnées)
-- Recommandations automatiques d'amélioration du workflow
-- Analyse par label, projet ou priorité (uniquement par statut et assignee)
-- Personnalisation des statuts du workflow (utilise le workflow tel que défini dans Linear)
-- Export des données d'analyse
+## Out of scope
+- Analysis of uncompleted issues (in progress or abandoned)
+- Automatic workflow improvement recommendations
+- Analysis by label, project, or priority (only by status and assignee)
+- Workflow status customization (uses the workflow as defined in Linear)
+- Analysis data export
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Goulot d'étranglement | Statut du workflow où les issues passent le plus de temps en médiane |
-| Distribution du temps | Répartition du temps passé par les issues dans chaque statut |
-| Temps médian | Valeur centrale du temps passé dans un statut — plus robuste que la moyenne face aux valeurs extrêmes |
-| Cycle | Période de travail itérative (sprint) dans Linear |
-| Transition d'état | Changement de statut d'une issue, horodaté, servant de base au calcul du temps par statut |
-| Assignee | Personne assignée à une issue dans Linear |
-| Breakdown | Ventilation détaillée d'une métrique selon un axe (ici : par assignee) |
-| Statut | Étape du workflow d'une issue dans Linear (Backlog, Todo, In Progress, In Review, Done) |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Bottleneck | Workflow status where issues spend the most time by median |
+| Time distribution | Breakdown of time spent by issues in each status |
+| Median time | Central value of time spent in a status — more robust than the average against outliers |
+| Cycle | Iterative work period (sprint) in Linear |
+| State transition | Status change of an issue, timestamped, used as the basis for time-per-status calculation |
+| Assignee | Person assigned to an issue in Linear |
+| Breakdown | Detailed decomposition of a metric along an axis (here: by assignee) |
+| Status | Step in an issue's workflow in Linear (Backlog, Todo, In Progress, In Review, Done) |
 
 ## Implementation
 
@@ -53,7 +53,7 @@ Le tech lead veut comprendre quelles étapes du workflow ralentissent systémati
 | Presenter | `interface-adapters/presenters/bottleneck-analysis.presenter.ts` |
 | Gateway Port | `entities/bottleneck-analysis/bottleneck-analysis-data.gateway.ts` |
 | Gateway Impl | `interface-adapters/gateways/bottleneck-analysis-data.in-prisma.gateway.ts` |
-| Migration | Aucune (StateTransition, Issue, Cycle existants) |
+| Migration | None (StateTransition, Issue, Cycle already exist) |
 
 | Method | Route | Use Case |
 |--------|-------|----------|

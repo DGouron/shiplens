@@ -1,60 +1,60 @@
-# Définir des règles d'audit personnalisées
+# Define custom audit rules
 
 ## Status: implemented
 
-## Contexte
-Le tech lead veut formaliser les pratiques de son équipe sous forme de règles vérifiables automatiquement. Sans ça, les bonnes pratiques restent orales, personne ne sait si elles sont réellement suivies, et les mêmes dérives reviennent à chaque cycle.
+## Context
+The tech lead wants to formalize team practices as automatically verifiable rules. Without this, best practices remain oral, nobody knows if they are actually followed, and the same drifts come back every cycle.
 
 ## Rules
-- Une règle a obligatoirement un identifiant unique, un nom, une sévérité et une condition
-- Les sévérités possibles sont : info, warning, error
-- Une condition porte sur un seuil de métrique, un pattern sur labels ou statuts, ou un ratio entre deux métriques
-- Une règle est immuable une fois créée — pour la modifier, on en crée une nouvelle et on archive l'ancienne
-- Les règles sont évaluées automatiquement à chaque fin de cycle
-- Le résultat d'une évaluation est pass, warn ou fail, accompagné d'un message explicatif
-- Les règles sont stockées dans un dossier configurable, par défaut ./rules/
-- Un identifiant de règle en doublon est interdit
+- A rule must have a unique identifier, a name, a severity, and a condition
+- Possible severities are: info, warning, error
+- A condition targets a metric threshold, a pattern on labels or statuses, or a ratio between two metrics
+- A rule is immutable once created — to modify it, create a new one and archive the old one
+- Rules are automatically evaluated at the end of each cycle
+- An evaluation result is pass, warn, or fail, accompanied by an explanatory message
+- Rules are stored in a configurable folder, defaulting to ./rules/
+- A duplicate rule identifier is forbidden
 
 ## Scenarios
-- création nominale: {identifiant "CT-MAX-5", nom "Cycle time max 5 jours", sévérité "warning", condition "cycle time > 5 jours"} → règle créée + disponible pour évaluation
-- évaluation pass: {règle "cycle time > 5 jours", cycle terminé avec cycle time moyen de 3 jours} → résultat "pass" + message "Cycle time moyen : 3 jours (seuil : 5 jours)"
-- évaluation warn: {règle "ratio bugs/features > 0.5" en sévérité "warning", cycle avec ratio 0.6} → résultat "warn" + message "Ratio bugs/features : 0.6 (seuil : 0.5)"
-- évaluation fail: {règle "cycle time > 5 jours" en sévérité "error", cycle avec cycle time moyen de 8 jours} → résultat "fail" + message "Cycle time moyen : 8 jours (seuil : 5 jours)"
-- identifiant manquant: {nom "Ma règle", sévérité "warning", condition présente, identifiant absent} → reject "L'identifiant de la règle est obligatoire."
-- sévérité invalide: {identifiant présent, sévérité "critical"} → reject "La sévérité doit être info, warning ou error."
-- condition invalide: {identifiant présent, condition "texte libre incompréhensible"} → reject "La condition de la règle n'est pas reconnue. Formats acceptés : seuil sur métrique, pattern sur labels/statuts, ratio entre métriques."
-- identifiant en doublon: {identifiant "CT-MAX-5" déjà existant} → reject "Une règle avec l'identifiant CT-MAX-5 existe déjà."
-- dossier de règles introuvable: {dossier configuré inexistant} → reject "Le dossier de règles configuré est introuvable."
+- nominal creation: {identifier "CT-MAX-5", name "Cycle time max 5 days", severity "warning", condition "cycle time > 5 days"} -> rule created + available for evaluation
+- evaluation pass: {rule "cycle time > 5 days", completed cycle with average cycle time of 3 days} -> result "pass" + message "Cycle time moyen : 3 jours (seuil : 5 jours)"
+- evaluation warn: {rule "ratio bugs/features > 0.5" with severity "warning", cycle with ratio 0.6} -> result "warn" + message "Ratio bugs/features : 0.6 (seuil : 0.5)"
+- evaluation fail: {rule "cycle time > 5 days" with severity "error", cycle with average cycle time of 8 days} -> result "fail" + message "Cycle time moyen : 8 jours (seuil : 5 jours)"
+- missing identifier: {name "My rule", severity "warning", condition present, identifier absent} -> reject "L'identifiant de la règle est obligatoire."
+- invalid severity: {identifier present, severity "critical"} -> reject "La sévérité doit être info, warning ou error."
+- invalid condition: {identifier present, condition "incomprehensible free text"} -> reject "La condition de la règle n'est pas reconnue. Formats acceptés : seuil sur métrique, pattern sur labels/statuts, ratio entre métriques."
+- duplicate identifier: {identifier "CT-MAX-5" already existing} -> reject "Une règle avec l'identifiant CT-MAX-5 existe déjà."
+- rules folder not found: {configured folder does not exist} -> reject "Le dossier de règles configuré est introuvable."
 
-## Hors scope
-- Édition d'une règle existante (on archive et recrée)
-- Évaluation en temps réel pendant un cycle en cours
-- Règles portant sur des métriques individuelles par développeur
-- Interface graphique de création de règles (fichier texte uniquement)
+## Out of scope
+- Editing an existing rule (archive and recreate)
+- Real-time evaluation during an ongoing cycle
+- Rules targeting individual developer metrics
+- Graphical interface for rule creation (text file only)
 
 ## Implementation
 
 ### Bounded Context
-`audit` — nouveau module (`src/modules/audit/`)
+`audit` — new module (`src/modules/audit/`)
 
 ### Artefacts
-- **Entity** : `AuditRule` avec `create()` + `evaluate()` — logique d'evaluation pure dans le domaine
+- **Entity** : `AuditRule` with `create()` + `evaluate()` — pure evaluation logic in the domain
 - **Use Cases** : `CreateAuditRuleUsecase`, `EvaluateAuditRuleUsecase`
-- **Gateway** : `AuditRuleInFilesystemGateway` — stockage fichier JSON, un fichier par regle
-- **Module** : `AuditModule` wire dans `AppModule`
+- **Gateway** : `AuditRuleInFilesystemGateway` — JSON file storage, one file per rule
+- **Module** : `AuditModule` wired in `AppModule`
 
-### Decisions architecturales
-- Condition modelisee en discriminated union (threshold, ratio, pattern) parsee par `parseCondition()`
-- Stockage fichier (pas Prisma) — `<identifier>.json` dans dossier configurable via `AUDIT_RULES_DIRECTORY`
-- `CycleMetrics` defini dans le BC audit pour eviter le couplage avec analytics
-- `EvaluationResult` est un type retour simple, pas une entite
-- `evaluate()` vit sur l'entite AuditRule — logique pure testable
+### Architectural decisions
+- Condition modeled as discriminated union (threshold, ratio, pattern) parsed by `parseCondition()`
+- File storage (not Prisma) — `<identifier>.json` in configurable folder via `AUDIT_RULES_DIRECTORY`
+- `CycleMetrics` defined in the audit BC to avoid coupling with analytics
+- `EvaluationResult` is a simple return type, not an entity
+- `evaluate()` lives on the AuditRule entity — pure testable logic
 
-## Glossaire
-| Terme | Définition |
-|-------|------------|
-| Règle d'audit | Vérification automatique d'une pratique d'équipe, définie par un identifiant, un nom, une sévérité et une condition |
-| Sévérité | Niveau d'importance de la règle : info (informatif), warning (attention requise), error (violation critique) |
-| Condition | Critère mesurable : seuil sur une métrique, pattern sur labels/statuts, ou ratio entre deux métriques |
-| Évaluation | Vérification d'une règle sur les données d'un cycle terminé, produisant pass, warn ou fail |
-| Archivage | Retrait d'une règle de l'évaluation active sans suppression physique |
+## Glossary
+| Term | Definition |
+|------|------------|
+| Audit rule | Automatic verification of a team practice, defined by an identifier, a name, a severity, and a condition |
+| Severity | Importance level of the rule: info (informational), warning (attention required), error (critical violation) |
+| Condition | Measurable criterion: threshold on a metric, pattern on labels/statuses, or ratio between two metrics |
+| Evaluation | Verification of a rule against a completed cycle's data, producing pass, warn, or fail |
+| Archiving | Removal of a rule from active evaluation without physical deletion |
