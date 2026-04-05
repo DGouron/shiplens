@@ -9,6 +9,7 @@ import {
 interface TeamSettingsEntry {
   excludedStatuses: string[];
   timezone?: string;
+  reviewStatusName?: string;
 }
 
 interface TeamSettingsFile {
@@ -31,6 +32,14 @@ export class TeamSettingsInFileGateway extends TeamSettingsGateway {
       excludedStatuses: statuses,
     };
     await this.writeSettings(settings);
+  }
+
+  async getReviewStatusName(teamId: string): Promise<string | null> {
+    const settings = await this.readSettings();
+    const reviewStatusName = settings[teamId]?.reviewStatusName;
+    return typeof reviewStatusName === 'string' && reviewStatusName.length > 0
+      ? reviewStatusName
+      : null;
   }
 
   async getTimezone(teamId: string): Promise<string> {

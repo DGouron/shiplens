@@ -6,6 +6,7 @@ export abstract class TeamSettingsGateway {
     teamId: string,
     statuses: string[],
   ): Promise<void>;
+  abstract getReviewStatusName(teamId: string): Promise<string | null>;
   abstract getTimezone(teamId: string): Promise<string>;
   abstract setTimezone(teamId: string, timezone: string): Promise<void>;
 }

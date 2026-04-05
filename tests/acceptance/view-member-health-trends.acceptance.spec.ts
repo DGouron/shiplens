@@ -153,9 +153,45 @@ describe('View Member Health Trends (acceptance)', () => {
       'drifting cycle time: Alice 3 cycles 1.2d -> 1.5d -> 2.1d -> red + rising -> covered by PR 4 (Signal 3)',
     );
 
-    it.todo(
-      'lingering review: Charlie 3 cycles 8h -> 12h -> 24h -> red + rising -> covered by PR 2 (Signal 5)',
-    );
+    it('lingering review: Charlie 3 cycles 8h -> 12h -> 24h -> review signal red + rising + "24h"', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: 8,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: 12,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: 24,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Charlie',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.medianReviewTime.value).toBe('24h');
+      expect(dto.medianReviewTime.trend).toBe('rising');
+      expect(dto.medianReviewTime.indicator).toBe('red');
+    });
 
     it.todo(
       'drift improvement: Alice 3 cycles 4 -> 2 -> 1 -> green + falling -> covered by PR 5 (Signal 4)',
