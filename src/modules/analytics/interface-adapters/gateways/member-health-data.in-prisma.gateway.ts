@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { BottleneckAnalysis } from '../../entities/bottleneck-analysis/bottleneck-analysis.js';
 import { BottleneckAnalysisDataGateway } from '../../entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
+import { type EstimatedIssue } from '../../entities/estimation-accuracy/estimation-accuracy.schema.js';
 import { EstimationAccuracyDataGateway } from '../../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { type MemberHealthCycleSnapshot } from '../../entities/member-health/member-health.schema.js';
 import { MemberHealthDataGateway } from '../../entities/member-health/member-health-data.gateway.js';
 import { TeamSettingsGateway } from '../../entities/team-settings/team-settings.gateway.js';
 
 const DEFAULT_REVIEW_STATUS_SUBSTRING = 'review';
+const WELL_ESTIMATED_LOWER_BOUND = 0.5;
+const WELL_ESTIMATED_UPPER_BOUND = 2.0;
 
 @Injectable()
 export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
@@ -33,11 +36,16 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     const snapshots: MemberHealthCycleSnapshot[] = [];
 
     for (const cycleId of lastCycleIds) {
-      const estimationScorePercent = await this.computeEstimationScorePercent(
+      const memberIssues = await this.fetchMemberIssuesForCycle(
         cycleId,
         teamId,
         memberName,
       );
+
+      const estimationScorePercent =
+        this.computeEstimationScorePercent(memberIssues);
+      const underestimationRatioPercent =
+        this.computeUnderestimationRatioPercent(memberIssues);
 
       const medianReviewTimeInHours = await this.computeMedianReviewTimeInHours(
         cycleId,
@@ -49,7 +57,7 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
       snapshots.push({
         cycleId,
         estimationScorePercent,
-        underestimationRatioPercent: null,
+        underestimationRatioPercent,
         averageCycleTimeInDays: null,
         driftingTicketCount: null,
         medianReviewTimeInHours,
@@ -59,28 +67,45 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     return snapshots;
   }
 
-  private async computeEstimationScorePercent(
+  private async fetchMemberIssuesForCycle(
     cycleId: string,
     teamId: string,
     memberName: string,
-  ): Promise<number | null> {
+  ): Promise<EstimatedIssue[]> {
     const data = await this.estimationAccuracyDataGateway.getEstimationData(
       cycleId,
       teamId,
     );
+    return data.issues.filter((issue) => issue.assigneeName === memberName);
+  }
 
-    const memberIssues = data.issues.filter(
-      (issue) => issue.assigneeName === memberName,
-    );
-
+  private computeEstimationScorePercent(
+    memberIssues: EstimatedIssue[],
+  ): number | null {
     if (memberIssues.length === 0) return null;
 
     const wellEstimatedCount = memberIssues.filter((issue) => {
       const ratio = issue.points / issue.cycleTimeInDays;
-      return ratio >= 0.5 && ratio <= 2.0;
+      return (
+        ratio >= WELL_ESTIMATED_LOWER_BOUND &&
+        ratio <= WELL_ESTIMATED_UPPER_BOUND
+      );
     }).length;
 
     return Math.round((wellEstimatedCount / memberIssues.length) * 100);
+  }
+
+  private computeUnderestimationRatioPercent(
+    memberIssues: EstimatedIssue[],
+  ): number | null {
+    if (memberIssues.length === 0) return null;
+
+    const underEstimatedCount = memberIssues.filter((issue) => {
+      const ratio = issue.points / issue.cycleTimeInDays;
+      return ratio < WELL_ESTIMATED_LOWER_BOUND;
+    }).length;
+
+    return Math.round((underEstimatedCount / memberIssues.length) * 100);
   }
 
   private async computeMedianReviewTimeInHours(

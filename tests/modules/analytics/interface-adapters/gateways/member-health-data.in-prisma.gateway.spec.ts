@@ -1,9 +1,42 @@
 import { type BottleneckAnalysisProps } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.schema.js';
+import {
+  type EstimatedIssue,
+  type EstimationAccuracyProps,
+} from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.schema.js';
 import { MemberHealthDataInPrismaGateway } from '@modules/analytics/interface-adapters/gateways/member-health-data.in-prisma.gateway.js';
 import { StubBottleneckAnalysisDataGateway } from '@modules/analytics/testing/good-path/stub.bottleneck-analysis-data.gateway.js';
 import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
 import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
 import { beforeEach, describe, expect, it } from 'vitest';
+
+function estimatedIssueForMember(params: {
+  assigneeName: string;
+  points: number;
+  cycleTimeInDays: number;
+  externalId?: string;
+}): EstimatedIssue {
+  return {
+    externalId: params.externalId ?? `issue-${params.assigneeName}`,
+    title: 'Any title',
+    points: params.points,
+    cycleTimeInDays: params.cycleTimeInDays,
+    assigneeName: params.assigneeName,
+    labelNames: [],
+  };
+}
+
+function estimationDataWithIssues(
+  cycleId: string,
+  issues: EstimatedIssue[],
+): EstimationAccuracyProps {
+  return {
+    cycleId,
+    teamId: 'team-1',
+    issues,
+    excludedWithoutEstimation: 0,
+    excludedWithoutCycleTime: 0,
+  };
+}
 
 function bottleneckWithSingleReviewIssue(params: {
   reviewStatusName: string;
@@ -182,6 +215,187 @@ describe('MemberHealthDataInPrismaGateway', () => {
       );
 
       expect(snapshots[0].medianReviewTimeInHours).toBe(11);
+    });
+  });
+
+  describe('underestimationRatioPercent', () => {
+    it('returns 100 when every member issue in the cycle is under-estimated', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 1,
+          cycleTimeInDays: 4,
+          externalId: 'issue-1',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 2,
+          cycleTimeInDays: 8,
+          externalId: 'issue-2',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 1,
+          cycleTimeInDays: 3,
+          externalId: 'issue-3',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 2,
+          cycleTimeInDays: 6,
+          externalId: 'issue-4',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Bob',
+        5,
+      );
+
+      expect(snapshots[0].underestimationRatioPercent).toBe(100);
+    });
+
+    it('returns 50 when half of the member issues are under-estimated and half are well-estimated', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 1,
+          cycleTimeInDays: 4,
+          externalId: 'issue-1',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 2,
+          cycleTimeInDays: 8,
+          externalId: 'issue-2',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 3,
+          cycleTimeInDays: 3,
+          externalId: 'issue-3',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 2,
+          cycleTimeInDays: 2,
+          externalId: 'issue-4',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Bob',
+        5,
+      );
+
+      expect(snapshots[0].underestimationRatioPercent).toBe(50);
+    });
+
+    it('returns 0 when every member issue falls inside the well-estimated band', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 3,
+          cycleTimeInDays: 3,
+          externalId: 'issue-1',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 4,
+          cycleTimeInDays: 2,
+          externalId: 'issue-2',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 2,
+          cycleTimeInDays: 3,
+          externalId: 'issue-3',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].underestimationRatioPercent).toBe(0);
+    });
+
+    it('returns null when the member has no issues in the cycle', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 3,
+          cycleTimeInDays: 3,
+          externalId: 'issue-1',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Bob',
+        5,
+      );
+
+      expect(snapshots[0].underestimationRatioPercent).toBeNull();
+    });
+
+    it('rounds the ratio to the nearest integer when the division is not exact', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 1,
+          cycleTimeInDays: 4,
+          externalId: 'issue-1',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 1,
+          cycleTimeInDays: 4,
+          externalId: 'issue-2',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 1,
+          cycleTimeInDays: 4,
+          externalId: 'issue-3',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 3,
+          cycleTimeInDays: 3,
+          externalId: 'issue-4',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 3,
+          cycleTimeInDays: 3,
+          externalId: 'issue-5',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 3,
+          cycleTimeInDays: 3,
+          externalId: 'issue-6',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Bob',
+          points: 3,
+          cycleTimeInDays: 3,
+          externalId: 'issue-7',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Bob',
+        5,
+      );
+
+      expect(snapshots[0].underestimationRatioPercent).toBe(43);
     });
   });
 });

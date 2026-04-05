@@ -145,9 +145,45 @@ describe('View Member Health Trends (acceptance)', () => {
       expect(dto.underestimationRatio.indicator).toBe('not-applicable');
     });
 
-    it.todo(
-      'chronic underestimation: Bob 3 cycles 40% -> 45% -> 50% -> red + rising -> covered by PR 3 (Signal 2)',
-    );
+    it('chronic underestimation: Bob 3 cycles 40% -> 45% -> 50% -> underestimation signal red + rising + "50%"', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: 40,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: 45,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: 50,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Bob',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.underestimationRatio.value).toBe('50%');
+      expect(dto.underestimationRatio.trend).toBe('rising');
+      expect(dto.underestimationRatio.indicator).toBe('red');
+    });
 
     it.todo(
       'drifting cycle time: Alice 3 cycles 1.2d -> 1.5d -> 2.1d -> red + rising -> covered by PR 4 (Signal 3)',
