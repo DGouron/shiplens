@@ -56,7 +56,7 @@ Ask the necessary questions:
 Apply the checks:
 - **INVEST**: read `rules/invest.md` and validate each criterion
 - **Definition of Ready**: read `rules/dor.md`
-- **Scope**: is it too large? Propose a split if so
+- **Slicing**: read `rules/slicing.md` — **always** split into narrow slices, even when INVEST passes. Propose a walking-skeleton-first PR plan for anything multi-behavior.
 
 ### Step 3: SPECIFY
 
