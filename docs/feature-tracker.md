@@ -25,4 +25,4 @@ o# Feature Tracker
 | Afficher les donnees de pilotage dans le rapport de cycle | [display-cycle-piloting-data](specs/display-cycle-piloting-data.md) | Analytics | implemented | 2026-04-03 |
 | Voir le profil cycle d'un membre | [view-member-cycle-profile](specs/view-member-cycle-profile.md) | Analytics | implemented | 2026-04-03 |
 | Detecter les tickets en derive | [detect-drifting-issues](specs/detect-drifting-issues.md) | Analytics | implemented | 2026-04-05 |
-| Voir les tendances de sante d'un membre | [view-member-health-trends](specs/view-member-health-trends.md) | Analytics | in-progress (3/5) | 2026-04-05 |
+| Voir les tendances de sante d'un membre | [view-member-health-trends](specs/view-member-health-trends.md) | Analytics | in-progress (4/5) | 2026-04-05 |
