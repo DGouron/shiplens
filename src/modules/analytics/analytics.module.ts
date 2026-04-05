@@ -9,6 +9,7 @@ import { DriftingIssueDetectionDataGateway } from './entities/drifting-issue/dri
 import { DurationPredictionDataGateway } from './entities/duration-prediction/duration-prediction-data.gateway.js';
 import { EstimationAccuracyDataGateway } from './entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { MemberDigestDataGateway } from './entities/member-digest/member-digest-data.gateway.js';
+import { MemberHealthDataGateway } from './entities/member-health/member-health-data.gateway.js';
 import { AiTextGeneratorGateway } from './entities/sprint-report/ai-text-generator.gateway.js';
 import { SprintReportGateway } from './entities/sprint-report/sprint-report.gateway.js';
 import { SprintReportDataGateway } from './entities/sprint-report/sprint-report-data.gateway.js';
@@ -25,6 +26,7 @@ import { DriftingIssuesController } from './interface-adapters/controllers/drift
 import { DurationPredictionController } from './interface-adapters/controllers/duration-prediction.controller.js';
 import { EstimationAccuracyController } from './interface-adapters/controllers/estimation-accuracy.controller.js';
 import { MemberDigestController } from './interface-adapters/controllers/member-digest.controller.js';
+import { MemberHealthController } from './interface-adapters/controllers/member-health.controller.js';
 import { ReportExportController } from './interface-adapters/controllers/report-export.controller.js';
 import { SettingsPageController } from './interface-adapters/controllers/settings-page.controller.js';
 import { SprintReportController } from './interface-adapters/controllers/sprint-report.controller.js';
@@ -42,6 +44,7 @@ import { DriftingIssueDetectionDataInPrismaGateway } from './interface-adapters/
 import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
 import { EstimationAccuracyDataInPrismaGateway } from './interface-adapters/gateways/estimation-accuracy-data.in-prisma.gateway.js';
 import { MemberDigestDataInPrismaGateway } from './interface-adapters/gateways/member-digest-data.in-prisma.gateway.js';
+import { MemberHealthDataInPrismaGateway } from './interface-adapters/gateways/member-health-data.in-prisma.gateway.js';
 import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprint-report.in-prisma.gateway.js';
 import { SprintReportDataInPrismaGateway } from './interface-adapters/gateways/sprint-report-data.in-prisma.gateway.js';
 import { StatusThresholdInPrismaGateway } from './interface-adapters/gateways/status-threshold.in-prisma.gateway.js';
@@ -55,6 +58,7 @@ import { CycleMetricsPresenter } from './interface-adapters/presenters/cycle-met
 import { DriftingIssuesPresenter } from './interface-adapters/presenters/drifting-issues.presenter.js';
 import { DurationPredictionPresenter } from './interface-adapters/presenters/duration-prediction.presenter.js';
 import { EstimationAccuracyPresenter } from './interface-adapters/presenters/estimation-accuracy.presenter.js';
+import { MemberHealthPresenter } from './interface-adapters/presenters/member-health.presenter.js';
 import { ReportDetailPresenter } from './interface-adapters/presenters/report-detail.presenter.js';
 import { ReportHistoryPresenter } from './interface-adapters/presenters/report-history.presenter.js';
 import { SprintReportPresenter } from './interface-adapters/presenters/sprint-report.presenter.js';
@@ -71,6 +75,7 @@ import { GetAlertHistoryUsecase } from './usecases/get-alert-history.usecase.js'
 import { GetBlockedIssuesUsecase } from './usecases/get-blocked-issues.usecase.js';
 import { GetCycleIssuesUsecase } from './usecases/get-cycle-issues.usecase.js';
 import { GetEstimationTrendUsecase } from './usecases/get-estimation-trend.usecase.js';
+import { GetMemberHealthUsecase } from './usecases/get-member-health.usecase.js';
 import { GetReportUsecase } from './usecases/get-report.usecase.js';
 import { GetTeamExcludedStatusesUsecase } from './usecases/get-team-excluded-statuses.usecase.js';
 import { GetWorkspaceDashboardUsecase } from './usecases/get-workspace-dashboard.usecase.js';
@@ -96,6 +101,7 @@ import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-sta
     SettingsPageController,
     MemberDigestController,
     DriftingIssuesController,
+    MemberHealthController,
   ],
   providers: [
     CalculateCycleMetricsUsecase,
@@ -196,6 +202,12 @@ import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-sta
     {
       provide: DriftingIssueDetectionDataGateway,
       useClass: DriftingIssueDetectionDataInPrismaGateway,
+    },
+    GetMemberHealthUsecase,
+    MemberHealthPresenter,
+    {
+      provide: MemberHealthDataGateway,
+      useClass: MemberHealthDataInPrismaGateway,
     },
   ],
   exports: [SprintReportGateway],
