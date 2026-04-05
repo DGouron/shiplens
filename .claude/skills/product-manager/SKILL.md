@@ -69,7 +69,9 @@ Produce the spec according to the Shiplens DSL:
 
 1. Create the file `docs/specs/<feature-name>.md`
 2. Enrich `docs/ddd/ubiquitous-language.md` with terms from the spec glossary
-3. Add a line in `docs/feature-tracker.md` (status: drafted)
+3. Add a line in the right tracker — see **Draft Management** below:
+   - Finalized spec (INVEST + DoR + DoD passed) → `docs/feature-tracker.md` with status `ready`
+   - Captured idea, not yet refined → `docs/draft-tracker.md` with status `draft`
 4. Present the spec to the user
 5. Wait for validation before considering the spec ready
 
@@ -107,6 +109,47 @@ Questions:
 
 We don't spec anything until these are answered.
 ```
+
+---
+
+## Draft Management
+
+Two trackers live side by side:
+
+- **`docs/feature-tracker.md`**: fully PM-validated specs — statuses `ready` or `implemented`. The actionable backlog.
+- **`docs/draft-tracker.md`**: raw ideas captured without a full PM session. Typically from `/debug-workflow`, retros, or incidents. Status `draft`.
+
+**Do NOT read `docs/draft-tracker.md` at session start.** It is consulted only on the three explicit flows below, to keep the PM's context clean when writing a new spec.
+
+### Flow A — Capturing a draft
+
+When the user captures an idea that is not ready for a full spec session (vague, too early, explicitly deferred):
+1. Create `docs/specs/<idea-name>.md` with `status: draft` in frontmatter and a minimal `Decisions to make` section
+2. Append a line to `docs/draft-tracker.md`:
+   `| <Idea> | [<name>](specs/<name>.md) | <origin> | <low\|medium\|high> | <YYYY-MM-DD today> | draft |`
+3. Do NOT touch `feature-tracker.md`
+
+### Flow B — Promoting a draft to a finalized spec
+
+When the user asks to finalize an existing draft:
+1. Read the draft spec file
+2. Run the full PM workflow (Steps 1-3) to finalize it — INVEST, DoR, DoD, DSL
+3. Overwrite the spec file with the finalized version (frontmatter `status: ready`)
+4. **Remove** the line from `docs/draft-tracker.md`
+5. **Add** a line to `docs/feature-tracker.md` with status `ready` and today's date
+
+### Flow C — Reviewing drafts (on explicit request only)
+
+Only when the user explicitly asks to review drafts (e.g. "check the drafts", "review stale drafts"):
+1. Read `docs/draft-tracker.md`
+2. For each entry, compute age in days from the `Added` column vs today
+3. Flag entries > 30 days as **stale**
+4. Present the list to the user — group stale items separately from fresh ones
+5. For each stale item, ask the user to pick one of:
+   - **keep** — reset `Added` to today, stays in the tracker
+   - **drop** — remove the line from `draft-tracker.md` AND delete the spec file `docs/specs/<name>.md`
+   - **refine now** — switch to Flow B (promote)
+6. Never auto-delete. The user decides every case.
 
 ---
 
