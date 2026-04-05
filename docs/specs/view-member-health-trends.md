@@ -1,6 +1,13 @@
 # View member health trends
 
-## Status: ready
+## Status: in-progress (1/5)
+
+## Implementation Progress
+- [x] PR 1 — Walking skeleton + Signal 1 (estimation score evolution)
+- [ ] PR 2 — Signal 5 (median review time)
+- [ ] PR 3 — Signal 2 (underestimation ratio)
+- [ ] PR 4 — Signal 3 (average cycle time)
+- [ ] PR 5 — Signal 4 (drifting tickets per cycle)
 
 ## Context
 Project management tools show what is done, not how things are going. A developer who systematically underestimates, whose PRs linger in review, or whose cycle time drifts cycle after cycle sends invisible signals on Linear. The tech lead needs these signals to intervene before problems take hold.
