@@ -1,10 +1,10 @@
 # View member health trends
 
-## Status: in-progress (1/5)
+## Status: in-progress (2/5)
 
 ## Implementation Progress
 - [x] PR 1 — Walking skeleton + Signal 1 (estimation score evolution)
-- [ ] PR 2 — Signal 5 (median review time)
+- [x] PR 2 — Signal 5 (median review time)
 - [ ] PR 3 — Signal 2 (underestimation ratio)
 - [ ] PR 4 — Signal 3 (average cycle time)
 - [ ] PR 5 — Signal 4 (drifting tickets per cycle)

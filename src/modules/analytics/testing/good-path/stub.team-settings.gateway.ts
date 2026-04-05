@@ -6,6 +6,7 @@ import {
 export class StubTeamSettingsGateway extends TeamSettingsGateway {
   excludedStatuses: Map<string, string[]> = new Map();
   timezones: Map<string, string> = new Map();
+  reviewStatusNames: Map<string, string> = new Map();
 
   async getExcludedStatuses(teamId: string): Promise<string[]> {
     return this.excludedStatuses.get(teamId) ?? [];
@@ -13,6 +14,10 @@ export class StubTeamSettingsGateway extends TeamSettingsGateway {
 
   async setExcludedStatuses(teamId: string, statuses: string[]): Promise<void> {
     this.excludedStatuses.set(teamId, statuses);
+  }
+
+  async getReviewStatusName(teamId: string): Promise<string | null> {
+    return this.reviewStatusNames.get(teamId) ?? null;
   }
 
   async getTimezone(teamId: string): Promise<string> {

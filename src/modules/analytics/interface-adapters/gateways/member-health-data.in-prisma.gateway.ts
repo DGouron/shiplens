@@ -1,12 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { BottleneckAnalysis } from '../../entities/bottleneck-analysis/bottleneck-analysis.js';
+import { BottleneckAnalysisDataGateway } from '../../entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
 import { EstimationAccuracyDataGateway } from '../../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { type MemberHealthCycleSnapshot } from '../../entities/member-health/member-health.schema.js';
 import { MemberHealthDataGateway } from '../../entities/member-health/member-health-data.gateway.js';
+import { TeamSettingsGateway } from '../../entities/team-settings/team-settings.gateway.js';
+
+const DEFAULT_REVIEW_STATUS_SUBSTRING = 'review';
 
 @Injectable()
 export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
   constructor(
     private readonly estimationAccuracyDataGateway: EstimationAccuracyDataGateway,
+    private readonly bottleneckAnalysisDataGateway: BottleneckAnalysisDataGateway,
+    private readonly teamSettingsGateway: TeamSettingsGateway,
   ) {
     super();
   }
@@ -20,6 +27,8 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
       await this.estimationAccuracyDataGateway.getCompletedCycleIds(teamId);
 
     const lastCycleIds = completedCycleIds.slice(-cycleLimit);
+    const configuredReviewStatusName =
+      await this.teamSettingsGateway.getReviewStatusName(teamId);
 
     const snapshots: MemberHealthCycleSnapshot[] = [];
 
@@ -30,13 +39,20 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
         memberName,
       );
 
+      const medianReviewTimeInHours = await this.computeMedianReviewTimeInHours(
+        cycleId,
+        teamId,
+        memberName,
+        configuredReviewStatusName,
+      );
+
       snapshots.push({
         cycleId,
         estimationScorePercent,
         underestimationRatioPercent: null,
         averageCycleTimeInDays: null,
         driftingTicketCount: null,
-        medianReviewTimeInHours: null,
+        medianReviewTimeInHours,
       });
     }
 
@@ -65,5 +81,39 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     }).length;
 
     return Math.round((wellEstimatedCount / memberIssues.length) * 100);
+  }
+
+  private async computeMedianReviewTimeInHours(
+    cycleId: string,
+    teamId: string,
+    memberName: string,
+    configuredReviewStatusName: string | null,
+  ): Promise<number | null> {
+    const bottleneckData =
+      await this.bottleneckAnalysisDataGateway.getBottleneckData(
+        cycleId,
+        teamId,
+      );
+
+    if (bottleneckData.completedIssues.length === 0) return null;
+
+    const analysis = BottleneckAnalysis.create(bottleneckData);
+    const memberEntry = analysis.assigneeBreakdown.find(
+      (entry) => entry.assigneeName === memberName,
+    );
+
+    if (!memberEntry) return null;
+
+    if (configuredReviewStatusName !== null) {
+      const exactMatch = memberEntry.statusMedians.find(
+        (entry) => entry.statusName === configuredReviewStatusName,
+      );
+      if (exactMatch) return exactMatch.medianHours;
+    }
+
+    const substringMatch = memberEntry.statusMedians.find((entry) =>
+      entry.statusName.toLowerCase().includes(DEFAULT_REVIEW_STATUS_SUBSTRING),
+    );
+    return substringMatch?.medianHours ?? null;
   }
 }
