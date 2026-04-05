@@ -398,4 +398,106 @@ describe('MemberHealthDataInPrismaGateway', () => {
       expect(snapshots[0].underestimationRatioPercent).toBe(43);
     });
   });
+
+  describe('averageCycleTimeInDays', () => {
+    it('returns the single cycle time value when the member has exactly one issue', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 2,
+          cycleTimeInDays: 2.5,
+          externalId: 'issue-1',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].averageCycleTimeInDays).toBe(2.5);
+    });
+
+    it('returns the arithmetic mean when multiple member issues average to a clean decimal', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 1,
+          cycleTimeInDays: 1.0,
+          externalId: 'issue-1',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 2,
+          cycleTimeInDays: 2.0,
+          externalId: 'issue-2',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 3,
+          cycleTimeInDays: 3.0,
+          externalId: 'issue-3',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].averageCycleTimeInDays).toBe(2.0);
+    });
+
+    it('rounds the average to one decimal place when the division is not exact', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 1,
+          cycleTimeInDays: 1.1,
+          externalId: 'issue-1',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 1,
+          cycleTimeInDays: 1.2,
+          externalId: 'issue-2',
+        }),
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 1,
+          cycleTimeInDays: 1.4,
+          externalId: 'issue-3',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].averageCycleTimeInDays).toBe(1.2);
+    });
+
+    it('returns null when the member has no issues in the cycle', async () => {
+      estimationGateway.estimationData = estimationDataWithIssues('cycle-1', [
+        estimatedIssueForMember({
+          assigneeName: 'Alice',
+          points: 2,
+          cycleTimeInDays: 2.0,
+          externalId: 'issue-1',
+        }),
+      ]);
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Bob',
+        5,
+      );
+
+      expect(snapshots[0].averageCycleTimeInDays).toBeNull();
+    });
+  });
 });

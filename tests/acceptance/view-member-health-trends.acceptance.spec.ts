@@ -185,9 +185,45 @@ describe('View Member Health Trends (acceptance)', () => {
       expect(dto.underestimationRatio.indicator).toBe('red');
     });
 
-    it.todo(
-      'drifting cycle time: Alice 3 cycles 1.2d -> 1.5d -> 2.1d -> red + rising -> covered by PR 4 (Signal 3)',
-    );
+    it('drifting cycle time: Alice 3 cycles 1.2d -> 1.5d -> 2.1d -> cycle time signal red + rising + "2.1d"', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.2,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.5,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 2.1,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Alice',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.averageCycleTime.value).toBe('2.1d');
+      expect(dto.averageCycleTime.trend).toBe('rising');
+      expect(dto.averageCycleTime.indicator).toBe('red');
+    });
 
     it('lingering review: Charlie 3 cycles 8h -> 12h -> 24h -> review signal red + rising + "24h"', async () => {
       gateway.cycleSnapshots = [
@@ -233,8 +269,51 @@ describe('View Member Health Trends (acceptance)', () => {
       'drift improvement: Alice 3 cycles 4 -> 2 -> 1 -> green + falling -> covered by PR 5 (Signal 4)',
     );
 
-    it.todo(
-      'mixed trend: Bob 4 cycles 1.5d -> 2d -> 1.2d -> 1.8d -> orange + mixed -> covered by PR 4 (Signal 3)',
-    );
+    it('mixed trend: Bob 4 cycles 1.5d -> 2d -> 1.2d -> 1.8d -> cycle time signal orange (first deviation)', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.5,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 2,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.2,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-4',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.8,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Bob',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.averageCycleTime.value).toBe('1.8d');
+      expect(dto.averageCycleTime.indicator).toBe('orange');
+    });
   });
 });

@@ -46,6 +46,8 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
         this.computeEstimationScorePercent(memberIssues);
       const underestimationRatioPercent =
         this.computeUnderestimationRatioPercent(memberIssues);
+      const averageCycleTimeInDays =
+        this.computeAverageCycleTimeInDays(memberIssues);
 
       const medianReviewTimeInHours = await this.computeMedianReviewTimeInHours(
         cycleId,
@@ -58,7 +60,7 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
         cycleId,
         estimationScorePercent,
         underestimationRatioPercent,
-        averageCycleTimeInDays: null,
+        averageCycleTimeInDays,
         driftingTicketCount: null,
         medianReviewTimeInHours,
       });
@@ -106,6 +108,18 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     }).length;
 
     return Math.round((underEstimatedCount / memberIssues.length) * 100);
+  }
+
+  private computeAverageCycleTimeInDays(
+    memberIssues: EstimatedIssue[],
+  ): number | null {
+    if (memberIssues.length === 0) return null;
+
+    const total = memberIssues.reduce(
+      (sum, issue) => sum + issue.cycleTimeInDays,
+      0,
+    );
+    return Math.round((total / memberIssues.length) * 10) / 10;
   }
 
   private async computeMedianReviewTimeInHours(
