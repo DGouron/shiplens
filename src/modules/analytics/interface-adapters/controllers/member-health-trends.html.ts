@@ -288,6 +288,53 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     }
     .custom-select:hover { border-color: var(--border-hover); }
 
+    /* -- NOTICE -- */
+    .notice {
+      background: var(--bg-surface);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-1);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.84rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      animation: fadeSlideIn 0.4s ease both;
+    }
+
+    .notice strong { color: var(--text-primary); font-weight: 600; }
+
+    .notice-indicators {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .notice-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+    }
+
+    .notice-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* -- SIGNAL DESCRIPTION -- */
+    .signal-description {
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
     /* -- EMPTY STATE -- */
     .empty-state {
       text-align: center;
@@ -359,13 +406,25 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       </div>
 
       <div class="cycles-selector">
-        <label for="cyclesSelect">Cycles:</label>
+        <label for="cyclesSelect">Completed sprints to analyze:</label>
         <select class="custom-select" id="cyclesSelect">
           <option value="3">3</option>
           <option value="5" selected>5</option>
           <option value="8">8</option>
           <option value="10">10</option>
         </select>
+      </div>
+
+      <div class="notice">
+        This dashboard tracks how a team member's work patterns evolve over completed sprints.
+        Each signal compares recent cycles to detect improving or worsening trends.
+        A minimum of <strong>3 completed sprints</strong> is required to compute a trend.
+        <div class="notice-indicators">
+          <span class="notice-indicator"><span class="notice-dot indicator-green"></span> Favorable trend</span>
+          <span class="notice-indicator"><span class="notice-dot indicator-orange"></span> First deviation or mixed</span>
+          <span class="notice-indicator"><span class="notice-dot indicator-red"></span> Unfavorable for 2+ sprints</span>
+          <span class="notice-indicator"><span class="notice-dot indicator-grey"></span> Not enough data</span>
+        </div>
       </div>
 
       <div id="loading">Loading health data...</div>
@@ -409,12 +468,27 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     }
 
     /* -- SIGNAL CONFIG -- */
-    var SIGNAL_LABELS = {
-      estimationScore: 'Estimation Score',
-      underestimationRatio: 'Underestimation Ratio',
-      averageCycleTime: 'Average Cycle Time',
-      driftingTickets: 'Drifting Tickets',
-      medianReviewTime: 'Median Review Time'
+    var SIGNAL_CONFIG = {
+      estimationScore: {
+        label: 'Estimation Score',
+        description: 'Percentage of issues correctly estimated — actual effort fell within the expected range. A rising score means the member is getting better at sizing work.'
+      },
+      underestimationRatio: {
+        label: 'Underestimation Ratio',
+        description: 'Percentage of issues that took significantly longer than estimated. A falling ratio means fewer surprises and more predictable sprint delivery.'
+      },
+      averageCycleTime: {
+        label: 'Average Cycle Time',
+        description: 'Mean processing time per issue across the sprint. Rising cycle time may indicate increasing complexity, blockers, or context switching.'
+      },
+      driftingTickets: {
+        label: 'Drifting Tickets',
+        description: 'Number of issues whose actual duration exceeded the expected time based on their estimate. Fewer drifts signal more predictable delivery.'
+      },
+      medianReviewTime: {
+        label: 'Median Review Time',
+        description: 'Median time issues spend waiting in review. Long review times create bottlenecks and slow the whole team down.'
+      }
     };
 
     var TREND_ARROWS = {
@@ -431,7 +505,7 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     }
 
     function renderSignalCard(key, signal) {
-      var label = SIGNAL_LABELS[key] || key;
+      var config = SIGNAL_CONFIG[key] || { label: key, description: '' };
       var trendArrow = signal.trend ? (TREND_ARROWS[signal.trend] || '') : '';
       var trendLabel = signal.trend ? (trendArrow + ' ' + signal.trend) : '';
 
@@ -443,13 +517,14 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
 
       var note = '';
       if (signal.indicator === 'not-applicable') {
-        note = '<div class="signal-note">Not applicable</div>';
+        note = '<div class="signal-note">Not applicable — this member has no estimated issues in the analyzed sprints</div>';
       } else if (signal.indicator === 'not-enough-history') {
-        note = '<div class="signal-note">Not enough history</div>';
+        note = '<div class="signal-note">Not enough history — at least 3 completed sprints are needed to compute a trend</div>';
       }
 
       return '<div class="signal-card">' +
-        '<div class="signal-label">' + escapeHtml(label) + '</div>' +
+        '<div class="signal-label">' + escapeHtml(config.label) + '</div>' +
+        '<div class="signal-description">' + escapeHtml(config.description) + '</div>' +
         '<div class="signal-value">' + escapeHtml(signal.value) + '</div>' +
         '<div class="signal-footer">' +
           '<span class="signal-trend">' + trendLabel + '</span>' +
