@@ -27,6 +27,7 @@ import { DurationPredictionController } from './interface-adapters/controllers/d
 import { EstimationAccuracyController } from './interface-adapters/controllers/estimation-accuracy.controller.js';
 import { MemberDigestController } from './interface-adapters/controllers/member-digest.controller.js';
 import { MemberHealthController } from './interface-adapters/controllers/member-health.controller.js';
+import { MemberHealthTrendsPageController } from './interface-adapters/controllers/member-health-trends-page.controller.js';
 import { ReportExportController } from './interface-adapters/controllers/report-export.controller.js';
 import { SettingsPageController } from './interface-adapters/controllers/settings-page.controller.js';
 import { SprintReportController } from './interface-adapters/controllers/sprint-report.controller.js';
@@ -102,6 +103,7 @@ import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-sta
     MemberDigestController,
     DriftingIssuesController,
     MemberHealthController,
+    MemberHealthTrendsPageController,
   ],
   providers: [
     CalculateCycleMetricsUsecase,

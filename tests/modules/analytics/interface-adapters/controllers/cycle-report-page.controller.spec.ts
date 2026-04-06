@@ -111,4 +111,12 @@ describe('CycleReportPageController', () => {
 
     expect(result).not.toContain('function loadIssues');
   });
+
+  it('HTML page contains health trends link in digest section', () => {
+    const result = controller.getPage();
+
+    expect(result).toContain('id="healthTrendsLink"');
+    expect(result).toContain('View health trends');
+    expect(result).toContain('/member-health-trends');
+  });
 });
