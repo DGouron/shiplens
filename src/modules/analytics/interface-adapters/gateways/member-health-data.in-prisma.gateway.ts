@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BottleneckAnalysis } from '../../entities/bottleneck-analysis/bottleneck-analysis.js';
 import { BottleneckAnalysisDataGateway } from '../../entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
+import { calculateBusinessHours } from '../../entities/drifting-issue/business-hours.js';
+import {
+  getMaxBusinessHours,
+  requiresSplitting,
+} from '../../entities/drifting-issue/drift-grid.js';
+import { DriftingIssueDetectionDataGateway } from '../../entities/drifting-issue/drifting-issue-detection-data.gateway.js';
 import { type EstimatedIssue } from '../../entities/estimation-accuracy/estimation-accuracy.schema.js';
 import { EstimationAccuracyDataGateway } from '../../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
 import { type MemberHealthCycleSnapshot } from '../../entities/member-health/member-health.schema.js';
@@ -17,6 +23,7 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     private readonly estimationAccuracyDataGateway: EstimationAccuracyDataGateway,
     private readonly bottleneckAnalysisDataGateway: BottleneckAnalysisDataGateway,
     private readonly teamSettingsGateway: TeamSettingsGateway,
+    private readonly driftingIssueDetectionDataGateway: DriftingIssueDetectionDataGateway,
   ) {
     super();
   }
@@ -32,6 +39,7 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     const lastCycleIds = completedCycleIds.slice(-cycleLimit);
     const configuredReviewStatusName =
       await this.teamSettingsGateway.getReviewStatusName(teamId);
+    const timezone = await this.teamSettingsGateway.getTimezone(teamId);
 
     const snapshots: MemberHealthCycleSnapshot[] = [];
 
@@ -56,17 +64,64 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
         configuredReviewStatusName,
       );
 
+      const driftingTicketCount = await this.computeDriftingTicketCount(
+        cycleId,
+        teamId,
+        memberName,
+        timezone,
+      );
+
       snapshots.push({
         cycleId,
         estimationScorePercent,
         underestimationRatioPercent,
         averageCycleTimeInDays,
-        driftingTicketCount: null,
+        driftingTicketCount,
         medianReviewTimeInHours,
       });
     }
 
     return snapshots;
+  }
+
+  private async computeDriftingTicketCount(
+    cycleId: string,
+    teamId: string,
+    memberName: string,
+    timezone: string,
+  ): Promise<number | null> {
+    const driftData =
+      await this.driftingIssueDetectionDataGateway.getCompletedCycleDriftData(
+        teamId,
+        cycleId,
+      );
+    const memberIssues = driftData.filter(
+      (issue) => issue.assigneeName === memberName,
+    );
+
+    if (memberIssues.length === 0) return null;
+
+    let driftCount = 0;
+
+    for (const issue of memberIssues) {
+      if (
+        issue.points === null ||
+        issue.startedAt === null ||
+        issue.completedAt === null
+      )
+        continue;
+      if (requiresSplitting(issue.points)) continue;
+      const maxHours = getMaxBusinessHours(issue.points);
+      if (maxHours === null) continue;
+      const elapsed = calculateBusinessHours(
+        issue.startedAt,
+        issue.completedAt,
+        timezone,
+      );
+      if (elapsed > maxHours) driftCount++;
+    }
+
+    return driftCount;
   }
 
   private async fetchMemberIssuesForCycle(

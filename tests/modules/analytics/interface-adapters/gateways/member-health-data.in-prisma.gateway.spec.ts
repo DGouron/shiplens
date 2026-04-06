@@ -5,6 +5,7 @@ import {
 } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.schema.js';
 import { MemberHealthDataInPrismaGateway } from '@modules/analytics/interface-adapters/gateways/member-health-data.in-prisma.gateway.js';
 import { StubBottleneckAnalysisDataGateway } from '@modules/analytics/testing/good-path/stub.bottleneck-analysis-data.gateway.js';
+import { StubDriftingIssueDetectionDataGateway } from '@modules/analytics/testing/good-path/stub.drifting-issue-detection-data.gateway.js';
 import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
 import { StubTeamSettingsGateway } from '@modules/analytics/testing/good-path/stub.team-settings.gateway.js';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -69,16 +70,19 @@ describe('MemberHealthDataInPrismaGateway', () => {
   let estimationGateway: StubEstimationAccuracyDataGateway;
   let bottleneckGateway: StubBottleneckAnalysisDataGateway;
   let teamSettingsGateway: StubTeamSettingsGateway;
+  let driftingIssueGateway: StubDriftingIssueDetectionDataGateway;
   let gateway: MemberHealthDataInPrismaGateway;
 
   beforeEach(() => {
     estimationGateway = new StubEstimationAccuracyDataGateway();
     bottleneckGateway = new StubBottleneckAnalysisDataGateway();
     teamSettingsGateway = new StubTeamSettingsGateway();
+    driftingIssueGateway = new StubDriftingIssueDetectionDataGateway();
     gateway = new MemberHealthDataInPrismaGateway(
       estimationGateway,
       bottleneckGateway,
       teamSettingsGateway,
+      driftingIssueGateway,
     );
 
     estimationGateway.completedCycleIds = ['cycle-1'];
@@ -396,6 +400,164 @@ describe('MemberHealthDataInPrismaGateway', () => {
       );
 
       expect(snapshots[0].underestimationRatioPercent).toBe(43);
+    });
+  });
+
+  describe('driftingTicketCount', () => {
+    it('returns 1 when one of three member issues exceeds the drift grid threshold', async () => {
+      driftingIssueGateway.completedCycleDriftData = [
+        {
+          issueExternalId: 'issue-1',
+          assigneeName: 'Alice',
+          points: 1,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T11:00:00Z',
+        },
+        {
+          issueExternalId: 'issue-2',
+          assigneeName: 'Alice',
+          points: 1,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T12:00:00Z',
+        },
+        {
+          issueExternalId: 'issue-3',
+          assigneeName: 'Alice',
+          points: 1,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T17:00:00Z',
+        },
+      ];
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].driftingTicketCount).toBe(1);
+    });
+
+    it('returns 0 when all member issues complete within the drift grid threshold', async () => {
+      driftingIssueGateway.completedCycleDriftData = [
+        {
+          issueExternalId: 'issue-1',
+          assigneeName: 'Alice',
+          points: 1,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T12:00:00Z',
+        },
+        {
+          issueExternalId: 'issue-2',
+          assigneeName: 'Alice',
+          points: 2,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T14:00:00Z',
+        },
+      ];
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].driftingTicketCount).toBe(0);
+    });
+
+    it('returns null when no drift data exists for the target member', async () => {
+      driftingIssueGateway.completedCycleDriftData = [
+        {
+          issueExternalId: 'issue-1',
+          assigneeName: 'Bob',
+          points: 1,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T17:00:00Z',
+        },
+      ];
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].driftingTicketCount).toBeNull();
+    });
+
+    it('skips issues without points or startedAt or completedAt in the drift count', async () => {
+      driftingIssueGateway.completedCycleDriftData = [
+        {
+          issueExternalId: 'issue-1',
+          assigneeName: 'Alice',
+          points: null,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T17:00:00Z',
+        },
+        {
+          issueExternalId: 'issue-2',
+          assigneeName: 'Alice',
+          points: 1,
+          startedAt: null,
+          completedAt: '2026-04-01T17:00:00Z',
+        },
+        {
+          issueExternalId: 'issue-3',
+          assigneeName: 'Alice',
+          points: 1,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: null,
+        },
+        {
+          issueExternalId: 'issue-4',
+          assigneeName: 'Alice',
+          points: 2,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T14:00:00Z',
+        },
+      ];
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].driftingTicketCount).toBe(0);
+    });
+
+    it('skips issues requiring splitting when points are 8 or more', async () => {
+      driftingIssueGateway.completedCycleDriftData = [
+        {
+          issueExternalId: 'issue-1',
+          assigneeName: 'Alice',
+          points: 8,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-07T17:00:00Z',
+        },
+        {
+          issueExternalId: 'issue-2',
+          assigneeName: 'Alice',
+          points: 13,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-07T17:00:00Z',
+        },
+        {
+          issueExternalId: 'issue-3',
+          assigneeName: 'Alice',
+          points: 2,
+          startedAt: '2026-04-01T09:00:00Z',
+          completedAt: '2026-04-01T14:00:00Z',
+        },
+      ];
+
+      const snapshots = await gateway.getMemberCycleSnapshots(
+        'team-1',
+        'Alice',
+        5,
+      );
+
+      expect(snapshots[0].driftingTicketCount).toBe(0);
     });
   });
 
