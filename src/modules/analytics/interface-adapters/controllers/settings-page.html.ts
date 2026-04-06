@@ -538,17 +538,17 @@ export function buildSettingsPageHtml(locale: Locale): string {
     renderDriftGrid();
     function renderDriftGrid() {
       var grid = [
-        { points: 1, maxHours: '${translations.driftRow1Hours}' },
-        { points: 2, maxHours: '${translations.driftRow2Hours}' },
-        { points: 3, maxHours: '${translations.driftRow3Hours}' },
-        { points: 5, maxHours: '${translations.driftRow5Hours}' },
+        { points: 1, maxHours: TRANSLATIONS.driftRow1Hours },
+        { points: 2, maxHours: TRANSLATIONS.driftRow2Hours },
+        { points: 3, maxHours: TRANSLATIONS.driftRow3Hours },
+        { points: 5, maxHours: TRANSLATIONS.driftRow5Hours },
       ];
-      var html = '<table class="drift-grid-table"><thead><tr><th>${translations.driftGridHeaderPoints}</th><th>${translations.driftGridHeaderDuration}</th></tr></thead><tbody>';
+      var html = '<table class="drift-grid-table"><thead><tr><th>' + escapeHtml(TRANSLATIONS.driftGridHeaderPoints) + '</th><th>' + escapeHtml(TRANSLATIONS.driftGridHeaderDuration) + '</th></tr></thead><tbody>';
       grid.forEach(function(entry) {
         html += '<tr><td>' + entry.points + '</td><td>' + entry.maxHours + '</td></tr>';
       });
       html += '</tbody></table>';
-      html += '<div class="drift-grid-note">${translations.driftGridNote}</div>';
+      html += '<div class="drift-grid-note">' + escapeHtml(TRANSLATIONS.driftGridNote) + '</div>';
       document.getElementById('driftGridContent').innerHTML = html;
     }
 
