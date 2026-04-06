@@ -1,13 +1,6 @@
 # View member health trends
 
-## Status: in-progress (4/5)
-
-## Implementation Progress
-- [x] PR 1 — Walking skeleton + Signal 1 (estimation score evolution)
-- [x] PR 2 — Signal 5 (median review time)
-- [x] PR 3 — Signal 2 (underestimation ratio)
-- [x] PR 4 — Signal 3 (average cycle time)
-- [ ] PR 5 — Signal 4 (drifting tickets per cycle)
+## Status: implemented
 
 ## Context
 Project management tools show what is done, not how things are going. A developer who systematically underestimates, whose PRs linger in review, or whose cycle time drifts cycle after cycle sends invisible signals on Linear. The tech lead needs these signals to intervene before problems take hold.
@@ -52,3 +45,24 @@ Project management tools show what is done, not how things are going. A develope
 | Trend | Direction of a signal's evolution over recent cycles: rising, falling or stable |
 | Health indicator | Color code (green/orange/red) summarizing whether the trend is favorable, mixed or unfavorable |
 | Drift | Ticket whose actual processing time exceeds the expected duration based on its estimate (cf. spec detect-drifting-issues) |
+
+## Implementation
+
+### Bounded Context
+Analytics
+
+### Artifacts
+- Entity: `MemberHealth` (with `HealthSignal` value type)
+- Use case: `GetMemberHealthUsecase`
+- Presenter: `MemberHealthPresenter`
+- Controller: `MemberHealthController`
+- Gateway: `MemberHealthDataGateway` (port) / `MemberHealthDataInPrismaGateway` (impl)
+
+### Endpoints
+- `GET /api/analytics/teams/:teamId/members/:memberName/health?cycles=5`
+
+### Architectural decisions
+- Single aggregate `MemberHealth` holding 5 signals (not 5 separate value objects)
+- Trend algorithm: consecutive delta runs with per-signal epsilon
+- Review status identification: hybrid case-insensitive substring match + per-team override via `TeamSettings.reviewStatusName`
+- Historical drift: exact business hours computation via `StateTransition` records, reusing `calculateBusinessHours` and the drift grid from `detect-drifting-issues`

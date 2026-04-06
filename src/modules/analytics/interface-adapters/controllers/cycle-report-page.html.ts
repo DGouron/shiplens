@@ -643,7 +643,10 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       <div class="glass" id="digestSection" style="display:none">
         <div class="section-head">
           <span class="section-title">Digest IA membre</span>
-          <button class="btn btn-accent" id="digestBtn">Generer le digest</button>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <a class="btn" id="healthTrendsLink" href="/member-health-trends" target="_blank">View health trends</a>
+            <button class="btn btn-accent" id="digestBtn">Generer le digest</button>
+          </div>
         </div>
         <div id="digestContent" class="report-empty">Selectionnez un membre pour generer un digest.</div>
       </div>
@@ -1171,6 +1174,13 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       document.getElementById('digestSection').style.display = selectedMember ? '' : 'none';
       document.getElementById('digestContent').className = 'report-empty';
       document.getElementById('digestContent').textContent = 'Cliquez sur le bouton pour generer le digest.';
+
+      if (selectedMember) {
+        var healthTeamId = document.getElementById('teamId').value.trim();
+        document.getElementById('healthTrendsLink').href =
+          '/member-health-trends?teamId=' + encodeURIComponent(healthTeamId) +
+          '&memberName=' + encodeURIComponent(selectedMember) + '&cycles=5';
+      }
 
       renderMemberMetrics();
       renderBottlenecks();

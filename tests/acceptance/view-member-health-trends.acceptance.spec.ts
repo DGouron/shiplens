@@ -265,9 +265,45 @@ describe('View Member Health Trends (acceptance)', () => {
       expect(dto.medianReviewTime.indicator).toBe('red');
     });
 
-    it.todo(
-      'drift improvement: Alice 3 cycles 4 -> 2 -> 1 -> green + falling -> covered by PR 5 (Signal 4)',
-    );
+    it('drift improvement: Alice 3 cycles 4 -> 2 -> 1 -> drift signal green + falling + value "1"', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: 4,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: 2,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: 1,
+          medianReviewTimeInHours: null,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Alice',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.driftingTickets.value).toBe('1');
+      expect(dto.driftingTickets.trend).toBe('falling');
+      expect(dto.driftingTickets.indicator).toBe('green');
+    });
 
     it('mixed trend: Bob 4 cycles 1.5d -> 2d -> 1.2d -> 1.8d -> cycle time signal orange (first deviation)', async () => {
       gateway.cycleSnapshots = [
