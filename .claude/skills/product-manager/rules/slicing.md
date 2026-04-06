@@ -54,3 +54,24 @@ When a feature is split into N slices, the spec's `## Status:` field carries the
 - PR 5: Signal 4 (drifting tickets)
 
 PR 1 took heavy post-agent corrections. PR 2 passed quality gates on the first try. The agent's error rate dropped proportionally with scope.
+
+## Logical branch coverage per slice
+
+When assigning acceptance scenarios to slices, cross-reference the `.todo` list against the **logical branches of the decision engine**, not just the signal-to-PR mapping.
+
+Example: a health signal has three possible indicators (`green`, `orange`, `red`). If all activated scenarios only exercise `green` and `red`, the `orange` path has zero acceptance coverage — even if it's unit-tested. Always verify that each branch of the decision model is covered at acceptance level by at least one activated scenario across the slices delivered so far.
+
+**Concrete lesson**: in `view-member-health-trends`, the `mixed trend` scenario (Bob 1.5d→2d→1.2d→1.8d → orange) was left as `.todo` across PRs 1-3. The orchestrator caught this during PR 4 review and activated it alongside the `drifting cycle time` scenario, because both exercise Signal 3 (cycle time). Without that catch, orange indicator coverage would have been deferred indefinitely or forgotten.
+
+**Rule**: after splitting, map each scenario to its target indicator branch and verify no branch is left uncovered beyond the current PR.
+
+## Git workflow for stacked PRs
+
+**Never set a child PR's base to a parent feature branch.** When GitHub merges a PR with `base = feature-branch-X`, commits land in X — not in `master`. If you stack N PRs this way, only PR 1 (based on master) reaches master. PRs 2-N accumulate in dead-end feature branches.
+
+Two safe patterns:
+
+1. **Rebase-on-land**: every PR targets `master`. After PR N lands, rebase PR N+1 onto the updated master and force-push. Clean, linear history. Best for small teams.
+2. **Consolidation PR**: stack freely during development (base = parent branch for easy review), then create a final "propagation PR" from the chain tip to master. Simpler workflow, but produces an extra merge commit.
+
+**Concrete lesson**: in `view-member-health-trends`, PRs 2-4 were stacked with `base = parent feature branch`. All showed as "merged" on GitHub, but master only received PR 1. A consolidation PR (#44) was required to propagate the accumulated work. This cost an extra round-trip and confused the status reporting.
