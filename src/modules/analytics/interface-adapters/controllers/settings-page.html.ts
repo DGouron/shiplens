@@ -1,9 +1,16 @@
-export const settingsPageHtml = `<!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+import { type Locale } from '../../entities/workspace-settings/workspace-language.schema.js';
+import { settingsPageTranslations } from '../presenters/settings-page.translations.js';
+
+export function buildSettingsPageHtml(locale: Locale): string {
+  const translations = settingsPageTranslations[locale];
+  const translationsJson = JSON.stringify(translations);
+
+  return `<!DOCTYPE html>
+<html lang="${locale}" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — Shiplens</title>
+  <title>${translations.pageTitle} — Shiplens</title>
   <style>
     :root {
       --accent-1: #6366f1;
@@ -370,12 +377,12 @@ export const settingsPageHtml = `<!DOCTYPE html>
       <div class="nav-left">
         <a href="/dashboard" class="nav-brand">Shiplens</a>
         <span class="nav-sep">/</span>
-        <a href="/dashboard" class="nav-crumb">Dashboard</a>
+        <a href="/dashboard" class="nav-crumb">${translations.breadcrumbDashboard}</a>
         <span class="nav-sep">/</span>
-        <span class="nav-crumb nav-crumb-active">Settings</span>
+        <span class="nav-crumb nav-crumb-active">${translations.breadcrumbSettings}</span>
       </div>
       <div class="nav-right">
-        <div class="theme-toggle" id="themeToggle" title="Changer de theme">
+        <div class="theme-toggle" id="themeToggle" title="${translations.themeToggleTitle}">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>
         </div>
@@ -384,35 +391,46 @@ export const settingsPageHtml = `<!DOCTYPE html>
 
     <div class="container">
       <div class="page-header">
-        <h1 class="page-title">Settings</h1>
+        <h1 class="page-title">${translations.pageTitle}</h1>
         <select class="custom-select" id="teamSelector" disabled>
-          <option value="">Chargement des equipes...</option>
+          <option value="">${translations.teamSelectorLoading}</option>
         </select>
       </div>
 
       <div id="errorContainer"></div>
 
+      <div class="glass" id="languageSection">
+        <div class="section-head">
+          <span class="section-title">${translations.languageTitle}</span>
+        </div>
+        <div class="section-subtitle">${translations.languageDescription}</div>
+        <select class="custom-select" id="languageSelect">
+          <option value="en"${locale === 'en' ? ' selected' : ''}>English</option>
+          <option value="fr"${locale === 'fr' ? ' selected' : ''}>Fran\u00e7ais</option>
+        </select>
+      </div>
+
       <div class="glass" id="timezoneSection">
         <div class="section-head">
-          <span class="section-title">Fuseau horaire</span>
+          <span class="section-title">${translations.timezoneTitle}</span>
         </div>
-        <div class="section-subtitle">Fuseau utilise pour le calcul des heures ouvrees (detection de derive).</div>
-        <div id="timezoneContent" class="empty-state">Selectionnez une equipe pour configurer le fuseau horaire.</div>
+        <div class="section-subtitle">${translations.timezoneDescription}</div>
+        <div id="timezoneContent" class="empty-state">${translations.timezoneEmptyState}</div>
       </div>
 
       <div class="glass" id="excludedStatusesSection">
         <div class="section-head">
-          <span class="section-title">Issues bloquees — Statuts exclus</span>
+          <span class="section-title">${translations.excludedStatusesTitle}</span>
         </div>
-        <div class="section-subtitle">Les statuts exclus ne seront pas analyses lors de la detection d'issues bloquees.</div>
-        <div id="excludedStatusesContent" class="empty-state">Selectionnez une equipe pour gerer les statuts exclus.</div>
+        <div class="section-subtitle">${translations.excludedStatusesDescription}</div>
+        <div id="excludedStatusesContent" class="empty-state">${translations.excludedStatusesEmptyState}</div>
       </div>
 
       <div class="glass" id="driftGridSection">
         <div class="section-head">
-          <span class="section-title">Grille de derive — Correspondance points / duree</span>
+          <span class="section-title">${translations.driftGridTitle}</span>
         </div>
-        <div class="section-subtitle">Duree maximum attendue en heures ouvrees selon l'estimation en points (lecture seule).</div>
+        <div class="section-subtitle">${translations.driftGridDescription}</div>
         <div id="driftGridContent"></div>
       </div>
     </div>
@@ -426,11 +444,28 @@ export const settingsPageHtml = `<!DOCTYPE html>
       document.documentElement.setAttribute('data-theme', saved);
     })();
 
+    var TRANSLATIONS = ${translationsJson};
+
     document.getElementById('themeToggle').addEventListener('click', function() {
       var current = document.documentElement.getAttribute('data-theme');
       var next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('shiplens-theme', next);
+    });
+
+    document.getElementById('languageSelect').addEventListener('change', function() {
+      var newLocale = this.value;
+      fetch(window.location.origin + '/settings/language', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language: newLocale }),
+      }).then(function(response) {
+        if (!response.ok) throw new Error('Failed to save language');
+        showToast(TRANSLATIONS.toastLanguageSaved);
+        window.location.reload();
+      }).catch(function() {
+        showError(TRANSLATIONS.errorSaveSettings);
+      });
     });
 
     var API = window.location.origin;
@@ -464,14 +499,14 @@ export const settingsPageHtml = `<!DOCTYPE html>
       clearError();
       try {
         var response = await fetch(API + '/dashboard/data');
-        if (!response.ok) throw new Error('Impossible de charger les equipes');
+        if (!response.ok) throw new Error(TRANSLATIONS.errorLoadTeams);
         var data = await response.json();
         if (data.status) {
-          showError(data.message || 'Aucune equipe disponible');
+          showError(data.message || TRANSLATIONS.errorLoadTeams);
           return;
         }
         var selector = document.getElementById('teamSelector');
-        selector.innerHTML = '<option value="">Selectionnez une equipe...</option>';
+        selector.innerHTML = '<option value="">' + escapeHtml(TRANSLATIONS.teamSelectorEmpty) + '</option>';
         data.teams.forEach(function(team) {
           var option = document.createElement('option');
           option.value = team.teamId;
@@ -503,17 +538,17 @@ export const settingsPageHtml = `<!DOCTYPE html>
     renderDriftGrid();
     function renderDriftGrid() {
       var grid = [
-        { points: 1, maxHours: '4h' },
-        { points: 2, maxHours: '6h' },
-        { points: 3, maxHours: '8h (1 jour)' },
-        { points: 5, maxHours: '20h (2-3 jours)' },
+        { points: 1, maxHours: '${translations.driftRow1Hours}' },
+        { points: 2, maxHours: '${translations.driftRow2Hours}' },
+        { points: 3, maxHours: '${translations.driftRow3Hours}' },
+        { points: 5, maxHours: '${translations.driftRow5Hours}' },
       ];
-      var html = '<table class="drift-grid-table"><thead><tr><th>Points</th><th>Duree max attendue</th></tr></thead><tbody>';
+      var html = '<table class="drift-grid-table"><thead><tr><th>${translations.driftGridHeaderPoints}</th><th>${translations.driftGridHeaderDuration}</th></tr></thead><tbody>';
       grid.forEach(function(entry) {
         html += '<tr><td>' + entry.points + '</td><td>' + entry.maxHours + '</td></tr>';
       });
       html += '</tbody></table>';
-      html += '<div class="drift-grid-note">Les tickets estimes a 8 points ou plus sont signales "A redecouper" des qu'ils passent en cours.</div>';
+      html += '<div class="drift-grid-note">${translations.driftGridNote}</div>';
       document.getElementById('driftGridContent').innerHTML = html;
     }
 
@@ -528,10 +563,10 @@ export const settingsPageHtml = `<!DOCTYPE html>
     async function loadTimezone(teamId) {
       var container = document.getElementById('timezoneContent');
       container.className = 'loading';
-      container.textContent = 'Chargement...';
+      container.textContent = TRANSLATIONS.loading;
       try {
         var response = await fetch(API + '/settings/teams/' + encodeURIComponent(teamId) + '/timezone');
-        if (!response.ok) throw new Error('Impossible de charger le fuseau horaire');
+        if (!response.ok) throw new Error(TRANSLATIONS.errorLoadTimezone);
         var data = await response.json();
         renderTimezoneSelector(teamId, data.timezone);
       } catch (error) {
@@ -566,8 +601,8 @@ export const settingsPageHtml = `<!DOCTYPE html>
             body: JSON.stringify({ timezone: timezone }),
           }
         );
-        if (!response.ok) throw new Error('Erreur lors de la sauvegarde du fuseau horaire');
-        showToast('Fuseau horaire sauvegarde');
+        if (!response.ok) throw new Error(TRANSLATIONS.errorSaveTimezone);
+        showToast(TRANSLATIONS.toastTimezoneSaved);
       } catch (error) {
         showError(error.message);
       }
@@ -576,14 +611,14 @@ export const settingsPageHtml = `<!DOCTYPE html>
     async function loadStatusSettings(teamId) {
       var container = document.getElementById('excludedStatusesContent');
       container.className = 'loading';
-      container.textContent = 'Chargement...';
+      container.textContent = TRANSLATIONS.loading;
 
       try {
         var responses = await Promise.all([
           fetch(API + '/settings/teams/' + encodeURIComponent(teamId) + '/available-statuses'),
           fetch(API + '/settings/teams/' + encodeURIComponent(teamId) + '/excluded-statuses'),
         ]);
-        if (!responses[0].ok || !responses[1].ok) throw new Error('Impossible de charger les statuts');
+        if (!responses[0].ok || !responses[1].ok) throw new Error(TRANSLATIONS.errorLoadStatuses);
         var availableData = await responses[0].json();
         var excludedData = await responses[1].json();
         currentExcluded = excludedData.statuses;
@@ -599,7 +634,7 @@ export const settingsPageHtml = `<!DOCTYPE html>
       container.className = '';
 
       if (availableStatuses.length === 0) {
-        container.innerHTML = '<div class="empty-state">Aucun statut synchronise pour cette equipe.</div>';
+        container.innerHTML = '<div class="empty-state">' + escapeHtml(TRANSLATIONS.noSyncedStatuses) + '</div>';
         return;
       }
 
@@ -609,7 +644,7 @@ export const settingsPageHtml = `<!DOCTYPE html>
         var toggleClass = isExcluded ? 'status-toggle excluded' : 'status-toggle';
         html += '<div class="' + toggleClass + '" data-status="' + escapeHtml(status) + '">' +
           '<span class="status-toggle-name">' + escapeHtml(status) + '</span>' +
-          '<span class="status-toggle-label">' + (isExcluded ? 'Exclu' : 'Analyse') + '</span>' +
+          '<span class="status-toggle-label">' + (isExcluded ? TRANSLATIONS.statusExcludedLabel : TRANSLATIONS.statusIncludedLabel) + '</span>' +
           '</div>';
       });
       html += '</div>';
@@ -641,8 +676,9 @@ export const settingsPageHtml = `<!DOCTYPE html>
             body: JSON.stringify({ statuses: currentExcluded }),
           }
         );
-        if (!response.ok) throw new Error('Erreur lors de la sauvegarde');
+        if (!response.ok) throw new Error(TRANSLATIONS.errorSaveSettings);
         renderStatusToggles(teamId, availableStatuses, currentExcluded);
+        showToast(TRANSLATIONS.toastStatusSaved);
       } catch (error) {
         showError(error.message);
       }
@@ -650,3 +686,4 @@ export const settingsPageHtml = `<!DOCTYPE html>
   </script>
 </body>
 </html>`;
+}

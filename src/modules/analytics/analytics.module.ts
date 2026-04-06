@@ -17,6 +17,7 @@ import { StatusThresholdGateway } from './entities/status-threshold/status-thres
 import { AvailableStatusesGateway } from './entities/team-settings/available-statuses.gateway.js';
 import { TeamSettingsGateway } from './entities/team-settings/team-settings.gateway.js';
 import { WorkspaceDashboardDataGateway } from './entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
+import { WorkspaceSettingsGateway } from './entities/workspace-settings/workspace-settings.gateway.js';
 import { BlockedIssueDetectionScheduler } from './interface-adapters/controllers/blocked-issue-detection.scheduler.js';
 import { BlockedIssuesController } from './interface-adapters/controllers/blocked-issues.controller.js';
 import { BottleneckAnalysisController } from './interface-adapters/controllers/bottleneck-analysis.controller.js';
@@ -33,6 +34,7 @@ import { SettingsPageController } from './interface-adapters/controllers/setting
 import { SprintReportController } from './interface-adapters/controllers/sprint-report.controller.js';
 import { TeamSettingsController } from './interface-adapters/controllers/team-settings.controller.js';
 import { WorkspaceDashboardController } from './interface-adapters/controllers/workspace-dashboard.controller.js';
+import { WorkspaceLanguageController } from './interface-adapters/controllers/workspace-language.controller.js';
 import { AiTextGeneratorWithClaudeCliGateway } from './interface-adapters/gateways/ai-text-generator.with-claude-cli.gateway.js';
 import { AiTextGeneratorWithProviderGateway } from './interface-adapters/gateways/ai-text-generator.with-provider.gateway.js';
 import { AvailableStatusesInPrismaGateway } from './interface-adapters/gateways/available-statuses.in-prisma.gateway.js';
@@ -51,6 +53,7 @@ import { SprintReportDataInPrismaGateway } from './interface-adapters/gateways/s
 import { StatusThresholdInPrismaGateway } from './interface-adapters/gateways/status-threshold.in-prisma.gateway.js';
 import { TeamSettingsInFileGateway } from './interface-adapters/gateways/team-settings.in-file.gateway.js';
 import { WorkspaceDashboardDataInPrismaGateway } from './interface-adapters/gateways/workspace-dashboard-data.in-prisma.gateway.js';
+import { WorkspaceSettingsInFileGateway } from './interface-adapters/gateways/workspace-settings.in-file.gateway.js';
 import { AlertHistoryPresenter } from './interface-adapters/presenters/alert-history.presenter.js';
 import { BlockedIssuesPresenter } from './interface-adapters/presenters/blocked-issues.presenter.js';
 import { BottleneckAnalysisPresenter } from './interface-adapters/presenters/bottleneck-analysis.presenter.js';
@@ -80,11 +83,13 @@ import { GetMemberHealthUsecase } from './usecases/get-member-health.usecase.js'
 import { GetReportUsecase } from './usecases/get-report.usecase.js';
 import { GetTeamExcludedStatusesUsecase } from './usecases/get-team-excluded-statuses.usecase.js';
 import { GetWorkspaceDashboardUsecase } from './usecases/get-workspace-dashboard.usecase.js';
+import { GetWorkspaceLanguageUsecase } from './usecases/get-workspace-language.usecase.js';
 import { ListTeamCyclesUsecase } from './usecases/list-team-cycles.usecase.js';
 import { ListTeamReportsUsecase } from './usecases/list-team-reports.usecase.js';
 import { PredictIssueDurationUsecase } from './usecases/predict-issue-duration.usecase.js';
 import { SetStatusThresholdUsecase } from './usecases/set-status-threshold.usecase.js';
 import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-statuses.usecase.js';
+import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.usecase.js';
 
 @Module({
   imports: [AuditModule],
@@ -104,6 +109,7 @@ import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-sta
     DriftingIssuesController,
     MemberHealthController,
     MemberHealthTrendsPageController,
+    WorkspaceLanguageController,
   ],
   providers: [
     CalculateCycleMetricsUsecase,
@@ -210,6 +216,12 @@ import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-sta
     {
       provide: MemberHealthDataGateway,
       useClass: MemberHealthDataInPrismaGateway,
+    },
+    GetWorkspaceLanguageUsecase,
+    SetWorkspaceLanguageUsecase,
+    {
+      provide: WorkspaceSettingsGateway,
+      useClass: WorkspaceSettingsInFileGateway,
     },
   ],
   exports: [SprintReportGateway],
