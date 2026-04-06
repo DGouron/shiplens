@@ -145,24 +145,175 @@ describe('View Member Health Trends (acceptance)', () => {
       expect(dto.underestimationRatio.indicator).toBe('not-applicable');
     });
 
-    it.todo(
-      'chronic underestimation: Bob 3 cycles 40% -> 45% -> 50% -> red + rising -> covered by PR 3 (Signal 2)',
-    );
+    it('chronic underestimation: Bob 3 cycles 40% -> 45% -> 50% -> underestimation signal red + rising + "50%"', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: 40,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: 45,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: 50,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+      ];
 
-    it.todo(
-      'drifting cycle time: Alice 3 cycles 1.2d -> 1.5d -> 2.1d -> red + rising -> covered by PR 4 (Signal 3)',
-    );
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Bob',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
 
-    it.todo(
-      'lingering review: Charlie 3 cycles 8h -> 12h -> 24h -> red + rising -> covered by PR 2 (Signal 5)',
-    );
+      expect(dto.underestimationRatio.value).toBe('50%');
+      expect(dto.underestimationRatio.trend).toBe('rising');
+      expect(dto.underestimationRatio.indicator).toBe('red');
+    });
+
+    it('drifting cycle time: Alice 3 cycles 1.2d -> 1.5d -> 2.1d -> cycle time signal red + rising + "2.1d"', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.2,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.5,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 2.1,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Alice',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.averageCycleTime.value).toBe('2.1d');
+      expect(dto.averageCycleTime.trend).toBe('rising');
+      expect(dto.averageCycleTime.indicator).toBe('red');
+    });
+
+    it('lingering review: Charlie 3 cycles 8h -> 12h -> 24h -> review signal red + rising + "24h"', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: 8,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: 12,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: null,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: 24,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Charlie',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.medianReviewTime.value).toBe('24h');
+      expect(dto.medianReviewTime.trend).toBe('rising');
+      expect(dto.medianReviewTime.indicator).toBe('red');
+    });
 
     it.todo(
       'drift improvement: Alice 3 cycles 4 -> 2 -> 1 -> green + falling -> covered by PR 5 (Signal 4)',
     );
 
-    it.todo(
-      'mixed trend: Bob 4 cycles 1.5d -> 2d -> 1.2d -> 1.8d -> orange + mixed -> covered by PR 4 (Signal 3)',
-    );
+    it('mixed trend: Bob 4 cycles 1.5d -> 2d -> 1.2d -> 1.8d -> cycle time signal orange (first deviation)', async () => {
+      gateway.cycleSnapshots = [
+        {
+          cycleId: 'cycle-1',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.5,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-2',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 2,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-3',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.2,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+        {
+          cycleId: 'cycle-4',
+          estimationScorePercent: null,
+          underestimationRatioPercent: null,
+          averageCycleTimeInDays: 1.8,
+          driftingTicketCount: null,
+          medianReviewTimeInHours: null,
+        },
+      ];
+
+      const health = await getMemberHealth.execute({
+        teamId: 'team-1',
+        memberName: 'Bob',
+        cycles: 5,
+      });
+      const dto = presenter.present(health);
+
+      expect(dto.averageCycleTime.value).toBe('1.8d');
+      expect(dto.averageCycleTime.indicator).toBe('orange');
+    });
   });
 });
