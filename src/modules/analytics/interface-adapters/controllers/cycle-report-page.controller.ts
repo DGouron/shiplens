@@ -1,5 +1,6 @@
 import { Controller, Get, Header, Param, Query } from '@nestjs/common';
 import { GetCycleIssuesUsecase } from '../../usecases/get-cycle-issues.usecase.js';
+import { GetWorkspaceLanguageUsecase } from '../../usecases/get-workspace-language.usecase.js';
 import { ListTeamCyclesUsecase } from '../../usecases/list-team-cycles.usecase.js';
 import {
   type CycleIssuesDto,
@@ -9,7 +10,7 @@ import {
   type TeamCyclesDto,
   TeamCyclesPresenter,
 } from '../presenters/team-cycles.presenter.js';
-import { cycleReportPageHtml } from './cycle-report-page.html.js';
+import { buildCycleReportPageHtml } from './cycle-report-page.html.js';
 
 @Controller()
 export class CycleReportPageController {
@@ -18,6 +19,7 @@ export class CycleReportPageController {
     private readonly getCycleIssuesUsecase: GetCycleIssuesUsecase,
     private readonly teamCyclesPresenter: TeamCyclesPresenter,
     private readonly cycleIssuesPresenter: CycleIssuesPresenter,
+    private readonly getWorkspaceLanguage: GetWorkspaceLanguageUsecase,
   ) {}
 
   @Get('analytics/teams/:teamId/cycles')
@@ -40,7 +42,8 @@ export class CycleReportPageController {
 
   @Get('cycle-report')
   @Header('Content-Type', 'text/html')
-  getPage(): string {
-    return cycleReportPageHtml;
+  async getPage(): Promise<string> {
+    const locale = await this.getWorkspaceLanguage.execute();
+    return buildCycleReportPageHtml(locale);
   }
 }

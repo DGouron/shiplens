@@ -1,6 +1,6 @@
 # Translate remaining pages
 
-## Status: ready (slice 2/3)
+## Status: implemented (slice 2/3)
 
 Slice 2 of the i18n feature. Depends on Slice 1 (set-workspace-language) for i18n infrastructure.
 

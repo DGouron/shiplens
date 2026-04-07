@@ -49,7 +49,7 @@ Shiplens serves teams across multiple language backgrounds (francophone, angloph
 ## Implementation Progress
 
 - [x] Slice 1: i18n infrastructure + language selector + settings page ([set-workspace-language](set-workspace-language.md))
-- [ ] Slice 2: translate remaining pages ([translate-remaining-pages](translate-remaining-pages.md))
+- [x] Slice 2: translate remaining pages ([translate-remaining-pages](translate-remaining-pages.md))
 - [ ] Slice 3: unify SprintReport language ([unify-sprint-report-language](unify-sprint-report-language.md))
 
 ## Out of scope
