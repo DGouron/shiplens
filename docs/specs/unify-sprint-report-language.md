@@ -1,6 +1,6 @@
 # Unify sprint report language with workspace preference
 
-## Status: ready (slice 3/3)
+## Status: implemented (slice 3/3)
 
 Slice 3 of the i18n feature. Depends on Slice 1 (set-workspace-language) for workspace language infrastructure.
 

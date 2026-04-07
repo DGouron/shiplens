@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { WorkspaceSettingsGateway } from '../../entities/workspace-settings/workspace-settings.gateway.js';
 import { GetReportUsecase } from '../../usecases/get-report.usecase.js';
 import { ListTeamReportsUsecase } from '../../usecases/list-team-reports.usecase.js';
 import {
@@ -17,6 +18,7 @@ export class ReportExportController {
     private readonly getReport: GetReportUsecase,
     private readonly reportHistoryPresenter: ReportHistoryPresenter,
     private readonly reportDetailPresenter: ReportDetailPresenter,
+    private readonly workspaceSettingsGateway: WorkspaceSettingsGateway,
   ) {}
 
   @Get('teams/:teamId/reports')
@@ -32,6 +34,7 @@ export class ReportExportController {
     @Param('reportId') reportId: string,
   ): Promise<ReportDetailDto> {
     const report = await this.getReport.execute({ reportId });
-    return this.reportDetailPresenter.present(report);
+    const locale = await this.workspaceSettingsGateway.getLanguage();
+    return this.reportDetailPresenter.present(report, locale);
   }
 }

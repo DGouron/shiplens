@@ -2,6 +2,7 @@ import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path
 import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
+import { StubWorkspaceSettingsGateway } from '@modules/analytics/testing/good-path/stub.workspace-settings.gateway.js';
 import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
@@ -16,6 +17,7 @@ describe('Audit Rules in Report (acceptance)', () => {
   let auditRuleGateway: StubAuditRuleGateway;
   let checklistItemGateway: StubChecklistItemGateway;
   let cycleMetricsDataGateway: StubCycleMetricsDataGateway;
+  let workspaceSettingsGateway: StubWorkspaceSettingsGateway;
   let usecase: GenerateSprintReportUsecase;
 
   beforeEach(() => {
@@ -25,6 +27,7 @@ describe('Audit Rules in Report (acceptance)', () => {
     auditRuleGateway = new StubAuditRuleGateway();
     checklistItemGateway = new StubChecklistItemGateway();
     cycleMetricsDataGateway = new StubCycleMetricsDataGateway();
+    workspaceSettingsGateway = new StubWorkspaceSettingsGateway();
 
     cycleMetricsDataGateway.snapshotData = {
       cycleId: 'cycle-1',
@@ -63,6 +66,7 @@ describe('Audit Rules in Report (acceptance)', () => {
       auditRuleGateway,
       checklistItemGateway,
       cycleMetricsDataGateway,
+      workspaceSettingsGateway,
     );
   });
 
@@ -100,7 +104,6 @@ describe('Audit Rules in Report (acceptance)', () => {
       const report = await usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       });
 
@@ -124,7 +127,6 @@ describe('Audit Rules in Report (acceptance)', () => {
       const report = await usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       });
 
@@ -165,7 +167,6 @@ describe('Audit Rules in Report (acceptance)', () => {
       const report = await usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       });
 
@@ -180,7 +181,6 @@ describe('Audit Rules in Report (acceptance)', () => {
       const report = await usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       });
 
@@ -230,7 +230,6 @@ describe('Audit Rules in Report (acceptance)', () => {
       const report = await usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       });
 
@@ -250,7 +249,6 @@ describe('Audit Rules in Report (acceptance)', () => {
       const report = await usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       });
 
@@ -285,7 +283,6 @@ describe('Audit Rules in Report (acceptance)', () => {
       const report = await usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       });
 

@@ -32,7 +32,7 @@ describe('Export Sprint Report (acceptance)', () => {
       await sprintReportGateway.save(report);
 
       const retrieved = await getReport.execute({ reportId: report.id });
-      const detail = reportDetailPresenter.present(retrieved);
+      const detail = reportDetailPresenter.present(retrieved, 'fr');
 
       expect(detail.cycleName).toBe('Sprint 12');
       expect(detail.language).toBe('FR');
@@ -50,7 +50,7 @@ describe('Export Sprint Report (acceptance)', () => {
       await sprintReportGateway.save(report);
 
       const retrieved = await getReport.execute({ reportId: report.id });
-      const detail = reportDetailPresenter.present(retrieved);
+      const detail = reportDetailPresenter.present(retrieved, 'fr');
 
       expect(detail.markdown).toContain('#');
       expect(detail.markdown).toContain(report.executiveSummary);
@@ -61,7 +61,7 @@ describe('Export Sprint Report (acceptance)', () => {
       await sprintReportGateway.save(report);
 
       const retrieved = await getReport.execute({ reportId: report.id });
-      const detail = reportDetailPresenter.present(retrieved);
+      const detail = reportDetailPresenter.present(retrieved, 'fr');
 
       expect(detail.plainText).not.toContain('#');
       expect(detail.plainText).toContain(report.executiveSummary);
@@ -117,7 +117,7 @@ describe('Export Sprint Report (acceptance)', () => {
       await sprintReportGateway.save(report);
 
       const retrieved = await getReport.execute({ reportId: report.id });
-      const detail = reportDetailPresenter.present(retrieved);
+      const detail = reportDetailPresenter.present(retrieved, 'fr');
 
       expect(detail.id).toBe(report.id);
       expect(detail.cycleName).toBe('Sprint 12');

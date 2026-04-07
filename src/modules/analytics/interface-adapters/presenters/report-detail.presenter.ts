@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { type Presenter } from '@shared/foundation/presenter/presenter.js';
 import { type SprintReport } from '../../entities/sprint-report/sprint-report.js';
 import { type AuditSection } from '../../entities/sprint-report/sprint-report.schema.js';
+import { type Locale } from '../../entities/workspace-settings/workspace-language.schema.js';
 
 export interface ReportDetailDto {
   id: string;
@@ -12,20 +12,20 @@ export interface ReportDetailDto {
   plainText: string;
 }
 
-const NO_TREND_MESSAGE: Record<string, string> = {
-  FR: "Pas d'historique disponible pour comparer la vélocité",
-  EN: 'No historical data available to compare velocity',
+const NO_TREND_MESSAGE: Record<Locale, string> = {
+  fr: "Pas d'historique disponible pour comparer la vélocité",
+  en: 'No historical data available to compare velocity',
 };
 
-const SECTION_LABELS: Record<string, Record<string, string>> = {
-  FR: {
+const SECTION_LABELS: Record<Locale, Record<string, string>> = {
+  fr: {
     summary: 'Résumé',
     trends: 'Tendances',
     highlights: 'Points forts',
     risks: 'Risques',
     recommendations: 'Recommandations',
   },
-  EN: {
+  en: {
     summary: 'Summary',
     trends: 'Trends',
     highlights: 'Highlights',
@@ -34,20 +34,36 @@ const SECTION_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
-const _STATUS_EMOJI: Record<string, string> = {
-  pass: 'pass',
-  warn: 'warn',
-  fail: 'fail',
+const AUDIT_LABELS: Record<Locale, Record<string, string>> = {
+  fr: {
+    title: 'Audit des pratiques',
+    adherenceScorePrefix: "Score d'adhérence : ",
+    trendPrefix: 'Tendance : ',
+    noTrend: "Pas assez d'historique pour afficher la tendance.",
+    recommendations: 'Recommandations',
+    checklist: 'Checklist',
+    ruleHeader: 'Règle',
+    statusHeader: 'Statut',
+    measuredValueHeader: 'Valeur mesurée',
+  },
+  en: {
+    title: 'Practice audit',
+    adherenceScorePrefix: 'Adherence score: ',
+    trendPrefix: 'Trend: ',
+    noTrend: 'Not enough history to display trend.',
+    recommendations: 'Recommendations',
+    checklist: 'Checklist',
+    ruleHeader: 'Rule',
+    statusHeader: 'Status',
+    measuredValueHeader: 'Measured value',
+  },
 };
 
 @Injectable()
-export class ReportDetailPresenter
-  implements Presenter<SprintReport, ReportDetailDto>
-{
-  present(report: SprintReport): ReportDetailDto {
-    const labels = SECTION_LABELS[report.language] ?? SECTION_LABELS.EN;
-    const trendsContent =
-      report.trends ?? NO_TREND_MESSAGE[report.language] ?? NO_TREND_MESSAGE.EN;
+export class ReportDetailPresenter {
+  present(report: SprintReport, locale: Locale): ReportDetailDto {
+    const labels = SECTION_LABELS[locale];
+    const trendsContent = report.trends ?? NO_TREND_MESSAGE[locale];
 
     const markdownParts = [
       `# ${report.cycleName}`,
@@ -71,7 +87,7 @@ export class ReportDetailPresenter
     if (report.auditSection) {
       markdownParts.push(
         '',
-        ...this.renderAuditSectionMarkdown(report.auditSection),
+        ...this.renderAuditSectionMarkdown(report.auditSection, locale),
       );
     }
 
@@ -99,7 +115,7 @@ export class ReportDetailPresenter
     if (report.auditSection) {
       plainTextParts.push(
         '',
-        ...this.renderAuditSectionPlainText(report.auditSection),
+        ...this.renderAuditSectionPlainText(report.auditSection, locale),
       );
     }
 
@@ -115,22 +131,30 @@ export class ReportDetailPresenter
     };
   }
 
-  private renderAuditSectionMarkdown(auditSection: AuditSection): string[] {
+  private renderAuditSectionMarkdown(
+    auditSection: AuditSection,
+    locale: Locale,
+  ): string[] {
+    const audit = AUDIT_LABELS[locale];
     const lines: string[] = [];
 
-    lines.push(`## Audit des pratiques`);
+    lines.push(`## ${audit.title}`);
     lines.push('');
-    lines.push(`**Score d'adhérence : ${auditSection.adherenceScore}%**`);
+    lines.push(
+      `**${audit.adherenceScorePrefix}${auditSection.adherenceScore}%**`,
+    );
     lines.push('');
 
     if (auditSection.trend) {
-      lines.push(`**Tendance : ${auditSection.trend.message}**`);
+      lines.push(`**${audit.trendPrefix}${auditSection.trend.message}**`);
     } else {
-      lines.push("Pas assez d'historique pour afficher la tendance.");
+      lines.push(audit.noTrend);
     }
     lines.push('');
 
-    lines.push('| Règle | Statut | Valeur mesurée |');
+    lines.push(
+      `| ${audit.ruleHeader} | ${audit.statusHeader} | ${audit.measuredValueHeader} |`,
+    );
     lines.push('|-------|--------|----------------|');
     for (const rule of auditSection.evaluatedRules) {
       lines.push(
@@ -143,7 +167,7 @@ export class ReportDetailPresenter
     );
     if (failedRules.length > 0) {
       lines.push('');
-      lines.push('### Recommandations');
+      lines.push(`### ${audit.recommendations}`);
       for (const rule of failedRules) {
         lines.push(`- **${rule.ruleName}** : ${rule.recommendation}`);
       }
@@ -151,7 +175,7 @@ export class ReportDetailPresenter
 
     if (auditSection.checklistItems.length > 0) {
       lines.push('');
-      lines.push('### Checklist');
+      lines.push(`### ${audit.checklist}`);
       for (const item of auditSection.checklistItems) {
         lines.push(`- [ ] ${item.name}`);
       }
@@ -160,18 +184,22 @@ export class ReportDetailPresenter
     return lines;
   }
 
-  private renderAuditSectionPlainText(auditSection: AuditSection): string[] {
+  private renderAuditSectionPlainText(
+    auditSection: AuditSection,
+    locale: Locale,
+  ): string[] {
+    const audit = AUDIT_LABELS[locale];
     const lines: string[] = [];
 
-    lines.push('Audit des pratiques:');
+    lines.push(`${audit.title}:`);
     lines.push('');
-    lines.push(`Score d'adhérence : ${auditSection.adherenceScore}%`);
+    lines.push(`${audit.adherenceScorePrefix}${auditSection.adherenceScore}%`);
     lines.push('');
 
     if (auditSection.trend) {
-      lines.push(`Tendance : ${auditSection.trend.message}`);
+      lines.push(`${audit.trendPrefix}${auditSection.trend.message}`);
     } else {
-      lines.push("Pas assez d'historique pour afficher la tendance.");
+      lines.push(audit.noTrend);
     }
     lines.push('');
 
@@ -184,7 +212,7 @@ export class ReportDetailPresenter
     );
     if (failedRules.length > 0) {
       lines.push('');
-      lines.push('Recommandations:');
+      lines.push(`${audit.recommendations}:`);
       for (const rule of failedRules) {
         lines.push(`- ${rule.ruleName} : ${rule.recommendation}`);
       }
@@ -192,7 +220,7 @@ export class ReportDetailPresenter
 
     if (auditSection.checklistItems.length > 0) {
       lines.push('');
-      lines.push('Checklist:');
+      lines.push(`${audit.checklist}:`);
       for (const item of auditSection.checklistItems) {
         lines.push(`- ${item.name}`);
       }

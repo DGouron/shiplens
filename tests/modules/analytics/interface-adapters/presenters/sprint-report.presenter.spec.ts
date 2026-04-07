@@ -8,7 +8,7 @@ describe('SprintReportPresenter', () => {
   it('presents a full report with all sections', () => {
     const report = new SprintReportBuilder().build();
 
-    const dto = presenter.present(report);
+    const dto = presenter.present(report, 'fr');
 
     expect(dto.cycleName).toBe('Sprint 10');
     expect(dto.language).toBe('FR');
@@ -19,23 +19,31 @@ describe('SprintReportPresenter', () => {
     expect(dto.recommendations).toBeTruthy();
   });
 
-  it('presents null trends as absence message in french', () => {
+  it('presents null trends as absence message in french workspace', () => {
     const report = new SprintReportBuilder().withTrends(null).build();
 
-    const dto = presenter.present(report);
+    const dto = presenter.present(report, 'fr');
 
     expect(dto.trends).toBe(
       "Pas d'historique disponible pour comparer la vélocité",
     );
   });
 
-  it('presents null trends as absence message in english', () => {
-    const report = new SprintReportBuilder()
-      .withLanguage('EN')
+  it('presents null trends as absence message in english workspace', () => {
+    const report = new SprintReportBuilder().withTrends(null).build();
+
+    const dto = presenter.present(report, 'en');
+
+    expect(dto.trends).toBe('No historical data available to compare velocity');
+  });
+
+  it('uses workspace locale for no trend message regardless of report language', () => {
+    const frenchReport = new SprintReportBuilder()
+      .withLanguage('FR')
       .withTrends(null)
       .build();
 
-    const dto = presenter.present(report);
+    const dto = presenter.present(frenchReport, 'en');
 
     expect(dto.trends).toBe('No historical data available to compare velocity');
   });
@@ -58,7 +66,7 @@ describe('SprintReportPresenter', () => {
       })
       .build();
 
-    const dto = presenter.present(report);
+    const dto = presenter.present(report, 'fr');
 
     expect(dto.auditSection).not.toBeNull();
     expect(dto.auditSection?.adherenceScore).toBe(100);
@@ -68,7 +76,7 @@ describe('SprintReportPresenter', () => {
   it('presents null audit section when not present', () => {
     const report = new SprintReportBuilder().build();
 
-    const dto = presenter.present(report);
+    const dto = presenter.present(report, 'fr');
 
     expect(dto.auditSection).toBeNull();
   });

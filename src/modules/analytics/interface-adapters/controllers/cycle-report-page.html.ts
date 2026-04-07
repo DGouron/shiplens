@@ -884,7 +884,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamId: teamId, language: 'FR', provider: 'Anthropic' }),
+            body: JSON.stringify({ teamId: teamId, provider: 'Anthropic' }),
           }
         );
         if (!response.ok) {

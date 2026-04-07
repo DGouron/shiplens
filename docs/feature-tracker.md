@@ -28,4 +28,4 @@ o# Feature Tracker
 | Voir les tendances de sante d'un membre | [view-member-health-trends](specs/view-member-health-trends.md) | Analytics | implemented | 2026-04-06 |
 | Definir la langue du workspace | [set-workspace-language](specs/set-workspace-language.md) | Analytics | implemented | 2026-04-06 |
 | Traduire les pages restantes | [translate-remaining-pages](specs/translate-remaining-pages.md) | Analytics | implemented | 2026-04-07 |
-| Unifier la langue du sprint report | [unify-sprint-report-language](specs/unify-sprint-report-language.md) | Analytics | ready | 2026-04-06 |
+| Unifier la langue du sprint report | [unify-sprint-report-language](specs/unify-sprint-report-language.md) | Analytics | implemented | 2026-04-07 |

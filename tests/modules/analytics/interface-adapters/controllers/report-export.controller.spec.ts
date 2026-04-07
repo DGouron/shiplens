@@ -3,6 +3,7 @@ import { ReportExportController } from '@modules/analytics/interface-adapters/co
 import { ReportDetailPresenter } from '@modules/analytics/interface-adapters/presenters/report-detail.presenter.js';
 import { ReportHistoryPresenter } from '@modules/analytics/interface-adapters/presenters/report-history.presenter.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
+import { StubWorkspaceSettingsGateway } from '@modules/analytics/testing/good-path/stub.workspace-settings.gateway.js';
 import { GetReportUsecase } from '@modules/analytics/usecases/get-report.usecase.js';
 import { ListTeamReportsUsecase } from '@modules/analytics/usecases/list-team-reports.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -11,9 +12,11 @@ import { SprintReportBuilder } from '../../../../builders/sprint-report.builder.
 describe('ReportExportController', () => {
   let controller: ReportExportController;
   let gateway: StubSprintReportGateway;
+  let workspaceSettingsGateway: StubWorkspaceSettingsGateway;
 
   beforeEach(() => {
     gateway = new StubSprintReportGateway();
+    workspaceSettingsGateway = new StubWorkspaceSettingsGateway();
     const listTeamReports = new ListTeamReportsUsecase(gateway);
     const getReport = new GetReportUsecase(gateway);
     const reportHistoryPresenter = new ReportHistoryPresenter();
@@ -23,6 +26,7 @@ describe('ReportExportController', () => {
       getReport,
       reportHistoryPresenter,
       reportDetailPresenter,
+      workspaceSettingsGateway,
     );
   });
 
@@ -63,6 +67,20 @@ describe('ReportExportController', () => {
       expect(result.cycleName).toBe('Sprint 12');
       expect(result.markdown).toContain('# Sprint 12');
       expect(result.plainText).toContain('Sprint 12');
+    });
+
+    it('uses workspace language for labels', async () => {
+      workspaceSettingsGateway.storedLanguage = 'en';
+      const frenchReport = new SprintReportBuilder()
+        .withCycleName('Sprint 12')
+        .withLanguage('FR')
+        .build();
+      await gateway.save(frenchReport);
+
+      const result = await controller.getReportDetail(frenchReport.id);
+
+      expect(result.markdown).toContain('## Summary');
+      expect(result.markdown).toContain('## Trends');
     });
 
     it('throws ReportNotFoundError for unknown report', async () => {

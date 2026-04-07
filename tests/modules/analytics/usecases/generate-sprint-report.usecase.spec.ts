@@ -2,13 +2,13 @@ import {
   AiProviderUnavailableError,
   EmptySprintError,
   SprintNotSynchronizedError,
-  UnsupportedLanguageError,
 } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { FailingAiTextGeneratorGateway } from '@modules/analytics/testing/bad-path/failing.ai-text-generator.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
 import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
+import { StubWorkspaceSettingsGateway } from '@modules/analytics/testing/good-path/stub.workspace-settings.gateway.js';
 import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
@@ -24,6 +24,7 @@ describe('GenerateSprintReportUsecase', () => {
   let auditRuleGateway: StubAuditRuleGateway;
   let checklistItemGateway: StubChecklistItemGateway;
   let cycleMetricsDataGateway: StubCycleMetricsDataGateway;
+  let workspaceSettingsGateway: StubWorkspaceSettingsGateway;
   let usecase: GenerateSprintReportUsecase;
 
   beforeEach(() => {
@@ -33,6 +34,7 @@ describe('GenerateSprintReportUsecase', () => {
     auditRuleGateway = new StubAuditRuleGateway();
     checklistItemGateway = new StubChecklistItemGateway();
     cycleMetricsDataGateway = new StubCycleMetricsDataGateway();
+    workspaceSettingsGateway = new StubWorkspaceSettingsGateway();
 
     cycleMetricsDataGateway.snapshotData = {
       cycleId: 'cycle-1',
@@ -60,14 +62,16 @@ describe('GenerateSprintReportUsecase', () => {
       auditRuleGateway,
       checklistItemGateway,
       cycleMetricsDataGateway,
+      workspaceSettingsGateway,
     );
   });
 
-  it('generates a report in french for a synchronized sprint', async () => {
+  it('generates a report using workspace language', async () => {
+    workspaceSettingsGateway.storedLanguage = 'fr';
+
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -79,7 +83,8 @@ describe('GenerateSprintReportUsecase', () => {
     expect(report.recommendations).toBeTruthy();
   });
 
-  it('generates a report in english', async () => {
+  it('generates a report in english when workspace is english', async () => {
+    workspaceSettingsGateway.storedLanguage = 'en';
     aiGateway.generatedText = JSON.stringify({
       executiveSummary: 'The sprint went well with stable velocity.',
       trends: 'Velocity increased by 10% compared to last 3 sprints.',
@@ -91,7 +96,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'EN',
       provider: 'Anthropic',
     });
 
@@ -103,7 +107,6 @@ describe('GenerateSprintReportUsecase', () => {
     await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'Ollama',
     });
 
@@ -117,7 +120,6 @@ describe('GenerateSprintReportUsecase', () => {
       usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       }),
     ).rejects.toThrow(SprintNotSynchronizedError);
@@ -133,21 +135,9 @@ describe('GenerateSprintReportUsecase', () => {
       usecase.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       }),
     ).rejects.toThrow(EmptySprintError);
-  });
-
-  it('throws UnsupportedLanguageError for unsupported language', async () => {
-    await expect(
-      usecase.execute({
-        cycleId: 'cycle-1',
-        teamId: 'team-1',
-        language: 'JP' as 'FR',
-        provider: 'OpenAI',
-      }),
-    ).rejects.toThrow(UnsupportedLanguageError);
   });
 
   it('throws AiProviderUnavailableError when provider is unavailable', async () => {
@@ -159,13 +149,13 @@ describe('GenerateSprintReportUsecase', () => {
       auditRuleGateway,
       checklistItemGateway,
       cycleMetricsDataGateway,
+      workspaceSettingsGateway,
     );
 
     await expect(
       usecaseWithFailing.execute({
         cycleId: 'cycle-1',
         teamId: 'team-1',
-        language: 'FR',
         provider: 'OpenAI',
       }),
     ).rejects.toThrow(AiProviderUnavailableError);
@@ -177,7 +167,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -198,7 +187,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -209,7 +197,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -222,7 +209,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -234,7 +220,6 @@ describe('GenerateSprintReportUsecase', () => {
     await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -246,7 +231,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -272,7 +256,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -305,7 +288,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -334,7 +316,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -368,7 +349,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -388,7 +368,6 @@ describe('GenerateSprintReportUsecase', () => {
     const report = await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
@@ -408,7 +387,6 @@ describe('GenerateSprintReportUsecase', () => {
     await usecase.execute({
       cycleId: 'cycle-1',
       teamId: 'team-1',
-      language: 'FR',
       provider: 'OpenAI',
     });
 
