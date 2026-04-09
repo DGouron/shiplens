@@ -1,5 +1,6 @@
 import { type Locale } from '../../entities/workspace-settings/workspace-language.schema.js';
 import { cycleReportPageTranslations } from '../presenters/cycle-report-page.translations.js';
+import { faviconLink } from './favicon.js';
 
 export function buildCycleReportPageHtml(locale: Locale): string {
   const translations = cycleReportPageTranslations[locale];
@@ -11,6 +12,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shiplens — ${translations.pageTitle}</title>
+  ${faviconLink}
   <style>
     :root {
       --accent-1: #6366f1;
