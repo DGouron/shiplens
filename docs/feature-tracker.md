@@ -29,3 +29,11 @@ o# Feature Tracker
 | Definir la langue du workspace | [set-workspace-language](specs/set-workspace-language.md) | Analytics | implemented | 2026-04-06 |
 | Traduire les pages restantes | [translate-remaining-pages](specs/translate-remaining-pages.md) | Analytics | implemented | 2026-04-07 |
 | Unifier la langue du sprint report | [unify-sprint-report-language](specs/unify-sprint-report-language.md) | Analytics | implemented | 2026-04-07 |
+| Migrer le frontend vers React SPA | [migrate-to-react-spa](specs/frontend/migrate-to-react-spa.md) | Frontend | planned | 2026-04-09 |
+| Scaffolder le projet React SPA | [setup-react-spa](specs/frontend/setup-react-spa.md) | Frontend | planned | 2026-04-09 |
+| Extraire le design system | [extract-design-system](specs/frontend/extract-design-system.md) | Frontend | planned | 2026-04-09 |
+| Migrer la page dashboard | [migrate-dashboard-page](specs/frontend/migrate-dashboard-page.md) | Frontend | planned | 2026-04-09 |
+| Migrer la page cycle report | [migrate-cycle-report-page](specs/frontend/migrate-cycle-report-page.md) | Frontend | planned | 2026-04-09 |
+| Migrer la page health trends | [migrate-member-health-trends-page](specs/frontend/migrate-member-health-trends-page.md) | Frontend | planned | 2026-04-09 |
+| Migrer la page settings + cleanup backend | [migrate-settings-page](specs/frontend/migrate-settings-page.md) | Frontend | planned | 2026-04-09 |
+| Ameliorations design UX et data viz | [design-improvements](specs/frontend/design-improvements.md) | Frontend | planned | 2026-04-09 |
