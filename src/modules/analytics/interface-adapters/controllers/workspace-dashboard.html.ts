@@ -13,6 +13,9 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${translations.pageTitle} — Shiplens</title>
   ${faviconLink}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --accent-1: #6366f1;
@@ -45,27 +48,27 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
     }
 
     [data-theme="light"] {
-      --bg-deep: #f0f0f8;
-      --bg-base: #f8f9fc;
-      --bg-surface: rgba(255, 255, 255, 0.75);
-      --bg-elevated: rgba(255, 255, 255, 0.85);
-      --bg-hover: rgba(238, 242, 255, 0.9);
-      --border: rgba(99, 102, 241, 0.15);
-      --border-hover: rgba(99, 102, 241, 0.35);
-      --border-strong: rgba(99, 102, 241, 0.6);
-      --text-primary: #1e1b4b;
+      --bg-deep: #f4f4fb;
+      --bg-base: #ffffff;
+      --bg-surface: rgba(255, 255, 255, 0.92);
+      --bg-elevated: rgba(255, 255, 255, 0.96);
+      --bg-hover: rgba(238, 242, 255, 0.95);
+      --border: rgba(99, 102, 241, 0.12);
+      --border-hover: rgba(99, 102, 241, 0.25);
+      --border-strong: rgba(99, 102, 241, 0.45);
+      --text-primary: #1a1a2e;
       --text-secondary: #4338ca;
-      --text-muted: #6b7280;
-      --text-dim: #c7d2fe;
+      --text-muted: #64748b;
+      --text-dim: #cbd5e1;
       --glass-blur: 20px;
-      --shadow-card: 0 2px 16px rgba(99,102,241,0.08), 0 0 0 1px var(--border);
-      --shadow-hover: 0 6px 32px rgba(99,102,241,0.12), 0 0 0 1px var(--border-hover);
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(99,102,241,0.06), 0 0 0 1px rgba(99,102,241,0.08);
+      --shadow-hover: 0 4px 20px rgba(99,102,241,0.12), 0 0 0 1px rgba(99,102,241,0.15);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       background: var(--bg-deep);
       color: var(--text-primary);
       min-height: 100vh;
@@ -88,8 +91,8 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.04), transparent),
-        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(168,85,247,0.03), transparent);
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(99,102,241,0.07), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 90%, rgba(168,85,247,0.05), transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
@@ -121,6 +124,8 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
     }
 
     .nav-sep { color: var(--text-dim); font-size: 0.85rem; }
+    .nav-crumb { color: var(--text-muted); font-size: 0.85rem; text-decoration: none; transition: color var(--transition); }
+    .nav-crumb:hover { color: var(--text-secondary); }
     .nav-crumb-active { color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; }
 
     .nav-right { display: flex; align-items: center; gap: 1rem; }
@@ -261,6 +266,25 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
       border-color: var(--border-hover);
     }
 
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .completion-ring { flex-shrink: 0; }
+    .completion-ring svg { display: block; }
+    .ring-bg { stroke: var(--border); }
+    .ring-fg { transition: stroke-dashoffset 0.8s ease; }
+    .ring-text {
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      font-weight: 700;
+      fill: var(--text-primary);
+    }
+
+    .card-header-text { flex: 1; min-width: 0; }
+
     .team-name {
       font-size: 1.05rem;
       font-weight: 700;
@@ -270,7 +294,6 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
     .cycle-name {
       font-size: 0.78rem;
       color: var(--text-muted);
-      margin-bottom: 1rem;
     }
 
     .kpi {
@@ -286,7 +309,9 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
     .kpi-label { color: var(--text-muted); }
 
     .kpi-value {
-      font-weight: 700;
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      font-weight: 600;
+      font-size: 0.82rem;
       font-variant-numeric: tabular-nums;
       background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
       -webkit-background-clip: text;
@@ -301,7 +326,21 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
       background-clip: text;
     }
 
-    .no-cycle { color: var(--text-muted); font-style: italic; font-size: 0.85rem; padding: 0.5rem 0; }
+    .team-card--healthy { border-left: 4px solid var(--success); box-shadow: var(--shadow-card), inset 3px 0 12px -4px rgba(16,185,129,0.25); }
+    .team-card--warning { border-left: 4px solid var(--warning); box-shadow: var(--shadow-card), inset 3px 0 12px -4px rgba(245,158,11,0.25); }
+    .team-card--danger { border-left: 4px solid var(--danger); box-shadow: var(--shadow-card), inset 3px 0 12px -4px rgba(239,68,68,0.25); }
+    .team-card--idle { border-left: 4px solid var(--text-dim); }
+
+    .no-cycle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 0;
+      text-align: center;
+    }
+    .no-cycle-icon { opacity: 0.3; }
+    .no-cycle-text { color: var(--text-muted); font-size: 0.82rem; }
 
     .report-link {
       display: inline-flex;
@@ -330,21 +369,28 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
     .empty-state p { font-size: 1rem; color: var(--text-muted); margin-top: 0.5rem; }
 
     #loading {
-      text-align: center;
-      padding: 3rem;
-      color: var(--text-muted);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+      padding: 0;
     }
 
-    #loading::before {
-      content: '';
-      display: block;
-      width: 28px; height: 28px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent-1);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto 1rem;
+    .skeleton-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      animation: skeletonPulse 1.8s ease-in-out infinite;
     }
+    .skeleton-line {
+      height: 12px;
+      background: var(--bg-hover);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    .skeleton-line--title { width: 45%; height: 16px; margin-bottom: 0.5rem; }
+    .skeleton-line--sub { width: 25%; height: 10px; margin-bottom: 1.25rem; }
+    .skeleton-line--kpi { width: 100%; height: 14px; }
 
     #error { color: var(--danger); text-align: center; padding: 2rem; display: none; font-size: 0.9rem; }
 
@@ -353,8 +399,9 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    @keyframes skeletonPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
 
     @keyframes pulse {
@@ -382,7 +429,11 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
 
     <div class="container">
       <h1 class="page-title">${translations.pageTitle}</h1>
-      <div id="loading">${translations.loading}</div>
+      <div id="loading">
+        <div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--kpi"></div><div class="skeleton-line skeleton-line--kpi"></div><div class="skeleton-line skeleton-line--kpi"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--kpi"></div><div class="skeleton-line skeleton-line--kpi"></div><div class="skeleton-line skeleton-line--kpi"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--kpi"></div><div class="skeleton-line skeleton-line--kpi"></div><div class="skeleton-line skeleton-line--kpi"></div></div>
+      </div>
       <div id="error"></div>
       <div id="sync-status" class="glass sync-bar" style="display:none"></div>
       <div id="teams-grid" class="teams-grid"></div>
@@ -552,15 +603,41 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
       var grid = document.getElementById('teams-grid');
       grid.innerHTML = data.teams.map(function(team) {
         if (!team.hasActiveCycle) {
-          return '<div class="team-card">'
+          return '<div class="team-card team-card--idle">'
             + '<div class="team-name">' + team.teamName + '</div>'
-            + '<p class="no-cycle">' + team.noActiveCycleMessage + '</p>'
+            + '<div class="no-cycle">'
+              + '<svg class="no-cycle-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
+                + '<circle cx="12" cy="12" r="10"/>'
+                + '<path d="M12 6v6l4 2"/>'
+              + '</svg>'
+              + '<span class="no-cycle-text">' + team.noActiveCycleMessage + '</span>'
+            + '</div>'
             + '</div>';
         }
-        return '<div class="team-card">'
-          + '<div class="team-name">' + team.teamName + '</div>'
-          + '<div class="cycle-name">' + team.cycleName + '</div>'
-          + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiCompletion + '</span><span class="kpi-value">' + team.completionRate + '</span></div>'
+        var completion = parseInt(team.completionRate) || 0;
+        var healthClass = team.blockedAlert ? 'team-card--danger'
+          : completion >= 60 ? 'team-card--healthy'
+          : completion >= 30 ? 'team-card--warning'
+          : 'team-card--danger';
+        var ringColor = team.blockedAlert ? 'var(--danger)'
+          : completion >= 60 ? 'var(--success)'
+          : completion >= 30 ? 'var(--warning)'
+          : 'var(--danger)';
+        var dashOffset = 100 - completion;
+        return '<div class="team-card ' + healthClass + '">'
+          + '<div class="card-header">'
+            + '<div class="completion-ring">'
+              + '<svg viewBox="0 0 36 36" width="52" height="52">'
+                + '<circle class="ring-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="2.8"/>'
+                + '<circle class="ring-fg" cx="18" cy="18" r="15.9" fill="none" stroke="' + ringColor + '" stroke-width="2.8" stroke-dasharray="100" stroke-dashoffset="' + dashOffset + '" stroke-linecap="round" transform="rotate(-90 18 18)"/>'
+                + '<text class="ring-text" x="18" y="18" text-anchor="middle" dominant-baseline="central" font-size="8">' + completion + '%</text>'
+              + '</svg>'
+            + '</div>'
+            + '<div class="card-header-text">'
+              + '<div class="team-name">' + team.teamName + '</div>'
+              + '<div class="cycle-name">' + team.cycleName + '</div>'
+            + '</div>'
+          + '</div>'
           + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiVelocity + '</span><span class="kpi-value">' + team.currentVelocity + ' pts (' + team.velocityTrendLabel + ')</span></div>'
           + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiBlockedIssues + '</span><span class="kpi-value' + (team.blockedAlert ? ' alert-text' : '') + '">' + team.blockedIssuesCount + '</span></div>'
           + (team.reportLink ? '<a class="report-link" href="' + team.reportLink + '">' + TRANSLATIONS.viewReport + '</a>' : '<p class="no-cycle">' + TRANSLATIONS.noReportAvailable + '</p>')

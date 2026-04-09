@@ -13,6 +13,9 @@ export function buildCycleReportPageHtml(locale: Locale): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shiplens — ${translations.pageTitle}</title>
   ${faviconLink}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --accent-1: #6366f1;
@@ -46,28 +49,28 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     }
 
     [data-theme="light"] {
-      --bg-deep: #f0f0f8;
-      --bg-base: #f8f9fc;
-      --bg-surface: rgba(255, 255, 255, 0.75);
-      --bg-elevated: rgba(255, 255, 255, 0.85);
-      --bg-hover: rgba(238, 242, 255, 0.9);
-      --border: rgba(99, 102, 241, 0.15);
-      --border-hover: rgba(99, 102, 241, 0.35);
-      --border-strong: rgba(99, 102, 241, 0.6);
-      --text-primary: #1e1b4b;
+      --bg-deep: #f4f4fb;
+      --bg-base: #ffffff;
+      --bg-surface: rgba(255, 255, 255, 0.92);
+      --bg-elevated: rgba(255, 255, 255, 0.96);
+      --bg-hover: rgba(238, 242, 255, 0.95);
+      --border: rgba(99, 102, 241, 0.12);
+      --border-hover: rgba(99, 102, 241, 0.25);
+      --border-strong: rgba(99, 102, 241, 0.45);
+      --text-primary: #1a1a2e;
       --text-secondary: #4338ca;
-      --text-muted: #6b7280;
-      --text-dim: #c7d2fe;
+      --text-muted: #64748b;
+      --text-dim: #cbd5e1;
       --glass-blur: 20px;
-      --shadow-card: 0 2px 16px rgba(99,102,241,0.08), 0 0 0 1px var(--border);
-      --shadow-hover: 0 6px 32px rgba(99,102,241,0.12), 0 0 0 1px var(--border-hover);
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(99,102,241,0.06), 0 0 0 1px rgba(99,102,241,0.08);
+      --shadow-hover: 0 4px 20px rgba(99,102,241,0.12), 0 0 0 1px rgba(99,102,241,0.15);
       --glow: 0 0 20px rgba(99,102,241,0.05);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       background: var(--bg-deep);
       color: var(--text-primary);
       min-height: 100vh;
@@ -91,8 +94,8 @@ export function buildCycleReportPageHtml(locale: Locale): string {
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.04), transparent),
-        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(168,85,247,0.03), transparent);
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(99,102,241,0.07), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 90%, rgba(168,85,247,0.05), transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
@@ -146,7 +149,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     .metric-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.15rem 1.25rem; transition: all var(--transition); animation: fadeSlideIn 0.5s ease both; }
     .metric-card:nth-child(1) { animation-delay: 0.12s; } .metric-card:nth-child(2) { animation-delay: 0.18s; } .metric-card:nth-child(3) { animation-delay: 0.24s; } .metric-card:nth-child(4) { animation-delay: 0.30s; } .metric-card:nth-child(5) { animation-delay: 0.36s; } .metric-card:nth-child(6) { animation-delay: 0.42s; }
     .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--border-hover); }
-    .metric-value { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 50%, var(--accent-3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }
+    .metric-value { font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 50%, var(--accent-3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }
     .metric-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-top: 0.35rem; display: flex; align-items: center; gap: 0.35rem; }
     .scope-creep-alert .metric-value { background: linear-gradient(135deg, var(--warning), var(--danger)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
@@ -168,15 +171,19 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
     .report-content { line-height: 1.7; color: var(--text-secondary); }
-    .report-empty { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
+    .report-empty { color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0; }
+    .report-empty::before { content: ''; display: inline-block; width: 18px; height: 18px; flex-shrink: 0; border: 1.5px solid var(--text-dim); border-radius: 50%; background: none; opacity: 0.5; }
     .report-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
     .error-msg { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: var(--danger); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; animation: fadeSlideIn 0.3s ease both; }
     .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg-elevated); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(16,185,129,0.3); color: var(--success); padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; display: none; z-index: 100; box-shadow: 0 8px 30px rgba(0,0,0,0.3); animation: fadeSlideIn 0.3s ease both; }
-    .loading { text-align: center; color: var(--text-muted); padding: 2.5rem; font-size: 0.9rem; }
-    .loading::before { content: ''; display: block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent-1); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 0.75rem; }
+    .loading { padding: 1.5rem 0; }
+    .skeleton-line { height: 14px; background: var(--bg-hover); border-radius: 6px; margin-bottom: 0.75rem; animation: skeletonPulse 1.8s ease-in-out infinite; }
+    .skeleton-line:nth-child(1) { width: 60%; }
+    .skeleton-line:nth-child(2) { width: 80%; }
+    .skeleton-line:nth-child(3) { width: 40%; }
 
     @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes skeletonPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .severity-badge { display: inline-flex; align-items: center; padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; }
     .severity-critical { background: rgba(239,68,68,0.12); color: var(--danger); }
@@ -185,6 +192,14 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     .classification-over-estimated { background: rgba(245,158,11,0.12); color: var(--warning); }
     .classification-under-estimated { background: rgba(239,68,68,0.12); color: var(--danger); }
     .bottleneck-highlight { background: rgba(99,102,241,0.06); border-left: 3px solid var(--accent-1); }
+
+    .bar-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.45rem 0; }
+    .bar-row + .bar-row { border-top: 1px solid var(--border); }
+    .bar-label { width: 110px; flex-shrink: 0; font-size: 0.82rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { flex: 1; height: 22px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); transition: width 0.6s ease; min-width: 2px; }
+    .bar-fill--bottleneck { background: linear-gradient(90deg, var(--danger), #f87171); }
+    .bar-value { width: 55px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-muted); flex-shrink: 0; }
     .evolution-positive { color: var(--success); }
     .evolution-negative { color: var(--danger); }
     .subsection { margin-top: 1.5rem; }
@@ -429,7 +444,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadMetrics(cycleId, teamId) {
       var container = document.getElementById('metricsContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingMetrics;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -485,12 +500,25 @@ export function buildCycleReportPageHtml(locale: Locale): string {
           html += '<div class="report-empty">' + TRANSLATIONS.noBottleneckDataMember + '</div>';
         }
       } else {
-        html += '<table><thead><tr><th>' + TRANSLATIONS.headerStatus + '</th><th>' + TRANSLATIONS.headerMedianTime + '</th></tr></thead><tbody>';
-        data.statusDistribution.forEach(function(entry) {
-          var highlight = entry.statusName === data.bottleneckStatus ? ' class="bottleneck-highlight"' : '';
-          html += '<tr' + highlight + '><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.medianHours) + '</td></tr>';
+        var maxHours = 0;
+        var parsedEntries = data.statusDistribution.map(function(entry) {
+          var raw = entry.medianHours;
+          var hours = 0;
+          if (raw.includes('j')) { hours = parseFloat(raw) * 24; }
+          else { hours = parseFloat(raw); }
+          if (hours > maxHours) maxHours = hours;
+          return { statusName: entry.statusName, medianHours: raw, hours: hours };
         });
-        html += '</tbody></table>';
+
+        parsedEntries.forEach(function(entry) {
+          var pct = maxHours > 0 ? Math.round((entry.hours / maxHours) * 100) : 0;
+          var isBottleneck = entry.statusName === data.bottleneckStatus;
+          html += '<div class="bar-row">'
+            + '<span class="bar-label">' + escapeHtml(entry.statusName) + '</span>'
+            + '<div class="bar-track"><div class="bar-fill' + (isBottleneck ? ' bar-fill--bottleneck' : '') + '" style="width:' + pct + '%"></div></div>'
+            + '<span class="bar-value">' + escapeHtml(entry.medianHours) + '</span>'
+            + '</div>';
+        });
 
         html += '<div class="subsection"><div class="subsection-title">' + TRANSLATIONS.subsectionCycleComparison + '</div><div class="section-subtitle">' + TRANSLATIONS.subsectionCycleComparisonDescription + '</div>';
         if (data.cycleComparison) {
@@ -537,7 +565,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadBottlenecks(cycleId, teamId) {
       var container = document.getElementById('bottlenecksContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingBottlenecks;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -600,7 +628,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadBlockedIssues(teamId) {
       var container = document.getElementById('blockedIssuesContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingBlockedIssues;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(API + '/analytics/blocked-issues');
@@ -709,7 +737,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadEstimationAccuracy(teamId, cycleId) {
       var container = document.getElementById('estimationContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingEstimation;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -834,7 +862,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
       btn.disabled = true;
       btn.textContent = TRANSLATIONS.generatingDigest;
       digestEl.className = 'loading';
-      digestEl.textContent = TRANSLATIONS.digestGenerating;
+      digestEl.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -877,7 +905,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
       btn.disabled = true;
       btn.textContent = TRANSLATIONS.generatingReport;
       reportEl.className = 'loading';
-      reportEl.textContent = TRANSLATIONS.reportGenerating;
+      reportEl.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
       clearError();
 
       try {
