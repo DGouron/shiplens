@@ -3,6 +3,7 @@ import { type Locale } from '../../entities/workspace-settings/workspace-languag
 export interface MemberHealthTrendsTranslationKeys {
   pageTitle: string;
   breadcrumbDashboard: string;
+  navSettings: string;
   themeToggleTitle: string;
   backToCycleReport: string;
   healthTrendsSuffix: string;
@@ -39,6 +40,7 @@ export const memberHealthTrendsTranslations: Record<
   en: {
     pageTitle: 'Health Trends',
     breadcrumbDashboard: 'Dashboard',
+    navSettings: 'Settings',
     themeToggleTitle: 'Toggle theme',
     backToCycleReport: 'Back to cycle report',
     healthTrendsSuffix: 'Health Trends',
@@ -79,6 +81,7 @@ export const memberHealthTrendsTranslations: Record<
   fr: {
     pageTitle: 'Tendances de sante',
     breadcrumbDashboard: 'Dashboard',
+    navSettings: 'Settings',
     themeToggleTitle: 'Changer de theme',
     backToCycleReport: 'Retour au rapport de cycle',
     healthTrendsSuffix: 'Tendances de sante',

@@ -13,6 +13,9 @@ export function buildCycleReportPageHtml(locale: Locale): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shiplens — ${translations.pageTitle}</title>
   ${faviconLink}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --accent-1: #6366f1;
@@ -46,28 +49,28 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     }
 
     [data-theme="light"] {
-      --bg-deep: #f0f0f8;
-      --bg-base: #f8f9fc;
-      --bg-surface: rgba(255, 255, 255, 0.75);
-      --bg-elevated: rgba(255, 255, 255, 0.85);
-      --bg-hover: rgba(238, 242, 255, 0.9);
-      --border: rgba(99, 102, 241, 0.15);
-      --border-hover: rgba(99, 102, 241, 0.35);
-      --border-strong: rgba(99, 102, 241, 0.6);
-      --text-primary: #1e1b4b;
+      --bg-deep: #f4f4fb;
+      --bg-base: #ffffff;
+      --bg-surface: rgba(255, 255, 255, 0.92);
+      --bg-elevated: rgba(255, 255, 255, 0.96);
+      --bg-hover: rgba(238, 242, 255, 0.95);
+      --border: rgba(99, 102, 241, 0.12);
+      --border-hover: rgba(99, 102, 241, 0.25);
+      --border-strong: rgba(99, 102, 241, 0.45);
+      --text-primary: #1a1a2e;
       --text-secondary: #4338ca;
-      --text-muted: #6b7280;
-      --text-dim: #c7d2fe;
+      --text-muted: #64748b;
+      --text-dim: #cbd5e1;
       --glass-blur: 20px;
-      --shadow-card: 0 2px 16px rgba(99,102,241,0.08), 0 0 0 1px var(--border);
-      --shadow-hover: 0 6px 32px rgba(99,102,241,0.12), 0 0 0 1px var(--border-hover);
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(99,102,241,0.06), 0 0 0 1px rgba(99,102,241,0.08);
+      --shadow-hover: 0 4px 20px rgba(99,102,241,0.12), 0 0 0 1px rgba(99,102,241,0.15);
       --glow: 0 0 20px rgba(99,102,241,0.05);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       background: var(--bg-deep);
       color: var(--text-primary);
       min-height: 100vh;
@@ -91,8 +94,8 @@ export function buildCycleReportPageHtml(locale: Locale): string {
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.04), transparent),
-        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(168,85,247,0.03), transparent);
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(99,102,241,0.07), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 90%, rgba(168,85,247,0.05), transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
@@ -172,11 +175,14 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     .report-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
     .error-msg { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: var(--danger); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; animation: fadeSlideIn 0.3s ease both; }
     .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg-elevated); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(16,185,129,0.3); color: var(--success); padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; display: none; z-index: 100; box-shadow: 0 8px 30px rgba(0,0,0,0.3); animation: fadeSlideIn 0.3s ease both; }
-    .loading { text-align: center; color: var(--text-muted); padding: 2.5rem; font-size: 0.9rem; }
-    .loading::before { content: ''; display: block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent-1); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 0.75rem; }
+    .loading { padding: 1.5rem 0; }
+    .skeleton-line { height: 14px; background: var(--bg-hover); border-radius: 6px; margin-bottom: 0.75rem; animation: skeletonPulse 1.8s ease-in-out infinite; }
+    .skeleton-line:nth-child(1) { width: 60%; }
+    .skeleton-line:nth-child(2) { width: 80%; }
+    .skeleton-line:nth-child(3) { width: 40%; }
 
     @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes skeletonPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .severity-badge { display: inline-flex; align-items: center; padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; }
     .severity-critical { background: rgba(239,68,68,0.12); color: var(--danger); }
@@ -429,7 +435,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadMetrics(cycleId, teamId) {
       var container = document.getElementById('metricsContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingMetrics;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -537,7 +543,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadBottlenecks(cycleId, teamId) {
       var container = document.getElementById('bottlenecksContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingBottlenecks;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -600,7 +606,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadBlockedIssues(teamId) {
       var container = document.getElementById('blockedIssuesContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingBlockedIssues;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(API + '/analytics/blocked-issues');
@@ -709,7 +715,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     async function loadEstimationAccuracy(teamId, cycleId) {
       var container = document.getElementById('estimationContent');
       container.className = 'loading';
-      container.textContent = TRANSLATIONS.loadingEstimation;
+      container.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -834,7 +840,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
       btn.disabled = true;
       btn.textContent = TRANSLATIONS.generatingDigest;
       digestEl.className = 'loading';
-      digestEl.textContent = TRANSLATIONS.digestGenerating;
+      digestEl.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
 
       try {
         var response = await fetch(
@@ -877,7 +883,7 @@ export function buildCycleReportPageHtml(locale: Locale): string {
       btn.disabled = true;
       btn.textContent = TRANSLATIONS.generatingReport;
       reportEl.className = 'loading';
-      reportEl.textContent = TRANSLATIONS.reportGenerating;
+      reportEl.innerHTML = '<div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>';
       clearError();
 
       try {
