@@ -191,6 +191,14 @@ export function buildCycleReportPageHtml(locale: Locale): string {
     .classification-over-estimated { background: rgba(245,158,11,0.12); color: var(--warning); }
     .classification-under-estimated { background: rgba(239,68,68,0.12); color: var(--danger); }
     .bottleneck-highlight { background: rgba(99,102,241,0.06); border-left: 3px solid var(--accent-1); }
+
+    .bar-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.45rem 0; }
+    .bar-row + .bar-row { border-top: 1px solid var(--border); }
+    .bar-label { width: 110px; flex-shrink: 0; font-size: 0.82rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { flex: 1; height: 22px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); transition: width 0.6s ease; min-width: 2px; }
+    .bar-fill--bottleneck { background: linear-gradient(90deg, var(--danger), #f87171); }
+    .bar-value { width: 55px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-muted); flex-shrink: 0; }
     .evolution-positive { color: var(--success); }
     .evolution-negative { color: var(--danger); }
     .subsection { margin-top: 1.5rem; }
@@ -491,12 +499,25 @@ export function buildCycleReportPageHtml(locale: Locale): string {
           html += '<div class="report-empty">' + TRANSLATIONS.noBottleneckDataMember + '</div>';
         }
       } else {
-        html += '<table><thead><tr><th>' + TRANSLATIONS.headerStatus + '</th><th>' + TRANSLATIONS.headerMedianTime + '</th></tr></thead><tbody>';
-        data.statusDistribution.forEach(function(entry) {
-          var highlight = entry.statusName === data.bottleneckStatus ? ' class="bottleneck-highlight"' : '';
-          html += '<tr' + highlight + '><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.medianHours) + '</td></tr>';
+        var maxHours = 0;
+        var parsedEntries = data.statusDistribution.map(function(entry) {
+          var raw = entry.medianHours;
+          var hours = 0;
+          if (raw.includes('j')) { hours = parseFloat(raw) * 24; }
+          else { hours = parseFloat(raw); }
+          if (hours > maxHours) maxHours = hours;
+          return { statusName: entry.statusName, medianHours: raw, hours: hours };
         });
-        html += '</tbody></table>';
+
+        parsedEntries.forEach(function(entry) {
+          var pct = maxHours > 0 ? Math.round((entry.hours / maxHours) * 100) : 0;
+          var isBottleneck = entry.statusName === data.bottleneckStatus;
+          html += '<div class="bar-row">'
+            + '<span class="bar-label">' + escapeHtml(entry.statusName) + '</span>'
+            + '<div class="bar-track"><div class="bar-fill' + (isBottleneck ? ' bar-fill--bottleneck' : '') + '" style="width:' + pct + '%"></div></div>'
+            + '<span class="bar-value">' + escapeHtml(entry.medianHours) + '</span>'
+            + '</div>';
+        });
 
         html += '<div class="subsection"><div class="subsection-title">' + TRANSLATIONS.subsectionCycleComparison + '</div><div class="section-subtitle">' + TRANSLATIONS.subsectionCycleComparisonDescription + '</div>';
         if (data.cycleComparison) {

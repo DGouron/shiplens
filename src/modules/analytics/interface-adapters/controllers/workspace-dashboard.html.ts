@@ -266,6 +266,25 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
       border-color: var(--border-hover);
     }
 
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .completion-ring { flex-shrink: 0; }
+    .completion-ring svg { display: block; }
+    .ring-bg { stroke: var(--border); }
+    .ring-fg { transition: stroke-dashoffset 0.8s ease; }
+    .ring-text {
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      font-weight: 700;
+      fill: var(--text-primary);
+    }
+
+    .card-header-text { flex: 1; min-width: 0; }
+
     .team-name {
       font-size: 1.05rem;
       font-weight: 700;
@@ -275,7 +294,6 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
     .cycle-name {
       font-size: 0.78rem;
       color: var(--text-muted);
-      margin-bottom: 1rem;
     }
 
     .kpi {
@@ -586,10 +604,25 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
           : completion >= 60 ? 'team-card--healthy'
           : completion >= 30 ? 'team-card--warning'
           : 'team-card--danger';
+        var ringColor = team.blockedAlert ? 'var(--danger)'
+          : completion >= 60 ? 'var(--success)'
+          : completion >= 30 ? 'var(--warning)'
+          : 'var(--danger)';
+        var dashOffset = 100 - completion;
         return '<div class="team-card ' + healthClass + '">'
-          + '<div class="team-name">' + team.teamName + '</div>'
-          + '<div class="cycle-name">' + team.cycleName + '</div>'
-          + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiCompletion + '</span><span class="kpi-value">' + team.completionRate + '</span></div>'
+          + '<div class="card-header">'
+            + '<div class="completion-ring">'
+              + '<svg viewBox="0 0 36 36" width="52" height="52">'
+                + '<circle class="ring-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="2.8"/>'
+                + '<circle class="ring-fg" cx="18" cy="18" r="15.9" fill="none" stroke="' + ringColor + '" stroke-width="2.8" stroke-dasharray="100" stroke-dashoffset="' + dashOffset + '" stroke-linecap="round" transform="rotate(-90 18 18)"/>'
+                + '<text class="ring-text" x="18" y="18" text-anchor="middle" dominant-baseline="central" font-size="8">' + completion + '%</text>'
+              + '</svg>'
+            + '</div>'
+            + '<div class="card-header-text">'
+              + '<div class="team-name">' + team.teamName + '</div>'
+              + '<div class="cycle-name">' + team.cycleName + '</div>'
+            + '</div>'
+          + '</div>'
           + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiVelocity + '</span><span class="kpi-value">' + team.currentVelocity + ' pts (' + team.velocityTrendLabel + ')</span></div>'
           + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiBlockedIssues + '</span><span class="kpi-value' + (team.blockedAlert ? ' alert-text' : '') + '">' + team.blockedIssuesCount + '</span></div>'
           + (team.reportLink ? '<a class="report-link" href="' + team.reportLink + '">' + TRANSLATIONS.viewReport + '</a>' : '<p class="no-cycle">' + TRANSLATIONS.noReportAvailable + '</p>')
