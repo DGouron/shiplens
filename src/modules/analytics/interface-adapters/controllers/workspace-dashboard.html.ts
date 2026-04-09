@@ -1,5 +1,6 @@
 import { type Locale } from '../../entities/workspace-settings/workspace-language.schema.js';
 import { workspaceDashboardTranslations } from '../presenters/workspace-dashboard.translations.js';
+import { faviconLink } from './favicon.js';
 
 export function buildWorkspaceDashboardHtml(locale: Locale): string {
   const translations = workspaceDashboardTranslations[locale];
@@ -11,6 +12,7 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${translations.pageTitle} — Shiplens</title>
+  ${faviconLink}
   <style>
     :root {
       --accent-1: #6366f1;
