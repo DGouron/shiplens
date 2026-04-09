@@ -30,9 +30,15 @@ This migration restructures the repo into a monorepo with `frontend/` and `backe
 | 5 | [migrate-member-health-trends-page](migrate-member-health-trends-page.md) | Migrate the member health trends page to a React route with ViewModel hook |
 | 6 | [migrate-settings-page](migrate-settings-page.md) | Migrate the settings page to a React route with ViewModel hook, remove all HTML-serving controllers |
 
+## Transversal spec
+
+| Spec | Scope |
+|------|-------|
+| [design-improvements](design-improvements.md) | UX and data viz improvements from the design audit — applies across slices 2-5 (tab bar, palette, sparklines, counter animations, collapsible sections) |
+
 ## Dependency order
 
-Slice 1 must be completed first. Slice 2 depends on Slice 1. Slices 3-6 each depend on Slices 1 and 2. Slices 3-5 are independent of each other. Slice 6 is last because it removes the HTML-serving controllers after all pages are migrated.
+Slice 1 must be completed first. Slice 2 depends on Slice 1. Slices 3-6 each depend on Slices 1 and 2. Slices 3-5 are independent of each other. Slice 6 is last because it removes the HTML-serving controllers after all pages are migrated. The design-improvements spec is transversal: its items are implemented within the slice they reference.
 
 ## Monorepo structure
 
