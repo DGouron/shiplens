@@ -4,11 +4,12 @@ import {
   WorkspaceNotConnectedError,
 } from '../../entities/workspace-dashboard/workspace-dashboard.errors.js';
 import { GetWorkspaceDashboardUsecase } from '../../usecases/get-workspace-dashboard.usecase.js';
+import { GetWorkspaceLanguageUsecase } from '../../usecases/get-workspace-language.usecase.js';
 import {
   type WorkspaceDashboardDto,
   WorkspaceDashboardPresenter,
 } from '../presenters/workspace-dashboard.presenter.js';
-import { workspaceDashboardHtml } from './workspace-dashboard.html.js';
+import { buildWorkspaceDashboardHtml } from './workspace-dashboard.html.js';
 
 interface DashboardEmptyState {
   status: 'not_connected' | 'no_teams';
@@ -20,6 +21,7 @@ export class WorkspaceDashboardController {
   constructor(
     private readonly getWorkspaceDashboardUsecase: GetWorkspaceDashboardUsecase,
     private readonly workspaceDashboardPresenter: WorkspaceDashboardPresenter,
+    private readonly getWorkspaceLanguage: GetWorkspaceLanguageUsecase,
   ) {}
 
   @Get('dashboard/data')
@@ -42,7 +44,8 @@ export class WorkspaceDashboardController {
 
   @Get('dashboard')
   @Header('Content-Type', 'text/html')
-  getDashboardPage(): string {
-    return workspaceDashboardHtml;
+  async getDashboardPage(): Promise<string> {
+    const locale = await this.getWorkspaceLanguage.execute();
+    return buildWorkspaceDashboardHtml(locale);
   }
 }

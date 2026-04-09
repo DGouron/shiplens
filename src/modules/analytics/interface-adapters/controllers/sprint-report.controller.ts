@@ -1,5 +1,6 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { type AiProvider } from '../../entities/sprint-report/ai-text-generator.gateway.js';
+import { WorkspaceSettingsGateway } from '../../entities/workspace-settings/workspace-settings.gateway.js';
 import { GenerateSprintReportUsecase } from '../../usecases/generate-sprint-report.usecase.js';
 import {
   type SprintReportDto,
@@ -8,7 +9,6 @@ import {
 
 interface GenerateSprintReportBody {
   teamId: string;
-  language: string;
   provider: AiProvider;
 }
 
@@ -17,6 +17,7 @@ export class SprintReportController {
   constructor(
     private readonly generateSprintReport: GenerateSprintReportUsecase,
     private readonly sprintReportPresenter: SprintReportPresenter,
+    private readonly workspaceSettingsGateway: WorkspaceSettingsGateway,
   ) {}
 
   @Post(':cycleId/report')
@@ -27,10 +28,10 @@ export class SprintReportController {
     const report = await this.generateSprintReport.execute({
       cycleId,
       teamId: body.teamId,
-      language: body.language,
       provider: body.provider,
     });
 
-    return this.sprintReportPresenter.present(report);
+    const locale = await this.workspaceSettingsGateway.getLanguage();
+    return this.sprintReportPresenter.present(report, locale);
   }
 }

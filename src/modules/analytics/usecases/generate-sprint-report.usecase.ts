@@ -16,7 +16,6 @@ import {
 import {
   EmptySprintError,
   SprintNotSynchronizedError,
-  UnsupportedLanguageError,
 } from '../entities/sprint-report/sprint-report.errors.js';
 import { SprintReportGateway } from '../entities/sprint-report/sprint-report.gateway.js';
 import { SprintReport } from '../entities/sprint-report/sprint-report.js';
@@ -26,11 +25,11 @@ import {
   SprintReportDataGateway,
   type TrendContext,
 } from '../entities/sprint-report/sprint-report-data.gateway.js';
+import { WorkspaceSettingsGateway } from '../entities/workspace-settings/workspace-settings.gateway.js';
 
 interface GenerateSprintReportParams {
   cycleId: string;
   teamId: string;
-  language: string;
   provider: AiProvider;
 }
 
@@ -40,7 +39,6 @@ interface RuleEvaluation {
   result: EvaluationResult;
 }
 
-const SUPPORTED_LANGUAGES = ['FR', 'EN'];
 const MINIMUM_TREND_CYCLES = 3;
 
 @Injectable()
@@ -56,16 +54,16 @@ export class GenerateSprintReportUsecase
     private readonly auditRuleGateway: AuditRuleGateway,
     private readonly checklistItemGateway: ChecklistItemGateway,
     private readonly cycleMetricsDataGateway: CycleMetricsDataGateway,
+    private readonly workspaceSettingsGateway: WorkspaceSettingsGateway,
   ) {}
 
   async execute(params: GenerateSprintReportParams): Promise<SprintReport> {
-    this.logger.log(
-      `[${params.cycleId}] Report generation started — language: ${params.language}, provider: ${params.provider}`,
-    );
+    const locale = await this.workspaceSettingsGateway.getLanguage();
+    const language = locale.toUpperCase();
 
-    if (!SUPPORTED_LANGUAGES.includes(params.language)) {
-      throw new UnsupportedLanguageError();
-    }
+    this.logger.log(
+      `[${params.cycleId}] Report generation started — language: ${language}, provider: ${params.provider}`,
+    );
 
     const isSynchronized = await this.sprintReportDataGateway.isSynchronized(
       params.teamId,
@@ -104,7 +102,7 @@ export class GenerateSprintReportUsecase
     const prompt = this.buildPrompt(
       sprintContext,
       trendContext,
-      params.language,
+      language,
       ruleEvaluations,
     );
     this.logger.log(
@@ -139,7 +137,7 @@ export class GenerateSprintReportUsecase
       cycleId: params.cycleId,
       teamId: params.teamId,
       cycleName: sprintContext.cycleName,
-      language: params.language,
+      language,
       generatedAt: new Date().toISOString(),
       sections: {
         executiveSummary: parsedSections.executiveSummary,

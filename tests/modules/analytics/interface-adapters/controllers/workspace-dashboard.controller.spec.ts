@@ -1,18 +1,27 @@
 import { WorkspaceDashboardController } from '@modules/analytics/interface-adapters/controllers/workspace-dashboard.controller.js';
 import { WorkspaceDashboardPresenter } from '@modules/analytics/interface-adapters/presenters/workspace-dashboard.presenter.js';
 import { StubWorkspaceDashboardDataGateway } from '@modules/analytics/testing/good-path/stub.workspace-dashboard-data.gateway.js';
+import { StubWorkspaceSettingsGateway } from '@modules/analytics/testing/good-path/stub.workspace-settings.gateway.js';
 import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import { GetWorkspaceLanguageUsecase } from '@modules/analytics/usecases/get-workspace-language.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('WorkspaceDashboardController', () => {
   let gateway: StubWorkspaceDashboardDataGateway;
+  let settingsGateway: StubWorkspaceSettingsGateway;
   let controller: WorkspaceDashboardController;
 
   beforeEach(() => {
     gateway = new StubWorkspaceDashboardDataGateway();
+    settingsGateway = new StubWorkspaceSettingsGateway();
     const usecase = new GetWorkspaceDashboardUsecase(gateway);
     const presenter = new WorkspaceDashboardPresenter();
-    controller = new WorkspaceDashboardController(usecase, presenter);
+    const getLanguage = new GetWorkspaceLanguageUsecase(settingsGateway);
+    controller = new WorkspaceDashboardController(
+      usecase,
+      presenter,
+      getLanguage,
+    );
   });
 
   it('returns formatted dashboard data via JSON endpoint', async () => {
@@ -66,10 +75,20 @@ describe('WorkspaceDashboardController', () => {
     });
   });
 
-  it('returns HTML page content', () => {
-    const result = controller.getDashboardPage();
+  it('returns HTML page content with default english locale', async () => {
+    const result = await controller.getDashboardPage();
 
     expect(result).toContain('<!DOCTYPE html>');
     expect(result).toContain('Dashboard');
+    expect(result).toContain('lang="en"');
+  });
+
+  it('returns HTML with french locale when preference is french', async () => {
+    settingsGateway.storedLanguage = 'fr';
+
+    const result = await controller.getDashboardPage();
+
+    expect(result).toContain('lang="fr"');
+    expect(result).toContain('Changer de theme');
   });
 });

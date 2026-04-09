@@ -1,9 +1,16 @@
-export const cycleReportPageHtml = `<!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+import { type Locale } from '../../entities/workspace-settings/workspace-language.schema.js';
+import { cycleReportPageTranslations } from '../presenters/cycle-report-page.translations.js';
+
+export function buildCycleReportPageHtml(locale: Locale): string {
+  const translations = cycleReportPageTranslations[locale];
+  const translationsJson = JSON.stringify(translations);
+
+  return `<!DOCTYPE html>
+<html lang="${locale}" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shiplens — Rapport de cycle</title>
+  <title>Shiplens — ${translations.pageTitle}</title>
   <style>
     :root {
       --accent-1: #6366f1;
@@ -90,479 +97,101 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
     .app { position: relative; z-index: 1; }
 
-    /* ── NAV ── */
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 2rem;
-      background: var(--bg-surface);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      border-bottom: 1px solid var(--border);
-    }
-
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 2rem; background: var(--bg-surface); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border-bottom: 1px solid var(--border); }
     .nav-left { display: flex; align-items: center; gap: 1rem; }
-
-    .nav-brand {
-      font-weight: 800;
-      font-size: 1.1rem;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.02em;
-      text-decoration: none;
-    }
-
+    .nav-brand { font-weight: 800; font-size: 1.1rem; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.02em; text-decoration: none; }
     .nav-sep { color: var(--text-dim); font-size: 0.85rem; }
-
     .nav-crumb { color: var(--text-muted); font-size: 0.85rem; text-decoration: none; transition: color var(--transition); }
     .nav-crumb:hover { color: var(--text-secondary); }
     .nav-crumb-active { color: var(--text-secondary); font-weight: 600; }
-
     .nav-right { display: flex; align-items: center; gap: 1rem; }
 
-    /* ── THEME TOGGLE ── */
-    .theme-toggle {
-      width: 44px; height: 24px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      position: relative;
-      transition: all var(--transition);
-    }
+    .theme-toggle { width: 44px; height: 24px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; position: relative; transition: all var(--transition); }
     .theme-toggle:hover { border-color: var(--border-hover); }
-    .theme-toggle::after {
-      content: '';
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      transition: transform var(--transition);
-    }
+    .theme-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); transition: transform var(--transition); }
     [data-theme="light"] .theme-toggle::after { transform: translateX(20px); }
     .theme-icon { position: absolute; top: 4px; font-size: 0.7rem; line-height: 16px; pointer-events: none; }
     .theme-icon-dark { left: 5px; }
     .theme-icon-light { right: 5px; }
 
-    /* ── CONTAINER ── */
     .container { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
-
-    /* ── PAGE HEADER ── */
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .page-title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--text-primary);
-    }
-
-    /* ── SELECTORS ── */
-    .selector-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .custom-select {
-      appearance: none;
-      -webkit-appearance: none;
-      background: var(--bg-surface);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.55rem 2.2rem 0.55rem 0.85rem;
-      font-size: 0.85rem;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all var(--transition);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%236366f1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.7rem center;
-      min-width: 260px;
-    }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text-primary); }
+    .selector-bar { display: flex; align-items: center; gap: 0.75rem; }
+    .custom-select { appearance: none; -webkit-appearance: none; background: var(--bg-surface); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.55rem 2.2rem 0.55rem 0.85rem; font-size: 0.85rem; font-family: inherit; cursor: pointer; transition: all var(--transition); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%236366f1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.7rem center; min-width: 260px; }
     .custom-select:hover { border-color: var(--border-hover); }
     .custom-select:focus { outline: none; border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
     .custom-select:disabled { opacity: 0.4; cursor: not-allowed; }
+    input[type="text"] { display: none; }
 
-    input[type="text"] {
-      display: none;
-    }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--bg-surface);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      color: var(--text-secondary);
-      font-size: 0.82rem;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all var(--transition);
-      text-decoration: none;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-surface); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); color: var(--text-secondary); font-size: 0.82rem; font-family: inherit; cursor: pointer; transition: all var(--transition); text-decoration: none; }
     .btn:hover { border-color: var(--border-hover); background: var(--bg-hover); color: var(--text-primary); }
     .btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .btn:disabled:hover { background: var(--bg-surface); border-color: var(--border); color: var(--text-secondary); }
-
-    .btn-accent {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      color: #fff;
-      border: none;
-      font-weight: 600;
-    }
+    .btn-accent { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; border: none; font-weight: 600; }
     .btn-accent:hover { opacity: 0.9; color: #fff; }
 
-    /* ── GLASS SECTION ── */
-    .glass {
-      background: var(--bg-surface);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1.25rem;
-      box-shadow: var(--shadow-card);
-      transition: all var(--transition);
-      animation: fadeSlideIn 0.5s ease both;
-    }
-
+    .glass { background: var(--bg-surface); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-card); transition: all var(--transition); animation: fadeSlideIn 0.5s ease both; }
     .glass:nth-child(2) { animation-delay: 0.08s; }
     .glass:nth-child(3) { animation-delay: 0.16s; }
     .glass:nth-child(4) { animation-delay: 0.24s; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
 
-    .section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-    }
-
-    /* ── METRICS ── */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.85rem;
-    }
-
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
     @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 560px) { .metrics-grid { grid-template-columns: 1fr; } }
+    .metric-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.15rem 1.25rem; transition: all var(--transition); animation: fadeSlideIn 0.5s ease both; }
+    .metric-card:nth-child(1) { animation-delay: 0.12s; } .metric-card:nth-child(2) { animation-delay: 0.18s; } .metric-card:nth-child(3) { animation-delay: 0.24s; } .metric-card:nth-child(4) { animation-delay: 0.30s; } .metric-card:nth-child(5) { animation-delay: 0.36s; } .metric-card:nth-child(6) { animation-delay: 0.42s; }
+    .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--border-hover); }
+    .metric-value { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 50%, var(--accent-3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }
+    .metric-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-top: 0.35rem; display: flex; align-items: center; gap: 0.35rem; }
+    .scope-creep-alert .metric-value { background: linear-gradient(135deg, var(--warning), var(--danger)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-    .metric-card {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1.15rem 1.25rem;
-      transition: all var(--transition);
-      animation: fadeSlideIn 0.5s ease both;
-    }
-
-    .metric-card:nth-child(1) { animation-delay: 0.12s; }
-    .metric-card:nth-child(2) { animation-delay: 0.18s; }
-    .metric-card:nth-child(3) { animation-delay: 0.24s; }
-    .metric-card:nth-child(4) { animation-delay: 0.30s; }
-    .metric-card:nth-child(5) { animation-delay: 0.36s; }
-    .metric-card:nth-child(6) { animation-delay: 0.42s; }
-
-    .metric-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
-      border-color: var(--border-hover);
-    }
-
-    .metric-value {
-      font-size: 1.65rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1.2;
-    }
-
-    .metric-label {
-      font-size: 0.68rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-top: 0.35rem;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .scope-creep-alert .metric-value {
-      background: linear-gradient(135deg, var(--warning), var(--danger));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* ── TOOLTIP ── */
-    .metric-info {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      border: 1px solid var(--text-dim);
-      color: var(--text-muted);
-      font-size: 0.55rem;
-      font-style: normal;
-      font-weight: 700;
-      cursor: help;
-      flex-shrink: 0;
-      transition: all var(--transition);
-    }
+    .metric-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--text-dim); color: var(--text-muted); font-size: 0.55rem; font-style: normal; font-weight: 700; cursor: help; flex-shrink: 0; transition: all var(--transition); }
     .metric-info:hover { border-color: var(--accent-1); color: var(--accent-1); }
-
-    .tooltip {
-      display: none;
-      position: absolute;
-      bottom: calc(100% + 10px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-elevated);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      color: var(--text-primary);
-      font-size: 0.75rem;
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: normal;
-      padding: 0.6rem 0.85rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-hover);
-      white-space: normal;
-      width: 230px;
-      line-height: 1.5;
-      z-index: 50;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-    }
-    .tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: var(--border-hover);
-    }
+    .tooltip { display: none; position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: var(--bg-elevated); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: var(--text-primary); font-size: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: normal; padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-hover); white-space: normal; width: 230px; line-height: 1.5; z-index: 50; box-shadow: 0 8px 30px rgba(0,0,0,0.35); }
+    .tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--border-hover); }
     .metric-info:hover .tooltip { display: block; }
 
-    /* ── TABLE ── */
     table { width: 100%; border-collapse: collapse; }
-
-    th {
-      text-align: left;
-      color: var(--text-muted);
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    td {
-      padding: 0.7rem 1rem;
-      border-bottom: 1px solid var(--border);
-      color: var(--text-primary);
-      font-size: 0.85rem;
-      transition: background var(--transition);
-    }
-
+    th { text-align: left; color: var(--text-muted); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+    td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-primary); font-size: 0.85rem; transition: background var(--transition); }
     tbody tr { transition: background var(--transition); }
     tbody tr:hover { background: var(--bg-hover); }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.2rem 0.65rem;
-      border-radius: 99px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
+    .status-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; }
     .status-done { background: rgba(16,185,129,0.12); color: var(--success); }
     .status-progress { background: rgba(99,102,241,0.12); color: var(--accent-1); }
     .status-other { background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+    .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    .status-badge::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    /* ── REPORT SECTION ── */
     .report-content { line-height: 1.7; color: var(--text-secondary); }
     .report-empty { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
-
     .report-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .error-msg { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: var(--danger); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; animation: fadeSlideIn 0.3s ease both; }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg-elevated); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(16,185,129,0.3); color: var(--success); padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; display: none; z-index: 100; box-shadow: 0 8px 30px rgba(0,0,0,0.3); animation: fadeSlideIn 0.3s ease both; }
+    .loading { text-align: center; color: var(--text-muted); padding: 2.5rem; font-size: 0.9rem; }
+    .loading::before { content: ''; display: block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent-1); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 0.75rem; }
 
-    /* ── ERROR ── */
-    .error-msg {
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.25);
-      color: var(--danger);
-      border-radius: var(--radius-sm);
-      padding: 0.85rem 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-      animation: fadeSlideIn 0.3s ease both;
-    }
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── TOAST ── */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--bg-elevated);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(16,185,129,0.3);
-      color: var(--success);
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: none;
-      z-index: 100;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-      animation: fadeSlideIn 0.3s ease both;
-    }
-
-    /* ── LOADING ── */
-    .loading {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 2.5rem;
-      font-size: 0.9rem;
-    }
-
-    .loading::before {
-      content: '';
-      display: block;
-      width: 24px; height: 24px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent-1);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto 0.75rem;
-    }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* ── PILOTING SECTIONS ── */
-    .severity-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.2rem 0.65rem;
-      border-radius: 99px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
+    .severity-badge { display: inline-flex; align-items: center; padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; }
     .severity-critical { background: rgba(239,68,68,0.12); color: var(--danger); }
     .severity-warning { background: rgba(245,158,11,0.12); color: var(--warning); }
-
     .classification-well-estimated { background: rgba(16,185,129,0.12); color: var(--success); }
     .classification-over-estimated { background: rgba(245,158,11,0.12); color: var(--warning); }
     .classification-under-estimated { background: rgba(239,68,68,0.12); color: var(--danger); }
-
-    .bottleneck-highlight {
-      background: rgba(99,102,241,0.06);
-      border-left: 3px solid var(--accent-1);
-    }
-
+    .bottleneck-highlight { background: rgba(99,102,241,0.06); border-left: 3px solid var(--accent-1); }
     .evolution-positive { color: var(--success); }
     .evolution-negative { color: var(--danger); }
-
     .subsection { margin-top: 1.5rem; }
-    .section-subtitle {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: -0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .subsection-title {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
-    }
-
-    .alert-card {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.85rem 1rem;
-      margin-bottom: 0.5rem;
-      transition: all var(--transition);
-    }
-    .alert-card:hover {
-      border-color: var(--border-hover);
-      box-shadow: var(--shadow-hover);
-    }
-
-    .alert-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .alert-link {
-      color: var(--text-primary);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.88rem;
-      transition: color var(--transition);
-    }
+    .section-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; margin-bottom: 1rem; }
+    .subsection-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .alert-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 0.5rem; transition: all var(--transition); }
+    .alert-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-hover); }
+    .alert-header { display: flex; align-items: center; gap: 0.5rem; }
+    .alert-link { color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.88rem; transition: color var(--transition); }
     .alert-link:hover { color: var(--accent-1); }
   </style>
 </head>
@@ -572,13 +201,13 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       <div class="nav-left">
         <a href="/dashboard" class="nav-brand">Shiplens</a>
         <span class="nav-sep">/</span>
-        <a href="/dashboard" class="nav-crumb">Dashboard</a>
+        <a href="/dashboard" class="nav-crumb">${translations.breadcrumbDashboard}</a>
         <span class="nav-sep">/</span>
-        <span class="nav-crumb nav-crumb-active">Rapport de cycle</span>
+        <span class="nav-crumb nav-crumb-active">${translations.pageTitle}</span>
       </div>
       <div class="nav-right">
-        <a href="/settings" class="nav-crumb" id="settingsLink">Settings</a>
-        <div class="theme-toggle" id="themeToggle" title="Changer de theme">
+        <a href="/settings" class="nav-crumb" id="settingsLink">${translations.navSettings}</a>
+        <div class="theme-toggle" id="themeToggle" title="${translations.themeToggleTitle}">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>
         </div>
@@ -587,14 +216,14 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
     <div class="container">
       <div class="page-header">
-        <h1 class="page-title">Rapport de cycle</h1>
+        <h1 class="page-title">${translations.pageTitle}</h1>
         <div class="selector-bar">
           <input type="text" id="teamId" />
           <select class="custom-select" id="cycleSelector" disabled>
-            <option value="">Chargement des cycles...</option>
+            <option value="">${translations.loadingCycles}</option>
           </select>
           <select class="custom-select" id="memberSelector" disabled style="min-width:200px">
-            <option value="">Toute l'equipe</option>
+            <option value="">${translations.wholeTeam}</option>
           </select>
         </div>
       </div>
@@ -603,64 +232,64 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
       <div class="glass" id="metricsSection">
         <div class="section-head">
-          <span class="section-title">Metriques</span>
+          <span class="section-title">${translations.sectionMetrics}</span>
         </div>
-        <div id="metricsContent" class="loading">Selectionnez un cycle pour voir les metriques.</div>
+        <div id="metricsContent" class="loading">${translations.selectCycleMetrics}</div>
       </div>
 
       <div class="glass" id="memberMetricsSection" style="display:none">
         <div class="section-head">
-          <span class="section-title">Metriques membre</span>
+          <span class="section-title">${translations.sectionMemberMetrics}</span>
         </div>
         <div id="memberMetricsContent"></div>
       </div>
 
       <div class="glass" id="bottlenecksSection">
         <div class="section-head">
-          <span class="section-title">Goulots d'etranglement</span>
+          <span class="section-title">${translations.sectionBottlenecks}</span>
         </div>
-        <div class="section-subtitle">Temps median passe dans chaque statut du workflow — identifie ou les issues s'accumulent.</div>
-        <div id="bottlenecksContent" class="loading">Selectionnez un cycle pour voir les goulots.</div>
+        <div class="section-subtitle">${translations.subtitleBottlenecks}</div>
+        <div id="bottlenecksContent" class="loading">${translations.selectCycleBottlenecks}</div>
       </div>
 
       <div class="glass" id="blockedIssuesSection">
         <div class="section-head">
-          <span class="section-title">Issues bloquees</span>
-          <button class="btn" id="detectBtn" disabled>Relancer la detection</button>
+          <span class="section-title">${translations.sectionBlockedIssues}</span>
+          <button class="btn" id="detectBtn" disabled>${translations.buttonDetect}</button>
         </div>
-        <div class="section-subtitle">Issues restees dans le meme statut au-dela du seuil configure — triees par severite.</div>
-        <div id="blockedIssuesContent" class="loading">Selectionnez un cycle pour voir les issues bloquees.</div>
+        <div class="section-subtitle">${translations.subtitleBlockedIssues}</div>
+        <div id="blockedIssuesContent" class="loading">${translations.selectCycleBlockedIssues}</div>
       </div>
 
       <div class="glass" id="estimationSection">
         <div class="section-head">
-          <span class="section-title">Precision d'estimation</span>
+          <span class="section-title">${translations.sectionEstimation}</span>
         </div>
-        <div class="section-subtitle">Ecart entre l'estimation en points et le cycle time reel — par equipe et par developpeur.</div>
-        <div id="estimationContent" class="loading">Selectionnez un cycle pour voir la precision d'estimation.</div>
+        <div class="section-subtitle">${translations.subtitleEstimation}</div>
+        <div id="estimationContent" class="loading">${translations.selectCycleEstimation}</div>
       </div>
 
       <div class="glass" id="digestSection" style="display:none">
         <div class="section-head">
-          <span class="section-title">Digest IA membre</span>
+          <span class="section-title">${translations.sectionDigest}</span>
           <div style="display:flex;gap:0.5rem;align-items:center">
-            <a class="btn" id="healthTrendsLink" href="/member-health-trends" target="_blank">View health trends</a>
-            <button class="btn btn-accent" id="digestBtn">Generer le digest</button>
+            <a class="btn" id="healthTrendsLink" href="/member-health-trends" target="_blank">${translations.buttonViewHealthTrends}</a>
+            <button class="btn btn-accent" id="digestBtn">${translations.buttonGenerateDigest}</button>
           </div>
         </div>
-        <div id="digestContent" class="report-empty">Selectionnez un membre pour generer un digest.</div>
+        <div id="digestContent" class="report-empty">${translations.selectMemberDigest}</div>
       </div>
 
       <div class="glass" id="reportSection">
         <div class="section-head">
-          <span class="section-title">Rapport IA</span>
+          <span class="section-title">${translations.sectionReport}</span>
           <div class="report-actions">
-            <button class="btn btn-accent" id="generateBtn" disabled>Generer le rapport</button>
-            <button class="btn" id="exportBtn" disabled>&#8681; Export</button>
-            <button class="btn" id="copyBtn" disabled>&#9112; Copier</button>
+            <button class="btn btn-accent" id="generateBtn" disabled>${translations.buttonGenerateReport}</button>
+            <button class="btn" id="exportBtn" disabled>&#8681; ${translations.buttonExport}</button>
+            <button class="btn" id="copyBtn" disabled>&#9112; ${translations.buttonCopy}</button>
           </div>
         </div>
-        <div id="reportContent" class="report-empty">Selectionnez un cycle pour generer un rapport.</div>
+        <div id="reportContent" class="report-empty">${translations.selectCycleReport}</div>
       </div>
     </div>
   </div>
@@ -668,27 +297,27 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
   <div class="toast" id="toast"></div>
 
   <script>
-    /* ── THEME ── */
+    var TRANSLATIONS = ${translationsJson};
+
     (function() {
-      const saved = localStorage.getItem('shiplens-theme') || 'dark';
+      var saved = localStorage.getItem('shiplens-theme') || 'dark';
       document.documentElement.setAttribute('data-theme', saved);
     })();
 
     document.getElementById('themeToggle').addEventListener('click', function() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+      var current = document.documentElement.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('shiplens-theme', next);
     });
 
-    /* ── APP LOGIC ── */
-    const API = window.location.origin;
-    let currentReport = null;
-    let currentIssues = [];
-    let currentAlerts = [];
-    let currentBottlenecks = null;
-    let currentEstimation = null;
-    let selectedMember = null;
+    var API = window.location.origin;
+    var currentReport = null;
+    var currentIssues = [];
+    var currentAlerts = [];
+    var currentBottlenecks = null;
+    var currentEstimation = null;
+    var selectedMember = null;
 
     function showError(message) {
       document.getElementById('errorContainer').innerHTML =
@@ -700,28 +329,28 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     function showToast(message) {
-      const toast = document.getElementById('toast');
+      var toast = document.getElementById('toast');
       toast.textContent = message;
       toast.style.display = 'block';
       setTimeout(function() { toast.style.display = 'none'; }, 2500);
     }
 
     function escapeHtml(text) {
-      const div = document.createElement('div');
+      var div = document.createElement('div');
       div.appendChild(document.createTextNode(text));
       return div.innerHTML;
     }
 
     function statusBadge(statusName) {
-      const lower = statusName.toLowerCase();
-      let cls = 'status-other';
+      var lower = statusName.toLowerCase();
+      var cls = 'status-other';
       if (lower === 'done' || lower === 'completed') cls = 'status-done';
       else if (lower === 'in progress' || lower === 'started') cls = 'status-progress';
       return '<span class="status-badge ' + cls + '">' + escapeHtml(statusName) + '</span>';
     }
 
     function metricCard(value, label, tooltip, cssClass) {
-      const cls = cssClass || 'metric-card';
+      var cls = cssClass || 'metric-card';
       return '<div class="' + cls + '">' +
         '<div class="metric-value">' + escapeHtml(value) + '</div>' +
         '<div class="metric-label">' + escapeHtml(label) +
@@ -729,9 +358,8 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         '</div></div>';
     }
 
-    /* ── INIT ── */
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialTeamId = urlParams.get('teamId');
+    var urlParams = new URLSearchParams(window.location.search);
+    var initialTeamId = urlParams.get('teamId');
     if (initialTeamId) {
       document.getElementById('teamId').value = initialTeamId;
       document.getElementById('settingsLink').href = '/settings?teamId=' + encodeURIComponent(initialTeamId);
@@ -739,9 +367,9 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     document.getElementById('cycleSelector').addEventListener('change', function() {
-      const cycleId = this.value;
+      var cycleId = this.value;
       if (!cycleId) return;
-      const teamId = document.getElementById('teamId').value.trim();
+      var teamId = document.getElementById('teamId').value.trim();
       clearError();
       currentReport = null;
       selectedMember = null;
@@ -757,7 +385,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       document.getElementById('exportBtn').disabled = true;
       document.getElementById('copyBtn').disabled = true;
       document.getElementById('reportContent').className = 'report-empty';
-      document.getElementById('reportContent').textContent = 'Aucun rapport genere pour ce cycle.';
+      document.getElementById('reportContent').textContent = TRANSLATIONS.noReportGenerated;
       loadMetrics(cycleId, teamId);
       loadBottlenecks(cycleId, teamId);
       loadBlockedIssues(teamId);
@@ -766,21 +394,21 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     });
 
     async function loadTeam() {
-      const teamId = document.getElementById('teamId').value.trim();
+      var teamId = document.getElementById('teamId').value.trim();
       if (!teamId) return;
       clearError();
 
       try {
-        const response = await fetch(API + '/analytics/teams/' + encodeURIComponent(teamId) + '/cycles');
+        var response = await fetch(API + '/analytics/teams/' + encodeURIComponent(teamId) + '/cycles');
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
-          throw new Error(err.message || 'Erreur lors du chargement des cycles');
+          var err = await response.json().catch(function() { return {}; });
+          throw new Error(err.message || TRANSLATIONS.errorLoadCycles);
         }
-        const data = await response.json();
-        const selector = document.getElementById('cycleSelector');
-        selector.innerHTML = '<option value="">Selectionnez un cycle...</option>';
+        var data = await response.json();
+        var selector = document.getElementById('cycleSelector');
+        selector.innerHTML = '<option value="">' + TRANSLATIONS.selectCycle + '</option>';
         data.cycles.forEach(function(cycle) {
-          const option = document.createElement('option');
+          var option = document.createElement('option');
           option.value = cycle.externalId;
           option.textContent = cycle.name + ' (' + cycle.issueCount + ' issues) — ' + cycle.status;
           selector.appendChild(option);
@@ -797,101 +425,101 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     async function loadMetrics(cycleId, teamId) {
-      const container = document.getElementById('metricsContent');
+      var container = document.getElementById('metricsContent');
       container.className = 'loading';
-      container.textContent = 'Chargement des metriques...';
+      container.textContent = TRANSLATIONS.loadingMetrics;
 
       try {
-        const response = await fetch(
+        var response = await fetch(
           API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/metrics?teamId=' + encodeURIComponent(teamId)
         );
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
+          var err = await response.json().catch(function() { return {}; });
           container.className = '';
-          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Metriques non disponibles') + '</div>';
+          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || TRANSLATIONS.metricsUnavailable) + '</div>';
           return;
         }
-        const data = await response.json();
-        const scopeCreepValue = parseInt(data.scopeCreep) || 0;
-        const scopeCreepClass = scopeCreepValue > 30 ? 'metric-card scope-creep-alert' : 'metric-card';
+        var data = await response.json();
+        var scopeCreepValue = parseInt(data.scopeCreep) || 0;
+        var scopeCreepClass = scopeCreepValue > 30 ? 'metric-card scope-creep-alert' : 'metric-card';
 
         container.className = '';
         container.innerHTML =
           '<div class="metrics-grid">' +
-          metricCard(data.velocity, 'Velocite', 'Points completes par rapport aux points planifies sur le cycle.') +
-          metricCard(data.throughput, 'Throughput', 'Nombre total d\\'issues terminees dans le cycle.') +
-          metricCard(data.completionRate, 'Taux de completion', 'Pourcentage d\\'issues du scope initial terminees (hors scope creep).') +
-          metricCard(data.scopeCreep, 'Scope creep', 'Issues ajoutees apres le debut du cycle. Un scope creep eleve indique un perimetre instable.', scopeCreepClass) +
-          metricCard(data.averageCycleTime, 'Cycle time moyen', 'Duree moyenne entre le debut du travail sur une issue et sa completion.') +
-          metricCard(data.averageLeadTime, 'Lead time moyen', 'Duree moyenne entre la creation d\\'une issue et sa completion. Inclut le temps d\\'attente avant le debut du travail.') +
+          metricCard(data.velocity, TRANSLATIONS.metricVelocity, TRANSLATIONS.tooltipVelocity) +
+          metricCard(data.throughput, TRANSLATIONS.metricThroughput, TRANSLATIONS.tooltipThroughput) +
+          metricCard(data.completionRate, TRANSLATIONS.metricCompletionRate, TRANSLATIONS.tooltipCompletionRate) +
+          metricCard(data.scopeCreep, TRANSLATIONS.metricScopeCreep, TRANSLATIONS.tooltipScopeCreep, scopeCreepClass) +
+          metricCard(data.averageCycleTime, TRANSLATIONS.metricCycleTime, TRANSLATIONS.tooltipCycleTime) +
+          metricCard(data.averageLeadTime, TRANSLATIONS.metricLeadTime, TRANSLATIONS.tooltipLeadTime) +
           '</div>';
       } catch (error) {
         container.className = '';
-        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.errorPrefix + escapeHtml(error.message) + '</div>';
       }
     }
 
     function renderBottlenecks() {
-      const container = document.getElementById('bottlenecksContent');
+      var container = document.getElementById('bottlenecksContent');
       if (!currentBottlenecks) return;
-      const data = currentBottlenecks;
+      var data = currentBottlenecks;
 
       if (data.statusDistribution.length === 0) {
-        container.innerHTML = '<div class="report-empty">Aucune donnee de goulot disponible</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.noBottleneckData + '</div>';
         return;
       }
 
-      let html = '';
+      var html = '';
 
       if (selectedMember) {
-        const memberBreakdown = data.assigneeBreakdown.find(function(a) { return a.assigneeName === selectedMember; });
+        var memberBreakdown = data.assigneeBreakdown.find(function(a) { return a.assigneeName === selectedMember; });
         if (memberBreakdown && memberBreakdown.statusMedians.length > 0) {
-          html += '<table><thead><tr><th>Statut</th><th>Temps median</th></tr></thead><tbody>';
+          html += '<table><thead><tr><th>' + TRANSLATIONS.headerStatus + '</th><th>' + TRANSLATIONS.headerMedianTime + '</th></tr></thead><tbody>';
           memberBreakdown.statusMedians.forEach(function(median) {
             html += '<tr><td>' + escapeHtml(median.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(median.medianHours) + '</td></tr>';
           });
           html += '</tbody></table>';
         } else {
-          html += '<div class="report-empty">Aucune donnee de goulot pour ce membre</div>';
+          html += '<div class="report-empty">' + TRANSLATIONS.noBottleneckDataMember + '</div>';
         }
       } else {
-        html += '<table><thead><tr><th>Statut</th><th>Temps median</th></tr></thead><tbody>';
+        html += '<table><thead><tr><th>' + TRANSLATIONS.headerStatus + '</th><th>' + TRANSLATIONS.headerMedianTime + '</th></tr></thead><tbody>';
         data.statusDistribution.forEach(function(entry) {
-          let highlight = entry.statusName === data.bottleneckStatus ? ' class="bottleneck-highlight"' : '';
+          var highlight = entry.statusName === data.bottleneckStatus ? ' class="bottleneck-highlight"' : '';
           html += '<tr' + highlight + '><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.medianHours) + '</td></tr>';
         });
         html += '</tbody></table>';
 
-        html += '<div class="subsection"><div class="subsection-title">Comparaison avec le cycle precedent</div><div class="section-subtitle">Evolution du temps median par statut entre les deux derniers cycles.</div>';
+        html += '<div class="subsection"><div class="subsection-title">' + TRANSLATIONS.subsectionCycleComparison + '</div><div class="section-subtitle">' + TRANSLATIONS.subsectionCycleComparisonDescription + '</div>';
         if (data.cycleComparison) {
-          html += '<table><thead><tr><th>Statut</th><th>Cycle precedent</th><th>Cycle actuel</th><th>Evolution</th></tr></thead><tbody>';
+          html += '<table><thead><tr><th>' + TRANSLATIONS.headerStatus + '</th><th>' + TRANSLATIONS.headerPreviousCycle + '</th><th>' + TRANSLATIONS.headerCurrentCycle + '</th><th>' + TRANSLATIONS.headerEvolution + '</th></tr></thead><tbody>';
           data.cycleComparison.forEach(function(entry) {
-            let evolutionValue = parseFloat(entry.evolution);
-            let evolutionClass = evolutionValue > 0 ? 'evolution-negative' : evolutionValue < 0 ? 'evolution-positive' : '';
+            var evolutionValue = parseFloat(entry.evolution);
+            var evolutionClass = evolutionValue > 0 ? 'evolution-negative' : evolutionValue < 0 ? 'evolution-positive' : '';
             html += '<tr><td>' + escapeHtml(entry.statusName) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.previousMedianHours) + '</td><td style="font-variant-numeric:tabular-nums">' + escapeHtml(entry.currentMedianHours) + '</td><td class="' + evolutionClass + '">' + escapeHtml(entry.evolution) + '</td></tr>';
           });
           html += '</tbody></table>';
         } else {
-          html += '<div class="report-empty">Pas assez de cycles pour comparer</div>';
+          html += '<div class="report-empty">' + TRANSLATIONS.notEnoughCycles + '</div>';
         }
         html += '</div>';
 
-        html += '<div class="subsection"><div class="subsection-title">Breakdown par assignee</div><div class="section-subtitle">Temps median par statut pour chaque membre de l\\'equipe.</div>';
+        html += '<div class="subsection"><div class="subsection-title">' + TRANSLATIONS.subsectionAssigneeBreakdown + '</div><div class="section-subtitle">' + TRANSLATIONS.subsectionAssigneeBreakdownDescription + '</div>';
         if (data.assigneeBreakdown.length > 0) {
-          let statusSet = {};
+          var statusSet = {};
           data.assigneeBreakdown.forEach(function(assignee) {
             assignee.statusMedians.forEach(function(median) { statusSet[median.statusName] = true; });
           });
-          let allStatuses = Object.keys(statusSet);
-          html += '<table><thead><tr><th>Assignee</th>';
+          var allStatuses = Object.keys(statusSet);
+          html += '<table><thead><tr><th>' + TRANSLATIONS.headerAssignee + '</th>';
           allStatuses.forEach(function(status) { html += '<th>' + escapeHtml(status) + '</th>'; });
           html += '</tr></thead><tbody>';
           data.assigneeBreakdown.forEach(function(assignee) {
-            let medianMap = {};
+            var medianMap = {};
             assignee.statusMedians.forEach(function(median) { medianMap[median.statusName] = median.medianHours; });
             html += '<tr><td>' + escapeHtml(assignee.assigneeName) + '</td>';
             allStatuses.forEach(function(status) {
-              let value = medianMap[status] || '—';
+              var value = medianMap[status] || '—';
               html += '<td style="font-variant-numeric:tabular-nums">' + escapeHtml(value) + '</td>';
             });
             html += '</tr>';
@@ -905,18 +533,18 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     async function loadBottlenecks(cycleId, teamId) {
-      const container = document.getElementById('bottlenecksContent');
+      var container = document.getElementById('bottlenecksContent');
       container.className = 'loading';
-      container.textContent = 'Chargement des goulots...';
+      container.textContent = TRANSLATIONS.loadingBottlenecks;
 
       try {
-        const response = await fetch(
+        var response = await fetch(
           API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/bottlenecks?teamId=' + encodeURIComponent(teamId) + '&includeComparison=true'
         );
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
+          var err = await response.json().catch(function() { return {}; });
           container.className = '';
-          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Goulots non disponibles') + '</div>';
+          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || TRANSLATIONS.bottlenecksUnavailable) + '</div>';
           return;
         }
         currentBottlenecks = await response.json();
@@ -924,23 +552,23 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         renderBottlenecks();
       } catch (error) {
         container.className = '';
-        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.errorPrefix + escapeHtml(error.message) + '</div>';
       }
     }
 
     function renderBlockedIssues() {
-      const container = document.getElementById('blockedIssuesContent');
-      let alerts = currentAlerts.slice();
+      var container = document.getElementById('blockedIssuesContent');
+      var alerts = currentAlerts.slice();
 
       if (selectedMember) {
-        const memberExternalIds = currentIssues
+        var memberExternalIds = currentIssues
           .filter(function(issue) { return issue.assigneeName === selectedMember; })
           .map(function(issue) { return issue.externalId; });
         alerts = alerts.filter(function(alert) { return memberExternalIds.indexOf(alert.issueExternalId) !== -1; });
       }
 
       if (alerts.length === 0) {
-        container.innerHTML = '<div class="report-empty">Aucune issue bloquee detectee</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.noBlockedIssues + '</div>';
         return;
       }
 
@@ -950,9 +578,9 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         return 0;
       });
 
-      let html = '';
+      var html = '';
       alerts.forEach(function(alert) {
-        let severityClass = alert.severity === 'critical' ? 'severity-critical' : 'severity-warning';
+        var severityClass = alert.severity === 'critical' ? 'severity-critical' : 'severity-warning';
         html += '<div class="alert-card">' +
           '<div class="alert-header">' +
           '<a href="' + escapeHtml(alert.issueUrl) + '" target="_blank" class="alert-link">' + escapeHtml(alert.issueTitle) + '</a>' +
@@ -968,96 +596,102 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     async function loadBlockedIssues(teamId) {
-      const container = document.getElementById('blockedIssuesContent');
+      var container = document.getElementById('blockedIssuesContent');
       container.className = 'loading';
-      container.textContent = 'Chargement des issues bloquees...';
+      container.textContent = TRANSLATIONS.loadingBlockedIssues;
 
       try {
-        const response = await fetch(API + '/analytics/blocked-issues');
+        var response = await fetch(API + '/analytics/blocked-issues');
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
+          var err = await response.json().catch(function() { return {}; });
           container.className = '';
-          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Issues bloquees non disponibles') + '</div>';
+          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || TRANSLATIONS.blockedIssuesUnavailable) + '</div>';
           return;
         }
-        let allAlerts = await response.json();
+        var allAlerts = await response.json();
         currentAlerts = teamId ? allAlerts.filter(function(a) { return a.teamId === teamId; }) : allAlerts;
         container.className = '';
         renderBlockedIssues();
       } catch (error) {
         container.className = '';
-        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.errorPrefix + escapeHtml(error.message) + '</div>';
       }
     }
 
     async function detectBlockedIssues(teamId) {
-      const btn = document.getElementById('detectBtn');
+      var btn = document.getElementById('detectBtn');
       btn.disabled = true;
-      btn.textContent = 'Detection en cours...';
+      btn.textContent = TRANSLATIONS.detectionInProgress;
 
       try {
-        const response = await fetch(API + '/analytics/blocked-issues/detect', { method: 'POST' });
+        var response = await fetch(API + '/analytics/blocked-issues/detect', { method: 'POST' });
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
-          throw new Error(err.message || 'Erreur lors de la detection');
+          var err = await response.json().catch(function() { return {}; });
+          throw new Error(err.message || TRANSLATIONS.errorDetection);
         }
         await loadBlockedIssues(teamId);
-        btn.textContent = 'Relancer la detection';
+        btn.textContent = TRANSLATIONS.buttonDetect;
         btn.disabled = false;
       } catch (error) {
-        const container = document.getElementById('blockedIssuesContent');
-        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
-        btn.textContent = 'Relancer la detection';
+        var container = document.getElementById('blockedIssuesContent');
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.errorPrefix + escapeHtml(error.message) + '</div>';
+        btn.textContent = TRANSLATIONS.buttonDetect;
         btn.disabled = false;
       }
     }
 
+    function classificationLabel(classification) {
+      if (classification === 'well-estimated') return TRANSLATIONS.classificationWellEstimated;
+      if (classification === 'over-estimated') return TRANSLATIONS.classificationOverEstimated;
+      return TRANSLATIONS.classificationUnderEstimated;
+    }
+
     function renderEstimation() {
-      const container = document.getElementById('estimationContent');
+      var container = document.getElementById('estimationContent');
       if (!currentEstimation) return;
-      const data = currentEstimation;
+      var data = currentEstimation;
 
       if (data.teamScore.issueCount === 0) {
-        container.innerHTML = '<div class="report-empty">Pas assez de donnees pour calculer la precision</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.notEnoughEstimationData + '</div>';
         return;
       }
 
-      let html = '';
+      var html = '';
 
       if (selectedMember) {
-        const memberScore = data.developerScores.find(function(dev) { return dev.developerName === selectedMember; });
+        var memberScore = data.developerScores.find(function(dev) { return dev.developerName === selectedMember; });
         if (memberScore) {
-          let memberClassification = 'classification-' + memberScore.classification;
-          let memberLabel = memberScore.classification === 'well-estimated' ? 'Bien estimee' : memberScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+          var memberClassification = 'classification-' + memberScore.classification;
+          var memberLabel = classificationLabel(memberScore.classification);
           html += '<div class="metric-card" style="margin-bottom:1rem;">' +
-            '<div class="metric-value">' + memberScore.daysPerPoint.toFixed(1) + ' <small>jours/point</small></div>' +
+            '<div class="metric-value">' + memberScore.daysPerPoint.toFixed(1) + ' <small>' + TRANSLATIONS.headerDaysPerPoint + '</small></div>' +
             '<div class="metric-label">Score ' + escapeHtml(selectedMember) + ' <span class="severity-badge ' + memberClassification + '">' + escapeHtml(memberLabel) + '</span></div>' +
             '</div>';
-          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Jours/point</th><th>Classification</th></tr></thead><tbody>';
+          html += '<table><thead><tr><th>' + TRANSLATIONS.headerDeveloper + '</th><th>' + TRANSLATIONS.headerIssues + '</th><th>' + TRANSLATIONS.headerDaysPerPoint + '</th><th>' + TRANSLATIONS.headerClassification + '</th></tr></thead><tbody>';
           html += '<tr><td>' + escapeHtml(memberScore.developerName) + '</td>' +
             '<td style="font-variant-numeric:tabular-nums">' + memberScore.issueCount + '</td>' +
             '<td style="font-variant-numeric:tabular-nums">' + memberScore.daysPerPoint.toFixed(1) + '</td>' +
             '<td><span class="severity-badge ' + memberClassification + '">' + escapeHtml(memberLabel) + '</span></td></tr>';
           html += '</tbody></table>';
         } else {
-          html += '<div class="report-empty">Aucune donnee d\\'estimation pour ce membre</div>';
+          html += '<div class="report-empty">' + TRANSLATIONS.noEstimationDataMember + '</div>';
         }
       } else {
-        let classificationClass = 'classification-' + data.teamScore.classification;
-        let classificationLabel = data.teamScore.classification === 'well-estimated' ? 'Bien estimee' : data.teamScore.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+        var classificationClass = 'classification-' + data.teamScore.classification;
+        var teamLabel = classificationLabel(data.teamScore.classification);
 
         html += '<div class="metric-card" style="margin-bottom:1rem;">' +
-          '<div class="metric-value">' + data.teamScore.daysPerPoint.toFixed(1) + ' <small>jours/point</small></div>' +
-          '<div class="metric-label">Score equipe <span class="severity-badge ' + classificationClass + '">' + escapeHtml(classificationLabel) + '</span></div>' +
+          '<div class="metric-value">' + data.teamScore.daysPerPoint.toFixed(1) + ' <small>' + TRANSLATIONS.headerDaysPerPoint + '</small></div>' +
+          '<div class="metric-label">' + TRANSLATIONS.teamScore + ' <span class="severity-badge ' + classificationClass + '">' + escapeHtml(teamLabel) + '</span></div>' +
           '</div>';
-        html += '<p style="color:#64748b;font-size:0.85rem;margin:0 0 1.5rem 0;">Ce score represente le nombre moyen de jours necessaires pour completer 1 story point. Par exemple, un score de 5.0 signifie qu\\'une issue estimee a 2 points a pris en moyenne 10 jours. Plus la valeur est stable d\\'un cycle a l\\'autre, meilleure est la calibration des estimations.</p>';
+        html += '<p style="color:#64748b;font-size:0.85rem;margin:0 0 1.5rem 0;">' + TRANSLATIONS.estimationExplanation + '</p>';
 
         if (data.developerScores.length > 0) {
-          html += '<div class="subsection"><div class="subsection-title">Breakdown par developpeur</div><div class="section-subtitle">Score de precision et tendances d\\'estimation par membre.</div>';
-          html += '<table><thead><tr><th>Developpeur</th><th>Issues</th><th>Jours/point</th><th>Classification</th></tr></thead><tbody>';
+          html += '<div class="subsection"><div class="subsection-title">' + TRANSLATIONS.subsectionDeveloperBreakdown + '</div><div class="section-subtitle">' + TRANSLATIONS.subsectionDeveloperBreakdownDescription + '</div>';
+          html += '<table><thead><tr><th>' + TRANSLATIONS.headerDeveloper + '</th><th>' + TRANSLATIONS.headerIssues + '</th><th>' + TRANSLATIONS.headerDaysPerPoint + '</th><th>' + TRANSLATIONS.headerClassification + '</th></tr></thead><tbody>';
           data.developerScores.forEach(function(dev) {
-            let devClassification = 'classification-' + dev.classification;
-            let devLabel = dev.classification === 'well-estimated' ? 'Bien estimee' : dev.classification === 'over-estimated' ? 'Sur-estimee' : 'Sous-estimee';
+            var devClassification = 'classification-' + dev.classification;
+            var devLabel = classificationLabel(dev.classification);
             html += '<tr><td>' + escapeHtml(dev.developerName) + '</td>' +
               '<td style="font-variant-numeric:tabular-nums">' + dev.issueCount + '</td>' +
               '<td style="font-variant-numeric:tabular-nums">' + dev.daysPerPoint.toFixed(1) + '</td>' +
@@ -1071,18 +705,18 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     async function loadEstimationAccuracy(teamId, cycleId) {
-      const container = document.getElementById('estimationContent');
+      var container = document.getElementById('estimationContent');
       container.className = 'loading';
-      container.textContent = 'Chargement de la precision d\\'estimation...';
+      container.textContent = TRANSLATIONS.loadingEstimation;
 
       try {
-        const response = await fetch(
+        var response = await fetch(
           API + '/api/analytics/teams/' + encodeURIComponent(teamId) + '/cycles/' + encodeURIComponent(cycleId) + '/estimation-accuracy'
         );
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
+          var err = await response.json().catch(function() { return {}; });
           container.className = '';
-          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || 'Precision d\\'estimation non disponible') + '</div>';
+          container.innerHTML = '<div class="report-empty">' + escapeHtml(err.message || TRANSLATIONS.estimationUnavailable) + '</div>';
           return;
         }
         currentEstimation = await response.json();
@@ -1090,33 +724,33 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
         renderEstimation();
       } catch (error) {
         container.className = '';
-        container.innerHTML = '<div class="report-empty">Erreur: ' + escapeHtml(error.message) + '</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.errorPrefix + escapeHtml(error.message) + '</div>';
       }
     }
 
     async function loadCycleIssues(cycleId, teamId) {
       try {
-        const response = await fetch(
+        var response = await fetch(
           API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/issues?teamId=' + encodeURIComponent(teamId)
         );
         if (!response.ok) {
           currentIssues = [];
           return;
         }
-        const data = await response.json();
+        var data = await response.json();
         currentIssues = data.issues || [];
 
-        const memberSelector = document.getElementById('memberSelector');
-        const names = {};
+        var memberSelector = document.getElementById('memberSelector');
+        var names = {};
         currentIssues.forEach(function(issue) {
-          if (issue.assigneeName && issue.assigneeName !== 'Non assigne') {
+          if (issue.assigneeName && issue.assigneeName !== TRANSLATIONS.unassigned) {
             names[issue.assigneeName] = true;
           }
         });
-        const uniqueNames = Object.keys(names).sort();
-        memberSelector.innerHTML = '<option value="">Toute l\\'equipe</option>';
+        var uniqueNames = Object.keys(names).sort();
+        memberSelector.innerHTML = '<option value="">' + TRANSLATIONS.wholeTeam + '</option>';
         uniqueNames.forEach(function(name) {
-          const option = document.createElement('option');
+          var option = document.createElement('option');
           option.value = name;
           option.textContent = name;
           memberSelector.appendChild(option);
@@ -1128,32 +762,32 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     }
 
     function renderMemberMetrics() {
-      const container = document.getElementById('memberMetricsContent');
+      var container = document.getElementById('memberMetricsContent');
       if (!selectedMember) {
         document.getElementById('memberMetricsSection').style.display = 'none';
         return;
       }
 
       document.getElementById('memberMetricsSection').style.display = '';
-      const memberIssues = currentIssues.filter(function(issue) { return issue.assigneeName === selectedMember; });
+      var memberIssues = currentIssues.filter(function(issue) { return issue.assigneeName === selectedMember; });
 
       if (memberIssues.length === 0) {
-        container.innerHTML = '<div class="report-empty">Aucune issue pour ce membre sur ce cycle</div>';
+        container.innerHTML = '<div class="report-empty">' + TRANSLATIONS.noIssueMember + '</div>';
         return;
       }
 
-      const memberExternalIds = memberIssues.map(function(issue) { return issue.externalId; });
-      const blockedCount = currentAlerts.filter(function(alert) { return memberExternalIds.indexOf(alert.issueExternalId) !== -1; }).length;
+      var memberExternalIds = memberIssues.map(function(issue) { return issue.externalId; });
+      var blockedCount = currentAlerts.filter(function(alert) { return memberExternalIds.indexOf(alert.issueExternalId) !== -1; }).length;
 
-      let inProgressCount = 0;
-      let doneCount = 0;
-      let completedPoints = 0;
+      var inProgressCount = 0;
+      var doneCount = 0;
+      var completedPoints = 0;
 
       memberIssues.forEach(function(issue) {
-        const lower = issue.statusName.toLowerCase();
+        var lower = issue.statusName.toLowerCase();
         if (lower === 'done' || lower === 'completed') {
           doneCount++;
-          const raw = parseInt(issue.points);
+          var raw = parseInt(issue.points);
           if (!isNaN(raw)) completedPoints += raw;
         } else if (lower.indexOf('progress') !== -1 || lower.indexOf('started') !== -1) {
           inProgressCount++;
@@ -1161,10 +795,10 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
       });
 
       container.innerHTML = '<div class="metrics-grid" style="grid-template-columns:repeat(4,1fr)">' +
-        metricCard(String(inProgressCount), 'En cours', 'Issues actuellement en cours pour ce membre.') +
-        metricCard(String(blockedCount), 'Bloquees', 'Issues bloquees au-dela du seuil configure.') +
-        metricCard(String(doneCount), 'Terminees', 'Issues completees sur ce cycle.') +
-        metricCard(String(completedPoints), 'Points completes', 'Total des points des issues terminees.') +
+        metricCard(String(inProgressCount), TRANSLATIONS.memberMetricInProgress, TRANSLATIONS.tooltipMemberInProgress) +
+        metricCard(String(blockedCount), TRANSLATIONS.memberMetricBlocked, TRANSLATIONS.tooltipMemberBlocked) +
+        metricCard(String(doneCount), TRANSLATIONS.memberMetricDone, TRANSLATIONS.tooltipMemberDone) +
+        metricCard(String(completedPoints), TRANSLATIONS.memberMetricCompletedPoints, TRANSLATIONS.tooltipMemberCompletedPoints) +
         '</div>';
     }
 
@@ -1173,7 +807,7 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
       document.getElementById('digestSection').style.display = selectedMember ? '' : 'none';
       document.getElementById('digestContent').className = 'report-empty';
-      document.getElementById('digestContent').textContent = 'Cliquez sur le bouton pour generer le digest.';
+      document.getElementById('digestContent').textContent = TRANSLATIONS.clickToGenerateDigest;
 
       if (selectedMember) {
         var healthTeamId = document.getElementById('teamId').value.trim();
@@ -1189,19 +823,19 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     });
 
     document.getElementById('digestBtn').addEventListener('click', async function() {
-      const cycleId = document.getElementById('cycleSelector').value;
-      const teamId = document.getElementById('teamId').value.trim();
+      var cycleId = document.getElementById('cycleSelector').value;
+      var teamId = document.getElementById('teamId').value.trim();
       if (!cycleId || !teamId || !selectedMember) return;
 
-      const btn = document.getElementById('digestBtn');
-      const digestEl = document.getElementById('digestContent');
+      var btn = document.getElementById('digestBtn');
+      var digestEl = document.getElementById('digestContent');
       btn.disabled = true;
-      btn.textContent = 'Generation en cours...';
+      btn.textContent = TRANSLATIONS.generatingDigest;
       digestEl.className = 'loading';
-      digestEl.textContent = 'Le digest est en cours de generation par l\\'IA...';
+      digestEl.textContent = TRANSLATIONS.digestGenerating;
 
       try {
-        const response = await fetch(
+        var response = await fetch(
           API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/member-digest',
           {
             method: 'POST',
@@ -1210,18 +844,18 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
           }
         );
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
-          throw new Error(err.message || 'Le digest n\\'a pas pu etre genere');
+          var err = await response.json().catch(function() { return {}; });
+          throw new Error(err.message || TRANSLATIONS.digestFailed);
         }
-        const data = await response.json();
+        var data = await response.json();
         digestEl.className = 'report-content';
         digestEl.textContent = data.digest;
-        btn.textContent = 'Regenerer le digest';
+        btn.textContent = TRANSLATIONS.buttonRegenerateDigest;
         btn.disabled = false;
       } catch (error) {
         digestEl.className = 'report-empty';
-        digestEl.textContent = 'Le digest n\\'a pas pu etre genere';
-        btn.textContent = 'Reessayer';
+        digestEl.textContent = TRANSLATIONS.digestFailed;
+        btn.textContent = TRANSLATIONS.buttonRetry;
         btn.disabled = false;
       }
     });
@@ -1232,74 +866,74 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
     });
 
     document.getElementById('generateBtn').addEventListener('click', async function() {
-      const cycleId = document.getElementById('cycleSelector').value;
-      const teamId = document.getElementById('teamId').value.trim();
+      var cycleId = document.getElementById('cycleSelector').value;
+      var teamId = document.getElementById('teamId').value.trim();
       if (!cycleId || !teamId) return;
 
-      const btn = document.getElementById('generateBtn');
-      const reportEl = document.getElementById('reportContent');
+      var btn = document.getElementById('generateBtn');
+      var reportEl = document.getElementById('reportContent');
       btn.disabled = true;
-      btn.textContent = 'Generation en cours...';
+      btn.textContent = TRANSLATIONS.generatingReport;
       reportEl.className = 'loading';
-      reportEl.textContent = 'Le rapport est en cours de generation par l\\'IA...';
+      reportEl.textContent = TRANSLATIONS.reportGenerating;
       clearError();
 
       try {
-        const response = await fetch(
+        var response = await fetch(
           API + '/analytics/cycles/' + encodeURIComponent(cycleId) + '/report',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamId: teamId, language: 'FR', provider: 'Anthropic' }),
+            body: JSON.stringify({ teamId: teamId, provider: 'Anthropic' }),
           }
         );
         if (!response.ok) {
-          const err = await response.json().catch(function() { return {}; });
-          throw new Error(err.message || 'Erreur lors de la generation du rapport');
+          var err = await response.json().catch(function() { return {}; });
+          throw new Error(err.message || TRANSLATIONS.reportGenerationError);
         }
-        const data = await response.json();
+        var data = await response.json();
         currentReport = data;
 
         reportEl.className = 'report-content';
         reportEl.innerHTML =
           '<h3 style="margin-bottom:0.75rem;color:var(--text-primary);">' + escapeHtml(data.cycleName) + '</h3>' +
-          '<p><strong style="color:var(--text-secondary);">Resume</strong></p>' +
+          '<p><strong style="color:var(--text-secondary);">' + TRANSLATIONS.reportSummary + '</strong></p>' +
           '<p>' + escapeHtml(data.executiveSummary) + '</p><br>' +
-          '<p><strong style="color:var(--text-secondary);">Tendances</strong></p>' +
+          '<p><strong style="color:var(--text-secondary);">' + TRANSLATIONS.reportTrends + '</strong></p>' +
           '<p>' + escapeHtml(data.trends) + '</p><br>' +
-          '<p><strong style="color:var(--text-secondary);">Points forts</strong></p>' +
+          '<p><strong style="color:var(--text-secondary);">' + TRANSLATIONS.reportHighlights + '</strong></p>' +
           '<p>' + escapeHtml(data.highlights) + '</p><br>' +
-          '<p><strong style="color:var(--text-secondary);">Risques</strong></p>' +
+          '<p><strong style="color:var(--text-secondary);">' + TRANSLATIONS.reportRisks + '</strong></p>' +
           '<p>' + escapeHtml(data.risks) + '</p><br>' +
-          '<p><strong style="color:var(--text-secondary);">Recommandations</strong></p>' +
+          '<p><strong style="color:var(--text-secondary);">' + TRANSLATIONS.reportRecommendations + '</strong></p>' +
           '<p>' + escapeHtml(data.recommendations) + '</p>';
 
         document.getElementById('exportBtn').disabled = false;
         document.getElementById('copyBtn').disabled = false;
-        btn.textContent = 'Regenerer';
+        btn.textContent = TRANSLATIONS.buttonRegenerate;
         btn.disabled = false;
       } catch (error) {
         reportEl.className = 'report-empty';
         reportEl.textContent = error.message;
-        btn.textContent = 'Reessayer';
+        btn.textContent = TRANSLATIONS.buttonRetry;
         btn.disabled = false;
       }
     });
 
     document.getElementById('exportBtn').addEventListener('click', function() {
       if (!currentReport) {
-        showError('Aucun rapport a exporter. Veuillez d\\'abord generer un rapport pour ce cycle.');
+        showError(TRANSLATIONS.errorExportNoReport);
         return;
       }
-      const markdown = '# ' + currentReport.cycleName + '\\n\\n' +
-        '## Resume\\n' + currentReport.executiveSummary + '\\n\\n' +
-        '## Tendances\\n' + currentReport.trends + '\\n\\n' +
-        '## Points forts\\n' + currentReport.highlights + '\\n\\n' +
-        '## Risques\\n' + currentReport.risks + '\\n\\n' +
-        '## Recommandations\\n' + currentReport.recommendations + '\\n';
-      const blob = new Blob([markdown], { type: 'text/markdown' });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
+      var markdown = '# ' + currentReport.cycleName + '\\n\\n' +
+        '## ' + TRANSLATIONS.reportSummary + '\\n' + currentReport.executiveSummary + '\\n\\n' +
+        '## ' + TRANSLATIONS.reportTrends + '\\n' + currentReport.trends + '\\n\\n' +
+        '## ' + TRANSLATIONS.reportHighlights + '\\n' + currentReport.highlights + '\\n\\n' +
+        '## ' + TRANSLATIONS.reportRisks + '\\n' + currentReport.risks + '\\n\\n' +
+        '## ' + TRANSLATIONS.reportRecommendations + '\\n' + currentReport.recommendations + '\\n';
+      var blob = new Blob([markdown], { type: 'text/markdown' });
+      var url = URL.createObjectURL(blob);
+      var anchor = document.createElement('a');
       anchor.href = url;
       anchor.download = currentReport.cycleName.replace(/\\s+/g, '-').toLowerCase() + '-report.md';
       anchor.click();
@@ -1308,18 +942,19 @@ export const cycleReportPageHtml = `<!DOCTYPE html>
 
     document.getElementById('copyBtn').addEventListener('click', function() {
       if (!currentReport) {
-        showError('Aucun rapport a exporter. Veuillez d\\'abord generer un rapport pour ce cycle.');
+        showError(TRANSLATIONS.errorExportNoReport);
         return;
       }
-      const text = currentReport.executiveSummary + '\\n\\n' +
+      var text = currentReport.executiveSummary + '\\n\\n' +
         currentReport.trends + '\\n\\n' +
         currentReport.highlights + '\\n\\n' +
         currentReport.risks + '\\n\\n' +
         currentReport.recommendations;
       navigator.clipboard.writeText(text).then(function() {
-        showToast('Rapport copie !');
+        showToast(TRANSLATIONS.toastReportCopied);
       });
     });
   </script>
 </body>
 </html>`;
+}

@@ -83,3 +83,8 @@ Single source of truth for the project's business vocabulary. Enriched by `/prod
 | Test message | Notification | Message automatically sent when configuring a Slack webhook to verify it works |
 | Alert channel | Notification | Slack webhook dedicated to blocked issue alerts, distinct from the report webhook |
 | Rule origin | Audit | Source of an audit rule — manual (created in Shiplens) or packmind (synchronized from Packmind) |
+| Workspace language | Shared | Single language preference (EN or FR) applied workspace-wide to all UI pages |
+| Translation dictionary | Shared | Structured collection of translated UI strings keyed by locale code |
+| Locale | Shared | Language identifier (EN or FR) used to resolve the correct translation |
+| Generation language | Analytics | Language in which the AI produced a sprint report — stored as historical record on the report entity |
+| Display language | Shared | Workspace language used for UI labels — may differ from the generation language on older reports |

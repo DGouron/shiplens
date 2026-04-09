@@ -1,9 +1,16 @@
-export const workspaceDashboardHtml = `<!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+import { type Locale } from '../../entities/workspace-settings/workspace-language.schema.js';
+import { workspaceDashboardTranslations } from '../presenters/workspace-dashboard.translations.js';
+
+export function buildWorkspaceDashboardHtml(locale: Locale): string {
+  const translations = workspaceDashboardTranslations[locale];
+  const translationsJson = JSON.stringify(translations);
+
+  return `<!DOCTYPE html>
+<html lang="${locale}" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — Shiplens</title>
+  <title>${translations.pageTitle} — Shiplens</title>
   <style>
     :root {
       --accent-1: #6366f1;
@@ -87,7 +94,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
 
     .app { position: relative; z-index: 1; }
 
-    /* ── NAV ── */
     .nav {
       display: flex;
       align-items: center;
@@ -117,7 +123,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
 
     .nav-right { display: flex; align-items: center; gap: 1rem; }
 
-    /* ── THEME TOGGLE ── */
     .theme-toggle {
       width: 44px; height: 24px;
       background: var(--bg-elevated);
@@ -142,7 +147,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
     .theme-icon-dark { left: 5px; }
     .theme-icon-light { right: 5px; }
 
-    /* ── CONTAINER ── */
     .container { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
 
     .page-title {
@@ -152,7 +156,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
       margin-bottom: 1.5rem;
     }
 
-    /* ── GLASS ── */
     .glass {
       background: var(--bg-surface);
       backdrop-filter: blur(var(--glass-blur));
@@ -165,7 +168,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
       animation: fadeSlideIn 0.5s ease both;
     }
 
-    /* ── SYNC BAR ── */
     .sync-bar {
       display: flex;
       align-items: center;
@@ -197,7 +199,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
 
     .alert-text { color: var(--danger); font-weight: 600; }
 
-    /* ── BUTTONS ── */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -227,7 +228,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
     }
     .btn-accent:hover { opacity: 0.9; color: #fff; }
 
-    /* ── TEAMS GRID ── */
     .teams-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -315,7 +315,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
     .report-link:hover { color: var(--accent-2); }
     .report-link::after { content: ' \\2192'; }
 
-    /* ── EMPTY STATE ── */
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -328,7 +327,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
     }
     .empty-state p { font-size: 1rem; color: var(--text-muted); margin-top: 0.5rem; }
 
-    /* ── LOADING / ERROR ── */
     #loading {
       text-align: center;
       padding: 3rem;
@@ -348,7 +346,6 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
 
     #error { color: var(--danger); text-align: center; padding: 2rem; display: none; font-size: 0.9rem; }
 
-    /* ── ANIMATIONS ── */
     @keyframes fadeSlideIn {
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
@@ -370,11 +367,11 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
       <div class="nav-left">
         <a href="/dashboard" class="nav-brand">Shiplens</a>
         <span class="nav-sep">/</span>
-        <span class="nav-crumb-active">Dashboard</span>
+        <span class="nav-crumb-active">${translations.breadcrumbDashboard}</span>
       </div>
       <div class="nav-right">
-        <a href="/settings" class="nav-crumb">Settings</a>
-        <div class="theme-toggle" id="themeToggle" title="Changer de theme">
+        <a href="/settings" class="nav-crumb">${translations.navSettings}</a>
+        <div class="theme-toggle" id="themeToggle" title="${translations.themeToggleTitle}">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>
         </div>
@@ -382,8 +379,8 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
     </nav>
 
     <div class="container">
-      <h1 class="page-title">Dashboard</h1>
-      <div id="loading">Chargement...</div>
+      <h1 class="page-title">${translations.pageTitle}</h1>
+      <div id="loading">${translations.loading}</div>
       <div id="error"></div>
       <div id="sync-status" class="glass sync-bar" style="display:none"></div>
       <div id="teams-grid" class="teams-grid"></div>
@@ -391,47 +388,47 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
   </div>
 
   <script>
-    /* ── THEME ── */
+    var TRANSLATIONS = ${translationsJson};
+
     (function() {
-      const saved = localStorage.getItem('shiplens-theme') || 'dark';
+      var saved = localStorage.getItem('shiplens-theme') || 'dark';
       document.documentElement.setAttribute('data-theme', saved);
     })();
 
     document.getElementById('themeToggle').addEventListener('click', function() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+      var current = document.documentElement.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('shiplens-theme', next);
     });
 
-    /* ── APP LOGIC ── */
     async function loadDashboard() {
       try {
-        const response = await fetch('/dashboard/data');
+        var response = await fetch('/dashboard/data');
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'Erreur inconnue');
+          var error = await response.json();
+          throw new Error(error.message || TRANSLATIONS.errorUnknown);
         }
-        const data = await response.json();
+        var data = await response.json();
         renderDashboard(data);
       } catch (error) {
         document.getElementById('loading').style.display = 'none';
-        const errorDiv = document.getElementById('error');
+        var errorDiv = document.getElementById('error');
         errorDiv.style.display = 'block';
         errorDiv.textContent = error.message;
       }
     }
 
-    const MAX_RETRIES = 3;
-    let syncAttempt = 0;
+    var MAX_RETRIES = 3;
+    var syncAttempt = 0;
 
     function renderEmptyState(data) {
       document.getElementById('loading').style.display = 'none';
-      const grid = document.getElementById('teams-grid');
+      var grid = document.getElementById('teams-grid');
       if (data.status === 'no_teams') {
         grid.innerHTML = '<div class="empty-state">'
-          + '<p>Synchronisation des equipes en cours...</p>'
-          + '<button class="btn btn-accent" disabled>Synchronisation en cours...</button>'
+          + '<p>' + TRANSLATIONS.syncTeams + '</p>'
+          + '<button class="btn btn-accent" disabled>' + TRANSLATIONS.syncInProgress + '</button>'
           + '</div>';
         startSync();
       } else {
@@ -441,52 +438,52 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
 
     async function startSync() {
       syncAttempt++;
-      const btn = document.querySelector('.empty-state .btn');
+      var btn = document.querySelector('.empty-state .btn');
       if (!btn) return;
       btn.disabled = true;
-      btn.textContent = 'Synchronisation en cours...' + (syncAttempt > 1 ? ' (tentative ' + syncAttempt + '/' + MAX_RETRIES + ')' : '');
+      btn.textContent = TRANSLATIONS.syncInProgress + (syncAttempt > 1 ? ' (' + TRANSLATIONS.syncRetry + ' ' + syncAttempt + '/' + MAX_RETRIES + ')' : '');
       try {
-        const teamsResponse = await fetch('/sync/teams');
-        if (!teamsResponse.ok) throw new Error('Impossible de recuperer les equipes');
-        const teams = await teamsResponse.json();
-        if (teams.length === 0) throw new Error('Aucune equipe disponible dans le workspace');
+        var teamsResponse = await fetch('/sync/teams');
+        if (!teamsResponse.ok) throw new Error(TRANSLATIONS.syncErrorRetrieveTeams);
+        var teams = await teamsResponse.json();
+        if (teams.length === 0) throw new Error(TRANSLATIONS.syncErrorNoTeams);
 
-        const selectedTeams = teams.map(function(team) { return { teamId: team.teamId, teamName: team.teamName }; });
-        const allProjects = teams.flatMap(function(team) {
+        var selectedTeams = teams.map(function(team) { return { teamId: team.teamId, teamName: team.teamName }; });
+        var allProjects = teams.flatMap(function(team) {
           return (team.projects || []).map(function(project) {
             return { projectId: project.projectId, projectName: project.projectName, teamId: team.teamId };
           });
         });
-        const seen = new Set();
-        const selectedProjects = allProjects.filter(function(project) {
+        var seen = new Set();
+        var selectedProjects = allProjects.filter(function(project) {
           if (seen.has(project.projectId)) return false;
           seen.add(project.projectId);
           return true;
         });
-        const selectResponse = await fetch('/sync/selection', {
+        var selectResponse = await fetch('/sync/selection', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ selectedTeams: selectedTeams, selectedProjects: selectedProjects }),
         });
-        if (!selectResponse.ok) throw new Error('Impossible de selectionner les equipes');
+        if (!selectResponse.ok) throw new Error(TRANSLATIONS.syncErrorSelectTeams);
 
-        btn.textContent = 'Donnees de reference...';
+        btn.textContent = TRANSLATIONS.syncReferenceData;
         await fetch('/sync/reference-data', { method: 'POST' });
 
-        btn.textContent = 'Synchronisation des issues...';
-        for (const team of selectedTeams) {
+        btn.textContent = TRANSLATIONS.syncIssues;
+        for (var index = 0; index < selectedTeams.length; index++) {
           await fetch('/sync/issue-data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamId: team.teamId }),
+            body: JSON.stringify({ teamId: selectedTeams[index].teamId }),
           });
         }
 
         window.location.reload();
       } catch (error) {
         if (syncAttempt < MAX_RETRIES) {
-          const delay = Math.pow(2, syncAttempt) * 1000;
-          btn.textContent = error.message + ' — nouvelle tentative dans ' + (delay / 1000) + 's...';
+          var delay = Math.pow(2, syncAttempt) * 1000;
+          btn.textContent = error.message;
           setTimeout(startSync, delay);
         } else {
           btn.textContent = error.message;
@@ -497,24 +494,24 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
     }
 
     async function resync() {
-      const btn = document.querySelector('#sync-status .btn');
+      var btn = document.querySelector('#sync-status .btn');
       if (!btn) return;
       btn.disabled = true;
-      btn.textContent = 'Synchronisation...';
+      btn.textContent = TRANSLATIONS.syncInProgress;
       try {
-        const selectionResponse = await fetch('/sync/selection');
-        const selection = await selectionResponse.json();
-        if (!selection) throw new Error('Aucune selection');
+        var selectionResponse = await fetch('/sync/selection');
+        var selection = await selectionResponse.json();
+        if (!selection) throw new Error(TRANSLATIONS.syncNoSelection);
 
-        btn.textContent = 'Donnees de reference...';
+        btn.textContent = TRANSLATIONS.syncReferenceData;
         await fetch('/sync/reference-data', { method: 'POST' });
 
-        btn.textContent = 'Issues...';
-        for (const team of selection.selectedTeams) {
+        btn.textContent = TRANSLATIONS.syncIssues;
+        for (var index = 0; index < selection.selectedTeams.length; index++) {
           await fetch('/sync/issue-data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamId: team.teamId }),
+            body: JSON.stringify({ teamId: selection.selectedTeams[index].teamId }),
           });
         }
 
@@ -533,7 +530,7 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
         return;
       }
 
-      const syncDiv = document.getElementById('sync-status');
+      var syncDiv = document.getElementById('sync-status');
       syncDiv.style.display = 'flex';
       syncDiv.className = 'glass sync-bar' + (data.synchronization.isLate ? ' late' : '');
       syncDiv.innerHTML =
@@ -541,16 +538,16 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
           '<span class="sync-dot"></span>' +
           '<span>' +
             (data.synchronization.lastSyncDate
-              ? 'Derniere sync : ' + new Date(data.synchronization.lastSyncDate).toLocaleString('fr-FR')
-              : 'Jamais synchronise') +
+              ? TRANSLATIONS.lastSync + new Date(data.synchronization.lastSyncDate).toLocaleString('${locale === 'fr' ? 'fr-FR' : 'en-US'}')
+              : TRANSLATIONS.neverSynced) +
           '</span>' +
           (data.synchronization.lateWarning
             ? '<span class="alert-text">' + data.synchronization.lateWarning + '</span>'
             : '') +
         '</div>' +
-        '<button class="btn" onclick="resync()">Resynchroniser</button>';
+        '<button class="btn" onclick="resync()">' + TRANSLATIONS.resynchronize + '</button>';
 
-      const grid = document.getElementById('teams-grid');
+      var grid = document.getElementById('teams-grid');
       grid.innerHTML = data.teams.map(function(team) {
         if (!team.hasActiveCycle) {
           return '<div class="team-card">'
@@ -561,10 +558,10 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
         return '<div class="team-card">'
           + '<div class="team-name">' + team.teamName + '</div>'
           + '<div class="cycle-name">' + team.cycleName + '</div>'
-          + '<div class="kpi"><span class="kpi-label">Completion</span><span class="kpi-value">' + team.completionRate + '</span></div>'
-          + '<div class="kpi"><span class="kpi-label">Velocite</span><span class="kpi-value">' + team.currentVelocity + ' pts (' + team.velocityTrendLabel + ')</span></div>'
-          + '<div class="kpi"><span class="kpi-label">Issues bloquees</span><span class="kpi-value' + (team.blockedAlert ? ' alert-text' : '') + '">' + team.blockedIssuesCount + '</span></div>'
-          + (team.reportLink ? '<a class="report-link" href="' + team.reportLink + '">Voir le rapport</a>' : '<p class="no-cycle">Aucun rapport disponible</p>')
+          + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiCompletion + '</span><span class="kpi-value">' + team.completionRate + '</span></div>'
+          + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiVelocity + '</span><span class="kpi-value">' + team.currentVelocity + ' pts (' + team.velocityTrendLabel + ')</span></div>'
+          + '<div class="kpi"><span class="kpi-label">' + TRANSLATIONS.kpiBlockedIssues + '</span><span class="kpi-value' + (team.blockedAlert ? ' alert-text' : '') + '">' + team.blockedIssuesCount + '</span></div>'
+          + (team.reportLink ? '<a class="report-link" href="' + team.reportLink + '">' + TRANSLATIONS.viewReport + '</a>' : '<p class="no-cycle">' + TRANSLATIONS.noReportAvailable + '</p>')
           + '</div>';
       }).join('');
     }
@@ -573,3 +570,4 @@ export const workspaceDashboardHtml = `<!DOCTYPE html>
   </script>
 </body>
 </html>`;
+}

@@ -1,9 +1,16 @@
-export const memberHealthTrendsHtml = `<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+import { type Locale } from '../../entities/workspace-settings/workspace-language.schema.js';
+import { memberHealthTrendsTranslations } from '../presenters/member-health-trends.translations.js';
+
+export function buildMemberHealthTrendsHtml(locale: Locale): string {
+  const translations = memberHealthTrendsTranslations[locale];
+  const translationsJson = JSON.stringify(translations);
+
+  return `<!DOCTYPE html>
+<html lang="${locale}" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Health Trends — Shiplens</title>
+  <title>${translations.pageTitle} — Shiplens</title>
   <style>
     :root {
       --accent-1: #6366f1;
@@ -87,7 +94,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
 
     .app { position: relative; z-index: 1; }
 
-    /* -- NAV -- */
     .nav {
       display: flex;
       align-items: center;
@@ -119,7 +125,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
 
     .nav-right { display: flex; align-items: center; gap: 1rem; }
 
-    /* -- THEME TOGGLE -- */
     .theme-toggle {
       width: 44px; height: 24px;
       background: var(--bg-elevated);
@@ -144,12 +149,9 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     .theme-icon-dark { left: 5px; }
     .theme-icon-light { right: 5px; }
 
-    /* -- CONTAINER -- */
     .container { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
 
-    .page-header {
-      margin-bottom: 1.5rem;
-    }
+    .page-header { margin-bottom: 1.5rem; }
 
     .page-title {
       font-size: 1.6rem;
@@ -170,7 +172,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       background-clip: text;
     }
 
-    /* -- SIGNALS GRID -- */
     .signals-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -247,7 +248,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       font-style: italic;
     }
 
-    /* -- BACK LINK -- */
     .back-link {
       display: inline-flex;
       align-items: center;
@@ -262,7 +262,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     .back-link:hover { color: var(--accent-2); }
     .back-link::before { content: '\\2190 '; }
 
-    /* -- CYCLES SELECTOR -- */
     .cycles-selector {
       display: flex;
       align-items: center;
@@ -288,7 +287,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     }
     .custom-select:hover { border-color: var(--border-hover); }
 
-    /* -- NOTICE -- */
     .notice {
       background: var(--bg-surface);
       backdrop-filter: blur(var(--glass-blur));
@@ -327,7 +325,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       flex-shrink: 0;
     }
 
-    /* -- SIGNAL DESCRIPTION -- */
     .signal-description {
       font-size: 0.78rem;
       line-height: 1.5;
@@ -335,7 +332,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       margin-bottom: 0.75rem;
     }
 
-    /* -- EMPTY STATE -- */
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -348,7 +344,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     }
     .empty-state p { font-size: 1rem; color: var(--text-muted); margin-top: 0.5rem; }
 
-    /* -- LOADING / ERROR -- */
     #loading {
       text-align: center;
       padding: 3rem;
@@ -368,7 +363,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
 
     #error { color: var(--danger); text-align: center; padding: 2rem; display: none; font-size: 0.9rem; }
 
-    /* -- ANIMATIONS -- */
     @keyframes fadeSlideIn {
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
@@ -385,12 +379,12 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       <div class="nav-left">
         <a href="/dashboard" class="nav-brand">Shiplens</a>
         <span class="nav-sep">/</span>
-        <a href="/dashboard" class="nav-crumb">Dashboard</a>
+        <a href="/dashboard" class="nav-crumb">${translations.breadcrumbDashboard}</a>
         <span class="nav-sep">/</span>
-        <span class="nav-crumb-active">Health Trends</span>
+        <span class="nav-crumb-active">${translations.pageTitle}</span>
       </div>
       <div class="nav-right">
-        <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <div class="theme-toggle" id="themeToggle" title="${translations.themeToggleTitle}">
           <span class="theme-icon theme-icon-dark">&#9790;</span>
           <span class="theme-icon theme-icon-light">&#9788;</span>
         </div>
@@ -398,15 +392,15 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
     </nav>
 
     <div class="container">
-      <a id="backLink" href="/cycle-report" class="back-link">Back to cycle report</a>
+      <a id="backLink" href="/cycle-report" class="back-link">${translations.backToCycleReport}</a>
 
       <div class="page-header">
-        <h1 class="page-title"><span id="memberTitle" class="member-name"></span> Health Trends</h1>
-        <p class="page-subtitle">Health signals computed over the last <span id="cyclesCount">5</span> completed cycles</p>
+        <h1 class="page-title"><span id="memberTitle" class="member-name"></span> ${translations.healthTrendsSuffix}</h1>
+        <p class="page-subtitle">${translations.healthSignalsSubtitle}</p>
       </div>
 
       <div class="cycles-selector">
-        <label for="cyclesSelect">Completed sprints to analyze:</label>
+        <label for="cyclesSelect">${translations.completedSprintsLabel}</label>
         <select class="custom-select" id="cyclesSelect">
           <option value="3">3</option>
           <option value="5" selected>5</option>
@@ -416,28 +410,28 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       </div>
 
       <div class="notice">
-        This dashboard tracks how a team member's work patterns evolve over completed sprints.
-        Each signal compares recent cycles to detect improving or worsening trends.
-        A minimum of <strong>3 completed sprints</strong> is required to compute a trend.
+        ${translations.noticeIntro}
+        A minimum of <strong>${translations.noticeMinimum}</strong> is required to compute a trend.
         <div class="notice-indicators">
-          <span class="notice-indicator"><span class="notice-dot indicator-green"></span> Favorable trend</span>
-          <span class="notice-indicator"><span class="notice-dot indicator-orange"></span> First deviation or mixed</span>
-          <span class="notice-indicator"><span class="notice-dot indicator-red"></span> Unfavorable for 2+ sprints</span>
-          <span class="notice-indicator"><span class="notice-dot indicator-grey"></span> Not enough data</span>
+          <span class="notice-indicator"><span class="notice-dot indicator-green"></span> ${translations.indicatorFavorable}</span>
+          <span class="notice-indicator"><span class="notice-dot indicator-orange"></span> ${translations.indicatorMixed}</span>
+          <span class="notice-indicator"><span class="notice-dot indicator-red"></span> ${translations.indicatorUnfavorable}</span>
+          <span class="notice-indicator"><span class="notice-dot indicator-grey"></span> ${translations.indicatorNotEnoughData}</span>
         </div>
       </div>
 
-      <div id="loading">Loading health data...</div>
+      <div id="loading">${translations.loadingHealthData}</div>
       <div id="error"></div>
       <div id="emptyState" class="empty-state" style="display:none">
-        <p>No data available for this member</p>
+        <p>${translations.noDataAvailable}</p>
       </div>
       <div id="signalsGrid" class="signals-grid" style="display:none"></div>
     </div>
   </div>
 
   <script>
-    /* -- THEME -- */
+    var TRANSLATIONS = ${translationsJson};
+
     (function() {
       var saved = localStorage.getItem('shiplens-theme') || 'dark';
       document.documentElement.setAttribute('data-theme', saved);
@@ -450,7 +444,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       localStorage.setItem('shiplens-theme', next);
     });
 
-    /* -- URL PARAMS -- */
     var urlParams = new URLSearchParams(window.location.search);
     var teamId = urlParams.get('teamId') || '';
     var memberName = urlParams.get('memberName') || '';
@@ -467,27 +460,26 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       backLink.href = '/cycle-report?teamId=' + encodeURIComponent(teamId);
     }
 
-    /* -- SIGNAL CONFIG -- */
     var SIGNAL_CONFIG = {
       estimationScore: {
-        label: 'Estimation Score',
-        description: 'Percentage of issues correctly estimated — actual effort fell within the expected range. A rising score means the member is getting better at sizing work.'
+        label: TRANSLATIONS.signalEstimationScore,
+        description: TRANSLATIONS.signalEstimationScoreDescription
       },
       underestimationRatio: {
-        label: 'Underestimation Ratio',
-        description: 'Percentage of issues that took significantly longer than estimated. A falling ratio means fewer surprises and more predictable sprint delivery.'
+        label: TRANSLATIONS.signalUnderestimationRatio,
+        description: TRANSLATIONS.signalUnderestimationRatioDescription
       },
       averageCycleTime: {
-        label: 'Average Cycle Time',
-        description: 'Mean processing time per issue across the sprint. Rising cycle time may indicate increasing complexity, blockers, or context switching.'
+        label: TRANSLATIONS.signalAverageCycleTime,
+        description: TRANSLATIONS.signalAverageCycleTimeDescription
       },
       driftingTickets: {
-        label: 'Drifting Tickets',
-        description: 'Number of issues whose actual duration exceeded the expected time based on their estimate. Fewer drifts signal more predictable delivery.'
+        label: TRANSLATIONS.signalDriftingTickets,
+        description: TRANSLATIONS.signalDriftingTicketsDescription
       },
       medianReviewTime: {
-        label: 'Median Review Time',
-        description: 'Median time issues spend waiting in review. Long review times create bottlenecks and slow the whole team down.'
+        label: TRANSLATIONS.signalMedianReviewTime,
+        description: TRANSLATIONS.signalMedianReviewTimeDescription
       }
     };
 
@@ -517,9 +509,9 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
 
       var note = '';
       if (signal.indicator === 'not-applicable') {
-        note = '<div class="signal-note">Not applicable — this member has no estimated issues in the analyzed sprints</div>';
+        note = '<div class="signal-note">' + TRANSLATIONS.noteNotApplicable + '</div>';
       } else if (signal.indicator === 'not-enough-history') {
-        note = '<div class="signal-note">Not enough history — at least 3 completed sprints are needed to compute a trend</div>';
+        note = '<div class="signal-note">' + TRANSLATIONS.noteNotEnoughHistory + '</div>';
       }
 
       return '<div class="signal-card">' +
@@ -553,7 +545,7 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
         document.getElementById('loading').style.display = 'none';
         var errorDiv = document.getElementById('error');
         errorDiv.style.display = 'block';
-        errorDiv.textContent = 'Missing teamId or memberName in URL parameters.';
+        errorDiv.textContent = TRANSLATIONS.errorMissingParams;
         return;
       }
 
@@ -572,7 +564,7 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
 
         if (!response.ok) {
           var errorData = await response.json().catch(function() { return {}; });
-          throw new Error(errorData.message || 'Failed to load health data');
+          throw new Error(errorData.message || TRANSLATIONS.errorLoadFailed);
         }
 
         var data = await response.json();
@@ -586,7 +578,6 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
       }
     }
 
-    /* -- CYCLES SELECTOR CHANGE -- */
     cyclesSelect.addEventListener('change', function() {
       cycles = parseInt(this.value, 10) || 5;
       document.getElementById('cyclesCount').textContent = String(cycles);
@@ -608,3 +599,4 @@ export const memberHealthTrendsHtml = `<!DOCTYPE html>
   </script>
 </body>
 </html>`;
+}
