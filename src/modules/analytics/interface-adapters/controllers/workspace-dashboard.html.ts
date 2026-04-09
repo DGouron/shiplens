@@ -331,7 +331,16 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
     .team-card--danger { border-left: 4px solid var(--danger); box-shadow: var(--shadow-card), inset 3px 0 12px -4px rgba(239,68,68,0.25); }
     .team-card--idle { border-left: 4px solid var(--text-dim); }
 
-    .no-cycle { color: var(--text-muted); font-style: italic; font-size: 0.85rem; padding: 0.5rem 0; }
+    .no-cycle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 0;
+      text-align: center;
+    }
+    .no-cycle-icon { opacity: 0.3; }
+    .no-cycle-text { color: var(--text-muted); font-size: 0.82rem; }
 
     .report-link {
       display: inline-flex;
@@ -596,7 +605,13 @@ export function buildWorkspaceDashboardHtml(locale: Locale): string {
         if (!team.hasActiveCycle) {
           return '<div class="team-card team-card--idle">'
             + '<div class="team-name">' + team.teamName + '</div>'
-            + '<p class="no-cycle">' + team.noActiveCycleMessage + '</p>'
+            + '<div class="no-cycle">'
+              + '<svg class="no-cycle-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
+                + '<circle cx="12" cy="12" r="10"/>'
+                + '<path d="M12 6v6l4 2"/>'
+              + '</svg>'
+              + '<span class="no-cycle-text">' + team.noActiveCycleMessage + '</span>'
+            + '</div>'
             + '</div>';
         }
         var completion = parseInt(team.completionRate) || 0;
