@@ -8,7 +8,7 @@ Master spec for migrating the Shiplens frontend from server-rendered inline HTML
 
 The current frontend consists of 4 HTML pages generated as TypeScript template literals inside NestJS controllers. Each page embeds the full design system (CSS variables, theme support, glassmorphism, typography), navigation, and data-fetching logic as inline JavaScript. CSS is duplicated verbatim across all 4 files. JS relies on manual DOM manipulation with `innerHTML` string concatenation and raw `fetch` calls. There are no components, no client-side routing, and no frontend tests. The NestJS presenters already format domain data into DTOs that the inline JS consumes via JSON endpoints, but 4 controllers still serve HTML via `text/html` responses.
 
-This migration extracts the frontend into a standalone React SPA that consumes the existing NestJS JSON API. The backend becomes a pure API server. The design system is centralized. Each page becomes a tested React route.
+This migration restructures the repo into a monorepo with `frontend/` and `backend/` directories. The `.claude/` config is shared at the root. The frontend is a React SPA that consumes the existing NestJS JSON API. The backend becomes a pure API server. The design system is centralized. Each page becomes a tested React route.
 
 ## Current state
 
@@ -33,6 +33,20 @@ This migration extracts the frontend into a standalone React SPA that consumes t
 ## Dependency order
 
 Slice 1 must be completed first. Slice 2 depends on Slice 1. Slices 3-6 each depend on Slices 1 and 2. Slices 3-5 are independent of each other. Slice 6 is last because it removes the HTML-serving controllers after all pages are migrated.
+
+## Monorepo structure
+
+```
+shiplens/
+├── .claude/          # shared config (CLAUDE.md, rules, skills, memory)
+├── frontend/         # React Router v7 SPA (pnpm workspace)
+├── backend/          # NestJS API (moved from root)
+├── docs/             # specs, DDD docs, business rules
+├── pnpm-workspace.yaml
+└── package.json      # root workspace config
+```
+
+The backend move to `backend/` happens in Slice 1 alongside the frontend scaffolding. Both packages share the root `.claude/` directory, `docs/`, and git history.
 
 ## Out of scope
 
