@@ -21,7 +21,7 @@ fi
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$HOOK_DIR/../.." && pwd)}"
 
 spec_file_referenced() {
-  echo "$PROMPT" | grep -oP 'docs/specs/[a-z0-9-]+\.md' | head -1 || true
+  echo "$PROMPT" | grep -oP 'docs/specs/[a-z0-9_/-]+\.md' | head -1 || true
 }
 
 SPEC_REF=$(spec_file_referenced || true)

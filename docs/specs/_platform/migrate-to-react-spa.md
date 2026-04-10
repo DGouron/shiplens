@@ -25,10 +25,10 @@ This migration restructures the repo into a monorepo with `frontend/` and `backe
 |---|------|-------|
 | 1 | [setup-react-spa](setup-react-spa.md) | Scaffold the React SPA project, configure React Router v7, Vitest, Biome, dev proxy, build pipeline |
 | 2 | [extract-design-system](extract-design-system.md) | Extract shared CSS (tokens, theme, glassmorphism, nav, typography, buttons) into reusable modules |
-| 3 | [migrate-dashboard-page](migrate-dashboard-page.md) | Migrate the dashboard to a React route with ViewModel hook |
-| 4 | [migrate-cycle-report-page](migrate-cycle-report-page.md) | Migrate the cycle report page to a React route with ViewModel hook |
-| 5 | [migrate-member-health-trends-page](migrate-member-health-trends-page.md) | Migrate the member health trends page to a React route with ViewModel hook |
-| 6 | [migrate-settings-page](migrate-settings-page.md) | Migrate the settings page to a React route with ViewModel hook, remove all HTML-serving controllers |
+| 3 | [migrate-dashboard-page](../analytics/migrate-dashboard-page.md) | Migrate the dashboard to a React route with ViewModel hook |
+| 4 | [migrate-cycle-report-page](../analytics/migrate-cycle-report-page.md) | Migrate the cycle report page to a React route with ViewModel hook |
+| 5 | [migrate-member-health-trends-page](../analytics/migrate-member-health-trends-page.md) | Migrate the member health trends page to a React route with ViewModel hook |
+| 6 | [migrate-settings-page](../analytics/migrate-settings-page.md) | Migrate the settings page to a React route with ViewModel hook, remove all HTML-serving controllers |
 
 ## Transversal spec
 
