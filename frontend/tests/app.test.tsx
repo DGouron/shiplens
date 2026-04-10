@@ -33,8 +33,6 @@ describe('App', () => {
   it('renders the Shiplens brand link in the navbar on any unknown route', () => {
     renderWithRouter('/some/unknown/path');
 
-    expect(
-      screen.getByRole('link', { name: 'Shiplens' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Shiplens' })).toBeInTheDocument();
   });
 });
