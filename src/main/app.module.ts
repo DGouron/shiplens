@@ -1,5 +1,7 @@
+import { join } from 'node:path';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { AnalyticsModule } from '../modules/analytics/analytics.module.js';
 import { AuditModule } from '../modules/audit/audit.module.js';
 import { IdentityModule } from '../modules/identity/identity.module.js';
@@ -11,6 +13,19 @@ import { PrismaModule } from '../shared/infrastructure/prisma/prisma.module.js';
   imports: [
     PrismaModule,
     ScheduleModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'frontend', 'dist'),
+      exclude: [
+        '/dashboard/data',
+        '/analytics/(.*)',
+        '/api/(.*)',
+        '/settings/(.*)',
+        '/sync/(.*)',
+        '/linear/(.*)',
+        '/webhooks/(.*)',
+        '/notifications/(.*)',
+      ],
+    }),
     IdentityModule,
     SynchronizationModule,
     AnalyticsModule,

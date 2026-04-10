@@ -6,6 +6,7 @@ yarn.lock
 /dist
 /node_modules
 /build
+frontend/node_modules
 
 # Logs
 logs
@@ -69,3 +70,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Generated reports
 /docs/reports
+frontend/dist

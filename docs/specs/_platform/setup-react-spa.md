@@ -1,6 +1,34 @@
 # Setup React SPA
 
-## Status: planned (slice 1/6)
+## Status: implemented (slice 1/6)
+
+## Implementation
+
+**Workspace**: pnpm workspace with `frontend/` package (`@shiplens/frontend`).
+
+**Artifacts**:
+- `pnpm-workspace.yaml` — declares `frontend/` as a workspace package
+- `frontend/package.json` — React 19, React Router v7, Vite 7, Vitest 4, Biome 2.4
+- `frontend/vite.config.ts` — dev server on port 5173 with API proxy for `/dashboard/data`, `/analytics`, `/api`, `/settings`, `/sync`, `/linear`, `/webhooks`, `/notifications`
+- `frontend/src/main.tsx` — `createBrowserRouter` + `RouterProvider` wrapped in `LocaleProvider`
+- `frontend/src/app.tsx` — `App` layout with `Outlet`, `ShiplensShell` for index + catch-all routes
+- `frontend/src/locale-context.tsx` — React context fetching `GET /settings/language` on mount
+- `frontend/tests/app.test.tsx` — 2 tests proving the shell renders on root and unknown routes
+- `frontend/tests/vitest.d.ts` — augments Vitest `Assertion` with `@testing-library/jest-dom` matchers
+
+**Backend integration**:
+- `src/main/app.module.ts` — `ServeStaticModule.forRoot` serves `frontend/dist/` for non-API routes (SPA fallback)
+- Added `@nestjs/serve-static` as a dependency
+
+**Root tsconfig**: excludes `frontend/` so backend compilation ignores it.
+
+**Architectural decisions**:
+- Frontend lives alongside backend at root level (`frontend/` + `src/`), not in a `backend/` subdirectory. The monorepo split to `frontend/` + `backend/` is deferred to a separate concern.
+- Vitest and Biome versions aligned between root and frontend to avoid resolution conflicts.
+- React Router v7 used in SPA mode (`createBrowserRouter`), not framework mode.
+- Index route and catch-all route both render `ShiplensShell` to guarantee the minimal shell is visible at any path.
+
+
 
 Slice 1 of the frontend migration. No dependencies on other slices.
 

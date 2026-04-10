@@ -26,5 +26,6 @@
       "@modules/*": ["src/modules/*"],
       "@shared/*": ["src/shared/*"]
     }
-  }
+  },
+  "exclude": ["frontend"]
 }
