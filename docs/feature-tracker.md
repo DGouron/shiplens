@@ -33,7 +33,7 @@ Specs are organized by bounded context under `docs/specs/<bc>/`. Cross-cutting c
 | Traduire les pages restantes | [translate-remaining-pages](specs/analytics/translate-remaining-pages.md) | Analytics | implemented | 2026-04-07 |
 | Unifier la langue du sprint report | [unify-sprint-report-language](specs/analytics/unify-sprint-report-language.md) | Analytics | implemented | 2026-04-07 |
 | Migrer le frontend vers React SPA | [migrate-to-react-spa](specs/_platform/migrate-to-react-spa.md) | Platform | planned | 2026-04-09 |
-| Scaffolder le projet React SPA | [setup-react-spa](specs/_platform/setup-react-spa.md) | Platform | planned | 2026-04-09 |
+| Scaffolder le projet React SPA | [setup-react-spa](specs/_platform/setup-react-spa.md) | Platform | implemented | 2026-04-10 |
 | Extraire le design system | [extract-design-system](specs/_platform/extract-design-system.md) | Platform | planned | 2026-04-09 |
 | Ameliorations design UX et data viz | [design-improvements](specs/_platform/design-improvements.md) | Platform | planned | 2026-04-09 |
 | Migrer la page dashboard | [migrate-dashboard-page](specs/analytics/migrate-dashboard-page.md) | Analytics | planned | 2026-04-09 |
