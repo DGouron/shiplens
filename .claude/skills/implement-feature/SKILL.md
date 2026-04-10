@@ -60,28 +60,28 @@ Bounded Context : [module]
 Files to create : [count]
 
 ENTITY LAYER :
-  - src/modules/[bc]/entities/[entity]/[entity].ts
-  - src/modules/[bc]/entities/[entity]/[entity].schema.ts
+  - backend/src/modules/[bc]/entities/[entity]/[entity].ts
+  - backend/src/modules/[bc]/entities/[entity]/[entity].schema.ts
   ...
 
 USECASE LAYER :
-  - src/modules/[bc]/usecases/[action]-[entity].usecase.ts
+  - backend/src/modules/[bc]/usecases/[action]-[entity].usecase.ts
   ...
 
 INTERFACE ADAPTERS :
-  - src/modules/[bc]/interface-adapters/gateways/[entity].in-prisma.gateway.ts
-  - src/modules/[bc]/interface-adapters/presenters/[feature].presenter.ts
-  - src/modules/[bc]/interface-adapters/controllers/[feature].controller.ts
+  - backend/src/modules/[bc]/interface-adapters/gateways/[entity].in-prisma.gateway.ts
+  - backend/src/modules/[bc]/interface-adapters/presenters/[feature].presenter.ts
+  - backend/src/modules/[bc]/interface-adapters/controllers/[feature].controller.ts
   ...
 
 TEST DOUBLES :
-  - src/modules/[bc]/testing/good-path/stub.[entity].gateway.ts
-  - src/modules/[bc]/testing/bad-path/failing.[entity].gateway.ts
+  - backend/src/modules/[bc]/testing/good-path/stub.[entity].gateway.ts
+  - backend/src/modules/[bc]/testing/bad-path/failing.[entity].gateway.ts
 
 TESTS :
-  - tests/modules/[bc]/entities/[entity]/...
-  - tests/modules/[bc]/usecases/...
-  - tests/builders/[entity].builder.ts
+  - backend/tests/modules/[bc]/entities/[entity]/...
+  - backend/tests/modules/[bc]/usecases/...
+  - backend/tests/builders/[entity].builder.ts
 
 Validate this plan?
 ```
@@ -147,7 +147,7 @@ ACCEPTANCE CRITERIA :
 
 After implementation, update the domain documentation for affected bounded contexts.
 
-1. **Detect affected BCs**: Look at the spec's bounded context and the files modified during implementation. Any module under `src/modules/<bc-name>/` that was created or modified counts.
+1. **Detect affected BCs**: Look at the spec's bounded context and the files modified during implementation. Any module under `backend/src/modules/<bc-name>/` that was created or modified counts.
 2. **Run event storming**: Invoke `/event-storming <bc-name>` for each affected BC. If multiple BCs were modified, run one per BC.
 3. The event storming skill will automatically sync to the wiki via `/wiki`.
 

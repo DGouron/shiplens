@@ -51,9 +51,9 @@
 
 - **Framework**: Vitest — run with `pnpm test`
 - **School**: Detroit (Inside-Out, state-based) — test observable results, not interactions
-- **Location**: mirror structure in `/tests/`
-  - `src/modules/auth/entities/user/user.ts` → `tests/modules/auth/entities/user/user.spec.ts`
-- **Builders only**: never `new Entity()` in tests — use builders from `tests/builders/`
+- **Location**: mirror structure in `backend/tests/`
+  - `backend/src/modules/auth/entities/user/user.ts` → `backend/tests/modules/auth/entities/user/user.spec.ts`
+- **Builders only**: never `new Entity()` in tests — use builders from `backend/tests/builders/`
   - Pattern: `new UserBuilder().withEmail("x@y.com").build()`
   - Builders extend `EntityBuilder<Props, Entity>` from `shared/foundation/testing/entity-builder.ts`
 - **Mocks**: only for I/O boundaries (gateways, APIs, DB) — never for internal logic
@@ -66,7 +66,7 @@
 
 ## Architecture
 
-- **Screaming Architecture + Clean Architecture** — modules organized as bounded contexts (`src/modules/<context-name>/`)
+- **Screaming Architecture + Clean Architecture** — modules organized as bounded contexts (`backend/src/modules/<context-name>/`)
 - **Dependency Rule**: dependencies point inward only — domain never imports infrastructure
 - **Layer responsibilities**:
   - **Entity**: pure business logic, private constructor + `static create()`

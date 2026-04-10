@@ -67,7 +67,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /backups
 
 # Runtime data files
-/data
+data/
 
 # Generated reports
 /docs/reports

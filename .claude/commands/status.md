@@ -14,9 +14,9 @@ pnpm test               # Unit tests
 
 ## 2. Structure by Module
 
-For each directory under `src/modules/`:
+For each directory under `backend/src/modules/`:
 - Number of files
-- Number of corresponding tests (in `tests/modules/`)
+- Number of corresponding tests (in `backend/tests/modules/`)
 
 ## 3. Technical Debt
 

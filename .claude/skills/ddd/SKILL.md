@@ -32,7 +32,7 @@ DDD is used only at the **strategic** level (domain slicing, language). Tactical
 
 > "A Bounded Context delimits the applicability of a particular model." — Eric Evans
 
-One Bounded Context = one NestJS module in `src/modules/<context-name>/`
+One Bounded Context = one NestJS module in `backend/src/modules/<context-name>/`
 
 Each BC is a **self-contained module** with its own providers, controllers, and gateways.
 

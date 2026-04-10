@@ -11,7 +11,7 @@ Specs are organized by bounded context under `docs/specs/<bc>/`:
 - `synchronization/` — Linear data sync, team selection, webhooks
 - `_platform/` — cross-cutting concerns (frontend migration, design system, infrastructure setup)
 
-Bounded contexts match `src/modules/` folder names 1:1. If a feature spans multiple BCs or is purely infrastructure, use `_platform/`.
+Bounded contexts match `backend/src/modules/` folder names 1:1. If a feature spans multiple BCs or is purely infrastructure, use `_platform/`.
 
 Each spec follows this format:
 

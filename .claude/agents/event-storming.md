@@ -65,11 +65,11 @@ Le mode exploration alimente directement `/product-manager` pour ecrire les spec
 ### Phase 1 : EXPLORATION — Decouvrir le domaine dans le code
 
 1. **Identifier les fichiers sources** du BC cible :
-   - Entities : `src/modules/<bc>/entities/` — entites, schemas, guards, gateway ports
-   - Usecases : `src/modules/<bc>/usecases/` — intentions utilisateur = Commands
-   - Controllers : `src/modules/<bc>/interface-adapters/controllers/` — points d'entree API
-   - Presenters : `src/modules/<bc>/interface-adapters/presenters/` — projections
-   - Gateway implementations : `src/modules/<bc>/interface-adapters/gateways/` — Prisma
+   - Entities : `backend/src/modules/<bc>/entities/` — entites, schemas, guards, gateway ports
+   - Usecases : `backend/src/modules/<bc>/usecases/` — intentions utilisateur = Commands
+   - Controllers : `backend/src/modules/<bc>/interface-adapters/controllers/` — points d'entree API
+   - Presenters : `backend/src/modules/<bc>/interface-adapters/presenters/` — projections
+   - Gateway implementations : `backend/src/modules/<bc>/interface-adapters/gateways/` — Prisma
    - Erreurs : `*.errors.ts` — regles metier violees
 
 2. **Scanner les patterns revelateurs** :
@@ -82,7 +82,7 @@ Le mode exploration alimente directement `/product-manager` pour ecrire les spec
 
 3. **Analyser les relations** avec les autres BCs :
    - Quels modules NestJS sont importes ?
-   - Quels types du `src/shared/domain/` sont utilises ?
+   - Quels types du `backend/src/shared/domain/` sont utilises ?
    - Y a-t-il des imports directs vers d'autres modules ?
 
 ### Phase 2 : MODELISATION — Structurer les decouvertes
@@ -102,11 +102,11 @@ Le mode exploration alimente directement `/product-manager` pour ecrire les spec
 | Pattern | Description | Signal dans le code |
 |---------|-------------|---------------------|
 | **Partnership** | Deux BCs co-evoluent | Modifications synchronisees entre 2 modules |
-| **Shared Kernel** | Code partage (petit, stable) | Types dans `src/shared/domain/` |
+| **Shared Kernel** | Code partage (petit, stable) | Types dans `backend/src/shared/domain/` |
 | **Customer-Supplier** | Un BC fournit, l'autre consomme | Module NestJS exporte/importe |
 | **Conformist** | Le consumer adopte sans adaptation | Import direct de types d'un autre module |
 | **Anti-Corruption Layer** | Traduction du modele externe | Presenter/Adapter qui transforme |
-| **Published Language** | Langage partage documente | Types dans `src/shared/` |
+| **Published Language** | Langage partage documente | Types dans `backend/src/shared/` |
 | **Separate Ways** | Aucune relation | Aucun import croise |
 
 ### Phase 4 : REDACTION — Produire les livrables

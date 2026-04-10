@@ -34,7 +34,7 @@ This skill activates for any creation or modification of architectural component
 ## Module Structure
 
 ```
-src/modules/<bounded-context>/
+backend/src/modules/<bounded-context>/
 ├── <context>.module.ts            # NestJS module (DI wiring)
 ├── entities/
 │   └── <entity>/

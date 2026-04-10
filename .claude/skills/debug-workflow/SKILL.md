@@ -47,7 +47,7 @@ Investigate in concentric rings. Stop expanding as soon as the root cause is exp
 - N+1 queries (multiple `findMany` inside a loop)
 - Transaction failures or partial writes
 - Unique constraint violations at runtime
-- Migration drift: `prisma/schema.prisma` differs from actual database state
+- Migration drift: `backend/prisma/schema.prisma` differs from actual database state
 - Diagnostic: `npx prisma db pull` to compare schema vs DB
 
 **Ring 3 — NestJS Infrastructure**: module wiring, DI, lifecycle.
@@ -144,7 +144,7 @@ Gate: `pnpm test` must pass on the branch before merge.
 | Situation | Command |
 |-----------|---------|
 | Test failure details | `pnpm test -- --reporter=verbose` |
-| Specific test file | `pnpm test -- tests/path/to/test.spec.ts` |
+| Specific test file | `pnpm test -- backend/tests/path/to/test.spec.ts` |
 | Prisma schema vs DB | `npx prisma db pull --print` |
 | Prisma data inspection | `npx prisma studio` |
 | NestJS verbose logs | `DEBUG=* pnpm start:dev` |
@@ -157,15 +157,15 @@ Gate: `pnpm test` must pass on the branch before merge.
 
 | Area | Location |
 |------|----------|
-| Modules | `src/modules/<bounded-context>/` |
-| Entities | `src/modules/<bc>/entities/` |
-| Use Cases | `src/modules/<bc>/usecases/` |
-| Controllers | `src/modules/<bc>/interface-adapters/controllers/` |
-| Gateways | `src/modules/<bc>/interface-adapters/gateways/` |
-| Presenters | `src/modules/<bc>/interface-adapters/presenters/` |
-| Shared foundation | `src/shared/foundation/` |
-| Shared domain | `src/shared/domain/` |
-| Prisma | `prisma/schema.prisma` |
-| Tests | `tests/` (mirror structure) |
+| Modules | `backend/src/modules/<bounded-context>/` |
+| Entities | `backend/src/modules/<bc>/entities/` |
+| Use Cases | `backend/src/modules/<bc>/usecases/` |
+| Controllers | `backend/src/modules/<bc>/interface-adapters/controllers/` |
+| Gateways | `backend/src/modules/<bc>/interface-adapters/gateways/` |
+| Presenters | `backend/src/modules/<bc>/interface-adapters/presenters/` |
+| Shared foundation | `backend/src/shared/foundation/` |
+| Shared domain | `backend/src/shared/domain/` |
+| Prisma | `backend/prisma/schema.prisma` |
+| Tests | `backend/tests/` (mirror structure) |
 | Specs | `docs/specs/` |
 | Test command | `pnpm test` |
