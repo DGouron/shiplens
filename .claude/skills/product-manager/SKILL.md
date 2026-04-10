@@ -74,7 +74,7 @@ Produce the spec according to the Shiplens DSL:
    - `docs/specs/notification/` — Slack alerts, real-time notifications
    - `docs/specs/synchronization/` — Linear data sync, team selection, webhooks
    - `docs/specs/_platform/` — cross-cutting concerns (frontend migration, design system, infrastructure setup)
-   - If unsure which BC, check `src/modules/` folder names — they match 1:1
+   - If unsure which BC, check `backend/src/modules/` folder names — they match 1:1
 2. Create the file `docs/specs/<bc>/<feature-name>.md`
 3. Enrich `docs/ddd/ubiquitous-language.md` with terms from the spec glossary
 4. Add a line in the right tracker — see **Draft Management** below:

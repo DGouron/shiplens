@@ -17,7 +17,7 @@ Decouvre les conventions implicites d'une equipe en scannant le codebase et l'hi
 ## Activation
 
 - `/tribal-knowledge`
-- `/tribal-knowledge src/modules/shipping`
+- `/tribal-knowledge backend/src/modules/shipping`
 - "find the tribal knowledge in this project"
 - "quelles sont les conventions implicites ?"
 
@@ -197,6 +197,6 @@ Prochaines etapes possibles :
 
 ```
 /tribal-knowledge
-/tribal-knowledge src/modules/analytics
-/tribal-knowledge src/
+/tribal-knowledge backend/src/modules/analytics
+/tribal-knowledge backend/src/
 ```

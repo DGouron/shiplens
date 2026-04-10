@@ -28,9 +28,9 @@ Le prompt qui te lance contient :
 
 Chercher dans cet ordre :
 
-1. `src/modules/<module>/` — module principal (Clean Architecture)
-2. `src/shared/domain/` — concepts partages entre BCs
-3. `src/shared/foundation/` — abstractions techniques utilisees
+1. `backend/src/modules/<module>/` — module principal (Clean Architecture)
+2. `backend/src/shared/domain/` — concepts partages entre BCs
+3. `backend/src/shared/foundation/` — abstractions techniques utilisees
 
 Lister tous les fichiers trouves avec `Glob` et `LS`.
 
@@ -102,7 +102,7 @@ Types : Validation, Etat, Calcul, Configuration, Invariant, Workflow
 ### Phase 5 : VERIFIER LA COUVERTURE DE TEST
 
 Pour chaque regle identifiee :
-1. Chercher un fichier de test correspondant dans `tests/`
+1. Chercher un fichier de test correspondant dans `backend/tests/`
 2. Verifier si la regle est effectivement testee
 3. Marquer oui si teste, non si non
 

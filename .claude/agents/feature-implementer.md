@@ -36,11 +36,11 @@ Le test d'acceptance verifie que la feature satisfait la spec. Il reste RED pend
 ### Comment
 
 1. Lire la spec DSL (section Rules + Scenarios)
-2. Creer `tests/acceptance/<feature-name>.acceptance.spec.ts`
+2. Creer `backend/tests/acceptance/<feature-name>.acceptance.spec.ts`
 3. Pour chaque Rule de la spec → un `describe` block
 4. Pour chaque Scenario de la spec → un `it` block
 5. Le test utilise le use case + stub gateway (integration sans infra)
-6. Lancer `pnpm test -- tests/acceptance/<feature-name>.acceptance.spec.ts`
+6. Lancer `pnpm test -- backend/tests/acceptance/<feature-name>.acceptance.spec.ts`
 7. **Confirmer que TOUS les tests echouent** (RED)
 8. Mettre a jour le feature tracker (status: implementing)
 
@@ -116,11 +116,11 @@ Avant de coder, expliquer :
 
 #### 2. RED — Test qui echoue
 
-- Creer le fichier de test dans `tests/` (meme chemin miroir)
+- Creer le fichier de test dans `backend/tests/` (meme chemin miroir)
 - Ecrire **UN SEUL** test minimal qui decrit **UN SEUL** comportement
 - Du naif au complet : cas simple d'abord, edge cases apres
 - Pas d'anticipation : un cycle a la fois
-- Utiliser les builders de `tests/builders/` pour les donnees de test
+- Utiliser les builders de `backend/tests/builders/` pour les donnees de test
 - Utiliser les stubs de `testing/good-path/` et `testing/bad-path/` pour les gateways
 - Lancer `pnpm test -- [path-du-test]`
 - Confirmer l'echec
@@ -179,7 +179,7 @@ Suivre strictement l'ordre du plan fourni. En general :
 
 Apres avoir complete TOUTES les layers inside-out :
 
-1. Relancer le test d'acceptance : `pnpm test -- tests/acceptance/<feature-name>.acceptance.spec.ts`
+1. Relancer le test d'acceptance : `pnpm test -- backend/tests/acceptance/<feature-name>.acceptance.spec.ts`
 2. **Il DOIT passer GREEN**
 3. Si il reste RED : diagnostiquer, corriger, relancer (max 3 tentatives)
 4. Si toujours RED apres 3 tentatives : escalader dans le rapport
@@ -278,7 +278,7 @@ FINAL_REPORT:
   REMAINING_ISSUES:
     - [issue description] — [why auto-fix failed]
   ACCEPTANCE_TEST:
-    file: tests/acceptance/<feature>.acceptance.spec.ts
+    file: backend/tests/acceptance/<feature>.acceptance.spec.ts
     status: GREEN | RED
   SPEC_COVERAGE:
     - OK [rule/scenario] -> couvert par [test]

@@ -53,14 +53,14 @@ See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, Typ
 
 ### Test Structure
 
-- **Location**: Mirror structure in `/tests/`
-- **Example**: `src/modules/auth/entities/user/user.ts` → `tests/modules/auth/entities/user/user.spec.ts`
+- **Location**: Mirror structure in `backend/tests/`
+- **Example**: `backend/src/modules/auth/entities/user/user.ts` → `backend/tests/modules/auth/entities/user/user.spec.ts`
 
 ### Test Data Builders
 
-- **Location**: `/tests/builders/`
+- **Location**: `backend/tests/builders/`
 - **Convention**: `<entity>.builder.ts` — class extends `EntityBuilder<Props, Entity>`
-- **Base class**: `src/shared/foundation/testing/entity-builder.ts`
+- **Base class**: `backend/src/shared/foundation/testing/entity-builder.ts`
 - **Usage**: Always use builders in tests, never `new Entity()` directly
 - **Pattern**: `new UserBuilder().withEmail("x@y.com").build()`
 
@@ -70,7 +70,7 @@ See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, Typ
 - **DDD**: Strategic level only (Bounded Contexts, Ubiquitous Language)
 - **Framework**: NestJS 11
 - **Database**: SQLite via Prisma ORM
-- **Modules**: Organized as bounded contexts (`src/modules/<context-name>/`)
+- **Modules**: Organized as bounded contexts (`backend/src/modules/<context-name>/`)
 - **Workflow**: Use the `/architecture` skill to create components
 
 ### Principles
@@ -137,9 +137,9 @@ export class SomethingModule {}
 **MANDATORY PROCEDURE:**
 1. `pnpm db:backup` — always first
 2. `pnpm db:migrate --name description` — test locally
-3. Review generated SQL in `prisma/migrations/`
+3. Review generated SQL in `backend/prisma/migrations/`
 4. Test the application locally
-5. `git add prisma/migrations/`
+5. `git add backend/prisma/migrations/`
 6. `git commit -m "feat: ..."`
 7. `pnpm db:deploy` — production only
 

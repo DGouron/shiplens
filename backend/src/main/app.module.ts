@@ -14,7 +14,7 @@ import { PrismaModule } from '../shared/infrastructure/prisma/prisma.module.js';
     PrismaModule,
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'frontend', 'dist'),
+      rootPath: join(process.cwd(), '..', 'frontend', 'dist'),
       exclude: [
         '/dashboard/data',
         '/analytics/(.*)',

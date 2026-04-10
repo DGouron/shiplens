@@ -2,8 +2,8 @@ pre-commit:
   parallel: true
   jobs:
     - name: biome
-      glob: "*.ts"
+      glob: "*.{ts,tsx}"
       run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --staged
       stage_fixed: true
     - name: typecheck
-      run: npx tsc --noEmit
+      run: pnpm typecheck

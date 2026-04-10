@@ -21,14 +21,14 @@ Lire `.claude/CLAUDE.md` et `.claude/rules/coding-standards.md` AVANT toute anal
 ## Mission
 
 1. **Lire un BC de reference existant** pour comprendre les patterns concrets :
-   - Chercher dans `src/modules/` un module existant
+   - Chercher dans `backend/src/modules/` un module existant
    - Structure type : `entities/`, `usecases/`, `interface-adapters/controllers/`, `interface-adapters/presenters/`, `interface-adapters/gateways/`, `testing/`
 
 2. **Lire les fondations shared** :
-   - `src/shared/foundation/guard/` — guards Zod
-   - `src/shared/foundation/usecase/` — types Usecase
-   - `src/shared/foundation/presenter/` — types Presenter
-   - `src/shared/foundation/testing/` — EntityBuilder
+   - `backend/src/shared/foundation/guard/` — guards Zod
+   - `backend/src/shared/foundation/usecase/` — types Usecase
+   - `backend/src/shared/foundation/presenter/` — types Presenter
+   - `backend/src/shared/foundation/testing/` — EntityBuilder
 
 3. **Analyser la spec** fournie (dans `docs/specs/`) et identifier :
    - Quel bounded context ? (nouveau ou existant)
@@ -56,9 +56,9 @@ Pour une feature dans un BC existant, le walking skeleton n'est pas necessaire �
 
 - Toutes les regles de `.claude/rules/coding-standards.md` s'appliquent
 - Ordre inside-out : Entity -> Use Cases -> Interface Adapters (Gateways, Presenters, Controllers) -> Module Wiring
-- Chaque fichier a son test miroir dans `tests/` (meme chemin relatif)
-- Builder pour chaque nouvelle entite dans `tests/builders/`
-- Stub gateways dans `src/modules/<bc>/testing/good-path/` et `testing/bad-path/`
+- Chaque fichier a son test miroir dans `backend/tests/` (meme chemin relatif)
+- Builder pour chaque nouvelle entite dans `backend/tests/builders/`
+- Stub gateways dans `backend/src/modules/<bc>/testing/good-path/` et `testing/bad-path/`
 
 ## Format de sortie
 
@@ -71,44 +71,44 @@ PLAN:
   ENTITY LAYER:
     entities:
       - name: [EntityName]
-        file: src/modules/[bc]/entities/[entity]/[entity].ts
-        schema: src/modules/[bc]/entities/[entity]/[entity].schema.ts
-        guard: src/modules/[bc]/entities/[entity]/[entity].guard.ts
-        gateway_port: src/modules/[bc]/entities/[entity]/[entity].gateway.ts
-        errors: src/modules/[bc]/entities/[entity]/[entity].errors.ts
-        test: tests/modules/[bc]/entities/[entity]/[entity].spec.ts
-        builder: tests/builders/[entity].builder.ts
+        file: backend/src/modules/[bc]/entities/[entity]/[entity].ts
+        schema: backend/src/modules/[bc]/entities/[entity]/[entity].schema.ts
+        guard: backend/src/modules/[bc]/entities/[entity]/[entity].guard.ts
+        gateway_port: backend/src/modules/[bc]/entities/[entity]/[entity].gateway.ts
+        errors: backend/src/modules/[bc]/entities/[entity]/[entity].errors.ts
+        test: backend/tests/modules/[bc]/entities/[entity]/[entity].spec.ts
+        builder: backend/tests/builders/[entity].builder.ts
 
   USECASE LAYER:
     - name: [ActionEntity]
-      file: src/modules/[bc]/usecases/[action]-[entity].usecase.ts
-      test: tests/modules/[bc]/usecases/[action]-[entity].usecase.spec.ts
+      file: backend/src/modules/[bc]/usecases/[action]-[entity].usecase.ts
+      test: backend/tests/modules/[bc]/usecases/[action]-[entity].usecase.spec.ts
       dependencies: [gateways necessaires]
 
   INTERFACE ADAPTERS:
     gateways:
       - name: [EntityInPrismaGateway]
-        file: src/modules/[bc]/interface-adapters/gateways/[entity].in-prisma.gateway.ts
-        test: tests/modules/[bc]/interface-adapters/gateways/[entity].in-prisma.gateway.spec.ts
+        file: backend/src/modules/[bc]/interface-adapters/gateways/[entity].in-prisma.gateway.ts
+        test: backend/tests/modules/[bc]/interface-adapters/gateways/[entity].in-prisma.gateway.spec.ts
     presenters:
       - name: [FeaturePresenter]
-        file: src/modules/[bc]/interface-adapters/presenters/[feature].presenter.ts
-        test: tests/modules/[bc]/interface-adapters/presenters/[feature].presenter.spec.ts
+        file: backend/src/modules/[bc]/interface-adapters/presenters/[feature].presenter.ts
+        test: backend/tests/modules/[bc]/interface-adapters/presenters/[feature].presenter.spec.ts
     controllers:
       - name: [FeatureController]
-        file: src/modules/[bc]/interface-adapters/controllers/[feature].controller.ts
-        test: tests/modules/[bc]/interface-adapters/controllers/[feature].controller.spec.ts
+        file: backend/src/modules/[bc]/interface-adapters/controllers/[feature].controller.ts
+        test: backend/tests/modules/[bc]/interface-adapters/controllers/[feature].controller.spec.ts
 
   TEST DOUBLES:
-    - stub: src/modules/[bc]/testing/good-path/stub.[entity].gateway.ts
-    - failing: src/modules/[bc]/testing/bad-path/failing.[entity].gateway.ts
+    - stub: backend/src/modules/[bc]/testing/good-path/stub.[entity].gateway.ts
+    - failing: backend/src/modules/[bc]/testing/bad-path/failing.[entity].gateway.ts
 
   MODULE WIRING:
-    - file: src/modules/[bc]/[bc].module.ts
-    - app_module: src/main/app.module.ts (ajout import)
+    - file: backend/src/modules/[bc]/[bc].module.ts
+    - app_module: backend/src/main/app.module.ts (ajout import)
 
   PRISMA:
-    - schema_changes: prisma/schema.prisma (si nouveau model)
+    - schema_changes: backend/prisma/schema.prisma (si nouveau model)
     - migration: "pnpm db:backup && pnpm db:migrate --name [description]"
 
   IMPLEMENTATION_ORDER:
@@ -118,7 +118,7 @@ PLAN:
   REFERENCE_FILES:
     - [path] — [pourquoi le lire]
   ACCEPTANCE_TEST:
-    file: tests/acceptance/[feature-name].acceptance.spec.ts
+    file: backend/tests/acceptance/[feature-name].acceptance.spec.ts
     note: "Boucle externe SDD — ecrit en premier, RED pendant l'impl, GREEN a la fin"
 ```
 

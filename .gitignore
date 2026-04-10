@@ -3,10 +3,11 @@ package-lock.json
 yarn.lock
 
 # compiled output
-/dist
-/node_modules
-/build
-frontend/node_modules
+dist
+node_modules
+build
+backend/dist
+frontend/dist
 
 # Logs
 logs
@@ -66,8 +67,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /backups
 
 # Runtime data files
-/data
+data/
 
 # Generated reports
 /docs/reports
-frontend/dist

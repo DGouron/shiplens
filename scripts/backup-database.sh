@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 BACKUP_DIR="$PROJECT_DIR/backups"
-DB_PATH="$PROJECT_DIR/prisma/dev.db"
+DB_PATH="$PROJECT_DIR/backend/dev.db"
 DATE=$(date +%Y-%m-%d)
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_SUBDIR="$BACKUP_DIR/$DATE"
