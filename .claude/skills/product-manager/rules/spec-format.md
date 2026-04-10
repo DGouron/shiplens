@@ -1,6 +1,19 @@
 # Spec Format
 
-Each spec in `docs/specs/` follows this format:
+## Location
+
+Specs are organized by bounded context under `docs/specs/<bc>/`:
+
+- `analytics/` — cycle metrics, reports, dashboards, bottlenecks, estimation, member health, drifting issues
+- `audit/` — custom audit rules, Packmind imports
+- `identity/` — Linear workspace connection, authentication
+- `notification/` — Slack alerts, real-time notifications
+- `synchronization/` — Linear data sync, team selection, webhooks
+- `_platform/` — cross-cutting concerns (frontend migration, design system, infrastructure setup)
+
+Bounded contexts match `src/modules/` folder names 1:1. If a feature spans multiple BCs or is purely infrastructure, use `_platform/`.
+
+Each spec follows this format:
 
 ```markdown
 # [Title — action verb + object]

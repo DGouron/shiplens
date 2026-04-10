@@ -29,7 +29,7 @@ You do NOT code yourself. You coordinate, present, and validate with the user.
 ## Input
 
 The user provides either:
-- A path to a spec: `/implement-feature docs/specs/my-feature.md`
+- A path to a spec: `/implement-feature docs/specs/<bc>/my-feature.md` (specs are organized by bounded context)
 - An inline description: `/implement-feature "As a sender, I want to create a shipment"`
 
 If it is an inline description, remind the user that `/product-manager` can produce a complete spec and offer to use it first.
@@ -131,7 +131,7 @@ ACCEPTANCE CRITERIA :
 
 **This step is NON-NEGOTIABLE. It must be executed before any commit.**
 
-1. **Update the spec** (`docs/specs/<feature>.md`):
+1. **Update the spec** (`docs/specs/<bc>/<feature>.md`):
    - Add `## Status: implemented` after the title
    - Add an `## Implementation` section with:
      - Bounded Context
