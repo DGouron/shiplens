@@ -22,15 +22,19 @@ function renderWithRouter(initialPath = '/') {
 }
 
 describe('App', () => {
-  it('renders "Shiplens" text on the root route', () => {
+  it('renders the Shiplens brand link in the navbar on the root route', () => {
     renderWithRouter('/');
 
-    expect(screen.getByText('Shiplens')).toBeInTheDocument();
+    const brand = screen.getByRole('link', { name: 'Shiplens' });
+    expect(brand).toBeInTheDocument();
+    expect(brand).toHaveAttribute('href', '/dashboard');
   });
 
-  it('renders "Shiplens" text on any unknown route', () => {
+  it('renders the Shiplens brand link in the navbar on any unknown route', () => {
     renderWithRouter('/some/unknown/path');
 
-    expect(screen.getByText('Shiplens')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Shiplens' }),
+    ).toBeInTheDocument();
   });
 });

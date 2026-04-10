@@ -1,8 +1,49 @@
 # Extract design system
 
-## Status: planned (slice 2/6)
+## Status: implemented (slice 2/6)
 
-Slice 2 of the frontend migration. Depends on Slice 1 (setup-react-spa).
+## Implementation
+
+**Scope**: Centralize all shared CSS and UI primitives as reusable React components inside `frontend/src/`. The 4 legacy HTML templates remain untouched — this slice builds the foundation for slices 3-6 to consume.
+
+**Artifacts**:
+
+CSS modules (`frontend/src/styles/`):
+- `tokens.css` — shared vars + `[data-theme="dark"]` and `[data-theme="light"]` definitions
+- `global.css` — body reset, DM Sans, body::before gradients per theme, `.app` + `.container` + `.page-title`
+- `animations.css` — `fadeSlideIn` and `pulse` keyframes
+- `app-navbar.css` — nav layout, brand, separators, breadcrumbs
+- `theme-toggle.css` — toggle pill with animated knob + sun/moon icons
+- `glass-card.css` — `.glass` frosted container
+- `button.css` — `.btn` default and `.btn-accent` variants
+- `skeleton.css` — pulsing placeholders for loading states
+
+React components (`frontend/src/components/`):
+- `app-layout.tsx` — imports tokens/global/animations CSS, renders `AppNavbar` + `Outlet`
+- `app-navbar.tsx` — brand link, breadcrumbs, optional Settings link, theme toggle
+- `breadcrumb.tsx` — renders breadcrumb items with `/` separators, active state
+- `theme-toggle.tsx` — `useState` + `useEffect` wiring to `data-theme` attribute + localStorage
+- `glass-card.tsx` — glassmorphism wrapper with optional className
+- `button.tsx` — default/accent variants with proper button props
+- `skeleton-card.tsx` — configurable number of pulsing lines
+
+Updates:
+- `frontend/src/app.tsx` — re-exports `AppLayout` as `App`
+- `frontend/src/main.tsx` — router uses `App` which is now the `AppLayout`
+- `frontend/tests/app.test.tsx` — updated to assert navbar brand link instead of paragraph text
+
+**Tests**: 31 tests across 9 files (`tests/components/*.test.tsx` + updated `app.test.tsx`)
+
+**Architectural decisions**:
+- Plain CSS files imported from TSX components (no CSS-in-JS, no Tailwind) — matches the rules in the spec and the legacy stack.
+- Theme toggle reads localStorage in the initial state via lazy `useState` initializer — avoids a double-render flash.
+- `AppLayout` is the single source of truth for CSS imports (tokens/global/animations) — child pages do not re-import these.
+- React Router v7 `Link` used for the brand link; the `Settings` link is also a React Router `Link`.
+- `ShiplensShell` is now a placeholder `<p>Shiplens</p>` — slices 3-6 will replace it with real pages.
+- FOUC note: theme is applied after React mount via `useEffect`, so a first-paint flash is possible on slow networks. Acceptable for this slice — can be fixed with an inline script in `index.html` if needed later.
+
+**Out of scope (deferred to later slices)**: page-specific components (team cards, metric values, charts), responsive refinements, Storybook.
+
 
 ## Context
 
