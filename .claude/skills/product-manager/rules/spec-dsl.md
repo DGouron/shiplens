@@ -19,7 +19,7 @@
 
 ## Conventions
 
-- `→ reject "message"`: the system refuses with this error message (in French)
+- `→ reject "message"`: the system refuses with this error message (in English)
 - `→ status "<value>"`: the resulting entity has this status
 - `→ <property> "<value>"`: the resulting entity has this property
 - `+` to combine multiple outputs: `→ status "pending" + tracking "SL-*"`
@@ -42,8 +42,8 @@ The sender must be able to create a shipment with a recipient and a parcel.
 
 ## Scenarios
 - valid: {sender: "123 Rue A", recipient: "456 Rue B", weight: 2.5kg} → status "pending" + tracking "SL-*"
-- no recipient: {sender: "123 Rue A"} → reject "Le destinataire est obligatoire"
-- overweight: {sender: "123 Rue A", recipient: "456 Rue B", weight: 35kg} → reject "Le poids ne peut pas depasser 30kg"
+- no recipient: {sender: "123 Rue A"} → reject "Recipient is required"
+- overweight: {sender: "123 Rue A", recipient: "456 Rue B", weight: 35kg} → reject "Weight cannot exceed 30kg"
 
 ## Out of scope
 - Shipment price calculation
@@ -56,5 +56,5 @@ The sender must be able to create a shipment with a recipient and a parcel.
 - **Scenarios** = concrete examples (what tests will verify)
 - One scenario = one behavior. No mega-scenarios
 - Minimum 1 nominal + 1 edge case
-- Error messages always in French
+- Error messages always in English (project rule: English everywhere)
 - No technical jargon in rules or scenarios
