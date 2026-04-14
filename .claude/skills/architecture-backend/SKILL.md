@@ -1,9 +1,9 @@
 ---
-name: architecture
-description: Clean Architecture (Uncle Bob) guide for NestJS. Use to create modules, entities, use cases, presenters, controllers, gateways, guards. Contains tactical patterns and structure conventions.
+name: architecture-backend
+description: Clean Architecture (Uncle Bob) guide for the NestJS backend. Use to create backend modules, entities, use cases, presenters, controllers, gateways, guards. Contains tactical patterns and structure conventions. For frontend architecture, use architecture-frontend instead.
 ---
 
-# Clean Architecture - Tactical Guide (NestJS)
+# Clean Architecture - Backend Tactical Guide (NestJS)
 
 ## Activation
 

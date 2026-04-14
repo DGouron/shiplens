@@ -71,7 +71,7 @@ See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, Typ
 - **Framework**: NestJS 11
 - **Database**: SQLite via Prisma ORM
 - **Modules**: Organized as bounded contexts (`backend/src/modules/<context-name>/`)
-- **Workflow**: Use the `/architecture` skill to create components
+- **Workflow**: Use the `/architecture-backend` skill for backend components. Use `/architecture-frontend` for frontend (MVVM + Humble Object) components.
 
 ### Principles
 
@@ -171,7 +171,8 @@ export class SomethingModule {}
 | `/product-manager` | Define a feature, write INVEST specs + custom DSL |
 | `/implement-feature` | Implement a complete feature (orchestrates planner + implementer) |
 | `/tdd` | Write or modify code (RED-GREEN-REFACTOR) |
-| `/architecture` | Create module, entity, use case, presenter, gateway... |
+| `/architecture-backend` | Create backend module, entity, use case, presenter, gateway... |
+| `/architecture-frontend` | Create frontend module, entity, use case, presenter, gateway, hook, view (Humble Object) |
 | `/ddd` | Slice the domain, define ubiquitous language |
 | `/event-storming` | Big Picture Event Storming session on a bounded context |
 | `/business-rules-extractor` | Extract business rules from a module |

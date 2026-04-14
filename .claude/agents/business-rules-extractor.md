@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, LS
 model: sonnet
 maxTurns: 30
 skills:
-  - architecture
+  - architecture-backend
 ---
 
 # Business Rules Extractor

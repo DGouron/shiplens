@@ -6,7 +6,7 @@ model: opus
 maxTurns: 50
 skills:
   - tdd
-  - architecture
+  - architecture-backend
 ---
 
 # Feature Implementer

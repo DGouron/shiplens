@@ -79,5 +79,5 @@ When creating skills for Shiplens :
 - Skills go in `.claude/skills/<skill-name>/SKILL.md`
 - Agents go in `.claude/agents/<agent-name>.md`
 - Rules/references as sub-files loaded by the skill
-- Follow the existing skill patterns (see `/tdd`, `/architecture`, `/ddd`)
+- Follow the existing skill patterns (see `/tdd`, `/architecture-backend`, `/architecture-frontend`, `/ddd`)
 - Register new skills in `.claude/CLAUDE.md` skills table

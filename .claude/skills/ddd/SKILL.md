@@ -1,6 +1,6 @@
 ---
 name: ddd
-description: Strategic DDD guide for this project. Use to slice the domain into bounded contexts, define ubiquitous language, create a new business module, analyze boundaries between contexts. Tactical patterns follow Clean Architecture (see architecture skill).
+description: Strategic DDD guide for this project (fullstack — backend + frontend share the same bounded contexts). Use to slice the domain into bounded contexts, define ubiquitous language, create a new business module, analyze boundaries between contexts. Tactical patterns follow Clean Architecture (see architecture-backend and architecture-frontend skills).
 ---
 
 # Domain-Driven Design - Strategic Guide

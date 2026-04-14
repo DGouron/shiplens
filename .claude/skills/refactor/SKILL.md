@@ -199,6 +199,6 @@ After all steps:
 | From | To `/refactor` | Context |
 |------|----------------|---------|
 | `/debug-workflow` | P3 items | Debug identifies debt, `/refactor` addresses it |
-| `/architecture` | Dependency Rule violation | Architecture shows coupling, `/refactor` fixes it |
+| `/architecture-backend` or `/architecture-frontend` | Dependency Rule violation | Architecture shows coupling, `/refactor` fixes it |
 | `/event-storming` | BC too large | ES reveals a module should be split |
 | `/implement-feature` | Resistant code | Implementation reveals a prerequisite refactoring is needed |

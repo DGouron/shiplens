@@ -6,7 +6,7 @@ model: opus
 maxTurns: 30
 skills:
   - ddd
-  - architecture
+  - architecture-backend
 ---
 
 # Event Storming Big Picture Agent

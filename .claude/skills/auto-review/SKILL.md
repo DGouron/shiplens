@@ -83,7 +83,7 @@ Collect: number of modified files, lines added/deleted, prod vs tests ratio.
 
 | # | Audit | Reference | Focus |
 |---|-------|-----------|-------|
-| 1 | Clean Architecture | `/.claude/skills/architecture/SKILL.md` | Dependency Rule, layers |
+| 1 | Clean Architecture | `/.claude/skills/architecture-backend/SKILL.md` (backend) or `/.claude/skills/architecture-frontend/SKILL.md` (frontend) | Dependency Rule, layers |
 | 2 | Strategic DDD | `/.claude/skills/ddd/SKILL.md` | Bounded Context, language |
 | 3 | SOLID | `.claude/rules/coding-standards.md` | 5 principles |
 | 4 | Testing | `/.claude/skills/tdd/SKILL.md` | Coverage, Detroit patterns |
@@ -185,7 +185,8 @@ Collect: number of modified files, lines added/deleted, prod vs tests ratio.
 | Problem | Skill |
 |---------|-------|
 | Missing tests | `/tdd` |
-| New module | `/architecture` |
+| New backend module | `/architecture-backend` |
+| New frontend module | `/architecture-frontend` |
 | SOLID violation | See `coding-standards.md` |
 | Potential secrets | `/security` |
 ```

@@ -6,7 +6,7 @@ model: opus
 maxTurns: 30
 permissionMode: default
 skills:
-  - architecture
+  - architecture-backend
   - product-manager
 ---
 
