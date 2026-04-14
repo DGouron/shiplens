@@ -184,6 +184,7 @@ export class SomethingModule {}
 | `/skill-creator` | Create or modify a skill |
 | `/auto-review` | Self-review before PR (5 sequential audits) |
 | `/tribal-knowledge` | Discover implicit team conventions (tribal knowledge) in a codebase |
+| `/naming-audit` | Audit naming quality (files, functions, types) without reading the code — blind test of Screaming Arch + Clean Code + Ubiquitous Language |
 | `/wiki` | Sync DDD docs to GitHub wiki |
 | `/security` | Secret detection scan before commit |
 | `/status` | Full project health diagnostic (read-only) |
