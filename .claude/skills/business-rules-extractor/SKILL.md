@@ -1,6 +1,6 @@
 ---
 name: business-rules-extractor
-description: "Extracts business rules from a backend module and produces two tables: Product view (business concepts) and Dev view (type + source). Saves to docs/business-rules/."
+description: "Extracts business rules from a module (backend + frontend) and produces three tables: Product view (business concepts), Backend dev view (type + source), Frontend dev view (type + source). Saves to docs/business-rules/."
 triggers:
   - "business.*rules"
   - "règles.*métier"
@@ -10,7 +10,7 @@ triggers:
 
 # Business Rules Extractor
 
-Extracts business rules from a backend module and produces two tables: Product view (business concepts) and Dev view (type + source).
+Extracts business rules from a module (backend + frontend) and produces three tables: Product view (business concepts), Backend dev view, Frontend dev view. A Bounded Context spans both workspaces — rules may live in backend entities/usecases/guards AND in frontend presenters/hooks/viewmodel schemas.
 
 ## Activation
 
