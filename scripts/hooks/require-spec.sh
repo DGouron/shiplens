@@ -10,11 +10,11 @@ INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | "$HOOK_DIR/parse-json.sh" tool_input.subagent_type)
 PROMPT=$(echo "$INPUT" | "$HOOK_DIR/parse-json.sh" tool_input.prompt)
 
-is_feature_implementer() {
-  echo "$TOOL_NAME" | grep -qi "feature-implementer"
+is_spec_implementer() {
+  echo "$TOOL_NAME" | grep -qiE "^(feature|frontend)-implementer$"
 }
 
-if ! is_feature_implementer; then
+if ! is_spec_implementer; then
   exit 0
 fi
 

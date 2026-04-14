@@ -163,6 +163,24 @@ assert_hook "non bad-path file is ignored" 0 "enforce-gateway-error-in-bad-path.
   '{"tool_input":{"file_path":"/repo/backend/src/modules/x/entities/y/y.ts","content":"throw new Error(\"boom\");"}}'
 
 # ─────────────────────────────────────────────────────────────────────────────
+section "require-spec.sh (existing)"
+
+assert_hook "feature-implementer with existing spec ref is allowed" 0 "require-spec.sh" \
+  '{"tool_input":{"subagent_type":"feature-implementer","prompt":"docs/specs/identity/connect-linear-workspace.md"}}'
+
+assert_hook "frontend-implementer with existing spec ref is allowed" 0 "require-spec.sh" \
+  '{"tool_input":{"subagent_type":"frontend-implementer","prompt":"docs/specs/analytics/migrate-dashboard-page.md"}}'
+
+assert_hook "frontend-implementer without spec is blocked" 2 "require-spec.sh" \
+  '{"tool_input":{"subagent_type":"frontend-implementer","prompt":"Please implement the dashboard"}}'
+
+assert_hook "frontend-planner (non-implementer) is ignored" 0 "require-spec.sh" \
+  '{"tool_input":{"subagent_type":"frontend-planner","prompt":"anything"}}'
+
+assert_hook "substring implementer name is not matched" 0 "require-spec.sh" \
+  '{"tool_input":{"subagent_type":"some-feature-implementer-other","prompt":"docs/specs/analytics/migrate-dashboard-page.md"}}'
+
+# ─────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "==="
 echo "Results: $PASS passed, $FAIL failed"

@@ -169,7 +169,8 @@ export class SomethingModule {}
 | Skill | When to use |
 |-------|-------------|
 | `/product-manager` | Define a feature, write INVEST specs + custom DSL |
-| `/implement-feature` | Implement a complete feature (orchestrates planner + implementer) |
+| `/implement-feature` | Implement a complete backend feature (orchestrates planner + implementer) |
+| `/implement-feature-frontend` | Implement a complete frontend feature (orchestrates frontend-planner + frontend-implementer, Humble Object) |
 | `/tdd` | Write or modify code (RED-GREEN-REFACTOR) |
 | `/architecture-backend` | Create backend module, entity, use case, presenter, gateway... |
 | `/architecture-frontend` | Create frontend module, entity, use case, presenter, gateway, hook, view (Humble Object) |
