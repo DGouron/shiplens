@@ -15,12 +15,12 @@ describe('BottleneckAnalysisController', () => {
     controller = new BottleneckAnalysisController(usecase, presenter);
   });
 
-  it('returns formatted bottleneck analysis', async () => {
+  it('returns bottleneck analysis with numeric median hours', async () => {
     const result = await controller.getBottlenecks('cycle-1', 'team-1');
 
     expect(result.bottleneckStatus).toBeDefined();
     expect(result.statusDistribution.length).toBeGreaterThan(0);
-    expect(result.statusDistribution[0].medianHours).toContain('h');
+    expect(typeof result.statusDistribution[0].medianHours).toBe('number');
   });
 
   it('includes comparison when requested', async () => {

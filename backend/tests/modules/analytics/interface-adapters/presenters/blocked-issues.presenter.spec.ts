@@ -11,7 +11,7 @@ describe('BlockedIssuesPresenter', () => {
     expect(result).toEqual([]);
   });
 
-  it('formats alert with duration in hours', () => {
+  it('presents alert duration as raw numeric hours', () => {
     const alert = new BlockedIssueAlertBuilder()
       .withDurationHours(50)
       .withIssueUuid('abc-123')
@@ -20,7 +20,7 @@ describe('BlockedIssuesPresenter', () => {
     const result = presenter.present([alert]);
 
     expect(result).toHaveLength(1);
-    expect(result[0].durationHours).toBe('2.1j');
+    expect(result[0].durationHours).toBe(50);
     expect(result[0].issueUrl).toBe('https://linear.app/issue/abc-123');
     expect(result[0].severity).toBe('warning');
   });
