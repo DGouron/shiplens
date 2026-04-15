@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const teamDashboardDtoSchema = z.object({
+export const teamDashboardResponseSchema = z.object({
   teamId: z.string(),
   teamName: z.string(),
   hasActiveCycle: z.boolean(),
@@ -14,24 +14,24 @@ export const teamDashboardDtoSchema = z.object({
   noActiveCycleMessage: z.nullable(z.string()),
 });
 
-export const synchronizationDtoSchema = z.object({
+export const synchronizationResponseSchema = z.object({
   lastSyncDate: z.nullable(z.string()),
   isLate: z.boolean(),
   lateWarning: z.nullable(z.string()),
   nextSync: z.string(),
 });
 
-export const workspaceDashboardDataDtoSchema = z.object({
-  teams: z.array(teamDashboardDtoSchema),
-  synchronization: synchronizationDtoSchema,
+export const workspaceDashboardDataResponseSchema = z.object({
+  teams: z.array(teamDashboardResponseSchema),
+  synchronization: synchronizationResponseSchema,
 });
 
-export const workspaceDashboardEmptyDtoSchema = z.object({
+export const workspaceDashboardEmptyResponseSchema = z.object({
   status: z.enum(['not_connected', 'no_teams']),
   message: z.string(),
 });
 
 export const workspaceDashboardResponseSchema = z.union([
-  workspaceDashboardDataDtoSchema,
-  workspaceDashboardEmptyDtoSchema,
+  workspaceDashboardDataResponseSchema,
+  workspaceDashboardEmptyResponseSchema,
 ]);

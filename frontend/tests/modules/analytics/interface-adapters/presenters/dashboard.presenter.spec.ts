@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { DashboardPresenter } from '@/modules/analytics/interface-adapters/presenters/dashboard.presenter.ts';
 import { dashboardTranslations } from '@/modules/analytics/interface-adapters/presenters/dashboard.translations.ts';
-import { SynchronizationDtoBuilder } from '../../../../builders/synchronization-dto.builder.ts';
-import { TeamDashboardDtoBuilder } from '../../../../builders/team-dashboard-dto.builder.ts';
-import { WorkspaceDashboardDtoBuilder } from '../../../../builders/workspace-dashboard-dto.builder.ts';
+import { SynchronizationResponseBuilder } from '../../../../builders/synchronization-response.builder.ts';
+import { TeamDashboardResponseBuilder } from '../../../../builders/team-dashboard-response.builder.ts';
+import { WorkspaceDashboardResponseBuilder } from '../../../../builders/workspace-dashboard-response.builder.ts';
 
 describe('DashboardPresenter', () => {
   const englishTranslations = dashboardTranslations.en;
 
   it('maps an active team with 75% completion and no blocked issues to a healthy card', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withTeamId('team-1')
           .withTeamName('Alpha')
           .withCompletionRate('75%')
@@ -41,9 +41,9 @@ describe('DashboardPresenter', () => {
   });
 
   it('maps a 45% completion team to a warning card', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withCompletionRate('45%')
           .withBlockedAlert(false)
           .build(),
@@ -62,9 +62,9 @@ describe('DashboardPresenter', () => {
   });
 
   it('maps a 20% completion team to a danger card', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withCompletionRate('20%')
           .withBlockedAlert(false)
           .build(),
@@ -83,9 +83,9 @@ describe('DashboardPresenter', () => {
   });
 
   it('maps a blocked-alert team to a danger card regardless of completion', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withCompletionRate('90%')
           .withBlockedAlert(true)
           .build(),
@@ -104,9 +104,9 @@ describe('DashboardPresenter', () => {
   });
 
   it('maps a team without active cycle to an idle card', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withTeamId('team-idle')
           .withTeamName('Sleepers')
           .withoutActiveCycle()
@@ -126,7 +126,7 @@ describe('DashboardPresenter', () => {
   });
 
   it('falls back to the translation when no noActiveCycleMessage is provided', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
         {
           teamId: 'team-idle',
@@ -155,9 +155,9 @@ describe('DashboardPresenter', () => {
   });
 
   it('formats the last sync label with the translation prefix and a locale-formatted date', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withSynchronization(
-        new SynchronizationDtoBuilder()
+        new SynchronizationResponseBuilder()
           .withLastSyncDate('2026-04-15T08:00:00.000Z')
           .withIsLate(false)
           .build(),
@@ -179,9 +179,9 @@ describe('DashboardPresenter', () => {
   });
 
   it('uses the neverSynced label when lastSyncDate is null', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withSynchronization(
-        new SynchronizationDtoBuilder().withLastSyncDate(null).build(),
+        new SynchronizationResponseBuilder().withLastSyncDate(null).build(),
       )
       .build();
     const presenter = new DashboardPresenter('en', englishTranslations);
@@ -193,9 +193,9 @@ describe('DashboardPresenter', () => {
   });
 
   it('exposes the lateWarning translation when the synchronization is late', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withSynchronization(
-        new SynchronizationDtoBuilder().withIsLate(true).build(),
+        new SynchronizationResponseBuilder().withIsLate(true).build(),
       )
       .build();
     const presenter = new DashboardPresenter('en', englishTranslations);
@@ -207,10 +207,12 @@ describe('DashboardPresenter', () => {
   });
 
   it('uses the French translations when the locale is fr', () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
-      .withTeams([new TeamDashboardDtoBuilder().withoutActiveCycle().build()])
+    const dto = new WorkspaceDashboardResponseBuilder()
+      .withTeams([
+        new TeamDashboardResponseBuilder().withoutActiveCycle().build(),
+      ])
       .withSynchronization(
-        new SynchronizationDtoBuilder().withLastSyncDate(null).build(),
+        new SynchronizationResponseBuilder().withLastSyncDate(null).build(),
       )
       .build();
     const presenter = new DashboardPresenter('fr', dashboardTranslations.fr);

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
 import { GatewayError } from '@/shared/foundation/gateway-error.ts';
-import { WorkspaceDashboardDtoBuilder } from '../../../../builders/workspace-dashboard-dto.builder.ts';
+import { WorkspaceDashboardResponseBuilder } from '../../../../builders/workspace-dashboard-response.builder.ts';
 
 function stubFetchOnce(response: Partial<Response>): void {
   const fetchMock = vi.fn().mockResolvedValue(response);
@@ -15,7 +15,7 @@ describe('WorkspaceDashboardInHttpGateway', () => {
   });
 
   it('fetches /dashboard/data and returns the parsed data DTO', async () => {
-    const payload = new WorkspaceDashboardDtoBuilder().build();
+    const payload = new WorkspaceDashboardResponseBuilder().build();
     stubFetchOnce({
       ok: true,
       json: async () => payload,

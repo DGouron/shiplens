@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { FailingWorkspaceDashboardGateway } from '@/modules/analytics/testing/bad-path/failing.workspace-dashboard.gateway.ts';
-import { StubEmptyWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.empty-workspace-dashboard.gateway.ts';
-import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.gateway.ts';
+import { FailingWorkspaceDashboardGateway } from '@/modules/analytics/testing/bad-path/failing.workspace-dashboard.in-memory.gateway.ts';
+import { StubEmptyWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.empty-workspace-dashboard.in-memory.gateway.ts';
+import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.in-memory.gateway.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
 import { GatewayError } from '@/shared/foundation/gateway-error.ts';
-import { WorkspaceDashboardDtoBuilder } from '../../../builders/workspace-dashboard-dto.builder.ts';
+import { WorkspaceDashboardResponseBuilder } from '../../../builders/workspace-dashboard-response.builder.ts';
 
 describe('GetWorkspaceDashboardUsecase', () => {
-  it('delegates to the gateway and returns the data DTO', async () => {
-    const dto = new WorkspaceDashboardDtoBuilder().build();
+  it('delegates to the gateway and returns the data response', async () => {
+    const dto = new WorkspaceDashboardResponseBuilder().build();
     const usecase = new GetWorkspaceDashboardUsecase(
       new StubWorkspaceDashboardGateway({ response: dto }),
     );
@@ -18,7 +18,7 @@ describe('GetWorkspaceDashboardUsecase', () => {
     expect(result).toEqual(dto);
   });
 
-  it('returns the empty DTO verbatim when the gateway returns an empty variant', async () => {
+  it('returns the empty response verbatim when the gateway returns an empty variant', async () => {
     const usecase = new GetWorkspaceDashboardUsecase(
       new StubEmptyWorkspaceDashboardGateway({
         status: 'not_connected',

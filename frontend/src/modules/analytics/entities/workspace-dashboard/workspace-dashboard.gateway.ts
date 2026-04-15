@@ -1,5 +1,5 @@
-import { type WorkspaceDashboardDto } from './workspace-dashboard.dto.ts';
+import { type WorkspaceDashboardResponse } from './workspace-dashboard.response.ts';
 
 export abstract class WorkspaceDashboardGateway {
-  abstract fetchDashboard(): Promise<WorkspaceDashboardDto>;
+  abstract fetchDashboard(): Promise<WorkspaceDashboardResponse>;
 }

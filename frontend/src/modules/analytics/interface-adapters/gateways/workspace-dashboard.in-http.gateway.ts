@@ -1,10 +1,10 @@
 import { GatewayError } from '@/shared/foundation/gateway-error.ts';
-import { type WorkspaceDashboardDto } from '../../entities/workspace-dashboard/workspace-dashboard.dto.ts';
 import { WorkspaceDashboardGateway } from '../../entities/workspace-dashboard/workspace-dashboard.gateway.ts';
-import { workspaceDashboardResponseGuard } from './workspace-dashboard.dto.guard.ts';
+import { type WorkspaceDashboardResponse } from '../../entities/workspace-dashboard/workspace-dashboard.response.ts';
+import { workspaceDashboardResponseGuard } from './workspace-dashboard.response.guard.ts';
 
 export class WorkspaceDashboardInHttpGateway extends WorkspaceDashboardGateway {
-  async fetchDashboard(): Promise<WorkspaceDashboardDto> {
+  async fetchDashboard(): Promise<WorkspaceDashboardResponse> {
     const response = await fetch('/dashboard/data');
     if (!response.ok) {
       throw new GatewayError(

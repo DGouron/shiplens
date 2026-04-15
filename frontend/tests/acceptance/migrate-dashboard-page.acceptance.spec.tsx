@@ -5,13 +5,13 @@ import { App } from '@/app.tsx';
 import { LocaleProvider } from '@/locale-context.tsx';
 import { overrideUsecases, resetUsecases } from '@/main/dependencies.ts';
 import { DashboardView } from '@/modules/analytics/interface-adapters/views/dashboard.view.tsx';
-import { FailingWorkspaceDashboardGateway } from '@/modules/analytics/testing/bad-path/failing.workspace-dashboard.gateway.ts';
-import { StubEmptyWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.empty-workspace-dashboard.gateway.ts';
-import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.gateway.ts';
+import { FailingWorkspaceDashboardGateway } from '@/modules/analytics/testing/bad-path/failing.workspace-dashboard.in-memory.gateway.ts';
+import { StubEmptyWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.empty-workspace-dashboard.in-memory.gateway.ts';
+import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.in-memory.gateway.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
-import { SynchronizationDtoBuilder } from '../builders/synchronization-dto.builder.ts';
-import { TeamDashboardDtoBuilder } from '../builders/team-dashboard-dto.builder.ts';
-import { WorkspaceDashboardDtoBuilder } from '../builders/workspace-dashboard-dto.builder.ts';
+import { SynchronizationResponseBuilder } from '../builders/synchronization-response.builder.ts';
+import { TeamDashboardResponseBuilder } from '../builders/team-dashboard-response.builder.ts';
+import { WorkspaceDashboardResponseBuilder } from '../builders/workspace-dashboard-response.builder.ts';
 import { withQueryClient } from '../helpers/query-client-wrapper.tsx';
 
 function renderAtPath(initialPath: string) {
@@ -57,7 +57,7 @@ describe('Migrate dashboard page (acceptance)', () => {
   });
 
   it('dashboard route renders: navigating to /dashboard shows the Dashboard page heading', async () => {
-    const dto = new WorkspaceDashboardDtoBuilder().build();
+    const dto = new WorkspaceDashboardResponseBuilder().build();
     overrideUsecases({
       getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
         new StubWorkspaceDashboardGateway({ response: dto }),
@@ -74,19 +74,19 @@ describe('Migrate dashboard page (acceptance)', () => {
   });
 
   it('nominal dashboard renders 3 team cards', async () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withTeamId('team-1')
           .withTeamName('Alpha')
           .withCompletionRate('75%')
           .build(),
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withTeamId('team-2')
           .withTeamName('Bravo')
           .withCompletionRate('45%')
           .build(),
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withTeamId('team-3')
           .withTeamName('Charlie')
           .withCompletionRate('20%')
@@ -162,9 +162,9 @@ describe('Migrate dashboard page (acceptance)', () => {
   });
 
   it('team without active cycle shows idle card with No active cycle message', async () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withTeamId('team-idle')
           .withTeamName('Sleepers')
           .withoutActiveCycle()
@@ -186,9 +186,9 @@ describe('Migrate dashboard page (acceptance)', () => {
   });
 
   it('healthy team has green ring stroke color', async () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withTeams([
-        new TeamDashboardDtoBuilder()
+        new TeamDashboardResponseBuilder()
           .withTeamName('Healthy Team')
           .withCompletionRate('75%')
           .withBlockedAlert(false)
@@ -212,9 +212,9 @@ describe('Migrate dashboard page (acceptance)', () => {
   });
 
   it('sync status late shows the late warning from the translations', async () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withSynchronization(
-        new SynchronizationDtoBuilder().withIsLate(true).build(),
+        new SynchronizationResponseBuilder().withIsLate(true).build(),
       )
       .build();
     overrideUsecases({
@@ -231,9 +231,9 @@ describe('Migrate dashboard page (acceptance)', () => {
   });
 
   it('never synced shows the Never synced label', async () => {
-    const dto = new WorkspaceDashboardDtoBuilder()
+    const dto = new WorkspaceDashboardResponseBuilder()
       .withSynchronization(
-        new SynchronizationDtoBuilder().withLastSyncDate(null).build(),
+        new SynchronizationResponseBuilder().withLastSyncDate(null).build(),
       )
       .build();
     overrideUsecases({
@@ -257,7 +257,7 @@ describe('Migrate dashboard page (acceptance)', () => {
         json: async () => ({ language: 'fr' }),
       }),
     );
-    const dto = new WorkspaceDashboardDtoBuilder().build();
+    const dto = new WorkspaceDashboardResponseBuilder().build();
     overrideUsecases({
       getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
         new StubWorkspaceDashboardGateway({ response: dto }),

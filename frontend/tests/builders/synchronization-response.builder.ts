@@ -1,9 +1,9 @@
-import { type SynchronizationDto } from '@/modules/analytics/entities/workspace-dashboard/workspace-dashboard.dto.ts';
+import { type SynchronizationResponse } from '@/modules/analytics/entities/workspace-dashboard/workspace-dashboard.response.ts';
 import { EntityBuilder } from '@/shared/foundation/testing/entity-builder.ts';
 
-export class SynchronizationDtoBuilder extends EntityBuilder<
-  SynchronizationDto,
-  SynchronizationDto
+export class SynchronizationResponseBuilder extends EntityBuilder<
+  SynchronizationResponse,
+  SynchronizationResponse
 > {
   constructor() {
     super({
@@ -29,7 +29,7 @@ export class SynchronizationDtoBuilder extends EntityBuilder<
     return this;
   }
 
-  build(): SynchronizationDto {
+  build(): SynchronizationResponse {
     return { ...this.props };
   }
 }

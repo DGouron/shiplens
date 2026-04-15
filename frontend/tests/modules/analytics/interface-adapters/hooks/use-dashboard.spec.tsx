@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { overrideUsecases, resetUsecases } from '@/main/dependencies.ts';
 import { useDashboard } from '@/modules/analytics/interface-adapters/hooks/use-dashboard.ts';
 import { dashboardViewModelSchema } from '@/modules/analytics/interface-adapters/presenters/dashboard.view-model.schema.ts';
-import { FailingWorkspaceDashboardGateway } from '@/modules/analytics/testing/bad-path/failing.workspace-dashboard.gateway.ts';
-import { StubEmptyWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.empty-workspace-dashboard.gateway.ts';
-import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.gateway.ts';
+import { FailingWorkspaceDashboardGateway } from '@/modules/analytics/testing/bad-path/failing.workspace-dashboard.in-memory.gateway.ts';
+import { StubEmptyWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.empty-workspace-dashboard.in-memory.gateway.ts';
+import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.in-memory.gateway.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
-import { WorkspaceDashboardDtoBuilder } from '../../../../builders/workspace-dashboard-dto.builder.ts';
+import { WorkspaceDashboardResponseBuilder } from '../../../../builders/workspace-dashboard-response.builder.ts';
 import {
   createTestQueryClient,
   withQueryClient,
@@ -29,7 +29,7 @@ describe('useDashboard', () => {
     overrideUsecases({
       getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
         new StubWorkspaceDashboardGateway({
-          response: new WorkspaceDashboardDtoBuilder().build(),
+          response: new WorkspaceDashboardResponseBuilder().build(),
         }),
       ),
     });
@@ -43,7 +43,7 @@ describe('useDashboard', () => {
     overrideUsecases({
       getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
         new StubWorkspaceDashboardGateway({
-          response: new WorkspaceDashboardDtoBuilder().build(),
+          response: new WorkspaceDashboardResponseBuilder().build(),
         }),
       ),
     });
@@ -60,7 +60,7 @@ describe('useDashboard', () => {
     }
   });
 
-  it('transitions to empty with kind not_connected when the usecase resolves with that DTO', async () => {
+  it('transitions to empty with kind not_connected when the usecase resolves with that response', async () => {
     overrideUsecases({
       getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
         new StubEmptyWorkspaceDashboardGateway({
@@ -83,7 +83,7 @@ describe('useDashboard', () => {
     }
   });
 
-  it('transitions to empty with kind no_teams when the usecase resolves with that DTO', async () => {
+  it('transitions to empty with kind no_teams when the usecase resolves with that response', async () => {
     overrideUsecases({
       getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
         new StubEmptyWorkspaceDashboardGateway({
@@ -124,7 +124,7 @@ describe('useDashboard', () => {
   it('reload triggers a refetch', async () => {
     let callCount = 0;
     const stub = new StubWorkspaceDashboardGateway({
-      response: new WorkspaceDashboardDtoBuilder().build(),
+      response: new WorkspaceDashboardResponseBuilder().build(),
     });
     const originalFetch = stub.fetchDashboard.bind(stub);
     stub.fetchDashboard = async () => {

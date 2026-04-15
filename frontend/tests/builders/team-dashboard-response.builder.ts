@@ -1,9 +1,9 @@
-import { type TeamDashboardDto } from '@/modules/analytics/entities/workspace-dashboard/workspace-dashboard.dto.ts';
+import { type TeamDashboardResponse } from '@/modules/analytics/entities/workspace-dashboard/workspace-dashboard.response.ts';
 import { EntityBuilder } from '@/shared/foundation/testing/entity-builder.ts';
 
-export class TeamDashboardDtoBuilder extends EntityBuilder<
-  TeamDashboardDto,
-  TeamDashboardDto
+export class TeamDashboardResponseBuilder extends EntityBuilder<
+  TeamDashboardResponse,
+  TeamDashboardResponse
 > {
   constructor() {
     super({
@@ -54,7 +54,7 @@ export class TeamDashboardDtoBuilder extends EntityBuilder<
     return this;
   }
 
-  build(): TeamDashboardDto {
+  build(): TeamDashboardResponse {
     return { ...this.props };
   }
 }

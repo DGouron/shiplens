@@ -1,9 +1,9 @@
 import { type Presenter } from '@/shared/foundation/presenter/presenter.ts';
 import {
-  type SynchronizationDto,
-  type TeamDashboardDto,
-  type WorkspaceDashboardDataDto,
-} from '../../entities/workspace-dashboard/workspace-dashboard.dto.ts';
+  type SynchronizationResponse,
+  type TeamDashboardResponse,
+  type WorkspaceDashboardDataResponse,
+} from '../../entities/workspace-dashboard/workspace-dashboard.response.ts';
 import {
   type DashboardTranslations,
   type Locale,
@@ -16,21 +16,21 @@ import {
 } from './dashboard.view-model.schema.ts';
 
 export class DashboardPresenter
-  implements Presenter<WorkspaceDashboardDataDto, DashboardViewModel>
+  implements Presenter<WorkspaceDashboardDataResponse, DashboardViewModel>
 {
   constructor(
     private readonly locale: Locale,
     private readonly translations: DashboardTranslations,
   ) {}
 
-  present(input: WorkspaceDashboardDataDto): DashboardViewModel {
+  present(input: WorkspaceDashboardDataResponse): DashboardViewModel {
     return {
       teams: input.teams.map((team) => this.presentTeam(team)),
       synchronization: this.presentSynchronization(input.synchronization),
     };
   }
 
-  private presentTeam(team: TeamDashboardDto): TeamCardViewModel {
+  private presentTeam(team: TeamDashboardResponse): TeamCardViewModel {
     if (!team.hasActiveCycle) {
       return {
         kind: 'idle',
@@ -66,7 +66,7 @@ export class DashboardPresenter
   }
 
   private presentSynchronization(
-    synchronization: SynchronizationDto,
+    synchronization: SynchronizationResponse,
   ): SyncStatusViewModel {
     const hasSyncHistory = synchronization.lastSyncDate !== null;
     const lastSyncLabel = hasSyncHistory

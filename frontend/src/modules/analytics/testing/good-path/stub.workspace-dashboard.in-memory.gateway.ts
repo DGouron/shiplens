@@ -1,11 +1,11 @@
-import { type WorkspaceDashboardDto } from '../../entities/workspace-dashboard/workspace-dashboard.dto.ts';
 import { WorkspaceDashboardGateway } from '../../entities/workspace-dashboard/workspace-dashboard.gateway.ts';
+import { type WorkspaceDashboardResponse } from '../../entities/workspace-dashboard/workspace-dashboard.response.ts';
 
 interface StubWorkspaceDashboardGatewayOptions {
-  response?: WorkspaceDashboardDto;
+  response?: WorkspaceDashboardResponse;
 }
 
-const defaultResponse: WorkspaceDashboardDto = {
+const defaultResponse: WorkspaceDashboardResponse = {
   teams: [
     {
       teamId: 'team-1',
@@ -30,14 +30,14 @@ const defaultResponse: WorkspaceDashboardDto = {
 };
 
 export class StubWorkspaceDashboardGateway extends WorkspaceDashboardGateway {
-  private readonly response: WorkspaceDashboardDto;
+  private readonly response: WorkspaceDashboardResponse;
 
   constructor(options: StubWorkspaceDashboardGatewayOptions = {}) {
     super();
     this.response = options.response ?? defaultResponse;
   }
 
-  async fetchDashboard(): Promise<WorkspaceDashboardDto> {
+  async fetchDashboard(): Promise<WorkspaceDashboardResponse> {
     return this.response;
   }
 }
