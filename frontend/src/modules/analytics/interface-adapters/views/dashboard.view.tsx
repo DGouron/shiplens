@@ -1,31 +1,60 @@
 import '@/styles/dashboard.css';
 import { useLocale } from '@/locale-context.tsx';
-import { useDashboard } from '../hooks/use-dashboard.ts';
-import { dashboardTranslations } from '../presenters/dashboard.translations.ts';
+import { useDashboardPage } from '../hooks/use-dashboard-page.ts';
+import { type SyncState } from '../hooks/use-sync-orchestrator.ts';
+import {
+  type DashboardTranslations,
+  dashboardTranslations,
+} from '../presenters/dashboard.translations.ts';
 import { DashboardEmptyStateView } from './dashboard-empty-state.view.tsx';
 import { DashboardErrorStateView } from './dashboard-error-state.view.tsx';
 import { DashboardLoadingStateView } from './dashboard-loading-state.view.tsx';
-import { SyncStatusBarView } from './sync-status-bar.view.tsx';
+import {
+  type SyncProgressIndicator,
+  SyncStatusBarView,
+} from './sync-status-bar.view.tsx';
 import { TeamCardView } from './team-card.view.tsx';
 import { TeamCardIdleView } from './team-card-idle.view.tsx';
 
 export function DashboardView() {
   const locale = useLocale();
   const translations = dashboardTranslations[locale];
-  const { state } = useDashboard();
+  const { dashboardState, syncState, startResync, retrySync } =
+    useDashboardPage();
+  const syncProgress = syncProgressFor(syncState, translations);
 
   return (
     <main data-testid="dashboard-page" className="container">
       <h1 className="page-title">{translations.pageTitle}</h1>
-      {renderBody(state, translations)}
+      {renderBody({
+        state: dashboardState,
+        translations,
+        syncState,
+        syncProgress,
+        startResync,
+        retrySync,
+      })}
     </main>
   );
 }
 
-function renderBody(
-  state: ReturnType<typeof useDashboard>['state'],
-  translations: typeof dashboardTranslations.en,
-) {
+interface RenderBodyParams {
+  state: ReturnType<typeof useDashboardPage>['dashboardState'];
+  translations: DashboardTranslations;
+  syncState: SyncState;
+  syncProgress: SyncProgressIndicator | null;
+  startResync: () => Promise<void>;
+  retrySync: () => Promise<void>;
+}
+
+function renderBody({
+  state,
+  translations,
+  syncState,
+  syncProgress,
+  startResync,
+  retrySync,
+}: RenderBodyParams) {
   if (state.status === 'loading') {
     return <DashboardLoadingStateView translations={translations} />;
   }
@@ -38,11 +67,17 @@ function renderBody(
     );
   }
   if (state.status === 'empty') {
+    const onRetryClick =
+      state.empty.kind === 'no_teams' && syncState.status === 'failed'
+        ? retrySync
+        : undefined;
     return (
       <DashboardEmptyStateView
         kind={state.empty.kind}
         message={state.empty.message}
         translations={translations}
+        syncProgress={syncProgress}
+        onRetryClick={onRetryClick}
       />
     );
   }
@@ -51,7 +86,8 @@ function renderBody(
       <SyncStatusBarView
         synchronization={state.data.synchronization}
         resyncLabel={translations.resynchronize}
-        onResyncClick={noop}
+        onResyncClick={startResync}
+        syncProgress={syncProgress}
       />
       <div className="teams-grid">
         {state.data.teams.map((team) =>
@@ -70,4 +106,25 @@ function renderBody(
   );
 }
 
-function noop() {}
+function syncProgressFor(
+  syncState: SyncState,
+  translations: DashboardTranslations,
+): SyncProgressIndicator | null {
+  if (syncState.status !== 'running') return null;
+  const stepLabel = stepLabelFor(syncState.step, translations);
+  const attemptLabel =
+    syncState.attempt > 1
+      ? `${translations.syncRetryLabel} ${syncState.attempt}/3`
+      : undefined;
+  return { stepLabel, attemptLabel };
+}
+
+function stepLabelFor(
+  step: 'teams' | 'selection' | 'reference' | 'issues',
+  translations: DashboardTranslations,
+): string {
+  if (step === 'teams') return translations.syncStepTeams;
+  if (step === 'selection') return translations.syncStepTeams;
+  if (step === 'reference') return translations.syncStepReference;
+  return translations.syncStepIssues;
+}

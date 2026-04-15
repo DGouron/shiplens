@@ -16,6 +16,16 @@ export interface DashboardTranslations {
   viewReport: string;
   noReportAvailable: string;
   noActiveCycle: string;
+  syncInProgress: string;
+  syncStepTeams: string;
+  syncStepReference: string;
+  syncStepIssues: string;
+  syncRetryLabel: string;
+  syncErrorRetrieveTeams: string;
+  syncErrorNoTeams: string;
+  syncErrorSelectTeams: string;
+  syncErrorNoSelection: string;
+  syncRetryButton: string;
 }
 
 export const dashboardTranslations: Record<Locale, DashboardTranslations> = {
@@ -35,6 +45,16 @@ export const dashboardTranslations: Record<Locale, DashboardTranslations> = {
     viewReport: 'View report',
     noReportAvailable: 'No report available',
     noActiveCycle: 'No active cycle',
+    syncInProgress: 'Synchronization in progress...',
+    syncStepTeams: 'Synchronizing teams...',
+    syncStepReference: 'Reference data...',
+    syncStepIssues: 'Synchronizing issues...',
+    syncRetryLabel: 'retry',
+    syncErrorRetrieveTeams: 'Unable to retrieve teams',
+    syncErrorNoTeams: 'No teams available in workspace',
+    syncErrorSelectTeams: 'Unable to select teams',
+    syncErrorNoSelection: 'No sync selection found',
+    syncRetryButton: 'Retry',
   },
   fr: {
     pageTitle: 'Dashboard',
@@ -52,5 +72,15 @@ export const dashboardTranslations: Record<Locale, DashboardTranslations> = {
     viewReport: 'Voir le rapport',
     noReportAvailable: 'Aucun rapport disponible',
     noActiveCycle: 'Aucun cycle actif',
+    syncInProgress: 'Synchronisation en cours...',
+    syncStepTeams: 'Synchronisation des equipes en cours...',
+    syncStepReference: 'Donnees de reference...',
+    syncStepIssues: 'Synchronisation des issues...',
+    syncRetryLabel: 'tentative',
+    syncErrorRetrieveTeams: 'Impossible de recuperer les equipes',
+    syncErrorNoTeams: 'Aucune equipe disponible dans le workspace',
+    syncErrorSelectTeams: 'Impossible de selectionner les equipes',
+    syncErrorNoSelection: 'Aucune selection de sync trouvee',
+    syncRetryButton: 'Reessayer',
   },
 };
