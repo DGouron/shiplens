@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 describe('CycleMetricsPresenter', () => {
   const presenter = new CycleMetricsPresenter();
 
-  it('presents metrics as formatted DTO', () => {
+  it('presents metrics as raw numeric DTO', () => {
     const result = presenter.present({
       velocity: { completedPoints: 21, plannedPoints: 25 },
       throughput: 8,
@@ -14,16 +14,16 @@ describe('CycleMetricsPresenter', () => {
       averageLeadTimeInDays: 9.5,
     });
 
-    expect(result.velocity).toBe('21/25 points');
-    expect(result.throughput).toBe('8 issues');
-    expect(result.completionRate).toBe('80%');
-    expect(result.scopeCreep).toBe('3 issues ajoutees');
-    expect(result.averageCycleTime).toBe('5.5 jours');
-    expect(result.averageLeadTime).toBe('9.5 jours');
+    expect(result.velocity).toEqual({ completedPoints: 21, plannedPoints: 25 });
+    expect(result.throughput).toBe(8);
+    expect(result.completionRate).toBe(80);
+    expect(result.scopeCreep).toBe(3);
+    expect(result.averageCycleTimeInDays).toBe(5.5);
+    expect(result.averageLeadTimeInDays).toBe(9.5);
     expect(result.trend).toBeUndefined();
   });
 
-  it('presents null cycle time and lead time as not available', () => {
+  it('preserves null cycle time and lead time for cycles with no completed issues', () => {
     const result = presenter.present({
       velocity: { completedPoints: 0, plannedPoints: 5 },
       throughput: 0,
@@ -33,11 +33,11 @@ describe('CycleMetricsPresenter', () => {
       averageLeadTimeInDays: null,
     });
 
-    expect(result.averageCycleTime).toBe('Non disponible');
-    expect(result.averageLeadTime).toBe('Non disponible');
+    expect(result.averageCycleTimeInDays).toBeNull();
+    expect(result.averageLeadTimeInDays).toBeNull();
   });
 
-  it('rounds cycle time and lead time to 1 decimal', () => {
+  it('preserves floating-point precision for cycle and lead times', () => {
     const result = presenter.present({
       velocity: { completedPoints: 10, plannedPoints: 20 },
       throughput: 5,
@@ -47,22 +47,8 @@ describe('CycleMetricsPresenter', () => {
       averageLeadTimeInDays: 7.123456789,
     });
 
-    expect(result.averageCycleTime).toBe('2.6 jours');
-    expect(result.averageLeadTime).toBe('7.1 jours');
-  });
-
-  it('drops trailing zero after rounding', () => {
-    const result = presenter.present({
-      velocity: { completedPoints: 10, plannedPoints: 20 },
-      throughput: 5,
-      completionRate: 50,
-      scopeCreep: 0,
-      averageCycleTimeInDays: 7.0,
-      averageLeadTimeInDays: 3.001,
-    });
-
-    expect(result.averageCycleTime).toBe('7 jours');
-    expect(result.averageLeadTime).toBe('3 jours');
+    expect(result.averageCycleTimeInDays).toBe(2.5556056215524032);
+    expect(result.averageLeadTimeInDays).toBe(7.123456789);
   });
 
   it('presents trend when included', () => {

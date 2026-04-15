@@ -15,13 +15,18 @@ interface TrendDto {
   previousVelocities: number[];
 }
 
+export interface VelocityDto {
+  completedPoints: number;
+  plannedPoints: number;
+}
+
 export interface CycleMetricsDto {
-  velocity: string;
-  throughput: string;
-  completionRate: string;
-  scopeCreep: string;
-  averageCycleTime: string;
-  averageLeadTime: string;
+  velocity: VelocityDto;
+  throughput: number;
+  completionRate: number;
+  scopeCreep: number;
+  averageCycleTimeInDays: number | null;
+  averageLeadTimeInDays: number | null;
   trend?: TrendDto;
 }
 
@@ -31,18 +36,15 @@ export class CycleMetricsPresenter
 {
   present(input: CycleMetricsInput): CycleMetricsDto {
     const dto: CycleMetricsDto = {
-      velocity: `${input.velocity.completedPoints}/${input.velocity.plannedPoints} points`,
-      throughput: `${input.throughput} issues`,
-      completionRate: `${input.completionRate}%`,
-      scopeCreep: `${input.scopeCreep} issues ajoutees`,
-      averageCycleTime:
-        input.averageCycleTimeInDays !== null
-          ? `${parseFloat(input.averageCycleTimeInDays.toFixed(1))} jours`
-          : 'Non disponible',
-      averageLeadTime:
-        input.averageLeadTimeInDays !== null
-          ? `${parseFloat(input.averageLeadTimeInDays.toFixed(1))} jours`
-          : 'Non disponible',
+      velocity: {
+        completedPoints: input.velocity.completedPoints,
+        plannedPoints: input.velocity.plannedPoints,
+      },
+      throughput: input.throughput,
+      completionRate: input.completionRate,
+      scopeCreep: input.scopeCreep,
+      averageCycleTimeInDays: input.averageCycleTimeInDays,
+      averageLeadTimeInDays: input.averageLeadTimeInDays,
     };
 
     if (input.trend) {

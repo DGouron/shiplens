@@ -37,9 +37,9 @@ describe('CycleMetricsController', () => {
 
     const result = await controller.getMetrics('cycle-1', 'team-1');
 
-    expect(result.velocity).toBe('5/5 points');
-    expect(result.throughput).toBe('1 issues');
-    expect(result.completionRate).toBe('100%');
+    expect(result.velocity).toEqual({ completedPoints: 5, plannedPoints: 5 });
+    expect(result.throughput).toBe(1);
+    expect(result.completionRate).toBe(100);
   });
 
   it('includes trend when requested', async () => {
