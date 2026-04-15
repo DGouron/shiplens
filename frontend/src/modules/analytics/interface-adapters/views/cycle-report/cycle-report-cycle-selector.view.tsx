@@ -1,4 +1,4 @@
-import { type CycleOptionViewModel } from '../presenters/cycle-report-shell.view-model.schema.ts';
+import { type CycleOptionViewModel } from '../../presenters/cycle-report-shell.view-model.schema.ts';
 
 interface CycleReportCycleSelectorViewProps {
   label: string;

@@ -1,4 +1,4 @@
-import { type TeamOptionViewModel } from '../presenters/cycle-report-shell.view-model.schema.ts';
+import { type TeamOptionViewModel } from '../../presenters/cycle-report-shell.view-model.schema.ts';
 
 interface CycleReportTeamSelectorViewProps {
   label: string;

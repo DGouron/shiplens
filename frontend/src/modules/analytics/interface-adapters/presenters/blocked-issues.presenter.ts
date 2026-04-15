@@ -23,12 +23,22 @@ export class BlockedIssuesPresenter
       (alert) => alert.teamId === this.selectedTeamId,
     );
     if (filtered.length === 0) {
-      return { items: [], emptyMessage: this.translations.emptyMessage };
+      return {
+        items: [],
+        emptyMessage: this.translations.emptyMessage,
+        showList: false,
+        showEmptyMessage: true,
+      };
     }
     const items: BlockedIssueItemViewModel[] = filtered.map((alert) =>
       this.toItem(alert),
     );
-    return { items, emptyMessage: null };
+    return {
+      items,
+      emptyMessage: null,
+      showList: true,
+      showEmptyMessage: false,
+    };
   }
 
   private toItem(alert: BlockedIssueAlertResponse): BlockedIssueItemViewModel {

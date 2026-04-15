@@ -10,6 +10,8 @@ export const bottleneckAnalysisViewModelSchema = z.object({
   rows: z.array(bottleneckRowViewModelSchema),
   bottleneckHeadline: z.string(),
   emptyMessage: z.nullable(z.string()),
+  showTable: z.boolean(),
+  showEmptyMessage: z.boolean(),
 });
 
 export type BottleneckRowViewModel = z.infer<

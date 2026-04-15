@@ -21,6 +21,7 @@ export const sectionPlaceholderViewModelSchema = z.object({
     'ai-report',
   ]),
   title: z.string(),
+  canRenderContent: z.boolean(),
 });
 
 export const cycleReportShellViewModelSchema = z.object({

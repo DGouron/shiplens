@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
 import { App } from '@/app.tsx';
 import { overrideUsecases, resetUsecases } from '@/main/dependencies.ts';
-import { CycleReportView } from '@/modules/analytics/interface-adapters/views/cycle-report.view.tsx';
+import { CycleReportView } from '@/modules/analytics/interface-adapters/views/cycle-report/cycle-report.view.tsx';
 import { FailingBlockedIssuesGateway } from '@/modules/analytics/testing/bad-path/failing.blocked-issues.in-memory.gateway.ts';
 import { FailingBottleneckAnalysisGateway } from '@/modules/analytics/testing/bad-path/failing.bottleneck-analysis.in-memory.gateway.ts';
 import { StubBlockedIssuesGateway } from '@/modules/analytics/testing/good-path/stub.blocked-issues.in-memory.gateway.ts';

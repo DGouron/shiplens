@@ -12,6 +12,8 @@ export const blockedIssueItemViewModelSchema = z.object({
 export const blockedIssuesViewModelSchema = z.object({
   items: z.array(blockedIssueItemViewModelSchema),
   emptyMessage: z.nullable(z.string()),
+  showList: z.boolean(),
+  showEmptyMessage: z.boolean(),
 });
 
 export type BlockedIssueItemViewModel = z.infer<

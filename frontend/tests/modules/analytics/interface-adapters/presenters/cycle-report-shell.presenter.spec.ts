@@ -135,14 +135,58 @@ describe('CycleReportShellPresenter', () => {
       selectedCycleId: null,
     });
 
-    expect(viewModel.sectionPlaceholders).toEqual([
-      { id: 'metrics', title: 'Metrics' },
-      { id: 'bottlenecks', title: 'Bottlenecks' },
-      { id: 'blocked', title: 'Blocked issues' },
-      { id: 'estimation', title: 'Estimation accuracy' },
-      { id: 'drifting', title: 'Drifting issues' },
-      { id: 'ai-report', title: 'AI report' },
+    expect(
+      viewModel.sectionPlaceholders.map((placeholder) => placeholder.id),
+    ).toEqual([
+      'metrics',
+      'bottlenecks',
+      'blocked',
+      'estimation',
+      'drifting',
+      'ai-report',
     ]);
+    expect(
+      viewModel.sectionPlaceholders.map((placeholder) => placeholder.title),
+    ).toEqual([
+      'Metrics',
+      'Bottlenecks',
+      'Blocked issues',
+      'Estimation accuracy',
+      'Drifting issues',
+      'AI report',
+    ]);
+  });
+
+  it('flags only team-scoped sections as renderable when no cycle is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: { cycles: [] },
+      selectedTeamId: 'team-1',
+      selectedCycleId: null,
+    });
+
+    const renderableIds = viewModel.sectionPlaceholders
+      .filter((placeholder) => placeholder.canRenderContent)
+      .map((placeholder) => placeholder.id);
+    expect(renderableIds).toEqual(['blocked', 'drifting']);
+  });
+
+  it('flags every section as renderable when both team and cycle are selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: { cycles: [] },
+      selectedTeamId: 'team-1',
+      selectedCycleId: 'cycle-1',
+    });
+
+    const notRenderable = viewModel.sectionPlaceholders.filter(
+      (placeholder) => !placeholder.canRenderContent,
+    );
+    expect(notRenderable).toEqual([]);
   });
 
   it('renders empty section placeholders list when no team is selected', () => {

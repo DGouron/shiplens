@@ -5,7 +5,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
 import { App, ShiplensShell } from './app.tsx';
 import { LocaleProvider } from './locale-context.tsx';
 import { queryClient } from './main/query-client.ts';
-import { CycleReportView } from './modules/analytics/interface-adapters/views/cycle-report.view.tsx';
+import { CycleReportView } from './modules/analytics/interface-adapters/views/cycle-report/cycle-report.view.tsx';
 import { DashboardView } from './modules/analytics/interface-adapters/views/dashboard.view.tsx';
 
 const router = createBrowserRouter([

@@ -21,6 +21,7 @@ export class CycleReportShellPresenter
 
   present(input: CycleReportShellInput): CycleReportShellViewModel {
     const hasSelectedTeam = input.selectedTeamId !== null;
+    const hasSelectedCycle = input.selectedCycleId !== null;
 
     return {
       heading: this.translations.pageTitle,
@@ -47,19 +48,45 @@ export class CycleReportShellPresenter
         : null,
       emptyPrompt: hasSelectedTeam ? null : this.translations.emptyPrompt,
       sectionPlaceholders: hasSelectedTeam
-        ? this.buildSectionPlaceholders()
+        ? this.buildSectionPlaceholders(hasSelectedCycle)
         : [],
     };
   }
 
-  private buildSectionPlaceholders(): SectionPlaceholderViewModel[] {
+  private buildSectionPlaceholders(
+    hasSelectedCycle: boolean,
+  ): SectionPlaceholderViewModel[] {
     return [
-      { id: 'metrics', title: this.translations.sectionMetrics },
-      { id: 'bottlenecks', title: this.translations.sectionBottlenecks },
-      { id: 'blocked', title: this.translations.sectionBlocked },
-      { id: 'estimation', title: this.translations.sectionEstimation },
-      { id: 'drifting', title: this.translations.sectionDrifting },
-      { id: 'ai-report', title: this.translations.sectionAiReport },
+      {
+        id: 'metrics',
+        title: this.translations.sectionMetrics,
+        canRenderContent: hasSelectedCycle,
+      },
+      {
+        id: 'bottlenecks',
+        title: this.translations.sectionBottlenecks,
+        canRenderContent: hasSelectedCycle,
+      },
+      {
+        id: 'blocked',
+        title: this.translations.sectionBlocked,
+        canRenderContent: true,
+      },
+      {
+        id: 'estimation',
+        title: this.translations.sectionEstimation,
+        canRenderContent: hasSelectedCycle,
+      },
+      {
+        id: 'drifting',
+        title: this.translations.sectionDrifting,
+        canRenderContent: true,
+      },
+      {
+        id: 'ai-report',
+        title: this.translations.sectionAiReport,
+        canRenderContent: hasSelectedCycle,
+      },
     ];
   }
 }

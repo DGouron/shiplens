@@ -1,5 +1,5 @@
 import { SkeletonCard } from '@/components/skeleton-card.tsx';
-import { type SectionPlaceholderViewModel } from '../presenters/cycle-report-shell.view-model.schema.ts';
+import { type SectionPlaceholderViewModel } from '../../presenters/cycle-report-shell.view-model.schema.ts';
 
 interface CycleReportSectionPlaceholderViewProps {
   placeholder: SectionPlaceholderViewModel;

@@ -18,6 +18,8 @@ export class BottleneckAnalysisPresenter
         rows: [],
         bottleneckHeadline: this.translations.noBottleneckHeadline,
         emptyMessage: this.translations.emptyMessage,
+        showTable: false,
+        showEmptyMessage: true,
       };
     }
     const sorted = [...input.statusDistribution].sort(
@@ -36,6 +38,8 @@ export class BottleneckAnalysisPresenter
         input.bottleneckStatus,
       ),
       emptyMessage: null,
+      showTable: true,
+      showEmptyMessage: false,
     };
   }
 }
