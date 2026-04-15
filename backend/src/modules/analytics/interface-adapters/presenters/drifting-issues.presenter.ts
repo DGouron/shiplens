@@ -12,6 +12,7 @@ export interface DriftingIssueDto {
   elapsedBusinessHours: number;
   expectedMaxHours: number | null;
   issueUrl: string;
+  assigneeName: string | null;
 }
 
 @Injectable()
@@ -29,6 +30,7 @@ export class DriftingIssuesPresenter
       elapsedBusinessHours: issue.elapsedBusinessHours,
       expectedMaxHours: issue.expectedMaxHours,
       issueUrl: `https://linear.app/issue/${issue.issueUuid}`,
+      assigneeName: issue.assigneeName,
     }));
   }
 }

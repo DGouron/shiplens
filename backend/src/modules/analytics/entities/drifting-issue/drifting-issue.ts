@@ -65,6 +65,10 @@ export class DriftingIssue {
     return this.input.statusName;
   }
 
+  get assigneeName(): string | null {
+    return this.input.assigneeName;
+  }
+
   get driftStatus(): DriftStatus {
     return this.status;
   }

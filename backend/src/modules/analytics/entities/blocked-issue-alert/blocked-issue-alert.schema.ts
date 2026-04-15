@@ -12,6 +12,7 @@ export const blockedIssueAlertSchema = z.object({
   detectedAt: z.string().min(1),
   active: z.boolean(),
   resolvedAt: z.string().nullable(),
+  assigneeName: z.string().nullable(),
 });
 
 export type BlockedIssueAlertProps = z.infer<typeof blockedIssueAlertSchema>;

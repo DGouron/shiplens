@@ -14,6 +14,7 @@ const defaultProps: BlockedIssueAlertProps = {
   detectedAt: '2026-01-15T12:00:00Z',
   active: true,
   resolvedAt: null,
+  assigneeName: null,
 };
 
 export class BlockedIssueAlertBuilder extends EntityBuilder<
@@ -76,6 +77,11 @@ export class BlockedIssueAlertBuilder extends EntityBuilder<
 
   withResolvedAt(resolvedAt: string | null): this {
     this.props.resolvedAt = resolvedAt;
+    return this;
+  }
+
+  withAssigneeName(assigneeName: string | null): this {
+    this.props.assigneeName = assigneeName;
     return this;
   }
 

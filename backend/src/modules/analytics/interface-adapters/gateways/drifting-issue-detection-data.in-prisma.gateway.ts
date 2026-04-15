@@ -41,6 +41,7 @@ export class DriftingIssueDetectionDataInPrismaGateway extends DriftingIssueDete
         statusName: issue.statusName,
         statusType: issue.statusType,
         startedAt: firstStartedTransition?.occurredAt ?? null,
+        assigneeName: issue.assigneeName ?? null,
       });
     }
 

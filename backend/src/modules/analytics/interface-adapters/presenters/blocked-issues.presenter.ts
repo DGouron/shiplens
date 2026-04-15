@@ -12,6 +12,7 @@ export interface BlockedIssueAlertDto {
   durationHours: number;
   issueUrl: string;
   detectedAt: string;
+  assigneeName: string | null;
 }
 
 @Injectable()
@@ -29,6 +30,7 @@ export class BlockedIssuesPresenter
       durationHours: alert.durationHours,
       issueUrl: alert.issueUrl,
       detectedAt: alert.detectedAt,
+      assigneeName: alert.assigneeName,
     }));
   }
 }

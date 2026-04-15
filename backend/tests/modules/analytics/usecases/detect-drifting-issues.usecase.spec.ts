@@ -16,6 +16,7 @@ function makeIssue(
     statusName: 'In Progress',
     statusType: 'started',
     startedAt: '2026-04-06T07:00:00Z',
+    assigneeName: null,
     ...overrides,
   };
 }

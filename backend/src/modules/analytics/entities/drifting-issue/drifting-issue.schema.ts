@@ -9,6 +9,7 @@ export const driftingIssueInputSchema = z.object({
   statusName: z.string().min(1),
   statusType: z.string().min(1),
   startedAt: z.string().min(1).nullable(),
+  assigneeName: z.string().nullable(),
 });
 
 export type DriftingIssueInput = z.infer<typeof driftingIssueInputSchema>;

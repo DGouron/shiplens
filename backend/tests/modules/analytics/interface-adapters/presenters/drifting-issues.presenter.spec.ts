@@ -16,6 +16,7 @@ function makeDriftingIssue(
     statusName: 'In Review',
     statusType: 'started',
     startedAt: '2026-04-06T07:00:00Z',
+    assigneeName: null,
     ...overrides,
   };
   const now = '2026-04-06T15:00:00Z'; // 8h business hours later
@@ -53,6 +54,7 @@ describe('DriftingIssuesPresenter', () => {
       statusName: 'In Progress',
       statusType: 'started',
       startedAt: '2026-04-06T07:00:00Z',
+      assigneeName: null,
     };
     const issue = DriftingIssue.analyze(input, '2026-04-06T07:00:00Z', PARIS);
     if (!issue) throw new Error('Expected a DriftingIssue');
@@ -66,5 +68,21 @@ describe('DriftingIssuesPresenter', () => {
 
   it('returns empty array for no issues', () => {
     expect(presenter.present([])).toEqual([]);
+  });
+
+  it('presents the assignee name when the drifting issue carries one', () => {
+    const issue = makeDriftingIssue({ assigneeName: 'Alice Martin' });
+
+    const [dto] = presenter.present([issue]);
+
+    expect(dto.assigneeName).toBe('Alice Martin');
+  });
+
+  it('presents a null assignee name when the drifting issue has no assignee', () => {
+    const issue = makeDriftingIssue();
+
+    const [dto] = presenter.present([issue]);
+
+    expect(dto.assigneeName).toBeNull();
   });
 });

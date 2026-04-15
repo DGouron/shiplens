@@ -13,6 +13,7 @@ function makeInput(overrides: Record<string, unknown> = {}) {
     statusName: 'In Progress',
     statusType: 'started',
     startedAt: '2026-04-06T07:00:00Z', // Monday 9h Paris
+    assigneeName: null,
     ...overrides,
   };
 }

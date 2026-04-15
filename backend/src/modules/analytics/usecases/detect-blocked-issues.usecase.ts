@@ -71,6 +71,7 @@ export class DetectBlockedIssuesUsecase implements Usecase<void, void> {
           detectedAt: existingAlert.detectedAt,
           active: true,
           resolvedAt: null,
+          assigneeName: existingAlert.assigneeName,
         });
         await this.blockedIssueAlertGateway.save(updatedAlert);
       } else {
@@ -86,6 +87,7 @@ export class DetectBlockedIssuesUsecase implements Usecase<void, void> {
           detectedAt: now.toISOString(),
           active: true,
           resolvedAt: null,
+          assigneeName: null,
         });
         await this.blockedIssueAlertGateway.save(newAlert);
         createdCount++;

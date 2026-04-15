@@ -13,6 +13,7 @@ export class BlockedIssueAlertInPrismaGateway extends BlockedIssueAlertGateway {
     const records = await this.prisma.blockedIssueAlert.findMany({
       where: { active: true },
     });
+    const assigneeByIssueKey = await this.loadAssigneeNames(records);
 
     return records.map((record) =>
       BlockedIssueAlert.create({
@@ -27,6 +28,10 @@ export class BlockedIssueAlertInPrismaGateway extends BlockedIssueAlertGateway {
         detectedAt: record.detectedAt,
         active: record.active,
         resolvedAt: record.resolvedAt,
+        assigneeName:
+          assigneeByIssueKey.get(
+            `${record.issueExternalId}:${record.teamId}`,
+          ) ?? null,
       }),
     );
   }
@@ -35,6 +40,7 @@ export class BlockedIssueAlertInPrismaGateway extends BlockedIssueAlertGateway {
     const records = await this.prisma.blockedIssueAlert.findMany({
       orderBy: { detectedAt: 'desc' },
     });
+    const assigneeByIssueKey = await this.loadAssigneeNames(records);
 
     return records.map((record) =>
       BlockedIssueAlert.create({
@@ -49,8 +55,36 @@ export class BlockedIssueAlertInPrismaGateway extends BlockedIssueAlertGateway {
         detectedAt: record.detectedAt,
         active: record.active,
         resolvedAt: record.resolvedAt,
+        assigneeName:
+          assigneeByIssueKey.get(
+            `${record.issueExternalId}:${record.teamId}`,
+          ) ?? null,
       }),
     );
+  }
+
+  private async loadAssigneeNames(
+    records: Array<{ issueExternalId: string; teamId: string }>,
+  ): Promise<Map<string, string>> {
+    if (records.length === 0) return new Map();
+
+    const issueKeys = records.map((record) => ({
+      externalId: record.issueExternalId,
+      teamId: record.teamId,
+    }));
+
+    const issues = await this.prisma.issue.findMany({
+      where: { OR: issueKeys },
+      select: { externalId: true, teamId: true, assigneeName: true },
+    });
+
+    const map = new Map<string, string>();
+    for (const issue of issues) {
+      if (issue.assigneeName) {
+        map.set(`${issue.externalId}:${issue.teamId}`, issue.assigneeName);
+      }
+    }
+    return map;
   }
 
   async save(alert: BlockedIssueAlert): Promise<void> {

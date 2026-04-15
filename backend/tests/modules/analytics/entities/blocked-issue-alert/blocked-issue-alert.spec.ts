@@ -15,6 +15,7 @@ describe('BlockedIssueAlert', () => {
       detectedAt: '2026-01-15T12:00:00Z',
       active: true,
       resolvedAt: null,
+      assigneeName: null,
     });
 
     expect(alert.id).toBe('alert-1');
@@ -39,6 +40,7 @@ describe('BlockedIssueAlert', () => {
       detectedAt: '2026-01-15T12:00:00Z',
       active: true,
       resolvedAt: null,
+      assigneeName: null,
     });
 
     expect(alert.severity).toBe('critical');
@@ -58,6 +60,7 @@ describe('BlockedIssueAlert', () => {
       detectedAt: '2026-01-15T12:00:00Z',
       active: true,
       resolvedAt: null,
+      assigneeName: null,
     });
 
     expect(alert.issueUrl).toBe('https://linear.app/issue/abc-123-def');
@@ -76,6 +79,7 @@ describe('BlockedIssueAlert', () => {
       detectedAt: '2026-01-15T12:00:00Z',
       active: true,
       resolvedAt: null,
+      assigneeName: null,
     });
 
     const resolved = alert.resolve('2026-01-16T12:00:00Z');
