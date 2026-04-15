@@ -16,12 +16,22 @@ import {
   useCycleReportShell,
 } from './use-cycle-report-shell.ts';
 import { useCycleReportUrlState } from './use-cycle-report-url-state.ts';
+import {
+  type DriftingIssuesState,
+  useDriftingIssues,
+} from './use-drifting-issues.ts';
+import {
+  type EstimationAccuracyState,
+  useEstimationAccuracy,
+} from './use-estimation-accuracy.ts';
 
 export interface UseCycleReportPageResult {
   shellState: CycleReportShellState;
   metricsState: CycleMetricsState;
   bottleneckState: BottleneckAnalysisState;
   blockedIssuesState: BlockedIssuesState;
+  estimationState: EstimationAccuracyState;
+  driftingState: DriftingIssuesState;
   selectTeam: (teamId: string) => void;
   selectCycle: (cycleId: string) => void;
 }
@@ -38,6 +48,13 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     cycleId: selectedCycleId,
   });
   const { state: blockedIssuesState } = useBlockedIssues({
+    teamId: selectedTeamId,
+  });
+  const { state: estimationState } = useEstimationAccuracy({
+    teamId: selectedTeamId,
+    cycleId: selectedCycleId,
+  });
+  const { state: driftingState } = useDriftingIssues({
     teamId: selectedTeamId,
   });
 
@@ -59,6 +76,8 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     metricsState,
     bottleneckState,
     blockedIssuesState,
+    estimationState,
+    driftingState,
     selectTeam,
     selectCycle,
   };

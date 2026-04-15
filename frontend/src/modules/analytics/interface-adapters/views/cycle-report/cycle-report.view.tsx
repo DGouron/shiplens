@@ -3,6 +3,8 @@ import { useCycleReportPage } from '../../hooks/use-cycle-report-page.ts';
 import { blockedIssuesTranslations } from '../../presenters/blocked-issues.translations.ts';
 import { bottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';
 import { cycleMetricsTranslations } from '../../presenters/cycle-metrics.translations.ts';
+import { driftingIssuesTranslations } from '../../presenters/drifting-issues.translations.ts';
+import { estimationAccuracyTranslations } from '../../presenters/estimation-accuracy.translations.ts';
 import { CycleReportReadyView } from './cycle-report-ready.view.tsx';
 
 export function CycleReportView() {
@@ -12,12 +14,16 @@ export function CycleReportView() {
     metricsState,
     bottleneckState,
     blockedIssuesState,
+    estimationState,
+    driftingState,
     selectTeam,
     selectCycle,
   } = useCycleReportPage();
   const metricsTranslationBundle = cycleMetricsTranslations[locale];
   const bottleneckTranslationBundle = bottleneckAnalysisTranslations[locale];
   const blockedIssuesTranslationBundle = blockedIssuesTranslations[locale];
+  const estimationTranslationBundle = estimationAccuracyTranslations[locale];
+  const driftingTranslationBundle = driftingIssuesTranslations[locale];
 
   if (shellState.status === 'loading') {
     return (
@@ -41,9 +47,13 @@ export function CycleReportView() {
       metricsState={metricsState}
       bottleneckState={bottleneckState}
       blockedIssuesState={blockedIssuesState}
+      estimationState={estimationState}
+      driftingState={driftingState}
       metricsTranslations={metricsTranslationBundle}
       bottleneckTranslations={bottleneckTranslationBundle}
       blockedIssuesTranslations={blockedIssuesTranslationBundle}
+      estimationTranslations={estimationTranslationBundle}
+      driftingTranslations={driftingTranslationBundle}
       onTeamChange={selectTeam}
       onCycleChange={selectCycle}
     />
