@@ -18,7 +18,7 @@ interface GenerateMemberDigestParams {
 
 interface MemberDigestResult {
   memberName: string;
-  digest: string;
+  digest: string | null;
 }
 
 @Injectable()
@@ -42,7 +42,7 @@ export class GenerateMemberDigestUsecase
     if (context.issues.length === 0) {
       return {
         memberName: params.memberName,
-        digest: 'Aucune issue en cours pour ce membre.',
+        digest: null,
       };
     }
 
