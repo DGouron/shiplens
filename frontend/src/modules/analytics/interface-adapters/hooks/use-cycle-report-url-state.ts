@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useSearchParams } from 'react-router';
+import { CYCLE_REPORT_URL_PARAM } from '../url-contracts/cycle-report.url-contract.ts';
 
 export interface UseCycleReportUrlStateResult {
   selectedTeamId: string | null;
@@ -11,15 +12,15 @@ export interface UseCycleReportUrlStateResult {
 export function useCycleReportUrlState(): UseCycleReportUrlStateResult {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const selectedTeamId = searchParams.get('teamId');
-  const selectedCycleId = searchParams.get('cycleId');
+  const selectedTeamId = searchParams.get(CYCLE_REPORT_URL_PARAM.teamId);
+  const selectedCycleId = searchParams.get(CYCLE_REPORT_URL_PARAM.cycleId);
 
   const selectTeam = useCallback(
     (teamId: string) => {
       setSearchParams((current) => {
         const next = new URLSearchParams(current);
-        next.set('teamId', teamId);
-        next.delete('cycleId');
+        next.set(CYCLE_REPORT_URL_PARAM.teamId, teamId);
+        next.delete(CYCLE_REPORT_URL_PARAM.cycleId);
         return next;
       });
     },
@@ -30,7 +31,7 @@ export function useCycleReportUrlState(): UseCycleReportUrlStateResult {
     (cycleId: string) => {
       setSearchParams((current) => {
         const next = new URLSearchParams(current);
-        next.set('cycleId', cycleId);
+        next.set(CYCLE_REPORT_URL_PARAM.cycleId, cycleId);
         return next;
       });
     },
