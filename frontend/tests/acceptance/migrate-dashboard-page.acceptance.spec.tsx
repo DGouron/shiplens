@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { createMemoryRouter, Navigate, RouterProvider } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from '@/app.tsx';
 import { LocaleProvider } from '@/locale-context.tsx';
@@ -9,6 +9,13 @@ import { FailingWorkspaceDashboardGateway } from '@/modules/analytics/testing/ba
 import { StubEmptyWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.empty-workspace-dashboard.in-memory.gateway.ts';
 import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.in-memory.gateway.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
+import { FailingSyncGateway } from '@/modules/synchronization/testing/bad-path/failing.sync.in-memory.gateway.ts';
+import { StubSyncGateway } from '@/modules/synchronization/testing/good-path/stub.sync.in-memory.gateway.ts';
+import { DiscoverSyncTeamsUsecase } from '@/modules/synchronization/usecases/discover-sync-teams.usecase.ts';
+import { GetSyncSelectionUsecase } from '@/modules/synchronization/usecases/get-sync-selection.usecase.ts';
+import { SelectAllSyncTargetsUsecase } from '@/modules/synchronization/usecases/select-all-sync-targets.usecase.ts';
+import { SyncReferenceDataUsecase } from '@/modules/synchronization/usecases/sync-reference-data.usecase.ts';
+import { SyncTeamIssuesUsecase } from '@/modules/synchronization/usecases/sync-team-issues.usecase.ts';
 import { SynchronizationResponseBuilder } from '../builders/synchronization-response.builder.ts';
 import { TeamDashboardResponseBuilder } from '../builders/team-dashboard-response.builder.ts';
 import { WorkspaceDashboardResponseBuilder } from '../builders/workspace-dashboard-response.builder.ts';
@@ -20,7 +27,10 @@ function renderAtPath(initialPath: string) {
       {
         path: '/',
         element: <App />,
-        children: [{ path: 'dashboard', element: <DashboardView /> }],
+        children: [
+          { index: true, element: <Navigate to="/dashboard" replace /> },
+          { path: 'dashboard', element: <DashboardView /> },
+        ],
       },
     ],
     { initialEntries: [initialPath] },
@@ -35,7 +45,10 @@ function renderAtPathWithLocaleProvider(initialPath: string) {
       {
         path: '/',
         element: <App />,
-        children: [{ path: 'dashboard', element: <DashboardView /> }],
+        children: [
+          { index: true, element: <Navigate to="/dashboard" replace /> },
+          { path: 'dashboard', element: <DashboardView /> },
+        ],
       },
     ],
     { initialEntries: [initialPath] },
@@ -271,7 +284,114 @@ describe('Migrate dashboard page (acceptance)', () => {
     });
   });
 
-  it.skip('auto sync succeeds: reloads the dashboard once sync completes', () => {});
-  it.skip('auto sync exhausts retries: shows error with retry button enabled', () => {});
-  it.skip('manual resync triggers the sync flow and reloads', () => {});
+  it('auto sync succeeds: reloads the dashboard once sync completes', async () => {
+    const dashboardGateway = new StubWorkspaceDashboardGateway();
+    const successResponse = new WorkspaceDashboardResponseBuilder()
+      .withTeams([
+        new TeamDashboardResponseBuilder().withTeamName('Synced Team').build(),
+      ])
+      .build();
+    let dashboardCallCount = 0;
+    dashboardGateway.fetchDashboard = async () => {
+      dashboardCallCount += 1;
+      return dashboardCallCount === 1
+        ? { status: 'no_teams', message: 'No teams yet' }
+        : successResponse;
+    };
+    const syncStub = new StubSyncGateway();
+    overrideUsecases({
+      getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(dashboardGateway),
+      discoverSyncTeams: new DiscoverSyncTeamsUsecase(syncStub),
+      selectAllSyncTargets: new SelectAllSyncTargetsUsecase(syncStub),
+      syncReferenceData: new SyncReferenceDataUsecase(syncStub),
+      syncTeamIssues: new SyncTeamIssuesUsecase(syncStub),
+      getSyncSelection: new GetSyncSelectionUsecase(syncStub),
+    });
+
+    renderAtPath('/dashboard');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('Synced Team')).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
+    expect(syncStub.referenceDataSyncCount).toBeGreaterThan(0);
+  });
+
+  it('auto sync exhausts retries: shows error with retry button enabled', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    overrideUsecases({
+      getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
+        new StubEmptyWorkspaceDashboardGateway({
+          status: 'no_teams',
+          message: 'No teams yet',
+        }),
+      ),
+      discoverSyncTeams: new DiscoverSyncTeamsUsecase(new FailingSyncGateway()),
+      selectAllSyncTargets: new SelectAllSyncTargetsUsecase(
+        new FailingSyncGateway(),
+      ),
+      syncReferenceData: new SyncReferenceDataUsecase(new FailingSyncGateway()),
+      syncTeamIssues: new SyncTeamIssuesUsecase(new FailingSyncGateway()),
+      getSyncSelection: new GetSyncSelectionUsecase(new FailingSyncGateway()),
+    });
+
+    renderAtPath('/dashboard');
+
+    await waitFor(() => {
+      expect(screen.getByText('No teams yet')).toBeInTheDocument();
+    });
+    await vi.advanceTimersByTimeAsync(10_000);
+    vi.useRealTimers();
+
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole('button', { name: 'Retry' }),
+        ).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
+  });
+
+  it('manual resync triggers the sync flow and reloads', async () => {
+    const dashboardGateway = new StubWorkspaceDashboardGateway();
+    const syncStub = new StubSyncGateway();
+    overrideUsecases({
+      getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(dashboardGateway),
+      discoverSyncTeams: new DiscoverSyncTeamsUsecase(syncStub),
+      selectAllSyncTargets: new SelectAllSyncTargetsUsecase(syncStub),
+      syncReferenceData: new SyncReferenceDataUsecase(syncStub),
+      syncTeamIssues: new SyncTeamIssuesUsecase(syncStub),
+      getSyncSelection: new GetSyncSelectionUsecase(syncStub),
+    });
+
+    renderAtPath('/dashboard');
+
+    const resyncButton = await screen.findByRole('button', {
+      name: 'Resynchronize',
+    });
+    fireEvent.click(resyncButton);
+
+    await waitFor(() => {
+      expect(syncStub.referenceDataSyncCount).toBeGreaterThan(0);
+    });
+    expect(syncStub.teamIssuesSyncedFor.length).toBeGreaterThan(0);
+  });
+
+  it('redirect from / to /dashboard renders the dashboard', async () => {
+    const dashboardGateway = new StubWorkspaceDashboardGateway();
+    overrideUsecases({
+      getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(dashboardGateway),
+    });
+
+    renderAtPath('/');
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Dashboard' }),
+      ).toBeInTheDocument();
+    });
+  });
 });

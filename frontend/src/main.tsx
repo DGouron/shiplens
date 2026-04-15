@@ -1,7 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
 import { App, ShiplensShell } from './app.tsx';
 import { LocaleProvider } from './locale-context.tsx';
 import { queryClient } from './main/query-client.ts';
@@ -12,7 +12,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <ShiplensShell /> },
+      { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardView /> },
       { path: '*', element: <ShiplensShell /> },
     ],
