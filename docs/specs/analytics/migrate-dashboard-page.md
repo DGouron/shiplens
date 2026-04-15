@@ -1,8 +1,23 @@
 # Migrate dashboard page
 
-## Status: planned (slice 3/6)
+## Status: implemented
 
 Slice 3 of the frontend migration. Depends on Slice 1 (setup-react-spa) and Slice 2 (extract-design-system).
+
+## Implementation
+
+- **Bounded contexts**: `frontend/src/modules/analytics/` (dashboard view + presentation) + `frontend/src/modules/synchronization/` (sync gateway + orchestration)
+- **Gateway**: `WorkspaceDashboardGateway` (port) + `WorkspaceDashboardInHttpGateway` (HTTP impl) reading `GET /dashboard/data`. Discriminated union response: data variant or empty variant (`{ status: 'not_connected' | 'no_teams', message }`).
+- **Sync gateway**: `SyncGateway` (port) + `SyncInHttpGateway` (HTTP impl) wrapping `GET /sync/teams`, `POST /sync/selection`, `GET /sync/selection`, `POST /sync/reference-data`, `POST /sync/issue-data`.
+- **Use cases**: `GetWorkspaceDashboardUsecase` + `DiscoverSyncTeamsUsecase` (throws `NoTeamsAvailableInWorkspace` `ApplicationRuleViolation` if empty) + `SelectAllSyncTargetsUsecase` + `SyncReferenceDataUsecase` + `SyncTeamIssuesUsecase` + `GetSyncSelectionUsecase`.
+- **Presenter**: `DashboardPresenter` transforms the response into a `DashboardViewModel` (Zod-validated). Computes health tier (`healthy` >=60%, `warning` >=30%, `danger` <30% or any blocked alert), ring stroke color (CSS vars), ring dash offset, locale-formatted last-sync label.
+- **Hooks**: `useDashboard` (TanStack Query `useQuery`, returns `AsyncState<DashboardViewModel, { status: 'empty', empty: { kind, message } }>`), `useSyncOrchestrator` (state machine `idle | running{step,attempt} | succeeded | failed`, exponential backoff 1s/2s/4s up to 3 attempts on auto-sync, no retry on manual resync), `useDashboardPage` (composition hook auto-triggering sync on `no_teams`).
+- **View** (humble, Humble Object pattern): `DashboardView`, `TeamCardView`, `TeamCardIdleView`, `CompletionRingView`, `SyncStatusBarView`, `DashboardEmptyStateView`, `DashboardErrorStateView`, `DashboardLoadingStateView`.
+- **Translations**: duplicated in `frontend/src/modules/analytics/interface-adapters/presenters/dashboard.translations.ts` (en/fr).
+- **Route**: `/dashboard` mounted in `frontend/src/main.tsx`. `/` redirects to `/dashboard` via `<Navigate>`.
+- **DI registry**: `frontend/src/main/dependencies.ts` exposes `usecases`, `overrideUsecases()`, `resetUsecases()`.
+- **Test doubles**: `stub.workspace-dashboard.in-memory.gateway.ts`, `stub.empty-workspace-dashboard.in-memory.gateway.ts`, `failing.workspace-dashboard.in-memory.gateway.ts`, `stub.sync.in-memory.gateway.ts`, `failing.sync.in-memory.gateway.ts`, `failing-once.sync.in-memory.gateway.ts`.
+- **Naming convention**: frontend uses `Response`/`*.response.ts` instead of `Dto` (frontend consumes responses, does not produce DTOs).
 
 ## Context
 

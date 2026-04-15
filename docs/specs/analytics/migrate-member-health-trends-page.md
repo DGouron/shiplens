@@ -1,6 +1,6 @@
 # Migrate member health trends page
 
-## Status: planned (slice 5/6)
+## Status: ready (slice 5/6)
 
 Slice 5 of the frontend migration. Depends on Slice 1 (setup-react-spa) and Slice 2 (extract-design-system).
 
