@@ -1,6 +1,6 @@
 ---
 name: event-storming
-description: "Runs a Big Picture Event Storming session on a bounded context or the entire backend. Discovers domain events, commands, entities, context boundaries. Produces a structured document in docs/ddd/."
+description: "Runs a Big Picture Event Storming session on a bounded context or the entire codebase (backend + frontend). Discovers domain events, commands, entities, context boundaries, frontend projections (hooks, presenters, views). Produces a structured document in docs/ddd/."
 triggers:
   - "event.?storming"
   - "domain.*events"
@@ -10,7 +10,7 @@ triggers:
 
 # Event Storming
 
-Runs a Big Picture Event Storming session on a bounded context or the entire backend.
+Runs a Big Picture Event Storming session on a bounded context or the entire codebase (backend + frontend). A Bounded Context spans both workspaces — the event-storming deliverable covers the backend domain (events, commands, entities) AND the frontend projections (hooks, presenters, views) that consume them.
 
 ## Activation
 

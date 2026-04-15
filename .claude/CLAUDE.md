@@ -71,7 +71,7 @@ See `.claude/rules/coding-standards.md` for detailed rules: naming, imports, Typ
 - **Framework**: NestJS 11
 - **Database**: SQLite via Prisma ORM
 - **Modules**: Organized as bounded contexts (`backend/src/modules/<context-name>/`)
-- **Workflow**: Use the `/architecture` skill to create components
+- **Workflow**: Use the `/architecture-backend` skill for backend components. Use `/architecture-frontend` for frontend (MVVM + Humble Object) components.
 
 ### Principles
 
@@ -169,9 +169,11 @@ export class SomethingModule {}
 | Skill | When to use |
 |-------|-------------|
 | `/product-manager` | Define a feature, write INVEST specs + custom DSL |
-| `/implement-feature` | Implement a complete feature (orchestrates planner + implementer) |
+| `/implement-feature` | Implement a complete backend feature (orchestrates planner + implementer) |
+| `/implement-feature-frontend` | Implement a complete frontend feature (orchestrates frontend-planner + frontend-implementer, Humble Object) |
 | `/tdd` | Write or modify code (RED-GREEN-REFACTOR) |
-| `/architecture` | Create module, entity, use case, presenter, gateway... |
+| `/architecture-backend` | Create backend module, entity, use case, presenter, gateway... |
+| `/architecture-frontend` | Create frontend module, entity, use case, presenter, gateway, hook, view (Humble Object) |
 | `/ddd` | Slice the domain, define ubiquitous language |
 | `/event-storming` | Big Picture Event Storming session on a bounded context |
 | `/business-rules-extractor` | Extract business rules from a module |
@@ -182,6 +184,7 @@ export class SomethingModule {}
 | `/skill-creator` | Create or modify a skill |
 | `/auto-review` | Self-review before PR (5 sequential audits) |
 | `/tribal-knowledge` | Discover implicit team conventions (tribal knowledge) in a codebase |
+| `/naming-audit` | Audit naming quality (files, functions, types) without reading the code — blind test of Screaming Arch + Clean Code + Ubiquitous Language |
 | `/wiki` | Sync DDD docs to GitHub wiki |
 | `/security` | Secret detection scan before commit |
 | `/status` | Full project health diagnostic (read-only) |

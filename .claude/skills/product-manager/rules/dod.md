@@ -10,8 +10,7 @@ A feature is "done" when it satisfies ALL of the following criteria:
 - [ ] **Zero architecture violations**: dependency rule respected
 - [ ] **Zero `any`, `as`, `!`** in the code
 - [ ] **Full names**: no abbreviations
-- [ ] **Error messages in French** for the end user
-- [ ] **Tests in English**
+- [ ] **English everywhere** (code, tests, errors, UI, comments — project rule)
 - [ ] **Prisma migration** if schema was modified (backup done first)
 - [ ] **Code review**: self-review or pair-review completed
 

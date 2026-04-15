@@ -1,6 +1,6 @@
 ---
 name: implement-feature
-description: Autonomous feature implementation via spec-driven development. Orchestrates a planner and a TDD implementer with preloaded skills. Consumes specs produced by /product-manager.
+description: Autonomous backend feature implementation via spec-driven development. Orchestrates a planner and a TDD implementer with architecture-backend preloaded. Consumes specs produced by /product-manager. For frontend features, use /implement-feature-frontend instead.
 triggers:
   - "implémente.*feature"
   - "implement.*feature"
@@ -21,8 +21,8 @@ You do NOT code yourself. You coordinate, present, and validate with the user.
 
 | Agent | Role | Preloaded skills |
 |-------|------|-----------------|
-| `feature-planner` | Analyzes the spec, produces a structured plan | `architecture` |
-| `feature-implementer` | Implements in TDD, self-review, fix loop | `tdd`, `architecture` |
+| `feature-planner` | Analyzes the spec, produces a structured plan | `architecture-backend` |
+| `feature-implementer` | Implements in TDD, self-review, fix loop | `tdd`, `architecture-backend` |
 
 ---
 
@@ -48,7 +48,7 @@ If it is an inline description, remind the user that `/product-manager` can prod
 
 Delegate to the **feature-planner** agent:
 - Pass the complete spec
-- The agent has `architecture` preloaded — it already knows the patterns
+- The agent has `architecture-backend` preloaded — it already knows the patterns
 - It reads a reference module and the shared foundations
 - It returns a structured plan
 
@@ -92,7 +92,7 @@ Validate this plan?
 
 Delegate to the **feature-implementer** agent:
 - Pass the complete spec + the validated plan
-- The agent has `tdd` and `architecture` preloaded
+- The agent has `tdd` and `architecture-backend` preloaded
 - It implements in TDD inside-out (RED-GREEN-REFACTOR)
 - It self-reviews and fixes autonomously (self-review loop)
 - It returns a report with created files, passing tests, and corrected violations

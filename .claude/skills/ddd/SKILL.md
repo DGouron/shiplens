@@ -1,6 +1,6 @@
 ---
 name: ddd
-description: Strategic DDD guide for this project. Use to slice the domain into bounded contexts, define ubiquitous language, create a new business module, analyze boundaries between contexts. Tactical patterns follow Clean Architecture (see architecture skill).
+description: Strategic DDD guide for this project (fullstack — backend + frontend share the same bounded contexts). Use to slice the domain into bounded contexts, define ubiquitous language, create a new business module, analyze boundaries between contexts. Tactical patterns follow Clean Architecture (see architecture-backend and architecture-frontend skills).
 ---
 
 # Domain-Driven Design - Strategic Guide
@@ -32,9 +32,13 @@ DDD is used only at the **strategic** level (domain slicing, language). Tactical
 
 > "A Bounded Context delimits the applicability of a particular model." — Eric Evans
 
-One Bounded Context = one NestJS module in `backend/src/modules/<context-name>/`
+**One Bounded Context = one module on each side**:
+- Backend: `backend/src/modules/<bc-name>/` — NestJS module with its own entities, usecases, controllers, gateways
+- Frontend: `frontend/src/modules/<bc-name>/` — React module with its own entities (rare), usecases, presenters, hooks, views, gateways (HTTP)
 
-Each BC is a **self-contained module** with its own providers, controllers, and gateways.
+Both sides share the **same BC name** and the **same ubiquitous language**. A Shipping BC on the backend exposes `CreateShipmentUsecase` and `ShipmentGateway`; on the frontend, it exposes `useShipmentCreator`, `ShipmentCreationPresenter`, `ShipmentInHttpGateway`. Same vocabulary, different layers.
+
+Each side is a **self-contained module**: backend has its providers/controllers/prisma gateway; frontend has its presenters/hooks/http gateway registered in the singleton registry.
 
 ### Identifying a Bounded Context
 
@@ -48,15 +52,17 @@ Each BC is a **self-contained module** with its own providers, controllers, and 
 
 ## Communication Between Bounded Contexts
 
-BCs communicate **via NestJS dependency injection** and module exports.
+**Backend**: BCs communicate via NestJS dependency injection and module exports.
+**Frontend**: BCs communicate via shared singleton registry (`frontend/src/main/dependencies.ts`) and shared domain types.
 
-### Communication Rules
+### Communication Rules (both sides)
 
 | Allowed | Forbidden |
 |---------|-----------|
-| Import an exported NestJS module | Directly import an internal file from another BC |
+| Import an exported NestJS module (back) or an exposed usecase from the registry (front) | Directly import an internal file from another BC (either side) |
 | Pass data (DTOs, primitives) | Share mutable entities |
-| Inject an exported use case | Access another BC's internal gateway |
+| Inject (back) or consume from registry (front) an exported usecase | Access another BC's internal gateway |
+| Use types from `shared/domain/` (back) or `shared/domain/` (front, mirrored) | Re-define the same concept in two BCs with different shapes |
 
 ---
 
@@ -89,11 +95,18 @@ Questions to validate:
 
 ### Step 2: Define the Language (glossary)
 
-### Step 3: Define the Public API (NestJS module exports)
+### Step 3: Define the Public API
+
+- Backend: NestJS module exports (usecases, gateway ports if reused)
+- Frontend: entries added to `frontend/src/main/dependencies.ts` (usecases, gateways)
 
 ### Step 4: Create the Structure
 
-After validation -> **Switch to the Architecture skill** for tactical details.
+After validation, create BOTH modules:
+- Backend first (domain owner): `backend/src/modules/<bc>/` — **Switch to `/architecture-backend`** for tactical details
+- Frontend second (consumer/presenter): `frontend/src/modules/<bc>/` — **Switch to `/architecture-frontend`** for tactical details
+
+If the BC has no frontend component (e.g., an internal sync job with no UI), only the backend module exists.
 
 ---
 

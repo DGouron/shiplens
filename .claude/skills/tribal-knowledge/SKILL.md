@@ -181,8 +181,8 @@ Prochaines etapes possibles :
 - NEVER invent conventions — every finding must come from the agents
 - NEVER summarize or rephrase agent results in sections 1-6 — paste as-is
 - The Executive Summary is the ONLY section you write yourself
-- If an agent returns empty results for an axis, note "Aucune convention implicite detectee" for that section
-- Output language: French
+- If an agent returns empty results for an axis, note "No implicit convention detected" for that section
+- Output language: English
 
 ## Error Handling
 

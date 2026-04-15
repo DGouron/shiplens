@@ -2,7 +2,9 @@
 set -euo pipefail
 
 # Verifies that each scenario in a spec DSL file has a corresponding test.
-# Usage: ./scripts/verify-spec-coverage.sh docs/specs/my-feature.md
+# Searches both backend/tests/acceptance/ and frontend/tests/acceptance/.
+# A scenario is considered covered if it matches in either workspace.
+# Usage: ./scripts/verify-spec-coverage.sh docs/specs/<bc>/my-feature.md
 # Exit 0 = all covered, Exit 1 = missing coverage.
 
 SPEC_FILE="${1:-}"
@@ -35,7 +37,8 @@ if [[ -z "$SCENARIOS" ]]; then
   exit 1
 fi
 
-ACCEPTANCE_TEST="$PROJECT_DIR/tests/acceptance/${FEATURE_NAME}.acceptance.spec.ts"
+BACKEND_ACCEPTANCE="$PROJECT_DIR/backend/tests/acceptance/${FEATURE_NAME}.acceptance.spec.ts"
+FRONTEND_ACCEPTANCE="$PROJECT_DIR/frontend/tests/acceptance/${FEATURE_NAME}.acceptance.spec.ts"
 MISSING=0
 COVERED=0
 TOTAL=0
@@ -43,10 +46,16 @@ TOTAL=0
 echo "Spec coverage: $FEATURE_NAME"
 echo "---"
 
+scenario_is_covered() {
+  local scenario="$1"
+  { [[ -f "$BACKEND_ACCEPTANCE" ]] && grep -qi "$scenario" "$BACKEND_ACCEPTANCE"; } \
+    || { [[ -f "$FRONTEND_ACCEPTANCE" ]] && grep -qi "$scenario" "$FRONTEND_ACCEPTANCE"; }
+}
+
 while IFS= read -r scenario; do
   TOTAL=$((TOTAL + 1))
 
-  if [[ -f "$ACCEPTANCE_TEST" ]] && grep -qi "$scenario" "$ACCEPTANCE_TEST"; then
+  if scenario_is_covered "$scenario"; then
     echo "  OK  $scenario"
     COVERED=$((COVERED + 1))
   else

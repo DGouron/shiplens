@@ -166,4 +166,4 @@ Only when the user explicitly asks to review drafts (e.g. "check the drafts", "r
 After spec validation:
 - `/implement-feature docs/specs/<bc>/<feature>.md` to start implementation
 - `/tdd` to implement manually
-- `/architecture` if a new component is needed
+- `/architecture-backend` or `/architecture-frontend` if a new component is needed

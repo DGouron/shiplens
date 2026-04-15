@@ -28,14 +28,14 @@ if [[ -z "$STAGED_FILES" ]]; then
 fi
 
 has_module_code() {
-  echo "$STAGED_FILES" | grep -q "^src/modules/" 2>/dev/null
+  echo "$STAGED_FILES" | grep -qE "^(backend|frontend)/src/modules/" 2>/dev/null
 }
 
 if ! has_module_code; then
   exit 0
 fi
 
-MODIFIED_MODULES=$(echo "$STAGED_FILES" | grep "^src/modules/" | cut -d'/' -f3 | sort -u)
+MODIFIED_MODULES=$(echo "$STAGED_FILES" | grep -E "^(backend|frontend)/src/modules/" | cut -d'/' -f4 | sort -u)
 
 TRACKER="$PROJECT_DIR/docs/feature-tracker.md"
 SPECS_DIR="$PROJECT_DIR/docs/specs"
