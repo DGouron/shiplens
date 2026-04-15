@@ -41,6 +41,7 @@ export class CycleReportShellPresenter
             options: (input.teamCycles?.cycles ?? []).map((cycle) => ({
               cycleId: cycle.externalId,
               label: cycle.name,
+              status: cycle.status,
             })),
           }
         : null,

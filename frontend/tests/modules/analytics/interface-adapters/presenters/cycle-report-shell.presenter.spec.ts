@@ -93,8 +93,8 @@ describe('CycleReportShellPresenter', () => {
     expect(viewModel.cycleSelector).not.toBeNull();
     if (viewModel.cycleSelector !== null) {
       expect(viewModel.cycleSelector.options).toEqual([
-        { cycleId: 'cycle-1', label: 'Cycle 12' },
-        { cycleId: 'cycle-2', label: 'Cycle 11' },
+        { cycleId: 'cycle-1', label: 'Cycle 12', status: 'in_progress' },
+        { cycleId: 'cycle-2', label: 'Cycle 11', status: 'in_progress' },
       ]);
     }
   });

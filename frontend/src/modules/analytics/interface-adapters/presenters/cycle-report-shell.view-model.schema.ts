@@ -8,6 +8,7 @@ export const teamOptionViewModelSchema = z.object({
 export const cycleOptionViewModelSchema = z.object({
   cycleId: z.string(),
   label: z.string(),
+  status: z.enum(['in_progress', 'completed']),
 });
 
 export const sectionPlaceholderViewModelSchema = z.object({

@@ -1,5 +1,13 @@
 import { useEffect } from 'react';
 import {
+  type BlockedIssuesState,
+  useBlockedIssues,
+} from './use-blocked-issues.ts';
+import {
+  type BottleneckAnalysisState,
+  useBottleneckAnalysis,
+} from './use-bottleneck-analysis.ts';
+import {
   type CycleMetricsState,
   useCycleMetrics,
 } from './use-cycle-metrics.ts';
@@ -12,6 +20,8 @@ import { useCycleReportUrlState } from './use-cycle-report-url-state.ts';
 export interface UseCycleReportPageResult {
   shellState: CycleReportShellState;
   metricsState: CycleMetricsState;
+  bottleneckState: BottleneckAnalysisState;
+  blockedIssuesState: BlockedIssuesState;
   selectTeam: (teamId: string) => void;
   selectCycle: (cycleId: string) => void;
 }
@@ -23,15 +33,33 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     teamId: selectedTeamId,
     cycleId: selectedCycleId,
   });
+  const { state: bottleneckState } = useBottleneckAnalysis({
+    teamId: selectedTeamId,
+    cycleId: selectedCycleId,
+  });
+  const { state: blockedIssuesState } = useBlockedIssues({
+    teamId: selectedTeamId,
+  });
 
   useEffect(() => {
     if (selectedCycleId !== null) return;
     if (shellState.status !== 'ready') return;
     if (shellState.data.cycleSelector === null) return;
-    const firstCycle = shellState.data.cycleSelector.options[0];
-    if (firstCycle === undefined) return;
-    selectCycle(firstCycle.cycleId);
+    const options = shellState.data.cycleSelector.options;
+    const firstCompleted = options.find(
+      (option) => option.status === 'completed',
+    );
+    const cycleToSelect = firstCompleted ?? options[0];
+    if (cycleToSelect === undefined) return;
+    selectCycle(cycleToSelect.cycleId);
   }, [selectedCycleId, shellState, selectCycle]);
 
-  return { shellState, metricsState, selectTeam, selectCycle };
+  return {
+    shellState,
+    metricsState,
+    bottleneckState,
+    blockedIssuesState,
+    selectTeam,
+    selectCycle,
+  };
 }
