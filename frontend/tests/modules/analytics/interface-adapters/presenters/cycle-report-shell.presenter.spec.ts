@@ -1,0 +1,172 @@
+import { describe, expect, it } from 'vitest';
+import { CycleReportShellPresenter } from '@/modules/analytics/interface-adapters/presenters/cycle-report-shell.presenter.ts';
+import { cycleReportShellTranslations } from '@/modules/analytics/interface-adapters/presenters/cycle-report-shell.translations.ts';
+import { CycleSummaryResponseBuilder } from '../../../../builders/cycle-summary-response.builder.ts';
+import { SyncAvailableTeamResponseBuilder } from '../../../../builders/sync-available-team-response.builder.ts';
+
+function makePresenter(locale: 'en' | 'fr' = 'en') {
+  return new CycleReportShellPresenter(cycleReportShellTranslations[locale]);
+}
+
+describe('CycleReportShellPresenter', () => {
+  it('renders the heading from the translations', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [],
+      teamCycles: null,
+      selectedTeamId: null,
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.heading).toBe('Cycle report');
+  });
+
+  it('maps available teams to team selector options', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder()
+          .withTeamId('team-1')
+          .withTeamName('Alpha')
+          .build(),
+        new SyncAvailableTeamResponseBuilder()
+          .withTeamId('team-2')
+          .withTeamName('Bravo')
+          .build(),
+      ],
+      teamCycles: null,
+      selectedTeamId: null,
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.teamSelector.options).toEqual([
+      { teamId: 'team-1', teamName: 'Alpha' },
+      { teamId: 'team-2', teamName: 'Bravo' },
+    ]);
+  });
+
+  it('exposes the selected team id when a team is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: null,
+      selectedTeamId: 'team-1',
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.teamSelector.selectedTeamId).toBe('team-1');
+  });
+
+  it('returns a null cycle selector when no team is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: null,
+      selectedTeamId: null,
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.cycleSelector).toBeNull();
+  });
+
+  it('maps team cycles to cycle selector options when a team is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: {
+        cycles: [
+          new CycleSummaryResponseBuilder()
+            .withExternalId('cycle-1')
+            .withName('Cycle 12')
+            .build(),
+          new CycleSummaryResponseBuilder()
+            .withExternalId('cycle-2')
+            .withName('Cycle 11')
+            .build(),
+        ],
+      },
+      selectedTeamId: 'team-1',
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.cycleSelector).not.toBeNull();
+    if (viewModel.cycleSelector !== null) {
+      expect(viewModel.cycleSelector.options).toEqual([
+        { cycleId: 'cycle-1', label: 'Cycle 12' },
+        { cycleId: 'cycle-2', label: 'Cycle 11' },
+      ]);
+    }
+  });
+
+  it('exposes the empty prompt when no team is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [],
+      teamCycles: null,
+      selectedTeamId: null,
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.emptyPrompt).toBe(
+      'Select a team to view the cycle report',
+    );
+  });
+
+  it('returns a null empty prompt when a team is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: { cycles: [] },
+      selectedTeamId: 'team-1',
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.emptyPrompt).toBeNull();
+  });
+
+  it('builds the 6 section placeholders with stable ids and translated titles', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: { cycles: [] },
+      selectedTeamId: 'team-1',
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.sectionPlaceholders).toEqual([
+      { id: 'metrics', title: 'Metrics' },
+      { id: 'bottlenecks', title: 'Bottlenecks' },
+      { id: 'blocked', title: 'Blocked issues' },
+      { id: 'estimation', title: 'Estimation accuracy' },
+      { id: 'drifting', title: 'Drifting issues' },
+      { id: 'ai-report', title: 'AI report' },
+    ]);
+  });
+
+  it('renders empty section placeholders list when no team is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [],
+      teamCycles: null,
+      selectedTeamId: null,
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.sectionPlaceholders).toEqual([]);
+  });
+
+  it('uses the French translations when the locale is fr', () => {
+    const viewModel = makePresenter('fr').present({
+      availableTeams: [],
+      teamCycles: null,
+      selectedTeamId: null,
+      selectedCycleId: null,
+    });
+
+    expect(viewModel.heading).toBe('Rapport de cycle');
+    expect(viewModel.emptyPrompt).toBe(
+      'Selectionner une equipe pour voir le rapport de cycle',
+    );
+  });
+});

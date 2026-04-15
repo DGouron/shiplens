@@ -1,5 +1,8 @@
+import { TeamCyclesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-cycles.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
+import { ListAvailableTeamsUsecase } from '@/modules/analytics/usecases/list-available-teams.usecase.ts';
+import { ListTeamCyclesUsecase } from '@/modules/analytics/usecases/list-team-cycles.usecase.ts';
 import { SyncInHttpGateway } from '@/modules/synchronization/interface-adapters/gateways/sync.in-http.gateway.ts';
 import { DiscoverSyncTeamsUsecase } from '@/modules/synchronization/usecases/discover-sync-teams.usecase.ts';
 import { GetSyncSelectionUsecase } from '@/modules/synchronization/usecases/get-sync-selection.usecase.ts';
@@ -9,6 +12,7 @@ import { SyncTeamIssuesUsecase } from '@/modules/synchronization/usecases/sync-t
 
 const workspaceDashboardGateway = new WorkspaceDashboardInHttpGateway();
 const syncGateway = new SyncInHttpGateway();
+const teamCyclesGateway = new TeamCyclesInHttpGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -19,6 +23,8 @@ export const usecases = {
   getSyncSelection: new GetSyncSelectionUsecase(syncGateway),
   syncReferenceData: new SyncReferenceDataUsecase(syncGateway),
   syncTeamIssues: new SyncTeamIssuesUsecase(syncGateway),
+  listAvailableTeams: new ListAvailableTeamsUsecase(syncGateway),
+  listTeamCycles: new ListTeamCyclesUsecase(teamCyclesGateway),
 };
 
 export function overrideUsecases(overrides: Partial<typeof usecases>): void {
@@ -34,4 +40,6 @@ export function resetUsecases(): void {
   usecases.getSyncSelection = new GetSyncSelectionUsecase(syncGateway);
   usecases.syncReferenceData = new SyncReferenceDataUsecase(syncGateway);
   usecases.syncTeamIssues = new SyncTeamIssuesUsecase(syncGateway);
+  usecases.listAvailableTeams = new ListAvailableTeamsUsecase(syncGateway);
+  usecases.listTeamCycles = new ListTeamCyclesUsecase(teamCyclesGateway);
 }
