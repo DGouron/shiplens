@@ -38,8 +38,8 @@ describe('DriftingIssuesPresenter', () => {
     expect(dto.statusName).toBe('In Review');
     expect(dto.points).toBe(1);
     expect(dto.driftStatus).toBe('drifting');
-    expect(dto.elapsedBusinessHours).toBe('8h');
-    expect(dto.expectedMaxHours).toBe('4h');
+    expect(dto.elapsedBusinessHours).toBe(8);
+    expect(dto.expectedMaxHours).toBe(4);
     expect(dto.issueUrl).toBe('https://linear.app/issue/uuid-1');
   });
 
@@ -61,7 +61,7 @@ describe('DriftingIssuesPresenter', () => {
 
     expect(dto.driftStatus).toBe('needs-splitting');
     expect(dto.expectedMaxHours).toBeNull();
-    expect(dto.elapsedBusinessHours).toBe('0h');
+    expect(dto.elapsedBusinessHours).toBe(0);
   });
 
   it('returns empty array for no issues', () => {

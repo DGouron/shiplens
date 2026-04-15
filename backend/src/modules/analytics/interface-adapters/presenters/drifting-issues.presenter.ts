@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { type Presenter } from '@shared/foundation/presenter/presenter.js';
 import { type DriftingIssue } from '../../entities/drifting-issue/drifting-issue.js';
-import { formatDuration } from './format-duration.js';
 
 export interface DriftingIssueDto {
   issueExternalId: string;
@@ -10,8 +9,8 @@ export interface DriftingIssueDto {
   statusName: string;
   points: number | null;
   driftStatus: string;
-  elapsedBusinessHours: string;
-  expectedMaxHours: string | null;
+  elapsedBusinessHours: number;
+  expectedMaxHours: number | null;
   issueUrl: string;
 }
 
@@ -27,11 +26,8 @@ export class DriftingIssuesPresenter
       statusName: issue.statusName,
       points: issue.points,
       driftStatus: issue.driftStatus,
-      elapsedBusinessHours: formatDuration(issue.elapsedBusinessHours),
-      expectedMaxHours:
-        issue.expectedMaxHours !== null
-          ? formatDuration(issue.expectedMaxHours)
-          : null,
+      elapsedBusinessHours: issue.elapsedBusinessHours,
+      expectedMaxHours: issue.expectedMaxHours,
       issueUrl: `https://linear.app/issue/${issue.issueUuid}`,
     }));
   }
