@@ -3,15 +3,19 @@ import { BottleneckAnalysisInHttpGateway } from '@/modules/analytics/interface-a
 import { CycleMetricsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/cycle-metrics.in-http.gateway.ts';
 import { DriftingIssuesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/drifting-issues.in-http.gateway.ts';
 import { EstimationAccuracyInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/estimation-accuracy.in-http.gateway.ts';
+import { SprintReportInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/sprint-report.in-http.gateway.ts';
 import { TeamCyclesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-cycles.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
+import { GenerateSprintReportUsecase } from '@/modules/analytics/usecases/generate-sprint-report.usecase.ts';
 import { GetBottleneckAnalysisUsecase } from '@/modules/analytics/usecases/get-bottleneck-analysis.usecase.ts';
 import { GetCycleMetricsUsecase } from '@/modules/analytics/usecases/get-cycle-metrics.usecase.ts';
 import { GetEstimationAccuracyUsecase } from '@/modules/analytics/usecases/get-estimation-accuracy.usecase.ts';
+import { GetSprintReportDetailUsecase } from '@/modules/analytics/usecases/get-sprint-report-detail.usecase.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
 import { ListAvailableTeamsUsecase } from '@/modules/analytics/usecases/list-available-teams.usecase.ts';
 import { ListBlockedIssuesUsecase } from '@/modules/analytics/usecases/list-blocked-issues.usecase.ts';
 import { ListDriftingIssuesUsecase } from '@/modules/analytics/usecases/list-drifting-issues.usecase.ts';
+import { ListSprintReportsUsecase } from '@/modules/analytics/usecases/list-sprint-reports.usecase.ts';
 import { ListTeamCyclesUsecase } from '@/modules/analytics/usecases/list-team-cycles.usecase.ts';
 import { SyncInHttpGateway } from '@/modules/synchronization/interface-adapters/gateways/sync.in-http.gateway.ts';
 import { DiscoverSyncTeamsUsecase } from '@/modules/synchronization/usecases/discover-sync-teams.usecase.ts';
@@ -28,6 +32,7 @@ const bottleneckAnalysisGateway = new BottleneckAnalysisInHttpGateway();
 const blockedIssuesGateway = new BlockedIssuesInHttpGateway();
 const estimationAccuracyGateway = new EstimationAccuracyInHttpGateway();
 const driftingIssuesGateway = new DriftingIssuesInHttpGateway();
+const sprintReportGateway = new SprintReportInHttpGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -49,6 +54,9 @@ export const usecases = {
     estimationAccuracyGateway,
   ),
   listDriftingIssues: new ListDriftingIssuesUsecase(driftingIssuesGateway),
+  listSprintReports: new ListSprintReportsUsecase(sprintReportGateway),
+  getSprintReportDetail: new GetSprintReportDetailUsecase(sprintReportGateway),
+  generateSprintReport: new GenerateSprintReportUsecase(sprintReportGateway),
 };
 
 export function overrideUsecases(overrides: Partial<typeof usecases>): void {
@@ -78,5 +86,14 @@ export function resetUsecases(): void {
   );
   usecases.listDriftingIssues = new ListDriftingIssuesUsecase(
     driftingIssuesGateway,
+  );
+  usecases.listSprintReports = new ListSprintReportsUsecase(
+    sprintReportGateway,
+  );
+  usecases.getSprintReportDetail = new GetSprintReportDetailUsecase(
+    sprintReportGateway,
+  );
+  usecases.generateSprintReport = new GenerateSprintReportUsecase(
+    sprintReportGateway,
   );
 }

@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { type AiReportState, useAiReport } from './use-ai-report.ts';
 import {
   type BlockedIssuesState,
   useBlockedIssues,
@@ -32,8 +33,12 @@ export interface UseCycleReportPageResult {
   blockedIssuesState: BlockedIssuesState;
   estimationState: EstimationAccuracyState;
   driftingState: DriftingIssuesState;
+  aiReportState: AiReportState;
   selectTeam: (teamId: string) => void;
   selectCycle: (cycleId: string) => void;
+  generateAiReport: () => void;
+  exportAiReport: () => void;
+  copyAiReport: () => void;
 }
 
 export function useCycleReportPage(): UseCycleReportPageResult {
@@ -58,6 +63,27 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     teamId: selectedTeamId,
   });
 
+  const selectedCycleName = useMemo<string | null>(() => {
+    if (selectedCycleId === null) return null;
+    if (shellState.status !== 'ready') return null;
+    if (shellState.data.cycleSelector === null) return null;
+    const match = shellState.data.cycleSelector.options.find(
+      (option) => option.cycleId === selectedCycleId,
+    );
+    return match?.label ?? null;
+  }, [selectedCycleId, shellState]);
+
+  const {
+    state: aiReportState,
+    generate: generateAiReport,
+    exportMarkdown: exportAiReport,
+    copyToClipboard: copyAiReport,
+  } = useAiReport({
+    teamId: selectedTeamId,
+    cycleId: selectedCycleId,
+    cycleName: selectedCycleName,
+  });
+
   useEffect(() => {
     if (selectedCycleId !== null) return;
     if (shellState.status !== 'ready') return;
@@ -78,7 +104,11 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     blockedIssuesState,
     estimationState,
     driftingState,
+    aiReportState,
     selectTeam,
     selectCycle,
+    generateAiReport,
+    exportAiReport,
+    copyAiReport,
   };
 }

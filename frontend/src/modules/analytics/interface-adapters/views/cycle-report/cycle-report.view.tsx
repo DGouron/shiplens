@@ -1,5 +1,6 @@
 import { useLocale } from '@/locale-context.tsx';
 import { useCycleReportPage } from '../../hooks/use-cycle-report-page.ts';
+import { aiReportTranslations } from '../../presenters/ai-report.translations.ts';
 import { blockedIssuesTranslations } from '../../presenters/blocked-issues.translations.ts';
 import { bottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';
 import { cycleMetricsTranslations } from '../../presenters/cycle-metrics.translations.ts';
@@ -16,14 +17,19 @@ export function CycleReportView() {
     blockedIssuesState,
     estimationState,
     driftingState,
+    aiReportState,
     selectTeam,
     selectCycle,
+    generateAiReport,
+    exportAiReport,
+    copyAiReport,
   } = useCycleReportPage();
   const metricsTranslationBundle = cycleMetricsTranslations[locale];
   const bottleneckTranslationBundle = bottleneckAnalysisTranslations[locale];
   const blockedIssuesTranslationBundle = blockedIssuesTranslations[locale];
   const estimationTranslationBundle = estimationAccuracyTranslations[locale];
   const driftingTranslationBundle = driftingIssuesTranslations[locale];
+  const aiReportTranslationBundle = aiReportTranslations[locale];
 
   if (shellState.status === 'loading') {
     return (
@@ -49,13 +55,18 @@ export function CycleReportView() {
       blockedIssuesState={blockedIssuesState}
       estimationState={estimationState}
       driftingState={driftingState}
+      aiReportState={aiReportState}
       metricsTranslations={metricsTranslationBundle}
       bottleneckTranslations={bottleneckTranslationBundle}
       blockedIssuesTranslations={blockedIssuesTranslationBundle}
       estimationTranslations={estimationTranslationBundle}
       driftingTranslations={driftingTranslationBundle}
+      aiReportTranslations={aiReportTranslationBundle}
       onTeamChange={selectTeam}
       onCycleChange={selectCycle}
+      onGenerateAiReport={generateAiReport}
+      onExportAiReport={exportAiReport}
+      onCopyAiReport={copyAiReport}
     />
   );
 }

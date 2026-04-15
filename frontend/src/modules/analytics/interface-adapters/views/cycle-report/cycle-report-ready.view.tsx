@@ -1,8 +1,10 @@
+import { type AiReportState } from '../../hooks/use-ai-report.ts';
 import { type BlockedIssuesState } from '../../hooks/use-blocked-issues.ts';
 import { type BottleneckAnalysisState } from '../../hooks/use-bottleneck-analysis.ts';
 import { type CycleMetricsState } from '../../hooks/use-cycle-metrics.ts';
 import { type DriftingIssuesState } from '../../hooks/use-drifting-issues.ts';
 import { type EstimationAccuracyState } from '../../hooks/use-estimation-accuracy.ts';
+import { type AiReportTranslations } from '../../presenters/ai-report.translations.ts';
 import { type BlockedIssuesTranslations } from '../../presenters/blocked-issues.translations.ts';
 import { type BottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';
 import { type CycleMetricsTranslations } from '../../presenters/cycle-metrics.translations.ts';
@@ -21,13 +23,18 @@ interface CycleReportReadyViewProps {
   blockedIssuesState: BlockedIssuesState;
   estimationState: EstimationAccuracyState;
   driftingState: DriftingIssuesState;
+  aiReportState: AiReportState;
   metricsTranslations: CycleMetricsTranslations;
   bottleneckTranslations: BottleneckAnalysisTranslations;
   blockedIssuesTranslations: BlockedIssuesTranslations;
   estimationTranslations: EstimationAccuracyTranslations;
   driftingTranslations: DriftingIssuesTranslations;
+  aiReportTranslations: AiReportTranslations;
   onTeamChange: (teamId: string) => void;
   onCycleChange: (cycleId: string) => void;
+  onGenerateAiReport: () => void;
+  onExportAiReport: () => void;
+  onCopyAiReport: () => void;
 }
 
 export function CycleReportReadyView({
@@ -37,13 +44,18 @@ export function CycleReportReadyView({
   blockedIssuesState,
   estimationState,
   driftingState,
+  aiReportState,
   metricsTranslations,
   bottleneckTranslations,
   blockedIssuesTranslations,
   estimationTranslations,
   driftingTranslations,
+  aiReportTranslations,
   onTeamChange,
   onCycleChange,
+  onGenerateAiReport,
+  onExportAiReport,
+  onCopyAiReport,
 }: CycleReportReadyViewProps) {
   return (
     <main data-testid="cycle-report-page" className="container">
@@ -79,11 +91,16 @@ export function CycleReportReadyView({
             blockedIssuesState={blockedIssuesState}
             estimationState={estimationState}
             driftingState={driftingState}
+            aiReportState={aiReportState}
             metricsTranslations={metricsTranslations}
             bottleneckTranslations={bottleneckTranslations}
             blockedIssuesTranslations={blockedIssuesTranslations}
             estimationTranslations={estimationTranslations}
             driftingTranslations={driftingTranslations}
+            aiReportTranslations={aiReportTranslations}
+            onGenerateAiReport={onGenerateAiReport}
+            onExportAiReport={onExportAiReport}
+            onCopyAiReport={onCopyAiReport}
           />
         ))}
       </div>
