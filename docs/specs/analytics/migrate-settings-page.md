@@ -1,6 +1,6 @@
 # Migrate settings page
 
-## Status: planned (slice 6/6)
+## Status: ready (slice 6/6)
 
 Slice 6 of the frontend migration. Depends on Slices 1-5. This is the final slice: after it, all HTML-serving controllers are removed.
 

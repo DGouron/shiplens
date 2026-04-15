@@ -1,6 +1,6 @@
 # Migrate cycle report page
 
-## Status: planned (slice 4/6)
+## Status: ready (slice 4/6)
 
 Slice 4 of the frontend migration. Depends on Slice 1 (setup-react-spa) and Slice 2 (extract-design-system).
 

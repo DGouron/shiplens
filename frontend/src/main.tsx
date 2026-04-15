@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import { App, ShiplensShell } from './app.tsx';
 import { LocaleProvider } from './locale-context.tsx';
 import { queryClient } from './main/query-client.ts';
+import { DashboardView } from './modules/analytics/interface-adapters/views/dashboard.view.tsx';
 
 const router = createBrowserRouter([
   {
@@ -12,6 +13,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <ShiplensShell /> },
+      { path: 'dashboard', element: <DashboardView /> },
       { path: '*', element: <ShiplensShell /> },
     ],
   },
