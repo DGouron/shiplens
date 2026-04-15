@@ -1,6 +1,16 @@
 import { useLocale } from '@/locale-context.tsx';
+import { type BlockedIssuesState } from '../hooks/use-blocked-issues.ts';
+import { type BottleneckAnalysisState } from '../hooks/use-bottleneck-analysis.ts';
 import { type CycleMetricsState } from '../hooks/use-cycle-metrics.ts';
 import { useCycleReportPage } from '../hooks/use-cycle-report-page.ts';
+import {
+  type BlockedIssuesTranslations,
+  blockedIssuesTranslations,
+} from '../presenters/blocked-issues.translations.ts';
+import {
+  type BottleneckAnalysisTranslations,
+  bottleneckAnalysisTranslations,
+} from '../presenters/bottleneck-analysis.translations.ts';
 import {
   type CycleMetricsTranslations,
   cycleMetricsTranslations,
@@ -9,6 +19,8 @@ import {
   type CycleReportShellViewModel,
   type SectionPlaceholderViewModel,
 } from '../presenters/cycle-report-shell.view-model.schema.ts';
+import { BlockedIssuesSectionView } from './blocked-issues.view.tsx';
+import { BottleneckAnalysisSectionView } from './bottleneck-analysis.view.tsx';
 import { CycleMetricsSectionView } from './cycle-metrics.view.tsx';
 import { CycleReportCycleSelectorView } from './cycle-report-cycle-selector.view.tsx';
 import { CycleReportEmptyPromptView } from './cycle-report-empty-prompt.view.tsx';
@@ -17,9 +29,17 @@ import { CycleReportTeamSelectorView } from './cycle-report-team-selector.view.t
 
 export function CycleReportView() {
   const locale = useLocale();
-  const { shellState, metricsState, selectTeam, selectCycle } =
-    useCycleReportPage();
+  const {
+    shellState,
+    metricsState,
+    bottleneckState,
+    blockedIssuesState,
+    selectTeam,
+    selectCycle,
+  } = useCycleReportPage();
   const metricsTranslations = cycleMetricsTranslations[locale];
+  const bottleneckTranslations = bottleneckAnalysisTranslations[locale];
+  const blockedIssuesTranslationsBundle = blockedIssuesTranslations[locale];
 
   if (shellState.status === 'loading') {
     return (
@@ -41,7 +61,11 @@ export function CycleReportView() {
     <CycleReportReadyView
       viewModel={shellState.data}
       metricsState={metricsState}
+      bottleneckState={bottleneckState}
+      blockedIssuesState={blockedIssuesState}
       metricsTranslations={metricsTranslations}
+      bottleneckTranslations={bottleneckTranslations}
+      blockedIssuesTranslationsBundle={blockedIssuesTranslationsBundle}
       onTeamChange={selectTeam}
       onCycleChange={selectCycle}
     />
@@ -51,7 +75,11 @@ export function CycleReportView() {
 interface CycleReportReadyViewProps {
   viewModel: CycleReportShellViewModel;
   metricsState: CycleMetricsState;
+  bottleneckState: BottleneckAnalysisState;
+  blockedIssuesState: BlockedIssuesState;
   metricsTranslations: CycleMetricsTranslations;
+  bottleneckTranslations: BottleneckAnalysisTranslations;
+  blockedIssuesTranslationsBundle: BlockedIssuesTranslations;
   onTeamChange: (teamId: string) => void;
   onCycleChange: (cycleId: string) => void;
 }
@@ -59,11 +87,18 @@ interface CycleReportReadyViewProps {
 function CycleReportReadyView({
   viewModel,
   metricsState,
+  bottleneckState,
+  blockedIssuesState,
   metricsTranslations,
+  bottleneckTranslations,
+  blockedIssuesTranslationsBundle,
   onTeamChange,
   onCycleChange,
 }: CycleReportReadyViewProps) {
-  const hasSelectedCycle = viewModel.cycleSelector?.selectedCycleId !== null;
+  const hasSelectedTeam = viewModel.teamSelector.selectedTeamId !== null;
+  const hasSelectedCycle =
+    viewModel.cycleSelector !== null &&
+    viewModel.cycleSelector.selectedCycleId !== null;
   return (
     <main data-testid="cycle-report-page" className="container">
       <h1 className="page-title">{viewModel.heading}</h1>
@@ -94,9 +129,14 @@ function CycleReportReadyView({
             <CycleReportSectionRenderer
               key={placeholder.id}
               placeholder={placeholder}
+              hasSelectedTeam={hasSelectedTeam}
               hasSelectedCycle={hasSelectedCycle}
               metricsState={metricsState}
+              bottleneckState={bottleneckState}
+              blockedIssuesState={blockedIssuesState}
               metricsTranslations={metricsTranslations}
+              bottleneckTranslations={bottleneckTranslations}
+              blockedIssuesTranslationsBundle={blockedIssuesTranslationsBundle}
             />
           ))}
         </div>
@@ -107,22 +147,48 @@ function CycleReportReadyView({
 
 interface CycleReportSectionRendererProps {
   placeholder: SectionPlaceholderViewModel;
+  hasSelectedTeam: boolean;
   hasSelectedCycle: boolean;
   metricsState: CycleMetricsState;
+  bottleneckState: BottleneckAnalysisState;
+  blockedIssuesState: BlockedIssuesState;
   metricsTranslations: CycleMetricsTranslations;
+  bottleneckTranslations: BottleneckAnalysisTranslations;
+  blockedIssuesTranslationsBundle: BlockedIssuesTranslations;
 }
 
 function CycleReportSectionRenderer({
   placeholder,
+  hasSelectedTeam,
   hasSelectedCycle,
   metricsState,
+  bottleneckState,
+  blockedIssuesState,
   metricsTranslations,
+  bottleneckTranslations,
+  blockedIssuesTranslationsBundle,
 }: CycleReportSectionRendererProps) {
   if (placeholder.id === 'metrics' && hasSelectedCycle) {
     return (
       <CycleMetricsSectionView
         state={metricsState}
         translations={metricsTranslations}
+      />
+    );
+  }
+  if (placeholder.id === 'bottlenecks' && hasSelectedCycle) {
+    return (
+      <BottleneckAnalysisSectionView
+        state={bottleneckState}
+        translations={bottleneckTranslations}
+      />
+    );
+  }
+  if (placeholder.id === 'blocked' && hasSelectedTeam) {
+    return (
+      <BlockedIssuesSectionView
+        state={blockedIssuesState}
+        translations={blockedIssuesTranslationsBundle}
       />
     );
   }

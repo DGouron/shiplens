@@ -1,9 +1,13 @@
+import { BlockedIssuesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/blocked-issues.in-http.gateway.ts';
+import { BottleneckAnalysisInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/bottleneck-analysis.in-http.gateway.ts';
 import { CycleMetricsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/cycle-metrics.in-http.gateway.ts';
 import { TeamCyclesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-cycles.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
+import { GetBottleneckAnalysisUsecase } from '@/modules/analytics/usecases/get-bottleneck-analysis.usecase.ts';
 import { GetCycleMetricsUsecase } from '@/modules/analytics/usecases/get-cycle-metrics.usecase.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
 import { ListAvailableTeamsUsecase } from '@/modules/analytics/usecases/list-available-teams.usecase.ts';
+import { ListBlockedIssuesUsecase } from '@/modules/analytics/usecases/list-blocked-issues.usecase.ts';
 import { ListTeamCyclesUsecase } from '@/modules/analytics/usecases/list-team-cycles.usecase.ts';
 import { SyncInHttpGateway } from '@/modules/synchronization/interface-adapters/gateways/sync.in-http.gateway.ts';
 import { DiscoverSyncTeamsUsecase } from '@/modules/synchronization/usecases/discover-sync-teams.usecase.ts';
@@ -16,6 +20,8 @@ const workspaceDashboardGateway = new WorkspaceDashboardInHttpGateway();
 const syncGateway = new SyncInHttpGateway();
 const teamCyclesGateway = new TeamCyclesInHttpGateway();
 const cycleMetricsGateway = new CycleMetricsInHttpGateway();
+const bottleneckAnalysisGateway = new BottleneckAnalysisInHttpGateway();
+const blockedIssuesGateway = new BlockedIssuesInHttpGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -29,6 +35,10 @@ export const usecases = {
   listAvailableTeams: new ListAvailableTeamsUsecase(syncGateway),
   listTeamCycles: new ListTeamCyclesUsecase(teamCyclesGateway),
   getCycleMetrics: new GetCycleMetricsUsecase(cycleMetricsGateway),
+  getBottleneckAnalysis: new GetBottleneckAnalysisUsecase(
+    bottleneckAnalysisGateway,
+  ),
+  listBlockedIssues: new ListBlockedIssuesUsecase(blockedIssuesGateway),
 };
 
 export function overrideUsecases(overrides: Partial<typeof usecases>): void {
@@ -47,4 +57,10 @@ export function resetUsecases(): void {
   usecases.listAvailableTeams = new ListAvailableTeamsUsecase(syncGateway);
   usecases.listTeamCycles = new ListTeamCyclesUsecase(teamCyclesGateway);
   usecases.getCycleMetrics = new GetCycleMetricsUsecase(cycleMetricsGateway);
+  usecases.getBottleneckAnalysis = new GetBottleneckAnalysisUsecase(
+    bottleneckAnalysisGateway,
+  );
+  usecases.listBlockedIssues = new ListBlockedIssuesUsecase(
+    blockedIssuesGateway,
+  );
 }
