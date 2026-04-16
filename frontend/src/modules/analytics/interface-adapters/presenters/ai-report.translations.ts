@@ -1,6 +1,7 @@
 import { type Locale } from './cycle-metrics.translations.ts';
 
 export interface AiReportTranslations {
+  locale: string;
   sectionTitle: string;
   loadingLabel: string;
   errorLabel: string;
@@ -15,6 +16,7 @@ export interface AiReportTranslations {
 
 export const aiReportTranslations: Record<Locale, AiReportTranslations> = {
   en: {
+    locale: 'en-US',
     sectionTitle: 'AI report',
     loadingLabel: 'Loading AI report...',
     errorLabel: 'Failed to load AI report',
@@ -27,6 +29,7 @@ export const aiReportTranslations: Record<Locale, AiReportTranslations> = {
     generatedAtPrefix: 'Generated at',
   },
   fr: {
+    locale: 'fr-FR',
     sectionTitle: 'Rapport IA',
     loadingLabel: 'Chargement du rapport IA...',
     errorLabel: 'Echec du chargement du rapport IA',

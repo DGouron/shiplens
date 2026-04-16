@@ -21,7 +21,7 @@ export class AiReportPresenter
       showEmpty: !hasDetail,
       reportMarkdown: input.detail?.markdown ?? '',
       generatedAtLabel: input.detail
-        ? `${this.translations.generatedAtPrefix} ${input.detail.generatedAt}`
+        ? `${this.translations.generatedAtPrefix} ${this.formatDate(input.detail.generatedAt)}`
         : '',
       emptyMessage: this.translations.emptyMessage,
       generateLabel: this.translations.generateLabel,
@@ -32,6 +32,15 @@ export class AiReportPresenter
       isGenerating: input.isGenerating,
       copyConfirmation: input.copyConfirmation,
     };
+  }
+
+  private formatDate(isoDate: string): string {
+    const date = new Date(isoDate);
+    if (Number.isNaN(date.getTime())) return isoDate;
+    return new Intl.DateTimeFormat(this.translations.locale, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(date);
   }
 
   private buildExportFilename(cycleName: string): string {

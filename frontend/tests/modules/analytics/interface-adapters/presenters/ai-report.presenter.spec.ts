@@ -25,9 +25,8 @@ describe('AiReportPresenter', () => {
     expect(viewModel.showReport).toBe(true);
     expect(viewModel.showEmpty).toBe(false);
     expect(viewModel.reportMarkdown).toBe('# Cycle 12\n\nContent.');
-    expect(viewModel.generatedAtLabel).toBe(
-      'Generated at 2026-04-10T08:30:00.000Z',
-    );
+    expect(viewModel.generatedAtLabel).toMatch(/^Generated at .+2026/);
+    expect(viewModel.generatedAtLabel).not.toContain('T08:30:00');
   });
 
   it('exposes showEmpty true and an empty markdown when no detail is provided', () => {
