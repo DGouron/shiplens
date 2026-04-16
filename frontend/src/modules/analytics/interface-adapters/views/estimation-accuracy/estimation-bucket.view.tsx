@@ -13,7 +13,11 @@ export function EstimationBucketView({
     <li
       className={`estimation-accuracy-bucket estimation-accuracy-bucket--${variant}`}
     >
-      {bucket.label}
+      <div
+        className="estimation-accuracy-bucket-bar"
+        style={{ width: `${bucket.percentage}%` }}
+      />
+      <span className="estimation-accuracy-bucket-label">{bucket.label}</span>
     </li>
   );
 }

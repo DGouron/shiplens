@@ -13,6 +13,11 @@ export class CycleMetricsInHttpGateway extends CycleMetricsGateway {
     const query = new URLSearchParams({ teamId: params.teamId });
     const path = `/analytics/cycles/${encodeURIComponent(params.cycleId)}/metrics?${query.toString()}`;
     const response = await fetch(path);
+    if (response.status === 422) {
+      throw new GatewayError(
+        'Metrics are available once the cycle is completed',
+      );
+    }
     if (!response.ok) {
       throw new GatewayError(
         `Failed to fetch cycle metrics: HTTP ${response.status}`,

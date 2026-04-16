@@ -13,6 +13,9 @@ export class DriftingIssuesInHttpGateway extends DriftingIssuesGateway {
     const teamSegment = encodeURIComponent(params.teamId);
     const path = `/analytics/drifting-issues/${teamSegment}`;
     const response = await fetch(path);
+    if (response.status === 500) {
+      throw new GatewayError('Unable to analyze drifting issues for this team');
+    }
     if (!response.ok) {
       throw new GatewayError(
         `Failed to fetch drifting issues: HTTP ${response.status}`,
