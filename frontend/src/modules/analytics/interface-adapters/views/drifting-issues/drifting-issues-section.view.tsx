@@ -1,3 +1,4 @@
+import '@/styles/drifting-issues.css';
 import { SkeletonCard } from '@/components/skeleton-card.tsx';
 import { type DriftingIssuesState } from '../../hooks/use-drifting-issues.ts';
 import { type DriftingIssuesTranslations } from '../../presenters/drifting-issues.translations.ts';

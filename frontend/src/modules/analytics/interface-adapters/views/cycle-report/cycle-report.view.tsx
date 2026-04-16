@@ -1,3 +1,4 @@
+import '@/styles/cycle-report.css';
 import { useLocale } from '@/locale-context.tsx';
 import { useCycleReportPage } from '../../hooks/use-cycle-report-page.ts';
 import { aiReportTranslations } from '../../presenters/ai-report.translations.ts';

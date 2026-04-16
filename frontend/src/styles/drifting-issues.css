@@ -1,0 +1,129 @@
+.drifting-issues-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.drifting-issues-empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.drifting-issues-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.drifting-issues-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.drifting-issues-item:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.drifting-issues-link {
+  color: var(--accent-1);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: color var(--transition);
+  flex: 1;
+  min-width: 160px;
+}
+
+.drifting-issues-link:hover {
+  color: var(--accent-2);
+}
+
+.drifting-issues-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.drifting-issues-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.drifting-issues-drift {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--danger);
+  white-space: nowrap;
+}
+
+.drifting-issues-elapsed,
+.drifting-issues-expected {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.drifting-issues-points {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.drifting-issues-member-link {
+  color: var(--accent-2);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: color var(--transition);
+  margin-left: auto;
+}
+
+.drifting-issues-member-link:hover {
+  color: var(--accent-1);
+}
+
+.drifting-issues-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  animation: fadeSlideIn 0.3s ease both;
+}
+
+@media (max-width: 640px) {
+  .drifting-issues-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .drifting-issues-member-link {
+    margin-left: 0;
+  }
+}

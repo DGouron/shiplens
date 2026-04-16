@@ -1,3 +1,4 @@
+import '@/styles/member-digest.css';
 import { type MemberDigestState } from '../../hooks/use-member-digest.ts';
 import { type MemberDigestTranslations } from '../../presenters/member-digest.translations.ts';
 import { MemberDigestEmptyView } from './member-digest-empty.view.tsx';

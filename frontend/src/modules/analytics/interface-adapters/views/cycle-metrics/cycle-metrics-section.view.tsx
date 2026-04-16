@@ -1,3 +1,4 @@
+import '@/styles/cycle-metrics.css';
 import { SkeletonCard } from '@/components/skeleton-card.tsx';
 import { type CycleMetricsState } from '../../hooks/use-cycle-metrics.ts';
 import { type CycleMetricsTranslations } from '../../presenters/cycle-metrics.translations.ts';

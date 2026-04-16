@@ -1,3 +1,4 @@
+import '@/styles/estimation-accuracy.css';
 import { SkeletonCard } from '@/components/skeleton-card.tsx';
 import { type EstimationAccuracyState } from '../../hooks/use-estimation-accuracy.ts';
 import { type EstimationAccuracyTranslations } from '../../presenters/estimation-accuracy.translations.ts';

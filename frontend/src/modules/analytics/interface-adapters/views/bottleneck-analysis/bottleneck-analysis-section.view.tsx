@@ -1,3 +1,4 @@
+import '@/styles/bottleneck-analysis.css';
 import { SkeletonCard } from '@/components/skeleton-card.tsx';
 import { type BottleneckAnalysisState } from '../../hooks/use-bottleneck-analysis.ts';
 import { type BottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';

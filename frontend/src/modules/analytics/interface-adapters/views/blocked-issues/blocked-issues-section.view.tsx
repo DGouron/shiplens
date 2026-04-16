@@ -1,3 +1,4 @@
+import '@/styles/blocked-issues.css';
 import { SkeletonCard } from '@/components/skeleton-card.tsx';
 import { type BlockedIssuesState } from '../../hooks/use-blocked-issues.ts';
 import { type BlockedIssuesTranslations } from '../../presenters/blocked-issues.translations.ts';

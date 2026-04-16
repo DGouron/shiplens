@@ -1,3 +1,4 @@
+import '@/styles/ai-report.css';
 import { SkeletonCard } from '@/components/skeleton-card.tsx';
 import { type AiReportState } from '../../hooks/use-ai-report.ts';
 import { type AiReportTranslations } from '../../presenters/ai-report.translations.ts';
