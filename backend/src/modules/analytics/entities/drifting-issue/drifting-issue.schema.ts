@@ -5,7 +5,7 @@ export const driftingIssueInputSchema = z.object({
   issueTitle: z.string().min(1),
   issueUuid: z.string().min(1),
   teamId: z.string().min(1),
-  points: z.number().int().positive().nullable(),
+  points: z.number().int().nonnegative().nullable(),
   statusName: z.string().min(1),
   statusType: z.string().min(1),
   startedAt: z.string().min(1).nullable(),
