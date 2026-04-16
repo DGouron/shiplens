@@ -37,6 +37,6 @@ Specs are organized by bounded context under `docs/specs/<bc>/`. Cross-cutting c
 | Extraire le design system | [extract-design-system](specs/_platform/extract-design-system.md) | Platform | implemented | 2026-04-10 |
 | Ameliorations design UX et data viz | [design-improvements](specs/_platform/design-improvements.md) | Platform | planned | 2026-04-09 |
 | Migrer la page dashboard | [migrate-dashboard-page](specs/analytics/migrate-dashboard-page.md) | Analytics | implemented | 2026-04-15 |
-| Migrer la page cycle report | [migrate-cycle-report-page](specs/analytics/migrate-cycle-report-page.md) | Analytics | planned | 2026-04-09 |
+| Migrer la page cycle report | [migrate-cycle-report-page](specs/analytics/migrate-cycle-report-page.md) | Analytics | implemented | 2026-04-16 |
 | Migrer la page health trends | [migrate-member-health-trends-page](specs/analytics/migrate-member-health-trends-page.md) | Analytics | planned | 2026-04-09 |
 | Migrer la page settings + cleanup backend | [migrate-settings-page](specs/analytics/migrate-settings-page.md) | Analytics | planned | 2026-04-09 |
