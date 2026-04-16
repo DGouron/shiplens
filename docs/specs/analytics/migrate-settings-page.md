@@ -1,8 +1,28 @@
 # Migrate settings page
 
-## Status: ready (slice 6/6)
+## Status: implemented (frontend only — backend cleanup pending)
 
 Slice 6 of the frontend migration. Depends on Slices 1-5. This is the final slice: after it, all HTML-serving controllers are removed.
+
+## Implementation
+
+### Bounded Context
+Analytics
+
+### Artifacts
+- **Gateways**: WorkspaceLanguageGateway (GET/PUT language), TeamSettingsGateway (timezone, available/excluded statuses), DriftGridGateway (grid entries)
+- **Use cases**: GetWorkspaceLanguage, SetWorkspaceLanguage, GetTeamTimezone, SetTeamTimezone, GetTeamStatusSettings, SetTeamExcludedStatuses, GetDriftGridEntries
+- **Presenter**: SettingsPresenter (transforms raw data → SettingsViewModel with semantic booleans)
+- **Translations**: settings.translations.ts (ported from backend settings-page.translations.ts)
+- **Hook**: useSettings (orchestrates 7 use cases, 3 mutations, team selection state, toast auto-dismiss)
+- **Views**: 9 humble views in views/settings/ (route-level + ready + 5 sections + toggle + toast)
+- **Route**: /settings in main.tsx
+
+### Architectural Decisions
+- LocaleContext enhanced with setLocale for immediate app-wide language switch
+- 3 separate gateways (SRP) instead of one composite gateway
+- Reused existing ListAvailableTeamsUsecase for team selector
+- Drift grid durations use locale-keyed label maps instead of fragile string comparison
 
 ## Context
 
