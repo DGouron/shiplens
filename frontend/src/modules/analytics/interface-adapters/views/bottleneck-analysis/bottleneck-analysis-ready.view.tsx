@@ -1,15 +1,12 @@
-import { type BottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';
 import { type BottleneckAnalysisViewModel } from '../../presenters/bottleneck-analysis.view-model.schema.ts';
-import { BottleneckAnalysisTableView } from './bottleneck-analysis-table.view.tsx';
+import { BottleneckAnalysisBarRowView } from './bottleneck-analysis-bar-row.view.tsx';
 
 interface BottleneckAnalysisReadyViewProps {
   viewModel: BottleneckAnalysisViewModel;
-  translations: BottleneckAnalysisTranslations;
 }
 
 export function BottleneckAnalysisReadyView({
   viewModel,
-  translations,
 }: BottleneckAnalysisReadyViewProps) {
   return (
     <div className="bottleneck-analysis-content">
@@ -20,12 +17,11 @@ export function BottleneckAnalysisReadyView({
         <p className="bottleneck-analysis-empty">{viewModel.emptyMessage}</p>
       )}
       {viewModel.showTable && (
-        <BottleneckAnalysisTableView
-          rows={viewModel.rows}
-          statusHeader={translations.tableHeaderStatus}
-          medianHeader={translations.tableHeaderMedianTime}
-          bottleneckRowLabel={translations.bottleneckRowLabel}
-        />
+        <div className="bottleneck-analysis-bars">
+          {viewModel.rows.map((row) => (
+            <BottleneckAnalysisBarRowView key={row.statusName} row={row} />
+          ))}
+        </div>
       )}
     </div>
   );

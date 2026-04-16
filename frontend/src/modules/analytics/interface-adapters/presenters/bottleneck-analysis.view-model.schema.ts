@@ -4,6 +4,7 @@ export const bottleneckRowViewModelSchema = z.object({
   statusName: z.string(),
   medianHoursLabel: z.string(),
   isBottleneck: z.boolean(),
+  barWidthPercent: z.number(),
 });
 
 export const bottleneckAnalysisViewModelSchema = z.object({

@@ -15,57 +15,70 @@
   font-size: 0.85rem;
 }
 
-.bottleneck-analysis-table {
-  width: 100%;
-  border-collapse: collapse;
+.bottleneck-analysis-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.bottleneck-analysis-table th {
-  text-align: left;
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.bottleneck-analysis-table th:last-child {
-  text-align: right;
-}
-
-.bottleneck-analysis-table td {
-  padding: 0.7rem 1rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-primary);
-  font-size: 0.85rem;
+.bottleneck-bar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 90px;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  border-radius: var(--radius-sm);
   transition: background var(--transition);
 }
 
-.bottleneck-analysis-table td:last-child {
-  text-align: right;
-  font-family: 'JetBrains Mono', 'SF Mono', monospace;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.bottleneck-analysis-table tbody tr {
-  transition: background var(--transition);
-}
-
-.bottleneck-analysis-table tbody tr:hover {
+.bottleneck-bar-row:hover {
   background: var(--bg-hover);
 }
 
-.bottleneck-analysis-row--highlighted {
-  background: rgba(99, 102, 241, 0.06);
-  border-left: 3px solid var(--accent-1);
+.bottleneck-bar-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.bottleneck-analysis-row--highlighted td:first-child {
-  font-weight: 600;
+.bottleneck-bar-track {
+  height: 22px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.bottleneck-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 2px;
+}
+
+.bottleneck-bar-row--highlighted .bottleneck-bar-label {
   color: var(--accent-1);
+  font-weight: 700;
+}
+
+.bottleneck-bar-row--highlighted .bottleneck-bar-fill {
+  background: linear-gradient(90deg, var(--danger), #ff8a8a);
+}
+
+.bottleneck-bar-value {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bottleneck-bar-row--highlighted .bottleneck-bar-value {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .bottleneck-analysis-error {

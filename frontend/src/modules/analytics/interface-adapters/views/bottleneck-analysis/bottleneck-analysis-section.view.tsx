@@ -24,10 +24,7 @@ export function BottleneckAnalysisSectionView({
         <p className="bottleneck-analysis-error">{state.message}</p>
       )}
       {state.status === 'ready' && (
-        <BottleneckAnalysisReadyView
-          viewModel={state.data}
-          translations={translations}
-        />
+        <BottleneckAnalysisReadyView viewModel={state.data} />
       )}
     </section>
   );

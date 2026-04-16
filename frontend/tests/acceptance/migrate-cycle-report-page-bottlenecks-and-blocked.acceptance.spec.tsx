@@ -107,11 +107,11 @@ describe('Migrate cycle report page bottlenecks and blocked (acceptance)', () =>
         within(bottleneckSection).getByText('In Review'),
       ).toBeInTheDocument();
     });
-    const rowCells = within(bottleneckSection)
-      .getAllByRole('row')
-      .slice(1)
-      .map((row) => row.querySelector('td')?.textContent);
-    expect(rowCells).toEqual(['In Review', 'In Progress', 'Todo']);
+    const barLabels = bottleneckSection.querySelectorAll<HTMLElement>(
+      '.bottleneck-bar-label',
+    );
+    const labelTexts = Array.from(barLabels).map((label) => label.textContent);
+    expect(labelTexts).toEqual(['In Review', 'In Progress', 'Todo']);
   });
 
   it('highlights the bottleneck row when statusName matches bottleneckStatus', async () => {
@@ -141,10 +141,14 @@ describe('Migrate cycle report page bottlenecks and blocked (acceptance)', () =>
 
     renderAtPath('/cycle-report?teamId=team-1&cycleId=cycle-1');
 
-    const highlightedRow = await screen.findByRole('row', {
-      name: 'Bottleneck status',
+    await waitFor(() => {
+      const highlightedBar = document.querySelector<HTMLElement>(
+        '.bottleneck-bar-row--highlighted',
+      );
+      expect(highlightedBar).not.toBeNull();
+      const label = highlightedBar?.querySelector('.bottleneck-bar-label');
+      expect(label?.textContent).toBe('In Review');
     });
-    expect(within(highlightedRow).getByText('In Review')).toBeInTheDocument();
   });
 
   it('shows a section-level skeleton while bottlenecks load', async () => {

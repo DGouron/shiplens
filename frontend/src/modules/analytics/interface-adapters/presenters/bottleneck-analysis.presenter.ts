@@ -25,12 +25,14 @@ export class BottleneckAnalysisPresenter
     const sorted = [...input.statusDistribution].sort(
       (left, right) => right.medianHours - left.medianHours,
     );
+    const maxMedianHours = sorted[0]?.medianHours ?? 1;
     const rows: BottleneckRowViewModel[] = sorted.map((entry) => ({
       statusName: entry.statusName,
       medianHoursLabel: formatDurationHours(entry.medianHours, {
         daysSuffix: this.translations.daysSuffix,
       }),
       isBottleneck: entry.statusName === input.bottleneckStatus,
+      barWidthPercent: Math.round((entry.medianHours / maxMedianHours) * 100),
     }));
     return {
       rows,
