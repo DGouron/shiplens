@@ -1,0 +1,82 @@
+.cycle-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .cycle-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .cycle-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cycle-metrics-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.15rem 1.25rem;
+  transition: all var(--transition);
+  animation: fadeSlideIn 0.5s ease both;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cycle-metrics-card:nth-child(1) { animation-delay: 0.12s; }
+.cycle-metrics-card:nth-child(2) { animation-delay: 0.18s; }
+.cycle-metrics-card:nth-child(3) { animation-delay: 0.24s; }
+.cycle-metrics-card:nth-child(4) { animation-delay: 0.30s; }
+.cycle-metrics-card:nth-child(5) { animation-delay: 0.36s; }
+.cycle-metrics-card:nth-child(6) { animation-delay: 0.42s; }
+
+.cycle-metrics-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-hover);
+}
+
+.cycle-metrics-card__value {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+  order: 2;
+}
+
+.cycle-metrics-card__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  order: 1;
+}
+
+.cycle-metrics-card--alert .cycle-metrics-card__value {
+  background: linear-gradient(135deg, var(--warning), var(--danger));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cycle-metrics-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  animation: fadeSlideIn 0.3s ease both;
+}

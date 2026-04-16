@@ -1,0 +1,176 @@
+.member-digest-section {
+  border-left: 3px solid var(--accent-2);
+}
+
+.member-digest-generate {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.member-digest-generate-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.2rem;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.member-digest-generate-button:hover {
+  opacity: 0.9;
+}
+
+.member-digest-generate-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.member-digest-empty {
+  padding: 0.5rem 0;
+}
+
+.member-digest-empty-message {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.member-digest-ready {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.member-digest-markdown {
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.member-digest-markdown h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 1.5rem 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.member-digest-markdown h1:first-child {
+  margin-top: 0;
+}
+
+.member-digest-markdown h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 1.25rem 0 0.6rem;
+}
+
+.member-digest-markdown h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 1rem 0 0.5rem;
+}
+
+.member-digest-markdown p {
+  margin-bottom: 0.75rem;
+}
+
+.member-digest-markdown ul,
+.member-digest-markdown ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.member-digest-markdown li {
+  margin-bottom: 0.35rem;
+}
+
+.member-digest-markdown strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.member-digest-markdown code {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 0.82em;
+  background: var(--bg-elevated);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--accent-1);
+}
+
+.member-digest-markdown pre {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  overflow-x: auto;
+}
+
+.member-digest-markdown pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.member-digest-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.member-digest-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.member-digest-copy-button:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.member-digest-copy-confirmation {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--success);
+  animation: fadeSlideIn 0.3s ease both;
+}
+
+.member-digest-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  animation: fadeSlideIn 0.3s ease both;
+}

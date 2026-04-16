@@ -1,0 +1,92 @@
+.bottleneck-analysis-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bottleneck-analysis-headline {
+  font-size: 0.88rem;
+  color: var(--accent-1);
+  font-weight: 600;
+}
+
+.bottleneck-analysis-empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.bottleneck-analysis-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bottleneck-bar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 90px;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+
+.bottleneck-bar-row:hover {
+  background: var(--bg-hover);
+}
+
+.bottleneck-bar-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bottleneck-bar-track {
+  height: 22px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.bottleneck-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 2px;
+}
+
+.bottleneck-bar-row--highlighted .bottleneck-bar-label {
+  color: var(--accent-1);
+  font-weight: 700;
+}
+
+.bottleneck-bar-row--highlighted .bottleneck-bar-fill {
+  background: linear-gradient(90deg, var(--danger), #ff8a8a);
+}
+
+.bottleneck-bar-value {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bottleneck-bar-row--highlighted .bottleneck-bar-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.bottleneck-analysis-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  animation: fadeSlideIn 0.3s ease both;
+}

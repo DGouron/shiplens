@@ -36,8 +36,8 @@ describe('View Member Cycle Profile (acceptance)', () => {
     });
   });
 
-  describe('no issues: member with 0 issues returns static message', () => {
-    it('returns a static message when the member has no issues', async () => {
+  describe('no issues: member with 0 issues returns null digest', () => {
+    it('returns a null digest when the member has no issues', async () => {
       memberDigestDataGateway.context = {
         memberName: 'Bob',
         cycleName: 'Sprint 42',
@@ -53,7 +53,7 @@ describe('View Member Cycle Profile (acceptance)', () => {
       });
 
       expect(result.memberName).toBe('Bob');
-      expect(result.digest).toBe('Aucune issue en cours pour ce membre.');
+      expect(result.digest).toBeNull();
     });
   });
 

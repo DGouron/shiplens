@@ -16,6 +16,7 @@ function makeDriftingIssue(
     statusName: 'In Review',
     statusType: 'started',
     startedAt: '2026-04-06T07:00:00Z',
+    assigneeName: null,
     ...overrides,
   };
   const now = '2026-04-06T15:00:00Z'; // 8h business hours later
@@ -38,8 +39,8 @@ describe('DriftingIssuesPresenter', () => {
     expect(dto.statusName).toBe('In Review');
     expect(dto.points).toBe(1);
     expect(dto.driftStatus).toBe('drifting');
-    expect(dto.elapsedBusinessHours).toBe('8h');
-    expect(dto.expectedMaxHours).toBe('4h');
+    expect(dto.elapsedBusinessHours).toBe(8);
+    expect(dto.expectedMaxHours).toBe(4);
     expect(dto.issueUrl).toBe('https://linear.app/issue/uuid-1');
   });
 
@@ -53,6 +54,7 @@ describe('DriftingIssuesPresenter', () => {
       statusName: 'In Progress',
       statusType: 'started',
       startedAt: '2026-04-06T07:00:00Z',
+      assigneeName: null,
     };
     const issue = DriftingIssue.analyze(input, '2026-04-06T07:00:00Z', PARIS);
     if (!issue) throw new Error('Expected a DriftingIssue');
@@ -61,10 +63,26 @@ describe('DriftingIssuesPresenter', () => {
 
     expect(dto.driftStatus).toBe('needs-splitting');
     expect(dto.expectedMaxHours).toBeNull();
-    expect(dto.elapsedBusinessHours).toBe('0h');
+    expect(dto.elapsedBusinessHours).toBe(0);
   });
 
   it('returns empty array for no issues', () => {
     expect(presenter.present([])).toEqual([]);
+  });
+
+  it('presents the assignee name when the drifting issue carries one', () => {
+    const issue = makeDriftingIssue({ assigneeName: 'Alice Martin' });
+
+    const [dto] = presenter.present([issue]);
+
+    expect(dto.assigneeName).toBe('Alice Martin');
+  });
+
+  it('presents a null assignee name when the drifting issue has no assignee', () => {
+    const issue = makeDriftingIssue();
+
+    const [dto] = presenter.present([issue]);
+
+    expect(dto.assigneeName).toBeNull();
   });
 });

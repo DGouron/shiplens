@@ -40,7 +40,7 @@ describe('GenerateMemberDigestUsecase', () => {
     expect(aiTextGeneratorGateway.receivedPrompt).toContain('Fix login bug');
   });
 
-  it('should return a static message when the member has no issues', async () => {
+  it('should return a null digest when the member has no issues', async () => {
     memberDigestDataGateway.context = {
       memberName: 'Bob',
       cycleName: 'Sprint 42',
@@ -56,7 +56,7 @@ describe('GenerateMemberDigestUsecase', () => {
     });
 
     expect(result.memberName).toBe('Bob');
-    expect(result.digest).toBe('Aucune issue en cours pour ce membre.');
+    expect(result.digest).toBeNull();
     expect(aiTextGeneratorGateway.receivedPrompt).toBe('');
   });
 

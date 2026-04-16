@@ -80,6 +80,21 @@
   - `shared/domain/`: cross-BC business concepts (Shared Kernel)
   - `shared/infrastructure/prisma/`: PrismaService + PrismaModule
 
+## Frontend Views (Humble Object — MANDATORY)
+
+Every file under `frontend/src/modules/*/interface-adapters/views/` is subject to ALL of the following rules. The `scripts/hooks/no-logic-in-views.sh` PreToolUse hook enforces them on every Write/Edit.
+
+- **One component per file** — exactly one `export function XxxView(` (plus at most one internal helper component, but prefer separate files). No cramming 3-5 components in the same `.view.tsx`.
+- **Folder layout** — `views/<feature>/<component>.view.tsx`. Subfolders per feature are mandatory as soon as a feature has more than one view file. Never keep a flat `views/*.view.tsx` list when a feature has multiple related views.
+- **No logic in JSX** — views must NEVER contain comparisons (`>`, `<`, `===`, `!==`, `!=`, `==`), null/undefined checks, or `.filter()`/`.reduce()`/`.some()`/`.every()` on domain data. The presenter computes these and exposes semantic booleans (`showFoo`, `isAlert`, `hasDrift`) on the ViewModel. Views write `{showFoo && ...}` only. Exception: the AsyncState discriminant (`state.status === 'loading' | 'ready' | 'error'`) IS allowed because AsyncState is a framework concern, not domain.
+- **No React hooks** — no `useState`, `useEffect`, `useMemo`, `useCallback`, `useReducer`, `useRef`, `useContext`. Move all state/effects to a hook under `interface-adapters/hooks/`.
+- **No direct fetch / no gateway or usecase imports** — views only receive a `viewModel` prop and emit callbacks.
+- **`.map()` to render lists is allowed** — iterating an array to produce JSX elements is the view's job. `.filter()` and `.reduce()` are not.
+
+## Naming Audit Before Commit
+
+- Before committing any change that introduces new `.view.tsx` files, new presenter/hook/component names, or new module subfolders, invoke `/naming-audit <scope>` and act on its findings (fix any Weak/Fail verdicts) before running `/ship`.
+
 ## Zod Schemas
 
 - Prefer `z.nullable()` over `z.optional()` — absent fields are `null`, not `undefined`

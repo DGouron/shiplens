@@ -6,13 +6,15 @@ interface TeamCyclesInput {
   cycles: CycleSummary[];
 }
 
+export type CycleStatus = 'in_progress' | 'completed';
+
 export interface CycleSummaryDto {
   externalId: string;
   name: string;
   startsAt: string;
   endsAt: string;
   issueCount: number;
-  status: string;
+  status: CycleStatus;
 }
 
 export interface TeamCyclesDto {
@@ -31,7 +33,7 @@ export class TeamCyclesPresenter
         startsAt: cycle.startsAt,
         endsAt: cycle.endsAt,
         issueCount: cycle.issueCount,
-        status: cycle.isActive ? 'Cycle en cours' : 'Terminé',
+        status: cycle.isActive ? 'in_progress' : 'completed',
       })),
     };
   }

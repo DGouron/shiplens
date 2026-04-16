@@ -41,16 +41,12 @@ describe('ReportExportController', () => {
 
       expect(result.reports).toHaveLength(1);
       expect(result.reports[0].cycleName).toBe('Sprint 12');
-      expect(result.emptyMessage).toBeNull();
     });
 
-    it('returns empty message when team has no reports', async () => {
+    it('returns empty list when team has no reports', async () => {
       const result = await controller.listReports('team-1');
 
       expect(result.reports).toHaveLength(0);
-      expect(result.emptyMessage).toBe(
-        "Aucun rapport n'a encore été généré pour cette équipe.",
-      );
     });
   });
 

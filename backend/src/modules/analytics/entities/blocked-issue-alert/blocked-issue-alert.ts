@@ -53,6 +53,10 @@ export class BlockedIssueAlert {
     return this.props.resolvedAt;
   }
 
+  get assigneeName(): string | null {
+    return this.props.assigneeName;
+  }
+
   get issueUrl(): string {
     return `https://linear.app/issue/${this.props.issueUuid}`;
   }

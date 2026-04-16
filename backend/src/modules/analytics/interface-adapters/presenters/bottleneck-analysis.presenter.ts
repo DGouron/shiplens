@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { type Presenter } from '@shared/foundation/presenter/presenter.js';
 import { type BottleneckAnalysisResult } from '../../usecases/analyze-bottlenecks-by-status.usecase.js';
-import { formatDuration } from './format-duration.js';
 
 interface StatusDistributionDto {
   statusName: string;
-  medianHours: string;
+  medianHours: number;
 }
 
 interface AssigneeBreakdownDto {
@@ -15,9 +14,9 @@ interface AssigneeBreakdownDto {
 
 interface CycleComparisonDto {
   statusName: string;
-  previousMedianHours: string;
-  currentMedianHours: string;
-  evolution: string;
+  previousMedianHours: number;
+  currentMedianHours: number;
+  evolutionPercent: number;
 }
 
 export interface BottleneckAnalysisDto {
@@ -35,22 +34,22 @@ export class BottleneckAnalysisPresenter
     return {
       statusDistribution: input.statusDistribution.map((entry) => ({
         statusName: entry.statusName,
-        medianHours: formatDuration(entry.medianHours),
+        medianHours: entry.medianHours,
       })),
       bottleneckStatus: input.bottleneckStatus,
       assigneeBreakdown: input.assigneeBreakdown.map((entry) => ({
         assigneeName: entry.assigneeName,
         statusMedians: entry.statusMedians.map((median) => ({
           statusName: median.statusName,
-          medianHours: formatDuration(median.medianHours),
+          medianHours: median.medianHours,
         })),
       })),
       cycleComparison: input.cycleComparison
         ? input.cycleComparison.map((entry) => ({
             statusName: entry.statusName,
-            previousMedianHours: formatDuration(entry.previousMedianHours),
-            currentMedianHours: formatDuration(entry.currentMedianHours),
-            evolution: `${entry.evolutionPercent}%`,
+            previousMedianHours: entry.previousMedianHours,
+            currentMedianHours: entry.currentMedianHours,
+            evolutionPercent: entry.evolutionPercent,
           }))
         : null,
     };

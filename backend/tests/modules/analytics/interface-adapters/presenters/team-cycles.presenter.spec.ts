@@ -23,10 +23,10 @@ describe('TeamCyclesPresenter', () => {
     expect(result.cycles[0].externalId).toBe('cycle-1');
     expect(result.cycles[0].name).toBe('Sprint 10');
     expect(result.cycles[0].issueCount).toBe(10);
-    expect(result.cycles[0].status).toBe('Terminé');
+    expect(result.cycles[0].status).toBe('completed');
   });
 
-  it('marks active cycle with status "Cycle en cours"', () => {
+  it('marks active cycle with status "in_progress"', () => {
     const result = presenter.present({
       cycles: [
         {
@@ -41,6 +41,6 @@ describe('TeamCyclesPresenter', () => {
       ],
     });
 
-    expect(result.cycles[0].status).toBe('Cycle en cours');
+    expect(result.cycles[0].status).toBe('in_progress');
   });
 });

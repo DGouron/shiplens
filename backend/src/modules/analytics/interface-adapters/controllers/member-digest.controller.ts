@@ -18,7 +18,7 @@ export class MemberDigestController {
   async generate(
     @Param('cycleId') cycleId: string,
     @Body() body: GenerateMemberDigestBody,
-  ): Promise<{ memberName: string; digest: string }> {
+  ): Promise<{ memberName: string; digest: string | null }> {
     return this.generateMemberDigest.execute({
       cycleId,
       teamId: body.teamId,

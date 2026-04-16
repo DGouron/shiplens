@@ -94,17 +94,13 @@ describe('Export Sprint Report (acceptance)', () => {
       expect(history.reports[0].cycleName).toBe('Sprint 12');
       expect(history.reports[1].cycleName).toBe('Sprint 11');
       expect(history.reports[2].cycleName).toBe('Sprint 10');
-      expect(history.emptyMessage).toBeNull();
     });
 
-    it('shows empty message when team has no reports', async () => {
+    it('returns empty list when team has no reports', async () => {
       const reports = await listTeamReports.execute({ teamId: 'team-1' });
       const history = reportHistoryPresenter.present(reports);
 
       expect(history.reports).toHaveLength(0);
-      expect(history.emptyMessage).toBe(
-        "Aucun rapport n'a encore été généré pour cette équipe.",
-      );
     });
   });
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { type Presenter } from '@shared/foundation/presenter/presenter.js';
 import { type BlockedIssueAlert } from '../../entities/blocked-issue-alert/blocked-issue-alert.js';
-import { formatDuration } from './format-duration.js';
 
 export interface BlockedIssueAlertDto {
   id: string;
@@ -10,9 +9,10 @@ export interface BlockedIssueAlertDto {
   teamId: string;
   statusName: string;
   severity: string;
-  durationHours: string;
+  durationHours: number;
   issueUrl: string;
   detectedAt: string;
+  assigneeName: string | null;
 }
 
 @Injectable()
@@ -27,9 +27,10 @@ export class BlockedIssuesPresenter
       teamId: alert.teamId,
       statusName: alert.statusName,
       severity: alert.severity,
-      durationHours: formatDuration(alert.durationHours),
+      durationHours: alert.durationHours,
       issueUrl: alert.issueUrl,
       detectedAt: alert.detectedAt,
+      assigneeName: alert.assigneeName,
     }));
   }
 }

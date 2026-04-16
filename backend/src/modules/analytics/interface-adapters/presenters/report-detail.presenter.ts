@@ -5,6 +5,7 @@ import { type Locale } from '../../entities/workspace-settings/workspace-languag
 
 export interface ReportDetailDto {
   id: string;
+  cycleId: string;
   cycleName: string;
   language: string;
   generatedAt: string;
@@ -123,6 +124,7 @@ export class ReportDetailPresenter {
 
     return {
       id: report.id,
+      cycleId: report.cycleId,
       cycleName: report.cycleName,
       language: report.language,
       generatedAt: report.generatedAt,

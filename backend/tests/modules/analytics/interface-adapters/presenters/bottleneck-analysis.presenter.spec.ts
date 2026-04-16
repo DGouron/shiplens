@@ -25,14 +25,14 @@ describe('BottleneckAnalysisPresenter', () => {
     cycleComparison: null,
   };
 
-  it('formats status distribution with hours label', () => {
+  it('presents status distribution as raw numeric hours', () => {
     const dto = presenter.present(input);
 
     expect(dto.statusDistribution).toEqual([
-      { statusName: 'Backlog', medianHours: '4h' },
-      { statusName: 'Todo', medianHours: '3h' },
-      { statusName: 'In Progress', medianHours: '24h' },
-      { statusName: 'In Review', medianHours: '36h' },
+      { statusName: 'Backlog', medianHours: 4 },
+      { statusName: 'Todo', medianHours: 2.5 },
+      { statusName: 'In Progress', medianHours: 24 },
+      { statusName: 'In Review', medianHours: 36 },
     ]);
   });
 
@@ -41,15 +41,15 @@ describe('BottleneckAnalysisPresenter', () => {
     expect(dto.bottleneckStatus).toBe('In Review');
   });
 
-  it('formats assignee breakdown', () => {
+  it('presents assignee breakdown with raw numeric hours', () => {
     const dto = presenter.present(input);
 
     expect(dto.assigneeBreakdown).toEqual([
       {
         assigneeName: 'Alice',
         statusMedians: [
-          { statusName: 'In Progress', medianHours: '20h' },
-          { statusName: 'In Review', medianHours: '2.5j' },
+          { statusName: 'In Progress', medianHours: 20 },
+          { statusName: 'In Review', medianHours: 60 },
         ],
       },
     ]);
@@ -60,7 +60,7 @@ describe('BottleneckAnalysisPresenter', () => {
     expect(dto.cycleComparison).toBeNull();
   });
 
-  it('formats cycle comparison with evolution percentage', () => {
+  it('presents cycle comparison with raw numeric evolution percent', () => {
     const inputWithComparison: BottleneckAnalysisResult = {
       ...input,
       cycleComparison: [
@@ -78,9 +78,9 @@ describe('BottleneckAnalysisPresenter', () => {
     expect(dto.cycleComparison).toEqual([
       {
         statusName: 'In Review',
-        previousMedianHours: '2.0j',
-        currentMedianHours: '36h',
-        evolution: '-25%',
+        previousMedianHours: 48,
+        currentMedianHours: 36,
+        evolutionPercent: -25,
       },
     ]);
   });

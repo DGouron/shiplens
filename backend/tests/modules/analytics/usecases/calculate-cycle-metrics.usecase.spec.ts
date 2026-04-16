@@ -1,5 +1,4 @@
 import {
-  CycleNotCompletedError,
   InsufficientHistoryError,
   NoCycleIssuesError,
 } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
@@ -48,19 +47,43 @@ describe('CalculateCycleMetricsUsecase', () => {
     expect(result.scopeCreep).toBe(0);
   });
 
-  it('throws CycleNotCompletedError for future cycle', async () => {
+  it('returns partial metrics for an in-progress cycle', async () => {
     gateway.snapshotData = {
       cycleId: 'cycle-1',
       teamId: 'team-1',
       cycleName: 'Sprint 10',
       startsAt: '2026-01-01T00:00:00Z',
       endsAt: '2099-12-31T00:00:00Z',
-      issues: [],
+      issues: [
+        {
+          externalId: 'issue-1',
+          title: 'Done issue',
+          statusName: 'Done',
+          points: 3,
+          createdAt: '2026-01-01T00:00:00Z',
+          completedAt: '2026-01-10T00:00:00Z',
+          startedAt: '2026-01-05T00:00:00Z',
+        },
+        {
+          externalId: 'issue-2',
+          title: 'In progress issue',
+          statusName: 'In Progress',
+          points: 5,
+          createdAt: '2026-01-01T00:00:00Z',
+          completedAt: null,
+          startedAt: '2026-01-08T00:00:00Z',
+        },
+      ],
     };
 
-    await expect(
-      usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' }),
-    ).rejects.toThrow(CycleNotCompletedError);
+    const result = await usecase.execute({
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+    });
+
+    expect(result.velocity.completedPoints).toBe(3);
+    expect(result.velocity.plannedPoints).toBe(8);
+    expect(result.throughput).toBe(1);
   });
 
   it('throws NoCycleIssuesError for empty cycle', async () => {
