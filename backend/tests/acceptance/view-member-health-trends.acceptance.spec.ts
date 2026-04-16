@@ -1,7 +1,10 @@
 import { NoCompletedCyclesError } from '@modules/analytics/entities/member-health/member-health.errors.js';
 import { MemberHealthPresenter } from '@modules/analytics/interface-adapters/presenters/member-health.presenter.js';
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubMemberHealthDataGateway } from '@modules/analytics/testing/good-path/stub.member-health-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { GetMemberHealthUsecase } from '@modules/analytics/usecases/get-member-health.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('View Member Health Trends (acceptance)', () => {
@@ -11,7 +14,14 @@ describe('View Member Health Trends (acceptance)', () => {
 
   beforeEach(() => {
     gateway = new StubMemberHealthDataGateway();
-    getMemberHealth = new GetMemberHealthUsecase(gateway);
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      new StubWorkflowConfigGateway(),
+      new StubAvailableStatusesGateway(),
+    );
+    getMemberHealth = new GetMemberHealthUsecase(
+      gateway,
+      resolveWorkflowConfig,
+    );
     presenter = new MemberHealthPresenter();
   });
 

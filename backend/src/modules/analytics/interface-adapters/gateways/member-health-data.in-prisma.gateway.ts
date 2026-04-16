@@ -32,6 +32,8 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     teamId: string,
     memberName: string,
     cycleLimit: number,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<MemberHealthCycleSnapshot[]> {
     const completedCycleIds =
       await this.estimationAccuracyDataGateway.getCompletedCycleIds(teamId);
@@ -48,6 +50,8 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
         cycleId,
         teamId,
         memberName,
+        startedStatuses,
+        completedStatuses,
       );
 
       const estimationScorePercent =
@@ -62,6 +66,7 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
         teamId,
         memberName,
         configuredReviewStatusName,
+        completedStatuses,
       );
 
       const driftingTicketCount = await this.computeDriftingTicketCount(
@@ -128,10 +133,14 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     cycleId: string,
     teamId: string,
     memberName: string,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<EstimatedIssue[]> {
     const data = await this.estimationAccuracyDataGateway.getEstimationData(
       cycleId,
       teamId,
+      startedStatuses,
+      completedStatuses,
     );
     return data.issues.filter((issue) => issue.assigneeName === memberName);
   }
@@ -182,11 +191,13 @@ export class MemberHealthDataInPrismaGateway extends MemberHealthDataGateway {
     teamId: string,
     memberName: string,
     configuredReviewStatusName: string | null,
+    completedStatuses: readonly string[],
   ): Promise<number | null> {
     const bottleneckData =
       await this.bottleneckAnalysisDataGateway.getBottleneckData(
         cycleId,
         teamId,
+        completedStatuses,
       );
 
     if (bottleneckData.completedIssues.length === 0) return null;

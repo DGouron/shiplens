@@ -17,4 +17,14 @@ export class AvailableStatusesInPrismaGateway extends AvailableStatusesGateway {
     });
     return results.map((row) => row.statusName);
   }
+
+  async getDistinctTransitionStatusNames(teamId: string): Promise<string[]> {
+    const results = await this.prisma.stateTransition.findMany({
+      where: { teamId },
+      distinct: ['toStatusName'],
+      select: { toStatusName: true },
+      orderBy: { toStatusName: 'asc' },
+    });
+    return results.map((row) => row.toStatusName);
+  }
 }

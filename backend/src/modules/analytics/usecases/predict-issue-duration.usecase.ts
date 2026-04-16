@@ -6,6 +6,7 @@ import {
 } from '../entities/duration-prediction/duration-prediction.errors.js';
 import { DurationPrediction } from '../entities/duration-prediction/duration-prediction.js';
 import { DurationPredictionDataGateway } from '../entities/duration-prediction/duration-prediction-data.gateway.js';
+import { ResolveWorkflowConfigUsecase } from './resolve-workflow-config.usecase.js';
 
 interface PredictIssueDurationParams {
   teamId: string;
@@ -22,6 +23,7 @@ export class PredictIssueDurationUsecase
 
   constructor(
     private readonly durationPredictionDataGateway: DurationPredictionDataGateway,
+    private readonly resolveWorkflowConfig: ResolveWorkflowConfigUsecase,
   ) {}
 
   async execute(
@@ -38,10 +40,16 @@ export class PredictIssueDurationUsecase
       throw new InsufficientHistoryError();
     }
 
+    const workflowConfig = await this.resolveWorkflowConfig.execute({
+      teamId: params.teamId,
+    });
+
     const cycleTimes =
       await this.durationPredictionDataGateway.getSimilarIssuesCycleTimes(
         params.teamId,
         params.issueExternalId,
+        workflowConfig.startedStatuses,
+        workflowConfig.completedStatuses,
       );
 
     if (cycleTimes.length === 0) {

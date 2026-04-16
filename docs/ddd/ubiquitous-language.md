@@ -88,3 +88,9 @@ Single source of truth for the project's business vocabulary. Enriched by `/prod
 | Locale | Shared | Language identifier (EN or FR) used to resolve the correct translation |
 | Generation language | Analytics | Language in which the AI produced a sprint report — stored as historical record on the report entity |
 | Display language | Shared | Workspace language used for UI labels — may differ from the generation language on older reports |
+| Workflow configuration | Analytics | Per-team mapping defining which status names correspond to "started" (work begins) and "completed" (work finished) for cycle time computation |
+| Started status | Analytics | Status name that marks the beginning of active work on an issue — used as the start point for cycle time |
+| Completed status | Analytics | Status name that marks the end of work on an issue — used as the end point for cycle time |
+| Hybrid resolution | Analytics | Three-tier strategy for determining workflow statuses: manual override > pattern matching > hardcoded fallback |
+| Health signal | Analytics | One of 5 per-member metrics (estimation score, underestimation ratio, average cycle time, drifting tickets, median review time) tracked over cycles with trend direction and severity color |
+| Drifting issue | Analytics | In-progress issue that has exceeded its expected business-hours budget per story point — status can be on-track, drifting, or needs-splitting |

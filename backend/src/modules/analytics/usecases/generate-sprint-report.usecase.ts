@@ -26,6 +26,7 @@ import {
   type TrendContext,
 } from '../entities/sprint-report/sprint-report-data.gateway.js';
 import { WorkspaceSettingsGateway } from '../entities/workspace-settings/workspace-settings.gateway.js';
+import { ResolveWorkflowConfigUsecase } from './resolve-workflow-config.usecase.js';
 
 interface GenerateSprintReportParams {
   cycleId: string;
@@ -55,6 +56,7 @@ export class GenerateSprintReportUsecase
     private readonly checklistItemGateway: ChecklistItemGateway,
     private readonly cycleMetricsDataGateway: CycleMetricsDataGateway,
     private readonly workspaceSettingsGateway: WorkspaceSettingsGateway,
+    private readonly resolveWorkflowConfig: ResolveWorkflowConfigUsecase,
   ) {}
 
   async execute(params: GenerateSprintReportParams): Promise<SprintReport> {
@@ -73,9 +75,15 @@ export class GenerateSprintReportUsecase
       throw new SprintNotSynchronizedError();
     }
 
+    const workflowConfig = await this.resolveWorkflowConfig.execute({
+      teamId: params.teamId,
+    });
+
     const sprintContext = await this.sprintReportDataGateway.getSprintContext(
       params.cycleId,
       params.teamId,
+      workflowConfig.startedStatuses,
+      workflowConfig.completedStatuses,
     );
 
     if (sprintContext.issues.length === 0) {
@@ -85,6 +93,7 @@ export class GenerateSprintReportUsecase
     const trendContext = await this.sprintReportDataGateway.getTrendContext(
       params.cycleId,
       params.teamId,
+      workflowConfig.completedStatuses,
     );
 
     const auditRules = await this.auditRuleGateway.findAll();

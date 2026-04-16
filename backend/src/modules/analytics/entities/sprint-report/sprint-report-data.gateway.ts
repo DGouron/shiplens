@@ -18,9 +18,12 @@ export abstract class SprintReportDataGateway {
   abstract getSprintContext(
     cycleId: string,
     teamId: string,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<SprintContext>;
   abstract getTrendContext(
     cycleId: string,
     teamId: string,
+    completedStatuses: readonly string[],
   ): Promise<TrendContext | null>;
 }

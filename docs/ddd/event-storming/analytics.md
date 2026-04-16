@@ -1,7 +1,7 @@
 # Event Storming — Analytics
 
-*Date: 2026-04-04*
-*Scope: Sprint metrics calculation, bottleneck analysis, blocked issue detection, duration prediction, AI reports*
+*Date: 2026-04-16*
+*Scope: Sprint metrics calculation, bottleneck analysis, blocked issue detection, duration prediction, AI reports, member health trends, workflow config auto-detection*
 
 ## Domain Events (Orange)
 
@@ -19,6 +19,9 @@
 | WorkspaceDashboardGenerated | GetWorkspaceDashboard | `src/modules/analytics/usecases/get-workspace-dashboard.usecase.ts` |
 | MemberDigestGenerated | GenerateMemberDigest | `src/modules/analytics/usecases/generate-member-digest.usecase.ts` |
 | TeamExcludedStatusesUpdated | SetTeamExcludedStatuses | `src/modules/analytics/usecases/set-team-excluded-statuses.usecase.ts` |
+| WorkflowConfigAutoDetected | ResolveWorkflowConfig (no existing config) | `src/modules/analytics/usecases/resolve-workflow-config.usecase.ts` |
+| WorkflowConfigSaved | SetWorkflowConfig (manual) or ResolveWorkflowConfig (auto-detect) | `src/modules/analytics/usecases/set-workflow-config.usecase.ts` |
+| MemberHealthTrendsViewed | GetMemberHealth | `src/modules/analytics/usecases/get-member-health.usecase.ts` |
 
 ## Commands (Blue)
 
@@ -42,6 +45,11 @@
 | GenerateMemberDigest | user | MemberDigestGenerated | `src/modules/analytics/usecases/generate-member-digest.usecase.ts` |
 | GetTeamExcludedStatuses | user | — (read) | `src/modules/analytics/usecases/get-team-excluded-statuses.usecase.ts` |
 | SetTeamExcludedStatuses | user | TeamExcludedStatusesUpdated | `src/modules/analytics/usecases/set-team-excluded-statuses.usecase.ts` |
+| GetWorkflowConfig | user | WorkflowConfigAutoDetected (if first access) | `src/modules/analytics/usecases/get-workflow-config.usecase.ts` |
+| SetWorkflowConfig | user | WorkflowConfigSaved | `src/modules/analytics/usecases/set-workflow-config.usecase.ts` |
+| ResolveWorkflowConfig | system (internal) | WorkflowConfigAutoDetected | `src/modules/analytics/usecases/resolve-workflow-config.usecase.ts` |
+| GetMemberHealth | user | MemberHealthTrendsViewed | `src/modules/analytics/usecases/get-member-health.usecase.ts` |
+| DetectDriftingIssues | user | — (read) | `src/modules/analytics/usecases/detect-drifting-issues.usecase.ts` |
 
 ## Entities (Yellow)
 
@@ -54,12 +62,15 @@
 | BottleneckAnalysis | Bottleneck analysis — median time distribution per status, per assignee, cross-cycle comparison | `src/modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.ts` |
 | EstimationAccuracy | Estimation accuracy — points/cycle time ratio per issue, developer, label, team | `src/modules/analytics/entities/estimation-accuracy/estimation-accuracy.ts` |
 | DurationPrediction | Duration prediction based on similar issues — confidence interval (P25/P50/P75) | `src/modules/analytics/entities/duration-prediction/duration-prediction.ts` |
+| WorkflowConfig | Team-level workflow status configuration — startedStatuses, completedStatuses, source (auto-detected or manual) | `src/modules/analytics/entities/workflow-config/workflow-config.ts` |
+| MemberHealth | Per-member health across N cycles — 5 computed signals: estimation, underestimation, cycle time, drifting tickets, review time | `src/modules/analytics/entities/member-health/member-health.ts` |
+| DriftingIssue | In-progress issue exceeding business-hours budget per story point. Status: on-track, drifting, needs-splitting | `src/modules/analytics/entities/drifting-issue/drifting-issue.ts` |
 
 ## Policies and Business Rules (Purple)
 
 | Rule | Description | Source File |
 |------|-------------|-------------|
-| CycleCompletionRequired | Metrics are only available for completed cycles (endsAt < now) | `src/modules/analytics/entities/cycle-snapshot/cycle-snapshot.ts` (l.26-28) |
+| CycleCompletionRequired | ~~Relaxed~~ — both completed and in-progress cycles can produce metrics | `src/modules/analytics/entities/cycle-snapshot/cycle-snapshot.ts` |
 | NoCycleIssuesGuard | A cycle without issues cannot produce metrics | `src/modules/analytics/entities/cycle-snapshot/cycle-snapshot.ts` (l.30-32) |
 | MinimumHistoryForTrend | Minimum 3 completed cycles to display a velocity trend | `src/modules/analytics/usecases/calculate-cycle-metrics.usecase.ts` (l.27) |
 | ThresholdSeverityEscalation | warning if duration >= threshold, critical if duration >= 2x threshold | `src/modules/analytics/entities/status-threshold/status-threshold.ts` (l.51-58) |
@@ -71,6 +82,11 @@
 | SupportedLanguages | Only FR and EN are supported for report generation | `src/modules/analytics/usecases/generate-sprint-report.usecase.ts` (l.43) |
 | ExcludedStatusesAutoResolve | When a status is excluded from tracking, active alerts for that status are automatically resolved | `src/modules/analytics/usecases/set-team-excluded-statuses.usecase.ts` (l.21-40) |
 | AlertSortOrder | Active alerts are sorted by severity (critical first) then by decreasing duration | `src/modules/analytics/usecases/get-blocked-issues.usecase.ts` (l.16-20) |
+| WorkflowConfigAutoDetection | If no config exists, scan team's transition status names against known patterns (case-insensitive): started = ["progress", "dev", "doing", "started", "in development"], completed = ["done", "completed", "closed", "shipped", "released"] | `src/modules/analytics/entities/workflow-config/workflow-status-patterns.ts` |
+| WorkflowConfigFallback | When pattern matching finds zero matches, fallback to ["In Progress", "Started"] / ["Done", "Completed"] | `src/modules/analytics/entities/workflow-config/workflow-status-patterns.ts` |
+| WorkflowConfigParameterization | Gateway methods receive startedStatuses/completedStatuses as parameters, resolved by ResolveWorkflowConfigUsecase before any call | `src/modules/analytics/entities/sprint-report/sprint-report-data.gateway.ts` |
+| MemberHealthMinimumHistory | Minimum 3 non-null values across cycles required to compute a trend indicator | `src/modules/analytics/entities/member-health/health-signal.ts` |
+| MemberHealthIndicatorEscalation | 1 consecutive unfavorable change = orange, 2+ = red, stable/favorable = green | `src/modules/analytics/entities/member-health/health-signal.ts` |
 
 ## Presenters (Green)
 
@@ -88,6 +104,9 @@
 | CycleIssuesPresenter | Cycle issues | `src/modules/analytics/interface-adapters/presenters/cycle-issues.presenter.ts` |
 | ReportHistoryPresenter | Generated report history | `src/modules/analytics/interface-adapters/presenters/report-history.presenter.ts` |
 | ReportDetailPresenter | Specific report detail | `src/modules/analytics/interface-adapters/presenters/report-detail.presenter.ts` |
+| MemberHealthPresenter | 5 health signals per member with indicator color, trend direction, last value | `src/modules/analytics/interface-adapters/presenters/member-health.presenter.ts` |
+| WorkflowConfigPresenter | startedStatuses, completedStatuses, source (auto-detected or manual) | `src/modules/analytics/interface-adapters/presenters/workflow-config.presenter.ts` |
+| DriftingIssuesPresenter | Drifting issues with drift status, elapsed time, budget | `src/modules/analytics/interface-adapters/presenters/drifting-issues.presenter.ts` |
 
 ## Gateways and External Systems (White)
 
@@ -97,6 +116,7 @@
 | AI Provider (OpenAI/Anthropic/Ollama) | Text generation for sprint reports and digests | `src/modules/analytics/entities/sprint-report/ai-text-generator.gateway.ts` |
 | Claude CLI (fallback) | Text generation via Claude CLI if no Anthropic API key | `src/modules/analytics/interface-adapters/gateways/ai-text-generator.with-claude-cli.gateway.ts` |
 | Filesystem | Team settings persistence (excluded statuses) | `src/modules/analytics/interface-adapters/gateways/team-settings.in-file.gateway.ts` |
+| Prisma (TeamWorkflowConfig) | Persist and retrieve auto-detected or manually-set workflow configs per team | `src/modules/analytics/interface-adapters/gateways/workflow-config.in-prisma.gateway.ts` |
 
 ## Relationships with Other Bounded Contexts
 
@@ -120,6 +140,12 @@
 | Accuracy score | Measure of the gap between estimation and reality via points/days ratio | — |
 | Prediction | Calculated estimate of probable duration based on history | — |
 | Confidence interval | Trio of P25/P50/P75 values framing the predicted duration | — |
+| Workflow configuration | Per-team mapping defining which status names correspond to "started" and "completed" for cycle time computation | — |
+| Started status | Status name marking the beginning of active work on an issue | — |
+| Completed status | Status name marking the end of work on an issue | — |
+| Hybrid resolution | Three-tier strategy: manual override > pattern matching > hardcoded fallback | — |
+| Health signal | One of 5 per-member metrics tracked over cycles with trend direction and severity color | — |
+| Drifting issue | In-progress issue exceeding its expected business-hours budget | — |
 
 ## Hot Spots (Pink)
 
@@ -128,4 +154,4 @@
 | Direct coupling Analytics → Audit | high | `GenerateSprintReportUsecase` directly imports types and gateways from the Audit module via a relative path (`../../audit/entities/...`). This is not a `@modules/` import, it's an internal file import. Although the NestJS module declares the import, accessing internal files violates the BC boundary principle. An Anti-Corruption Layer or a port in Analytics would be cleaner. |
 | TeamSettings persisted in filesystem | medium | `team-settings.in-file.gateway.ts` uses the filesystem while everything else uses Prisma. Inconsistency that could cause issues in multi-instance deployments. |
 | Fragile JSON parsing of AI response | medium | `GenerateSprintReportUsecase` (l.119-124) parses the AI response JSON with a regex `\{[\s\S]*\}` — fragile if the AI response contains multiple JSON objects or an unexpected format. |
-| Very large module | high | 18 usecases, 12 presenters, 7 entities, 15+ gateways. This BC could benefit from splitting: Metrics, Reporting, Alerting, Estimation, Dashboard. |
+| Very large module | high | 23 usecases, 15 presenters, 10 entities, 18+ gateways. This BC could benefit from splitting: Metrics, Reporting, Alerting, Estimation, Dashboard, MemberHealth, WorkflowConfig. |

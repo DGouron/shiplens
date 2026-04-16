@@ -4,8 +4,11 @@ import {
 } from '@modules/analytics/entities/duration-prediction/duration-prediction.errors.js';
 import { DurationPredictionController } from '@modules/analytics/interface-adapters/controllers/duration-prediction.controller.js';
 import { DurationPredictionPresenter } from '@modules/analytics/interface-adapters/presenters/duration-prediction.presenter.js';
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubDurationPredictionDataGateway } from '@modules/analytics/testing/good-path/stub.duration-prediction-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { PredictIssueDurationUsecase } from '@modules/analytics/usecases/predict-issue-duration.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('DurationPredictionController', () => {
@@ -14,7 +17,14 @@ describe('DurationPredictionController', () => {
 
   beforeEach(() => {
     gateway = new StubDurationPredictionDataGateway();
-    const usecase = new PredictIssueDurationUsecase(gateway);
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      new StubWorkflowConfigGateway(),
+      new StubAvailableStatusesGateway(),
+    );
+    const usecase = new PredictIssueDurationUsecase(
+      gateway,
+      resolveWorkflowConfig,
+    );
     const presenter = new DurationPredictionPresenter();
     controller = new DurationPredictionController(usecase, presenter);
   });

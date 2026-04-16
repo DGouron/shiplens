@@ -1,11 +1,14 @@
 import { SprintReportController } from '@modules/analytics/interface-adapters/controllers/sprint-report.controller.js';
 import { SprintReportPresenter } from '@modules/analytics/interface-adapters/presenters/sprint-report.presenter.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { StubWorkspaceSettingsGateway } from '@modules/analytics/testing/good-path/stub.workspace-settings.gateway.js';
 import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -22,6 +25,10 @@ describe('SprintReportController', () => {
     const checklistItemGateway = new StubChecklistItemGateway();
     const cycleMetricsDataGateway = new StubCycleMetricsDataGateway();
     workspaceSettingsGateway = new StubWorkspaceSettingsGateway();
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      new StubWorkflowConfigGateway(),
+      new StubAvailableStatusesGateway(),
+    );
     const usecase = new GenerateSprintReportUsecase(
       dataGateway,
       aiGateway,
@@ -30,6 +37,7 @@ describe('SprintReportController', () => {
       checklistItemGateway,
       cycleMetricsDataGateway,
       workspaceSettingsGateway,
+      resolveWorkflowConfig,
     );
     const presenter = new SprintReportPresenter();
     controller = new SprintReportController(

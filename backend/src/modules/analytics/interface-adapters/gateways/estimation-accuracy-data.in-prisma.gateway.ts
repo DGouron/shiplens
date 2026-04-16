@@ -12,6 +12,8 @@ export class EstimationAccuracyDataInPrismaGateway extends EstimationAccuracyDat
   async getEstimationData(
     cycleId: string,
     teamId: string,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<EstimationAccuracyProps> {
     const cycle = await this.prisma.cycle.findFirstOrThrow({
       where: { externalId: cycleId, teamId },
@@ -63,16 +65,12 @@ export class EstimationAccuracyDataInPrismaGateway extends EstimationAccuracyDat
         (transition) => transition.issueExternalId === issue.externalId,
       );
 
-      const startedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'In Progress' ||
-          transition.toStatusName === 'Started',
+      const startedTransition = issueTransitions.find((transition) =>
+        startedStatuses.includes(transition.toStatusName),
       );
 
-      const completedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'Done' ||
-          transition.toStatusName === 'Completed',
+      const completedTransition = issueTransitions.find((transition) =>
+        completedStatuses.includes(transition.toStatusName),
       );
 
       if (!startedTransition || !completedTransition) {

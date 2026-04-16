@@ -8,7 +8,12 @@ export class StubDurationPredictionDataGateway extends DurationPredictionDataGat
     return this.completedCycleCount;
   }
 
-  async getSimilarIssuesCycleTimes(): Promise<number[]> {
+  async getSimilarIssuesCycleTimes(
+    _teamId?: string,
+    _issueExternalId?: string,
+    _startedStatuses?: readonly string[],
+    _completedStatuses?: readonly string[],
+  ): Promise<number[]> {
     return this.similarIssuesCycleTimes;
   }
 }

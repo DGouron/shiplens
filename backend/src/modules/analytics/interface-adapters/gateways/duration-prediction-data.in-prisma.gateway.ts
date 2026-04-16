@@ -24,6 +24,8 @@ export class DurationPredictionDataInPrismaGateway extends DurationPredictionDat
   async getSimilarIssuesCycleTimes(
     teamId: string,
     issueExternalId: string,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<number[]> {
     const targetIssue = await this.prisma.issue.findFirst({
       where: { externalId: issueExternalId, teamId },
@@ -94,16 +96,12 @@ export class DurationPredictionDataInPrismaGateway extends DurationPredictionDat
         (transition) => transition.issueExternalId === issue.externalId,
       );
 
-      const startedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'In Progress' ||
-          transition.toStatusName === 'Started',
+      const startedTransition = issueTransitions.find((transition) =>
+        startedStatuses.includes(transition.toStatusName),
       );
 
-      const completedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'Done' ||
-          transition.toStatusName === 'Completed',
+      const completedTransition = issueTransitions.find((transition) =>
+        completedStatuses.includes(transition.toStatusName),
       );
 
       if (!startedTransition || !completedTransition) continue;

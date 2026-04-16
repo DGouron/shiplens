@@ -1,5 +1,8 @@
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { CalculateEstimationAccuracyUsecase } from '@modules/analytics/usecases/calculate-estimation-accuracy.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('CalculateEstimationAccuracyUsecase', () => {
@@ -8,7 +11,16 @@ describe('CalculateEstimationAccuracyUsecase', () => {
 
   beforeEach(() => {
     gateway = new StubEstimationAccuracyDataGateway();
-    usecase = new CalculateEstimationAccuracyUsecase(gateway);
+    const workflowConfigGateway = new StubWorkflowConfigGateway();
+    const availableStatusesGateway = new StubAvailableStatusesGateway();
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      workflowConfigGateway,
+      availableStatusesGateway,
+    );
+    usecase = new CalculateEstimationAccuracyUsecase(
+      gateway,
+      resolveWorkflowConfig,
+    );
   });
 
   it('returns estimation accuracy entity for a cycle', async () => {

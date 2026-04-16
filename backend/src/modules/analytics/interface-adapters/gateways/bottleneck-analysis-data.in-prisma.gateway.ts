@@ -15,6 +15,7 @@ export class BottleneckAnalysisDataInPrismaGateway extends BottleneckAnalysisDat
   async getBottleneckData(
     cycleId: string,
     teamId: string,
+    completedStatuses: readonly string[],
   ): Promise<BottleneckAnalysisProps> {
     const cycle = await this.prisma.cycle.findFirstOrThrow({
       where: { externalId: cycleId, teamId },
@@ -44,8 +45,7 @@ export class BottleneckAnalysisDataInPrismaGateway extends BottleneckAnalysisDat
         return transitions.some(
           (transition) =>
             transition.issueExternalId === issue.externalId &&
-            (transition.toStatusName === 'Done' ||
-              transition.toStatusName === 'Completed'),
+            completedStatuses.includes(transition.toStatusName),
         );
       })
       .map((issue) => ({

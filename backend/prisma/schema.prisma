@@ -214,3 +214,11 @@ model SlackAlertLog {
   issueExternalId String
   sentAt          String
 }
+
+model TeamWorkflowConfig {
+  id                String @id @default(uuid())
+  teamId            String @unique
+  startedStatuses   String
+  completedStatuses String
+  source            String
+}
