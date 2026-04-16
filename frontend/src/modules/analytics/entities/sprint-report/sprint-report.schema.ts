@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const sprintReportHistoryItemSchema = z.object({
   id: z.string(),
+  cycleId: z.string(),
   cycleName: z.string(),
   language: z.string(),
   generatedAt: z.string(),
@@ -13,6 +14,7 @@ export const sprintReportHistoryResponseSchema = z.object({
 
 export const sprintReportDetailResponseSchema = z.object({
   id: z.string(),
+  cycleId: z.string(),
   cycleName: z.string(),
   language: z.string(),
   generatedAt: z.string(),

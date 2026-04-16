@@ -4,6 +4,7 @@ import { type SprintReport } from '../../entities/sprint-report/sprint-report.js
 
 export interface ReportHistoryItemDto {
   id: string;
+  cycleId: string;
   cycleName: string;
   language: string;
   generatedAt: string;
@@ -21,6 +22,7 @@ export class ReportHistoryPresenter
     return {
       reports: reports.map((report) => ({
         id: report.id,
+        cycleId: report.cycleId,
         cycleName: report.cycleName,
         language: report.language,
         generatedAt: report.generatedAt,

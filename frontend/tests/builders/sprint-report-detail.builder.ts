@@ -8,6 +8,7 @@ export class SprintReportDetailBuilder extends EntityBuilder<
   constructor() {
     super({
       id: 'report-1',
+      cycleId: 'cycle-1',
       cycleName: 'Cycle 1',
       language: 'EN',
       generatedAt: '2026-04-01T10:00:00.000Z',
@@ -18,6 +19,11 @@ export class SprintReportDetailBuilder extends EntityBuilder<
 
   withId(id: string): this {
     this.props.id = id;
+    return this;
+  }
+
+  withCycleId(cycleId: string): this {
+    this.props.cycleId = cycleId;
     return this;
   }
 

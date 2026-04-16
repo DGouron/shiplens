@@ -47,6 +47,7 @@ export class StubSprintReportGateway extends SprintReportGateway {
       )
       .map((detail) => ({
         id: detail.id,
+        cycleId: detail.cycleId,
         cycleName: detail.cycleName,
         language: detail.language,
         generatedAt: detail.generatedAt,
@@ -73,6 +74,7 @@ export class StubSprintReportGateway extends SprintReportGateway {
       this.onGenerate?.(params) ??
       ({
         id: `report-${this.details.length + 1}`,
+        cycleId: params.cycleId,
         cycleName: `Cycle ${params.cycleId}`,
         language: 'EN',
         generatedAt: '2026-04-15T10:00:00.000Z',

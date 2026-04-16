@@ -79,7 +79,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle 1',
         }),
       { wrapper },
     );
@@ -100,7 +99,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle 1',
         }),
       { wrapper },
     );
@@ -132,7 +130,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle 1',
         }),
       { wrapper },
     );
@@ -156,7 +153,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle 1',
         }),
       { wrapper },
     );
@@ -171,7 +167,7 @@ describe('useAiReport', () => {
     overrideSprintReportUsecases(gateway);
 
     const { result } = renderHook(
-      () => useAiReport({ teamId: null, cycleId: null, cycleName: null }),
+      () => useAiReport({ teamId: null, cycleId: null }),
       { wrapper },
     );
 
@@ -191,7 +187,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle cycle-1',
         }),
       { wrapper },
     );
@@ -236,7 +231,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle 1',
         }),
       { wrapper },
     );
@@ -271,7 +265,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle 1',
         }),
       { wrapper },
     );
@@ -313,7 +306,6 @@ describe('useAiReport', () => {
         useAiReport({
           teamId: 'team-1',
           cycleId: 'cycle-1',
-          cycleName: 'Cycle 1',
         }),
       { wrapper },
     );

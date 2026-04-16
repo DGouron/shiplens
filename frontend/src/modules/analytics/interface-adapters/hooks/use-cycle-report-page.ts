@@ -133,16 +133,6 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     [navigate, selectedTeamId],
   );
 
-  const selectedCycleName = useMemo<string | null>(() => {
-    if (selectedCycleId === null) return null;
-    if (shellState.status !== 'ready') return null;
-    if (shellState.data.cycleSelector === null) return null;
-    const match = shellState.data.cycleSelector.options.find(
-      (option) => option.cycleId === selectedCycleId,
-    );
-    return match?.label ?? null;
-  }, [selectedCycleId, shellState]);
-
   const {
     state: aiReportState,
     generate: generateAiReport,
@@ -151,7 +141,6 @@ export function useCycleReportPage(): UseCycleReportPageResult {
   } = useAiReport({
     teamId: selectedTeamId,
     cycleId: selectedCycleId,
-    cycleName: selectedCycleName,
   });
 
   const showMemberDigestSection = selectedMemberName !== null;

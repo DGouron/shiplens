@@ -12,7 +12,6 @@ import { type AiReportViewModel } from '../presenters/ai-report.view-model.schem
 export interface UseAiReportParams {
   teamId: string | null;
   cycleId: string | null;
-  cycleName: string | null;
 }
 
 export type AiReportState = AsyncState<AiReportViewModel>;
@@ -28,7 +27,7 @@ const COPY_CONFIRMATION_TIMEOUT_MS = 2000;
 
 export function useAiReport(params: UseAiReportParams): UseAiReportResult {
   const locale = useLocale();
-  const { teamId, cycleId, cycleName } = params;
+  const { teamId, cycleId } = params;
   const queryClient = useQueryClient();
   const [copyConfirmation, setCopyConfirmation] = useState<string | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -47,12 +46,12 @@ export function useAiReport(params: UseAiReportParams): UseAiReportResult {
 
   const matchedReportId = useMemo<string | null>(() => {
     if (historyQuery.data === undefined) return null;
-    if (cycleName === null) return null;
+    if (cycleId === null) return null;
     const match = historyQuery.data.reports.find(
-      (report) => report.cycleName === cycleName,
+      (report) => report.cycleId === cycleId,
     );
     return match?.id ?? null;
-  }, [historyQuery.data, cycleName]);
+  }, [historyQuery.data, cycleId]);
 
   const detailEnabled = matchedReportId !== null;
 

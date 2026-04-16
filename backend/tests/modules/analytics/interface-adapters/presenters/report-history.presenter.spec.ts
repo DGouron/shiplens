@@ -36,6 +36,7 @@ describe('ReportHistoryPresenter', () => {
 
     expect(result.reports[0]).toEqual({
       id: report.id,
+      cycleId: report.cycleId,
       cycleName: 'Sprint 10',
       language: 'EN',
       generatedAt: '2026-01-01T10:00:00.000Z',
