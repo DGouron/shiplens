@@ -6,6 +6,7 @@ import { bottleneckAnalysisTranslations } from '../../presenters/bottleneck-anal
 import { cycleMetricsTranslations } from '../../presenters/cycle-metrics.translations.ts';
 import { driftingIssuesTranslations } from '../../presenters/drifting-issues.translations.ts';
 import { estimationAccuracyTranslations } from '../../presenters/estimation-accuracy.translations.ts';
+import { memberDigestTranslations } from '../../presenters/member-digest.translations.ts';
 import { CycleReportReadyView } from './cycle-report-ready.view.tsx';
 
 export function CycleReportView() {
@@ -18,6 +19,8 @@ export function CycleReportView() {
     estimationState,
     driftingState,
     aiReportState,
+    memberDigestState,
+    showMemberDigestSection,
     memberFilterViewModel,
     selectTeam,
     selectCycle,
@@ -26,6 +29,8 @@ export function CycleReportView() {
     generateAiReport,
     exportAiReport,
     copyAiReport,
+    generateMemberDigest,
+    copyMemberDigest,
   } = useCycleReportPage();
   const metricsTranslationBundle = cycleMetricsTranslations[locale];
   const bottleneckTranslationBundle = bottleneckAnalysisTranslations[locale];
@@ -33,6 +38,7 @@ export function CycleReportView() {
   const estimationTranslationBundle = estimationAccuracyTranslations[locale];
   const driftingTranslationBundle = driftingIssuesTranslations[locale];
   const aiReportTranslationBundle = aiReportTranslations[locale];
+  const memberDigestTranslationBundle = memberDigestTranslations[locale];
 
   if (shellState.status === 'loading') {
     return (
@@ -59,6 +65,8 @@ export function CycleReportView() {
       estimationState={estimationState}
       driftingState={driftingState}
       aiReportState={aiReportState}
+      memberDigestState={memberDigestState}
+      showMemberDigestSection={showMemberDigestSection}
       memberFilterViewModel={memberFilterViewModel}
       metricsTranslations={metricsTranslationBundle}
       bottleneckTranslations={bottleneckTranslationBundle}
@@ -66,6 +74,7 @@ export function CycleReportView() {
       estimationTranslations={estimationTranslationBundle}
       driftingTranslations={driftingTranslationBundle}
       aiReportTranslations={aiReportTranslationBundle}
+      memberDigestTranslations={memberDigestTranslationBundle}
       onTeamChange={selectTeam}
       onCycleChange={selectCycle}
       onMemberSelect={selectMember}
@@ -73,6 +82,8 @@ export function CycleReportView() {
       onGenerateAiReport={generateAiReport}
       onExportAiReport={exportAiReport}
       onCopyAiReport={copyAiReport}
+      onGenerateMemberDigest={generateMemberDigest}
+      onCopyMemberDigest={copyMemberDigest}
     />
   );
 }

@@ -4,6 +4,7 @@ import { type BottleneckAnalysisState } from '../../hooks/use-bottleneck-analysi
 import { type CycleMetricsState } from '../../hooks/use-cycle-metrics.ts';
 import { type DriftingIssuesState } from '../../hooks/use-drifting-issues.ts';
 import { type EstimationAccuracyState } from '../../hooks/use-estimation-accuracy.ts';
+import { type MemberDigestState } from '../../hooks/use-member-digest.ts';
 import { type AiReportTranslations } from '../../presenters/ai-report.translations.ts';
 import { type BlockedIssuesTranslations } from '../../presenters/blocked-issues.translations.ts';
 import { type BottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';
@@ -11,7 +12,9 @@ import { type CycleMetricsTranslations } from '../../presenters/cycle-metrics.tr
 import { type CycleReportShellViewModel } from '../../presenters/cycle-report-shell.view-model.schema.ts';
 import { type DriftingIssuesTranslations } from '../../presenters/drifting-issues.translations.ts';
 import { type EstimationAccuracyTranslations } from '../../presenters/estimation-accuracy.translations.ts';
+import { type MemberDigestTranslations } from '../../presenters/member-digest.translations.ts';
 import { type MemberFilterViewModel } from '../../presenters/member-filter.view-model.schema.ts';
+import { MemberDigestSectionView } from '../member-digest/member-digest-section.view.tsx';
 import { MemberFilterView } from '../member-filter/member-filter.view.tsx';
 import { CycleReportCycleSelectorView } from './cycle-report-cycle-selector.view.tsx';
 import { CycleReportEmptyPromptView } from './cycle-report-empty-prompt.view.tsx';
@@ -26,6 +29,8 @@ interface CycleReportReadyViewProps {
   estimationState: EstimationAccuracyState;
   driftingState: DriftingIssuesState;
   aiReportState: AiReportState;
+  memberDigestState: MemberDigestState | null;
+  showMemberDigestSection: boolean;
   memberFilterViewModel: MemberFilterViewModel;
   metricsTranslations: CycleMetricsTranslations;
   bottleneckTranslations: BottleneckAnalysisTranslations;
@@ -33,6 +38,7 @@ interface CycleReportReadyViewProps {
   estimationTranslations: EstimationAccuracyTranslations;
   driftingTranslations: DriftingIssuesTranslations;
   aiReportTranslations: AiReportTranslations;
+  memberDigestTranslations: MemberDigestTranslations;
   onTeamChange: (teamId: string) => void;
   onCycleChange: (cycleId: string) => void;
   onMemberSelect: (memberName: string | null) => void;
@@ -40,6 +46,8 @@ interface CycleReportReadyViewProps {
   onGenerateAiReport: () => void;
   onExportAiReport: () => void;
   onCopyAiReport: () => void;
+  onGenerateMemberDigest: () => void;
+  onCopyMemberDigest: () => void;
 }
 
 export function CycleReportReadyView({
@@ -50,6 +58,8 @@ export function CycleReportReadyView({
   estimationState,
   driftingState,
   aiReportState,
+  memberDigestState,
+  showMemberDigestSection,
   memberFilterViewModel,
   metricsTranslations,
   bottleneckTranslations,
@@ -57,6 +67,7 @@ export function CycleReportReadyView({
   estimationTranslations,
   driftingTranslations,
   aiReportTranslations,
+  memberDigestTranslations,
   onTeamChange,
   onCycleChange,
   onMemberSelect,
@@ -64,6 +75,8 @@ export function CycleReportReadyView({
   onGenerateAiReport,
   onExportAiReport,
   onCopyAiReport,
+  onGenerateMemberDigest,
+  onCopyMemberDigest,
 }: CycleReportReadyViewProps) {
   return (
     <main data-testid="cycle-report-page" className="container">
@@ -92,6 +105,14 @@ export function CycleReportReadyView({
       </div>
       {viewModel.emptyPrompt && (
         <CycleReportEmptyPromptView message={viewModel.emptyPrompt} />
+      )}
+      {showMemberDigestSection && memberDigestState && (
+        <MemberDigestSectionView
+          state={memberDigestState}
+          translations={memberDigestTranslations}
+          onGenerate={onGenerateMemberDigest}
+          onCopy={onCopyMemberDigest}
+        />
       )}
       <div className="cycle-report-sections">
         {viewModel.sectionPlaceholders.map((placeholder) => (

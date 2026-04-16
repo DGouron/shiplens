@@ -33,6 +33,10 @@ import {
   type EstimationAccuracyState,
   useEstimationAccuracy,
 } from './use-estimation-accuracy.ts';
+import {
+  type MemberDigestState,
+  useMemberDigest,
+} from './use-member-digest.ts';
 
 export interface UseCycleReportPageResult {
   shellState: CycleReportShellState;
@@ -42,6 +46,8 @@ export interface UseCycleReportPageResult {
   estimationState: EstimationAccuracyState;
   driftingState: DriftingIssuesState;
   aiReportState: AiReportState;
+  memberDigestState: MemberDigestState | null;
+  showMemberDigestSection: boolean;
   memberFilterViewModel: MemberFilterViewModel;
   selectTeam: (teamId: string) => void;
   selectCycle: (cycleId: string) => void;
@@ -50,6 +56,8 @@ export interface UseCycleReportPageResult {
   generateAiReport: () => void;
   exportAiReport: () => void;
   copyAiReport: () => void;
+  generateMemberDigest: () => void;
+  copyMemberDigest: () => void;
 }
 
 export function useCycleReportPage(): UseCycleReportPageResult {
@@ -146,6 +154,26 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     cycleName: selectedCycleName,
   });
 
+  const showMemberDigestSection = selectedMemberName !== null;
+
+  const memberDigestHook = useMemberDigest({
+    teamId: selectedTeamId ?? '',
+    cycleId: selectedCycleId ?? '',
+    memberName: selectedMemberName ?? '',
+  });
+
+  const memberDigestState: MemberDigestState | null = showMemberDigestSection
+    ? memberDigestHook.state
+    : null;
+
+  const generateMemberDigest = useCallback(() => {
+    memberDigestHook.generate();
+  }, [memberDigestHook]);
+
+  const copyMemberDigest = useCallback(() => {
+    memberDigestHook.copyToClipboard();
+  }, [memberDigestHook]);
+
   useEffect(() => {
     if (selectedCycleId !== null) return;
     if (shellState.status !== 'ready') return;
@@ -167,6 +195,8 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     estimationState,
     driftingState,
     aiReportState,
+    memberDigestState,
+    showMemberDigestSection,
     memberFilterViewModel,
     selectTeam,
     selectCycle,
@@ -175,5 +205,7 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     generateAiReport,
     exportAiReport,
     copyAiReport,
+    generateMemberDigest,
+    copyMemberDigest,
   };
 }

@@ -3,9 +3,11 @@ import { BottleneckAnalysisInHttpGateway } from '@/modules/analytics/interface-a
 import { CycleMetricsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/cycle-metrics.in-http.gateway.ts';
 import { DriftingIssuesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/drifting-issues.in-http.gateway.ts';
 import { EstimationAccuracyInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/estimation-accuracy.in-http.gateway.ts';
+import { MemberDigestInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/member-digest.in-http.gateway.ts';
 import { SprintReportInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/sprint-report.in-http.gateway.ts';
 import { TeamCyclesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-cycles.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
+import { GenerateMemberDigestUsecase } from '@/modules/analytics/usecases/generate-member-digest.usecase.ts';
 import { GenerateSprintReportUsecase } from '@/modules/analytics/usecases/generate-sprint-report.usecase.ts';
 import { GetBottleneckAnalysisUsecase } from '@/modules/analytics/usecases/get-bottleneck-analysis.usecase.ts';
 import { GetCycleMetricsUsecase } from '@/modules/analytics/usecases/get-cycle-metrics.usecase.ts';
@@ -33,6 +35,7 @@ const blockedIssuesGateway = new BlockedIssuesInHttpGateway();
 const estimationAccuracyGateway = new EstimationAccuracyInHttpGateway();
 const driftingIssuesGateway = new DriftingIssuesInHttpGateway();
 const sprintReportGateway = new SprintReportInHttpGateway();
+const memberDigestGateway = new MemberDigestInHttpGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -57,6 +60,7 @@ export const usecases = {
   listSprintReports: new ListSprintReportsUsecase(sprintReportGateway),
   getSprintReportDetail: new GetSprintReportDetailUsecase(sprintReportGateway),
   generateSprintReport: new GenerateSprintReportUsecase(sprintReportGateway),
+  generateMemberDigest: new GenerateMemberDigestUsecase(memberDigestGateway),
 };
 
 export function overrideUsecases(overrides: Partial<typeof usecases>): void {
@@ -95,5 +99,8 @@ export function resetUsecases(): void {
   );
   usecases.generateSprintReport = new GenerateSprintReportUsecase(
     sprintReportGateway,
+  );
+  usecases.generateMemberDigest = new GenerateMemberDigestUsecase(
+    memberDigestGateway,
   );
 }
