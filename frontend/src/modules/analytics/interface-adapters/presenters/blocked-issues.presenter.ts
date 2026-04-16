@@ -66,6 +66,7 @@ export class BlockedIssuesPresenter
         daysSuffix: this.translations.daysSuffix,
       }),
       severityLabel: this.translateSeverity(alert.severity),
+      severityLevel: alert.severity === 'critical' ? 'critical' : 'warning',
       issueUrl: alert.issueUrl,
       assigneeName,
       memberHealthTrendsHref: href,

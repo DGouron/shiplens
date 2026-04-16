@@ -17,7 +17,9 @@ export function BlockedIssueItemView({
   };
 
   return (
-    <li className="blocked-issues-item">
+    <li
+      className={`blocked-issues-item blocked-issues-item--${item.severityLevel}`}
+    >
       <a
         className="blocked-issues-link"
         href={item.issueUrl}

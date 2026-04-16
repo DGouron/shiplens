@@ -6,6 +6,7 @@ export const blockedIssueItemViewModelSchema = z.object({
   statusName: z.string(),
   durationLabel: z.string(),
   severityLabel: z.string(),
+  severityLevel: z.enum(['critical', 'warning']),
   issueUrl: z.string(),
   assigneeName: z.nullable(z.string()),
   memberHealthTrendsHref: z.nullable(z.string()),
