@@ -7,6 +7,7 @@ import { LocaleProvider } from './locale-context.tsx';
 import { queryClient } from './main/query-client.ts';
 import { CycleReportView } from './modules/analytics/interface-adapters/views/cycle-report/cycle-report.view.tsx';
 import { DashboardView } from './modules/analytics/interface-adapters/views/dashboard.view.tsx';
+import { MemberHealthTrendsView } from './modules/analytics/interface-adapters/views/member-health-trends/member-health-trends.view.tsx';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardView /> },
       { path: 'cycle-report', element: <CycleReportView /> },
+      { path: 'member-health-trends', element: <MemberHealthTrendsView /> },
       { path: '*', element: <ShiplensShell /> },
     ],
   },

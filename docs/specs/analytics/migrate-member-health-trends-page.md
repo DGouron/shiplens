@@ -1,6 +1,6 @@
 # Migrate member health trends page
 
-## Status: ready (slice 5/6)
+## Status: implemented
 
 Slice 5 of the frontend migration. Depends on Slice 1 (setup-react-spa) and Slice 2 (extract-design-system).
 
@@ -63,3 +63,22 @@ The member health trends page displays 5 health signals for a team member comput
 | Health signal | A metric computed over N cycles revealing a positive or negative trend in a member's work patterns |
 | Trend direction | Arrow indicating whether a signal value is rising, falling, or stable over recent cycles |
 | Health indicator | Color code (green/orange/red) summarizing whether the trend is favorable, mixed, or unfavorable |
+
+## Implementation
+
+- **Bounded Context**: analytics
+- **Gateway port**: `entities/member-health/member-health.gateway.ts` (abstract class, returns `null` on 422)
+- **HTTP gateway**: `interface-adapters/gateways/member-health.in-http.gateway.ts`
+- **Usecase**: `usecases/get-member-health.usecase.ts` (passthrough)
+- **Presenter**: `interface-adapters/presenters/member-health-trends.presenter.ts` (maps API response to ViewModel with semantic booleans)
+- **Translations**: `interface-adapters/presenters/member-health-trends.translations.ts` (34 keys, EN/FR)
+- **ViewModel schema**: `interface-adapters/presenters/member-health-trends.view-model.schema.ts` (Zod)
+- **Hook**: `interface-adapters/hooks/use-member-health-trends.ts` (owns cycle count state, AsyncState with empty variant)
+- **Views**: `interface-adapters/views/member-health-trends/` (4 humble components)
+- **Route**: `/member-health-trends` registered in `main.tsx`
+- **Registry**: `getMemberHealth` usecase added to `dependencies.ts`
+- **Architectural decisions**:
+  - No frontend domain entity (backend formats all values)
+  - AsyncState extended with `{ status: 'empty'; message: string }` ExtraVariant
+  - Gateway returns `null` on HTTP 422 (no completed cycles = empty state, not error)
+  - Translations embedded in ViewModel (views never touch raw keys)
