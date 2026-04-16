@@ -1,7 +1,4 @@
-import {
-  CycleNotCompletedError,
-  NoCycleIssuesError,
-} from './cycle-snapshot.errors.js';
+import { NoCycleIssuesError } from './cycle-snapshot.errors.js';
 import { cycleSnapshotGuard } from './cycle-snapshot.guard.js';
 import {
   type CycleIssue,
@@ -22,10 +19,6 @@ export class CycleSnapshot {
 
   static create(props: unknown): CycleSnapshot {
     const validatedProps = cycleSnapshotGuard.parse(props);
-
-    if (new Date(validatedProps.endsAt) > new Date()) {
-      throw new CycleNotCompletedError();
-    }
 
     if (validatedProps.issues.length === 0) {
       throw new NoCycleIssuesError();

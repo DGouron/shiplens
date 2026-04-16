@@ -1,7 +1,4 @@
-import {
-  CycleNotCompletedError,
-  NoCycleIssuesError,
-} from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
+import { NoCycleIssuesError } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
 import { CycleSnapshot } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.js';
 import { describe, expect, it } from 'vitest';
 
@@ -42,13 +39,12 @@ describe('CycleSnapshot', () => {
     expect(snapshot.cycleName).toBe('Sprint 10');
   });
 
-  it('throws CycleNotCompletedError when cycle end date is in the future', () => {
-    expect(() =>
-      CycleSnapshot.create({
-        ...completedCycleProps,
-        endsAt: '2099-12-31T00:00:00Z',
-      }),
-    ).toThrow(CycleNotCompletedError);
+  it('allows in-progress cycles with a future end date', () => {
+    const snapshot = CycleSnapshot.create({
+      ...completedCycleProps,
+      endsAt: '2099-12-31T00:00:00Z',
+    });
+    expect(snapshot.cycleId).toBe('cycle-1');
   });
 
   it('throws NoCycleIssuesError when cycle has no issues', () => {

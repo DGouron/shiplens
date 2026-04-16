@@ -53,21 +53,33 @@ describe('Calculate Cycle Metrics (acceptance)', () => {
       expect(result.completionRate).toBe(80);
     });
 
-    it('cycle not completed: rejects with error', async () => {
+    it('in-progress cycle with issues: returns partial metrics', async () => {
       gateway.snapshotData = {
         cycleId: 'cycle-1',
         teamId: 'team-1',
         cycleName: 'Sprint 10',
         startsAt: '2026-01-01T00:00:00Z',
         endsAt: '2099-12-31T00:00:00Z',
-        issues: [],
+        issues: [
+          {
+            externalId: 'issue-1',
+            title: 'Done',
+            statusName: 'Done',
+            points: 3,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: '2026-01-10T00:00:00Z',
+            startedAt: '2026-01-05T00:00:00Z',
+          },
+        ],
       };
 
-      await expect(
-        usecase.execute({ cycleId: 'cycle-1', teamId: 'team-1' }),
-      ).rejects.toThrow(
-        'Les métriques ne sont disponibles que pour les cycles terminés.',
-      );
+      const result = await usecase.execute({
+        cycleId: 'cycle-1',
+        teamId: 'team-1',
+      });
+
+      expect(result.velocity.completedPoints).toBe(3);
+      expect(result.throughput).toBe(1);
     });
 
     it('cycle with no issues: rejects with error', async () => {
