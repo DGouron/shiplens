@@ -8,6 +8,8 @@ export class StubMemberHealthDataGateway extends MemberHealthDataGateway {
     _teamId: string,
     _memberName: string,
     _cycleLimit: number,
+    _startedStatuses?: readonly string[],
+    _completedStatuses?: readonly string[],
   ): Promise<MemberHealthCycleSnapshot[]> {
     return this.cycleSnapshots;
   }

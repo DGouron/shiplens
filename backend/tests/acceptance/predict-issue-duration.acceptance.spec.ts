@@ -2,8 +2,11 @@ import {
   InsufficientHistoryError,
   NoSimilarIssuesError,
 } from '@modules/analytics/entities/duration-prediction/duration-prediction.errors.js';
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubDurationPredictionDataGateway } from '@modules/analytics/testing/good-path/stub.duration-prediction-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { PredictIssueDurationUsecase } from '@modules/analytics/usecases/predict-issue-duration.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Predict Issue Duration (acceptance)', () => {
@@ -12,7 +15,11 @@ describe('Predict Issue Duration (acceptance)', () => {
 
   beforeEach(() => {
     gateway = new StubDurationPredictionDataGateway();
-    usecase = new PredictIssueDurationUsecase(gateway);
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      new StubWorkflowConfigGateway(),
+      new StubAvailableStatusesGateway(),
+    );
+    usecase = new PredictIssueDurationUsecase(gateway, resolveWorkflowConfig);
   });
 
   describe('prediction requires minimum 2 completed cycles and similar issues', () => {

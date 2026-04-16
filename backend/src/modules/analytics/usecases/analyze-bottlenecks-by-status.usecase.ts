@@ -3,6 +3,7 @@ import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { NoSynchronizedDataError } from '../entities/bottleneck-analysis/bottleneck-analysis.errors.js';
 import { BottleneckAnalysis } from '../entities/bottleneck-analysis/bottleneck-analysis.js';
 import { BottleneckAnalysisDataGateway } from '../entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
+import { ResolveWorkflowConfigUsecase } from './resolve-workflow-config.usecase.js';
 
 interface AnalyzeBottlenecksParams {
   cycleId: string;
@@ -42,6 +43,7 @@ export class AnalyzeBottlenecksByStatusUsecase
 
   constructor(
     private readonly bottleneckDataGateway: BottleneckAnalysisDataGateway,
+    private readonly resolveWorkflowConfig: ResolveWorkflowConfigUsecase,
   ) {}
 
   async execute(
@@ -56,9 +58,14 @@ export class AnalyzeBottlenecksByStatusUsecase
       throw new NoSynchronizedDataError();
     }
 
+    const workflowConfig = await this.resolveWorkflowConfig.execute({
+      teamId: params.teamId,
+    });
+
     const data = await this.bottleneckDataGateway.getBottleneckData(
       params.cycleId,
       params.teamId,
+      workflowConfig.completedStatuses,
     );
 
     let previousCycleMedians: Record<string, number> | undefined;
@@ -74,6 +81,7 @@ export class AnalyzeBottlenecksByStatusUsecase
         const previousData = await this.bottleneckDataGateway.getBottleneckData(
           previousCycleId,
           params.teamId,
+          workflowConfig.completedStatuses,
         );
         const previousAnalysis = BottleneckAnalysis.create(previousData);
         previousCycleMedians = previousAnalysis.mediansAsRecord;

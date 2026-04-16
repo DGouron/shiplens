@@ -24,6 +24,8 @@ export class SprintReportDataInPrismaGateway extends SprintReportDataGateway {
   async getSprintContext(
     cycleId: string,
     teamId: string,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<SprintContext> {
     const cycle = await this.prisma.cycle.findFirstOrThrow({
       where: { externalId: cycleId, teamId },
@@ -52,16 +54,12 @@ export class SprintReportDataInPrismaGateway extends SprintReportDataGateway {
         (transition) => transition.issueExternalId === issue.externalId,
       );
 
-      const startedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'In Progress' ||
-          transition.toStatusName === 'Started',
+      const startedTransition = issueTransitions.find((transition) =>
+        startedStatuses.includes(transition.toStatusName),
       );
 
-      const completedTransition = issueTransitions.find(
-        (transition) =>
-          transition.toStatusName === 'Done' ||
-          transition.toStatusName === 'Completed',
+      const completedTransition = issueTransitions.find((transition) =>
+        completedStatuses.includes(transition.toStatusName),
       );
 
       return {
@@ -90,6 +88,7 @@ export class SprintReportDataInPrismaGateway extends SprintReportDataGateway {
   async getTrendContext(
     cycleId: string,
     teamId: string,
+    completedStatuses: readonly string[],
   ): Promise<TrendContext | null> {
     const now = new Date().toISOString();
 
@@ -133,8 +132,7 @@ export class SprintReportDataInPrismaGateway extends SprintReportDataGateway {
           transitions.some(
             (transition) =>
               transition.issueExternalId === issue.externalId &&
-              (transition.toStatusName === 'Done' ||
-                transition.toStatusName === 'Completed'),
+              completedStatuses.includes(transition.toStatusName),
           ),
         )
         .reduce((sum, issue) => sum + (issue.points ?? 0), 0);

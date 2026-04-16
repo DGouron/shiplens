@@ -32,11 +32,20 @@ export class StubSprintReportDataGateway extends SprintReportDataGateway {
     return this.synchronized;
   }
 
-  async getSprintContext(): Promise<SprintContext> {
+  async getSprintContext(
+    _cycleId?: string,
+    _teamId?: string,
+    _startedStatuses?: readonly string[],
+    _completedStatuses?: readonly string[],
+  ): Promise<SprintContext> {
     return this.sprintContext;
   }
 
-  async getTrendContext(): Promise<TrendContext | null> {
+  async getTrendContext(
+    _cycleId?: string,
+    _teamId?: string,
+    _completedStatuses?: readonly string[],
+  ): Promise<TrendContext | null> {
     return this.trendContext;
   }
 }

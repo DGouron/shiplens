@@ -16,6 +16,7 @@ import { SprintReportDataGateway } from './entities/sprint-report/sprint-report-
 import { StatusThresholdGateway } from './entities/status-threshold/status-threshold.gateway.js';
 import { AvailableStatusesGateway } from './entities/team-settings/available-statuses.gateway.js';
 import { TeamSettingsGateway } from './entities/team-settings/team-settings.gateway.js';
+import { WorkflowConfigGateway } from './entities/workflow-config/workflow-config.gateway.js';
 import { WorkspaceDashboardDataGateway } from './entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
 import { WorkspaceSettingsGateway } from './entities/workspace-settings/workspace-settings.gateway.js';
 import { BlockedIssueDetectionScheduler } from './interface-adapters/controllers/blocked-issue-detection.scheduler.js';
@@ -33,6 +34,7 @@ import { ReportExportController } from './interface-adapters/controllers/report-
 import { SettingsPageController } from './interface-adapters/controllers/settings-page.controller.js';
 import { SprintReportController } from './interface-adapters/controllers/sprint-report.controller.js';
 import { TeamSettingsController } from './interface-adapters/controllers/team-settings.controller.js';
+import { WorkflowConfigController } from './interface-adapters/controllers/workflow-config.controller.js';
 import { WorkspaceDashboardController } from './interface-adapters/controllers/workspace-dashboard.controller.js';
 import { WorkspaceLanguageController } from './interface-adapters/controllers/workspace-language.controller.js';
 import { AiTextGeneratorWithClaudeCliGateway } from './interface-adapters/gateways/ai-text-generator.with-claude-cli.gateway.js';
@@ -52,6 +54,7 @@ import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprin
 import { SprintReportDataInPrismaGateway } from './interface-adapters/gateways/sprint-report-data.in-prisma.gateway.js';
 import { StatusThresholdInPrismaGateway } from './interface-adapters/gateways/status-threshold.in-prisma.gateway.js';
 import { TeamSettingsInFileGateway } from './interface-adapters/gateways/team-settings.in-file.gateway.js';
+import { WorkflowConfigInPrismaGateway } from './interface-adapters/gateways/workflow-config.in-prisma.gateway.js';
 import { WorkspaceDashboardDataInPrismaGateway } from './interface-adapters/gateways/workspace-dashboard-data.in-prisma.gateway.js';
 import { WorkspaceSettingsInFileGateway } from './interface-adapters/gateways/workspace-settings.in-file.gateway.js';
 import { AlertHistoryPresenter } from './interface-adapters/presenters/alert-history.presenter.js';
@@ -67,6 +70,7 @@ import { ReportDetailPresenter } from './interface-adapters/presenters/report-de
 import { ReportHistoryPresenter } from './interface-adapters/presenters/report-history.presenter.js';
 import { SprintReportPresenter } from './interface-adapters/presenters/sprint-report.presenter.js';
 import { TeamCyclesPresenter } from './interface-adapters/presenters/team-cycles.presenter.js';
+import { WorkflowConfigPresenter } from './interface-adapters/presenters/workflow-config.presenter.js';
 import { WorkspaceDashboardPresenter } from './interface-adapters/presenters/workspace-dashboard.presenter.js';
 import { AnalyzeBottlenecksByStatusUsecase } from './usecases/analyze-bottlenecks-by-status.usecase.js';
 import { CalculateCycleMetricsUsecase } from './usecases/calculate-cycle-metrics.usecase.js';
@@ -82,13 +86,16 @@ import { GetEstimationTrendUsecase } from './usecases/get-estimation-trend.useca
 import { GetMemberHealthUsecase } from './usecases/get-member-health.usecase.js';
 import { GetReportUsecase } from './usecases/get-report.usecase.js';
 import { GetTeamExcludedStatusesUsecase } from './usecases/get-team-excluded-statuses.usecase.js';
+import { GetWorkflowConfigUsecase } from './usecases/get-workflow-config.usecase.js';
 import { GetWorkspaceDashboardUsecase } from './usecases/get-workspace-dashboard.usecase.js';
 import { GetWorkspaceLanguageUsecase } from './usecases/get-workspace-language.usecase.js';
 import { ListTeamCyclesUsecase } from './usecases/list-team-cycles.usecase.js';
 import { ListTeamReportsUsecase } from './usecases/list-team-reports.usecase.js';
 import { PredictIssueDurationUsecase } from './usecases/predict-issue-duration.usecase.js';
+import { ResolveWorkflowConfigUsecase } from './usecases/resolve-workflow-config.usecase.js';
 import { SetStatusThresholdUsecase } from './usecases/set-status-threshold.usecase.js';
 import { SetTeamExcludedStatusesUsecase } from './usecases/set-team-excluded-statuses.usecase.js';
+import { SetWorkflowConfigUsecase } from './usecases/set-workflow-config.usecase.js';
 import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.usecase.js';
 
 @Module({
@@ -109,6 +116,7 @@ import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.u
     DriftingIssuesController,
     MemberHealthController,
     MemberHealthTrendsPageController,
+    WorkflowConfigController,
     WorkspaceLanguageController,
   ],
   providers: [
@@ -216,6 +224,14 @@ import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.u
     {
       provide: MemberHealthDataGateway,
       useClass: MemberHealthDataInPrismaGateway,
+    },
+    ResolveWorkflowConfigUsecase,
+    GetWorkflowConfigUsecase,
+    SetWorkflowConfigUsecase,
+    WorkflowConfigPresenter,
+    {
+      provide: WorkflowConfigGateway,
+      useClass: WorkflowConfigInPrismaGateway,
     },
     GetWorkspaceLanguageUsecase,
     SetWorkspaceLanguageUsecase,

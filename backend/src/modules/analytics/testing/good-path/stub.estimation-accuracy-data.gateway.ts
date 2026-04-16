@@ -14,7 +14,12 @@ export class StubEstimationAccuracyDataGateway extends EstimationAccuracyDataGat
 
   completedCycleIds: string[] = [];
 
-  async getEstimationData(cycleId: string): Promise<EstimationAccuracyProps> {
+  async getEstimationData(
+    cycleId: string,
+    _teamId?: string,
+    _startedStatuses?: readonly string[],
+    _completedStatuses?: readonly string[],
+  ): Promise<EstimationAccuracyProps> {
     if (this.estimationDataByCycle[cycleId]) {
       return this.estimationDataByCycle[cycleId];
     }

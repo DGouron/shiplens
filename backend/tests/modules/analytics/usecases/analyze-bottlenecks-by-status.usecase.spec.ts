@@ -2,8 +2,11 @@ import {
   NoCompletedIssuesError,
   NoSynchronizedDataError,
 } from '@modules/analytics/entities/bottleneck-analysis/bottleneck-analysis.errors.js';
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubBottleneckAnalysisDataGateway } from '@modules/analytics/testing/good-path/stub.bottleneck-analysis-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { AnalyzeBottlenecksByStatusUsecase } from '@modules/analytics/usecases/analyze-bottlenecks-by-status.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('AnalyzeBottlenecksByStatusUsecase', () => {
@@ -12,7 +15,16 @@ describe('AnalyzeBottlenecksByStatusUsecase', () => {
 
   beforeEach(() => {
     gateway = new StubBottleneckAnalysisDataGateway();
-    usecase = new AnalyzeBottlenecksByStatusUsecase(gateway);
+    const workflowConfigGateway = new StubWorkflowConfigGateway();
+    const availableStatusesGateway = new StubAvailableStatusesGateway();
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      workflowConfigGateway,
+      availableStatusesGateway,
+    );
+    usecase = new AnalyzeBottlenecksByStatusUsecase(
+      gateway,
+      resolveWorkflowConfig,
+    );
   });
 
   it('returns status distribution and bottleneck', async () => {

@@ -1,6 +1,9 @@
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { CalculateEstimationAccuracyUsecase } from '@modules/analytics/usecases/calculate-estimation-accuracy.usecase.js';
 import { GetEstimationTrendUsecase } from '@modules/analytics/usecases/get-estimation-trend.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Track Estimation Accuracy (acceptance)', () => {
@@ -10,8 +13,18 @@ describe('Track Estimation Accuracy (acceptance)', () => {
 
   beforeEach(() => {
     gateway = new StubEstimationAccuracyDataGateway();
-    calculateAccuracy = new CalculateEstimationAccuracyUsecase(gateway);
-    getEstimationTrend = new GetEstimationTrendUsecase(gateway);
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      new StubWorkflowConfigGateway(),
+      new StubAvailableStatusesGateway(),
+    );
+    calculateAccuracy = new CalculateEstimationAccuracyUsecase(
+      gateway,
+      resolveWorkflowConfig,
+    );
+    getEstimationTrend = new GetEstimationTrendUsecase(
+      gateway,
+      resolveWorkflowConfig,
+    );
   });
 
   describe('estimation accuracy is measured by comparing estimated points to actual cycle time', () => {

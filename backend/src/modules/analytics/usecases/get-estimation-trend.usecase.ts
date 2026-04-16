@@ -3,6 +3,7 @@ import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { InsufficientHistoryForTrendError } from '../entities/estimation-accuracy/estimation-accuracy.errors.js';
 import { EstimationAccuracy } from '../entities/estimation-accuracy/estimation-accuracy.js';
 import { EstimationAccuracyDataGateway } from '../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
+import { ResolveWorkflowConfigUsecase } from './resolve-workflow-config.usecase.js';
 
 interface GetEstimationTrendParams {
   teamId: string;
@@ -22,6 +23,7 @@ export class GetEstimationTrendUsecase
 {
   constructor(
     private readonly estimationAccuracyDataGateway: EstimationAccuracyDataGateway,
+    private readonly resolveWorkflowConfig: ResolveWorkflowConfigUsecase,
   ) {}
 
   async execute(params: GetEstimationTrendParams): Promise<CycleTrendEntry[]> {
@@ -34,12 +36,18 @@ export class GetEstimationTrendUsecase
       throw new InsufficientHistoryForTrendError();
     }
 
+    const workflowConfig = await this.resolveWorkflowConfig.execute({
+      teamId: params.teamId,
+    });
+
     const trend: CycleTrendEntry[] = [];
 
     for (const cycleId of cycleIds) {
       const data = await this.estimationAccuracyDataGateway.getEstimationData(
         cycleId,
         params.teamId,
+        workflowConfig.startedStatuses,
+        workflowConfig.completedStatuses,
       );
 
       const accuracy = EstimationAccuracy.create(data);

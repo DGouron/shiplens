@@ -1,6 +1,9 @@
 import { InsufficientHistoryForTrendError } from '@modules/analytics/entities/estimation-accuracy/estimation-accuracy.errors.js';
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubEstimationAccuracyDataGateway } from '@modules/analytics/testing/good-path/stub.estimation-accuracy-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { GetEstimationTrendUsecase } from '@modules/analytics/usecases/get-estimation-trend.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('GetEstimationTrendUsecase', () => {
@@ -9,7 +12,13 @@ describe('GetEstimationTrendUsecase', () => {
 
   beforeEach(() => {
     gateway = new StubEstimationAccuracyDataGateway();
-    usecase = new GetEstimationTrendUsecase(gateway);
+    const workflowConfigGateway = new StubWorkflowConfigGateway();
+    const availableStatusesGateway = new StubAvailableStatusesGateway();
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      workflowConfigGateway,
+      availableStatusesGateway,
+    );
+    usecase = new GetEstimationTrendUsecase(gateway, resolveWorkflowConfig);
   });
 
   it('returns trend with average ratio per cycle', async () => {

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
 import { EstimationAccuracy } from '../entities/estimation-accuracy/estimation-accuracy.js';
 import { EstimationAccuracyDataGateway } from '../entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
+import { ResolveWorkflowConfigUsecase } from './resolve-workflow-config.usecase.js';
 
 interface CalculateEstimationAccuracyParams {
   cycleId: string;
@@ -16,6 +17,7 @@ export class CalculateEstimationAccuracyUsecase
 
   constructor(
     private readonly estimationAccuracyDataGateway: EstimationAccuracyDataGateway,
+    private readonly resolveWorkflowConfig: ResolveWorkflowConfigUsecase,
   ) {}
 
   async execute(
@@ -25,9 +27,15 @@ export class CalculateEstimationAccuracyUsecase
       `[${params.cycleId}] Estimation accuracy calculation started`,
     );
 
+    const workflowConfig = await this.resolveWorkflowConfig.execute({
+      teamId: params.teamId,
+    });
+
     const data = await this.estimationAccuracyDataGateway.getEstimationData(
       params.cycleId,
       params.teamId,
+      workflowConfig.startedStatuses,
+      workflowConfig.completedStatuses,
     );
 
     const result = EstimationAccuracy.create(data);

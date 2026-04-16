@@ -23,7 +23,11 @@ export class StubBottleneckAnalysisDataGateway extends BottleneckAnalysisDataGat
   previousCycleId: string | null = null;
   hasSyncData = true;
 
-  async getBottleneckData(): Promise<BottleneckAnalysisProps> {
+  async getBottleneckData(
+    _cycleId?: string,
+    _teamId?: string,
+    _completedStatuses?: readonly string[],
+  ): Promise<BottleneckAnalysisProps> {
     return this.bottleneckData;
   }
 

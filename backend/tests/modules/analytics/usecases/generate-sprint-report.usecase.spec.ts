@@ -5,11 +5,14 @@ import {
 } from '@modules/analytics/entities/sprint-report/sprint-report.errors.js';
 import { FailingAiTextGeneratorGateway } from '@modules/analytics/testing/bad-path/failing.ai-text-generator.gateway.js';
 import { StubAiTextGeneratorGateway } from '@modules/analytics/testing/good-path/stub.ai-text-generator.gateway.js';
+import { StubAvailableStatusesGateway } from '@modules/analytics/testing/good-path/stub.available-statuses.gateway.js';
 import { StubCycleMetricsDataGateway } from '@modules/analytics/testing/good-path/stub.cycle-metrics-data.gateway.js';
 import { StubSprintReportGateway } from '@modules/analytics/testing/good-path/stub.sprint-report.gateway.js';
 import { StubSprintReportDataGateway } from '@modules/analytics/testing/good-path/stub.sprint-report-data.gateway.js';
+import { StubWorkflowConfigGateway } from '@modules/analytics/testing/good-path/stub.workflow-config.gateway.js';
 import { StubWorkspaceSettingsGateway } from '@modules/analytics/testing/good-path/stub.workspace-settings.gateway.js';
 import { GenerateSprintReportUsecase } from '@modules/analytics/usecases/generate-sprint-report.usecase.js';
+import { ResolveWorkflowConfigUsecase } from '@modules/analytics/usecases/resolve-workflow-config.usecase.js';
 import { StubAuditRuleGateway } from '@modules/audit/testing/good-path/stub.audit-rule.gateway.js';
 import { StubChecklistItemGateway } from '@modules/audit/testing/good-path/stub.checklist-item.gateway.js';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -55,6 +58,13 @@ describe('GenerateSprintReportUsecase', () => {
       ],
     };
 
+    const workflowConfigGateway = new StubWorkflowConfigGateway();
+    const availableStatusesGateway = new StubAvailableStatusesGateway();
+    const resolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      workflowConfigGateway,
+      availableStatusesGateway,
+    );
+
     usecase = new GenerateSprintReportUsecase(
       dataGateway,
       aiGateway,
@@ -63,6 +73,7 @@ describe('GenerateSprintReportUsecase', () => {
       checklistItemGateway,
       cycleMetricsDataGateway,
       workspaceSettingsGateway,
+      resolveWorkflowConfig,
     );
   });
 
@@ -142,6 +153,10 @@ describe('GenerateSprintReportUsecase', () => {
 
   it('throws AiProviderUnavailableError when provider is unavailable', async () => {
     const failingAiGateway = new FailingAiTextGeneratorGateway();
+    const failingResolveWorkflowConfig = new ResolveWorkflowConfigUsecase(
+      new StubWorkflowConfigGateway(),
+      new StubAvailableStatusesGateway(),
+    );
     const usecaseWithFailing = new GenerateSprintReportUsecase(
       dataGateway,
       failingAiGateway,
@@ -150,6 +165,7 @@ describe('GenerateSprintReportUsecase', () => {
       checklistItemGateway,
       cycleMetricsDataGateway,
       workspaceSettingsGateway,
+      failingResolveWorkflowConfig,
     );
 
     await expect(

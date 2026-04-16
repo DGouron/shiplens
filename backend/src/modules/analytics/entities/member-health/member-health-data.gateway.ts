@@ -5,5 +5,7 @@ export abstract class MemberHealthDataGateway {
     teamId: string,
     memberName: string,
     cycleLimit: number,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<MemberHealthCycleSnapshot[]>;
 }

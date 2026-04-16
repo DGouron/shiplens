@@ -3,5 +3,7 @@ export abstract class DurationPredictionDataGateway {
   abstract getSimilarIssuesCycleTimes(
     teamId: string,
     issueExternalId: string,
+    startedStatuses: readonly string[],
+    completedStatuses: readonly string[],
   ): Promise<number[]>;
 }

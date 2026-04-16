@@ -101,6 +101,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots).toHaveLength(1);
@@ -136,6 +138,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].medianReviewTimeInHours).toBe(10);
@@ -154,6 +158,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].medianReviewTimeInHours).toBe(7);
@@ -182,6 +188,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].medianReviewTimeInHours).toBeNull();
@@ -199,6 +207,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].medianReviewTimeInHours).toBeNull();
@@ -216,6 +226,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].medianReviewTimeInHours).toBe(11);
@@ -255,6 +267,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Bob',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].underestimationRatioPercent).toBe(100);
@@ -292,6 +306,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Bob',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].underestimationRatioPercent).toBe(50);
@@ -323,6 +339,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].underestimationRatioPercent).toBe(0);
@@ -342,6 +360,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Bob',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].underestimationRatioPercent).toBeNull();
@@ -397,6 +417,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Bob',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].underestimationRatioPercent).toBe(43);
@@ -433,6 +455,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].driftingTicketCount).toBe(1);
@@ -460,6 +484,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].driftingTicketCount).toBe(0);
@@ -480,6 +506,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].driftingTicketCount).toBeNull();
@@ -521,6 +549,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].driftingTicketCount).toBe(0);
@@ -555,6 +585,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].driftingTicketCount).toBe(0);
@@ -576,6 +608,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].averageCycleTimeInDays).toBe(2.5);
@@ -607,6 +641,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].averageCycleTimeInDays).toBe(2.0);
@@ -638,6 +674,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Alice',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].averageCycleTimeInDays).toBe(1.2);
@@ -657,6 +695,8 @@ describe('MemberHealthDataInPrismaGateway', () => {
         'team-1',
         'Bob',
         5,
+        ['In Progress', 'Started'],
+        ['Done', 'Completed'],
       );
 
       expect(snapshots[0].averageCycleTimeInDays).toBeNull();
