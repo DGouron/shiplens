@@ -4,8 +4,14 @@ import { DriftingIssuesPresenter } from '@/modules/analytics/interface-adapters/
 import { driftingIssuesTranslations } from '@/modules/analytics/interface-adapters/presenters/drifting-issues.translations.ts';
 import { DriftingIssueResponseBuilder } from '../../../../builders/drifting-issue-response.builder.ts';
 
-function makePresenter(locale: Locale = 'en') {
-  return new DriftingIssuesPresenter(driftingIssuesTranslations[locale]);
+function makePresenter(
+  locale: Locale = 'en',
+  selectedMemberName: string | null = null,
+) {
+  return new DriftingIssuesPresenter(
+    driftingIssuesTranslations[locale],
+    selectedMemberName,
+  );
 }
 
 describe('DriftingIssuesPresenter', () => {
@@ -128,5 +134,60 @@ describe('DriftingIssuesPresenter', () => {
     expect(viewModel.rows[0]?.expectedLabel).toBe('Attendu: Non disponible');
     expect(viewModel.rows[0]?.pointsLabel).toBe('Sans estimation');
     expect(viewModel.rows[0]?.driftLabel).toBe('En derive');
+  });
+
+  it('filters rows to the selected member when a memberName is provided', () => {
+    const viewModel = makePresenter('en', 'Alice').present([
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('LIN-alice')
+        .withAssigneeName('Alice')
+        .build(),
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('LIN-bob')
+        .withAssigneeName('Bob')
+        .build(),
+    ]);
+
+    expect(viewModel.rows.map((row) => row.id)).toEqual(['LIN-alice']);
+  });
+
+  it('excludes rows without an assignee when a memberName is selected', () => {
+    const viewModel = makePresenter('en', 'Alice').present([
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('LIN-alice')
+        .withAssigneeName('Alice')
+        .build(),
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('LIN-unassigned')
+        .withAssigneeName(null)
+        .build(),
+    ]);
+
+    expect(viewModel.rows.map((row) => row.id)).toEqual(['LIN-alice']);
+  });
+
+  it('exposes the assigneeName and a member-health-trends href when assignee is present', () => {
+    const viewModel = makePresenter().present([
+      new DriftingIssueResponseBuilder()
+        .withTeamId('team-alpha')
+        .withAssigneeName('Alice')
+        .build(),
+    ]);
+
+    expect(viewModel.rows[0]?.assigneeName).toBe('Alice');
+    expect(viewModel.rows[0]?.showMemberLink).toBe(true);
+    expect(viewModel.rows[0]?.memberHealthTrendsHref).toBe(
+      '/member-health-trends?teamId=team-alpha&memberName=Alice',
+    );
+  });
+
+  it('emits a null href and showMemberLink false when the assignee is missing', () => {
+    const viewModel = makePresenter().present([
+      new DriftingIssueResponseBuilder().withAssigneeName(null).build(),
+    ]);
+
+    expect(viewModel.rows[0]?.assigneeName).toBeNull();
+    expect(viewModel.rows[0]?.showMemberLink).toBe(false);
+    expect(viewModel.rows[0]?.memberHealthTrendsHref).toBeNull();
   });
 });

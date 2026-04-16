@@ -3,6 +3,7 @@ import {
   type BlockedIssueAlertResponse,
   type BlockedIssuesResponse,
 } from '../../entities/blocked-issues/blocked-issues.response.ts';
+import { memberHealthTrendsHref } from '../url-contracts/member-health-trends.url-contract.ts';
 import { type BlockedIssuesTranslations } from './blocked-issues.translations.ts';
 import {
   type BlockedIssueItemViewModel,
@@ -16,11 +17,13 @@ export class BlockedIssuesPresenter
   constructor(
     private readonly translations: BlockedIssuesTranslations,
     private readonly selectedTeamId: string,
+    private readonly selectedMemberName: string | null = null,
   ) {}
 
   present(input: BlockedIssuesResponse): BlockedIssuesViewModel {
     const filtered = input.filter(
-      (alert) => alert.teamId === this.selectedTeamId,
+      (alert) =>
+        alert.teamId === this.selectedTeamId && this.matchesMember(alert),
     );
     if (filtered.length === 0) {
       return {
@@ -41,7 +44,20 @@ export class BlockedIssuesPresenter
     };
   }
 
+  private matchesMember(alert: BlockedIssueAlertResponse): boolean {
+    if (this.selectedMemberName === null) return true;
+    return alert.assigneeName === this.selectedMemberName;
+  }
+
   private toItem(alert: BlockedIssueAlertResponse): BlockedIssueItemViewModel {
+    const assigneeName = alert.assigneeName;
+    const href =
+      assigneeName === null
+        ? null
+        : memberHealthTrendsHref({
+            teamId: alert.teamId,
+            memberName: assigneeName,
+          });
     return {
       id: alert.id,
       issueTitle: alert.issueTitle,
@@ -51,6 +67,9 @@ export class BlockedIssuesPresenter
       }),
       severityLabel: this.translateSeverity(alert.severity),
       issueUrl: alert.issueUrl,
+      assigneeName,
+      memberHealthTrendsHref: href,
+      showMemberLink: href !== null,
     };
   }
 

@@ -3,10 +3,12 @@ import { BlockedIssueItemView } from './blocked-issue-item.view.tsx';
 
 interface BlockedIssuesReadyViewProps {
   viewModel: BlockedIssuesViewModel;
+  onMemberClick: (memberName: string) => void;
 }
 
 export function BlockedIssuesReadyView({
   viewModel,
+  onMemberClick,
 }: BlockedIssuesReadyViewProps) {
   return (
     <div className="blocked-issues-content">
@@ -18,7 +20,11 @@ export function BlockedIssuesReadyView({
       {viewModel.showList && (
         <ul className="blocked-issues-list">
           {viewModel.items.map((item) => (
-            <BlockedIssueItemView key={item.id} item={item} />
+            <BlockedIssueItemView
+              key={item.id}
+              item={item}
+              onMemberClick={onMemberClick}
+            />
           ))}
         </ul>
       )}

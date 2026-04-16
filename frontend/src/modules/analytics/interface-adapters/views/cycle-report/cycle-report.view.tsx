@@ -18,8 +18,11 @@ export function CycleReportView() {
     estimationState,
     driftingState,
     aiReportState,
+    memberFilterViewModel,
     selectTeam,
     selectCycle,
+    selectMember,
+    onMemberClick,
     generateAiReport,
     exportAiReport,
     copyAiReport,
@@ -56,6 +59,7 @@ export function CycleReportView() {
       estimationState={estimationState}
       driftingState={driftingState}
       aiReportState={aiReportState}
+      memberFilterViewModel={memberFilterViewModel}
       metricsTranslations={metricsTranslationBundle}
       bottleneckTranslations={bottleneckTranslationBundle}
       blockedIssuesTranslations={blockedIssuesTranslationBundle}
@@ -64,6 +68,8 @@ export function CycleReportView() {
       aiReportTranslations={aiReportTranslationBundle}
       onTeamChange={selectTeam}
       onCycleChange={selectCycle}
+      onMemberSelect={selectMember}
+      onMemberClick={onMemberClick}
       onGenerateAiReport={generateAiReport}
       onExportAiReport={exportAiReport}
       onCopyAiReport={copyAiReport}

@@ -9,6 +9,9 @@ export const driftingIssueRowViewModelSchema = z.object({
   expectedLabel: z.string(),
   pointsLabel: z.string(),
   issueUrl: z.string(),
+  assigneeName: z.nullable(z.string()),
+  memberHealthTrendsHref: z.nullable(z.string()),
+  showMemberLink: z.boolean(),
 });
 
 export const driftingIssuesViewModelSchema = z.object({

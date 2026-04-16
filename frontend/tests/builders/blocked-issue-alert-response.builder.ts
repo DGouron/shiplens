@@ -16,6 +16,7 @@ export class BlockedIssueAlertResponseBuilder extends EntityBuilder<
       durationHours: 48,
       issueUrl: 'https://linear.app/issue/uuid-1',
       detectedAt: '2025-01-01T00:00:00.000Z',
+      assigneeName: null,
     });
   }
 
@@ -61,6 +62,11 @@ export class BlockedIssueAlertResponseBuilder extends EntityBuilder<
 
   withDetectedAt(detectedAt: string): this {
     this.props.detectedAt = detectedAt;
+    return this;
+  }
+
+  withAssigneeName(assigneeName: string | null): this {
+    this.props.assigneeName = assigneeName;
     return this;
   }
 

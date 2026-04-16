@@ -4,10 +4,15 @@ import { blockedIssuesTranslations } from '@/modules/analytics/interface-adapter
 import { type Locale } from '@/modules/analytics/interface-adapters/presenters/cycle-metrics.translations.ts';
 import { BlockedIssueAlertResponseBuilder } from '../../../../builders/blocked-issue-alert-response.builder.ts';
 
-function makePresenter(selectedTeamId: string, locale: Locale = 'en') {
+function makePresenter(
+  selectedTeamId: string,
+  locale: Locale = 'en',
+  selectedMemberName: string | null = null,
+) {
   return new BlockedIssuesPresenter(
     blockedIssuesTranslations[locale],
     selectedTeamId,
+    selectedMemberName,
   );
 }
 
@@ -104,5 +109,69 @@ describe('BlockedIssuesPresenter', () => {
       blockedIssuesTranslations.fr.severityWarning,
     );
     expect(viewModel.items[0]?.durationLabel).toBe('3.0 jours');
+  });
+
+  it('filters alerts to the selected member when a memberName is provided', () => {
+    const viewModel = makePresenter('team-alpha', 'en', 'Alice').present([
+      new BlockedIssueAlertResponseBuilder()
+        .withId('alert-alice')
+        .withTeamId('team-alpha')
+        .withAssigneeName('Alice')
+        .build(),
+      new BlockedIssueAlertResponseBuilder()
+        .withId('alert-bob')
+        .withTeamId('team-alpha')
+        .withAssigneeName('Bob')
+        .build(),
+    ]);
+
+    expect(viewModel.items.map((item) => item.id)).toEqual(['alert-alice']);
+  });
+
+  it('excludes items without an assignee when a memberName is selected', () => {
+    const viewModel = makePresenter('team-alpha', 'en', 'Alice').present([
+      new BlockedIssueAlertResponseBuilder()
+        .withId('alert-alice')
+        .withTeamId('team-alpha')
+        .withAssigneeName('Alice')
+        .build(),
+      new BlockedIssueAlertResponseBuilder()
+        .withId('alert-unassigned')
+        .withTeamId('team-alpha')
+        .withAssigneeName(null)
+        .build(),
+    ]);
+
+    expect(viewModel.items.map((item) => item.id)).toEqual(['alert-alice']);
+  });
+
+  it('exposes the assigneeName and a member-health-trends href when assignee is present', () => {
+    const viewModel = makePresenter('team-alpha').present([
+      new BlockedIssueAlertResponseBuilder()
+        .withId('alert-1')
+        .withTeamId('team-alpha')
+        .withAssigneeName('Alice')
+        .build(),
+    ]);
+
+    expect(viewModel.items[0]?.assigneeName).toBe('Alice');
+    expect(viewModel.items[0]?.showMemberLink).toBe(true);
+    expect(viewModel.items[0]?.memberHealthTrendsHref).toBe(
+      '/member-health-trends?teamId=team-alpha&memberName=Alice',
+    );
+  });
+
+  it('emits a null href and showMemberLink false when the assignee is missing', () => {
+    const viewModel = makePresenter('team-alpha').present([
+      new BlockedIssueAlertResponseBuilder()
+        .withId('alert-1')
+        .withTeamId('team-alpha')
+        .withAssigneeName(null)
+        .build(),
+    ]);
+
+    expect(viewModel.items[0]?.assigneeName).toBeNull();
+    expect(viewModel.items[0]?.showMemberLink).toBe(false);
+    expect(viewModel.items[0]?.memberHealthTrendsHref).toBeNull();
   });
 });

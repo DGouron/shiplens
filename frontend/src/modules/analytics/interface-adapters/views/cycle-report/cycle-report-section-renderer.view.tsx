@@ -33,6 +33,7 @@ interface CycleReportSectionRendererViewProps {
   estimationTranslations: EstimationAccuracyTranslations;
   driftingTranslations: DriftingIssuesTranslations;
   aiReportTranslations: AiReportTranslations;
+  onMemberClick: (memberName: string) => void;
   onGenerateAiReport: () => void;
   onExportAiReport: () => void;
   onCopyAiReport: () => void;
@@ -52,6 +53,7 @@ export function CycleReportSectionRendererView({
   estimationTranslations,
   driftingTranslations,
   aiReportTranslations,
+  onMemberClick,
   onGenerateAiReport,
   onExportAiReport,
   onCopyAiReport,
@@ -80,6 +82,7 @@ export function CycleReportSectionRendererView({
       <BlockedIssuesSectionView
         state={blockedIssuesState}
         translations={blockedIssuesTranslations}
+        onMemberClick={onMemberClick}
       />
     );
   }
@@ -96,6 +99,7 @@ export function CycleReportSectionRendererView({
       <DriftingIssuesSectionView
         state={driftingState}
         translations={driftingTranslations}
+        onMemberClick={onMemberClick}
       />
     );
   }

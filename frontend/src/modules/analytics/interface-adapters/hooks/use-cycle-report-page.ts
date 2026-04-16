@@ -1,4 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router';
+import { useLocale } from '@/locale-context.tsx';
+import { usecases } from '@/main/dependencies.ts';
+import { MemberFilterPresenter } from '../presenters/member-filter.presenter.ts';
+import { memberFilterTranslations } from '../presenters/member-filter.translations.ts';
+import { type MemberFilterViewModel } from '../presenters/member-filter.view-model.schema.ts';
+import { memberHealthTrendsHref } from '../url-contracts/member-health-trends.url-contract.ts';
 import { type AiReportState, useAiReport } from './use-ai-report.ts';
 import {
   type BlockedIssuesState,
@@ -34,15 +42,21 @@ export interface UseCycleReportPageResult {
   estimationState: EstimationAccuracyState;
   driftingState: DriftingIssuesState;
   aiReportState: AiReportState;
+  memberFilterViewModel: MemberFilterViewModel;
   selectTeam: (teamId: string) => void;
   selectCycle: (cycleId: string) => void;
+  selectMember: (memberName: string | null) => void;
+  onMemberClick: (memberName: string) => void;
   generateAiReport: () => void;
   exportAiReport: () => void;
   copyAiReport: () => void;
 }
 
 export function useCycleReportPage(): UseCycleReportPageResult {
-  const { selectedTeamId, selectedCycleId } = useCycleReportUrlState();
+  const locale = useLocale();
+  const navigate = useNavigate();
+  const { selectedTeamId, selectedCycleId, selectedMemberName, selectMember } =
+    useCycleReportUrlState();
   const { state: shellState, selectTeam, selectCycle } = useCycleReportShell();
   const { state: metricsState } = useCycleMetrics({
     teamId: selectedTeamId,
@@ -54,6 +68,7 @@ export function useCycleReportPage(): UseCycleReportPageResult {
   });
   const { state: blockedIssuesState } = useBlockedIssues({
     teamId: selectedTeamId,
+    selectedMemberName,
   });
   const { state: estimationState } = useEstimationAccuracy({
     teamId: selectedTeamId,
@@ -61,7 +76,54 @@ export function useCycleReportPage(): UseCycleReportPageResult {
   });
   const { state: driftingState } = useDriftingIssues({
     teamId: selectedTeamId,
+    selectedMemberName,
   });
+
+  const blockedIssuesQuery = useQuery({
+    queryKey: ['analytics', 'blocked-issues'],
+    queryFn: () => usecases.listBlockedIssues.execute(),
+    enabled: selectedTeamId !== null,
+  });
+  const driftingIssuesQuery = useQuery({
+    queryKey: ['analytics', 'drifting-issues', selectedTeamId],
+    queryFn: () => {
+      if (selectedTeamId === null) {
+        return Promise.reject(
+          new Error('useCycleReportPage: selectedTeamId is required'),
+        );
+      }
+      return usecases.listDriftingIssues.execute({ teamId: selectedTeamId });
+    },
+    enabled: selectedTeamId !== null,
+  });
+
+  const memberFilterViewModel = useMemo<MemberFilterViewModel>(() => {
+    const presenter = new MemberFilterPresenter(
+      memberFilterTranslations[locale],
+      selectedMemberName,
+    );
+    const blockedForTeam = (blockedIssuesQuery.data ?? []).filter(
+      (alert) => alert.teamId === selectedTeamId,
+    );
+    return presenter.present({
+      blockedIssues: blockedForTeam,
+      driftingIssues: driftingIssuesQuery.data ?? [],
+    });
+  }, [
+    locale,
+    selectedMemberName,
+    selectedTeamId,
+    blockedIssuesQuery.data,
+    driftingIssuesQuery.data,
+  ]);
+
+  const onMemberClick = useCallback(
+    (memberName: string) => {
+      if (selectedTeamId === null) return;
+      navigate(memberHealthTrendsHref({ teamId: selectedTeamId, memberName }));
+    },
+    [navigate, selectedTeamId],
+  );
 
   const selectedCycleName = useMemo<string | null>(() => {
     if (selectedCycleId === null) return null;
@@ -105,8 +167,11 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     estimationState,
     driftingState,
     aiReportState,
+    memberFilterViewModel,
     selectTeam,
     selectCycle,
+    selectMember,
+    onMemberClick,
     generateAiReport,
     exportAiReport,
     copyAiReport,

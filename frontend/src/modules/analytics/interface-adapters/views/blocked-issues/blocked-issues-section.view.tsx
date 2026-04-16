@@ -6,11 +6,13 @@ import { BlockedIssuesReadyView } from './blocked-issues-ready.view.tsx';
 interface BlockedIssuesSectionViewProps {
   state: BlockedIssuesState;
   translations: BlockedIssuesTranslations;
+  onMemberClick: (memberName: string) => void;
 }
 
 export function BlockedIssuesSectionView({
   state,
   translations,
+  onMemberClick,
 }: BlockedIssuesSectionViewProps) {
   return (
     <section
@@ -23,7 +25,10 @@ export function BlockedIssuesSectionView({
         <p className="blocked-issues-error">{state.message}</p>
       )}
       {state.status === 'ready' && (
-        <BlockedIssuesReadyView viewModel={state.data} />
+        <BlockedIssuesReadyView
+          viewModel={state.data}
+          onMemberClick={onMemberClick}
+        />
       )}
     </section>
   );

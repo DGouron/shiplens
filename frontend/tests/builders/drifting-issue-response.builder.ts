@@ -16,6 +16,7 @@ export class DriftingIssueResponseBuilder extends EntityBuilder<
       elapsedBusinessHours: 72,
       expectedMaxHours: 24,
       issueUrl: 'https://linear.app/issue/drift-1',
+      assigneeName: null,
     });
   }
 
@@ -61,6 +62,11 @@ export class DriftingIssueResponseBuilder extends EntityBuilder<
 
   withIssueUrl(issueUrl: string): this {
     this.props.issueUrl = issueUrl;
+    return this;
+  }
+
+  withAssigneeName(assigneeName: string | null): this {
+    this.props.assigneeName = assigneeName;
     return this;
   }
 

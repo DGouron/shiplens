@@ -3,10 +3,12 @@ import { DriftingIssuesListView } from './drifting-issues-list.view.tsx';
 
 interface DriftingIssuesReadyViewProps {
   viewModel: DriftingIssuesViewModel;
+  onMemberClick: (memberName: string) => void;
 }
 
 export function DriftingIssuesReadyView({
   viewModel,
+  onMemberClick,
 }: DriftingIssuesReadyViewProps) {
   return (
     <div className="drifting-issues-content">
@@ -15,7 +17,12 @@ export function DriftingIssuesReadyView({
           {viewModel.emptyMessage}
         </p>
       )}
-      {viewModel.showList && <DriftingIssuesListView rows={viewModel.rows} />}
+      {viewModel.showList && (
+        <DriftingIssuesListView
+          rows={viewModel.rows}
+          onMemberClick={onMemberClick}
+        />
+      )}
     </div>
   );
 }

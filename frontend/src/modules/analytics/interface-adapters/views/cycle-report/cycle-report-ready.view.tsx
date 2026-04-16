@@ -11,6 +11,8 @@ import { type CycleMetricsTranslations } from '../../presenters/cycle-metrics.tr
 import { type CycleReportShellViewModel } from '../../presenters/cycle-report-shell.view-model.schema.ts';
 import { type DriftingIssuesTranslations } from '../../presenters/drifting-issues.translations.ts';
 import { type EstimationAccuracyTranslations } from '../../presenters/estimation-accuracy.translations.ts';
+import { type MemberFilterViewModel } from '../../presenters/member-filter.view-model.schema.ts';
+import { MemberFilterView } from '../member-filter/member-filter.view.tsx';
 import { CycleReportCycleSelectorView } from './cycle-report-cycle-selector.view.tsx';
 import { CycleReportEmptyPromptView } from './cycle-report-empty-prompt.view.tsx';
 import { CycleReportSectionRendererView } from './cycle-report-section-renderer.view.tsx';
@@ -24,6 +26,7 @@ interface CycleReportReadyViewProps {
   estimationState: EstimationAccuracyState;
   driftingState: DriftingIssuesState;
   aiReportState: AiReportState;
+  memberFilterViewModel: MemberFilterViewModel;
   metricsTranslations: CycleMetricsTranslations;
   bottleneckTranslations: BottleneckAnalysisTranslations;
   blockedIssuesTranslations: BlockedIssuesTranslations;
@@ -32,6 +35,8 @@ interface CycleReportReadyViewProps {
   aiReportTranslations: AiReportTranslations;
   onTeamChange: (teamId: string) => void;
   onCycleChange: (cycleId: string) => void;
+  onMemberSelect: (memberName: string | null) => void;
+  onMemberClick: (memberName: string) => void;
   onGenerateAiReport: () => void;
   onExportAiReport: () => void;
   onCopyAiReport: () => void;
@@ -45,6 +50,7 @@ export function CycleReportReadyView({
   estimationState,
   driftingState,
   aiReportState,
+  memberFilterViewModel,
   metricsTranslations,
   bottleneckTranslations,
   blockedIssuesTranslations,
@@ -53,6 +59,8 @@ export function CycleReportReadyView({
   aiReportTranslations,
   onTeamChange,
   onCycleChange,
+  onMemberSelect,
+  onMemberClick,
   onGenerateAiReport,
   onExportAiReport,
   onCopyAiReport,
@@ -77,6 +85,10 @@ export function CycleReportReadyView({
             onCycleChange={onCycleChange}
           />
         )}
+        <MemberFilterView
+          viewModel={memberFilterViewModel}
+          onMemberSelect={onMemberSelect}
+        />
       </div>
       {viewModel.emptyPrompt && (
         <CycleReportEmptyPromptView message={viewModel.emptyPrompt} />
@@ -98,6 +110,7 @@ export function CycleReportReadyView({
             estimationTranslations={estimationTranslations}
             driftingTranslations={driftingTranslations}
             aiReportTranslations={aiReportTranslations}
+            onMemberClick={onMemberClick}
             onGenerateAiReport={onGenerateAiReport}
             onExportAiReport={onExportAiReport}
             onCopyAiReport={onCopyAiReport}

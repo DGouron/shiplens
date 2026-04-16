@@ -6,11 +6,13 @@ import { DriftingIssuesReadyView } from './drifting-issues-ready.view.tsx';
 interface DriftingIssuesSectionViewProps {
   state: DriftingIssuesState;
   translations: DriftingIssuesTranslations;
+  onMemberClick: (memberName: string) => void;
 }
 
 export function DriftingIssuesSectionView({
   state,
   translations,
+  onMemberClick,
 }: DriftingIssuesSectionViewProps) {
   return (
     <section
@@ -23,7 +25,10 @@ export function DriftingIssuesSectionView({
         <p className="drifting-issues-error">{state.message}</p>
       )}
       {state.status === 'ready' && (
-        <DriftingIssuesReadyView viewModel={state.data} />
+        <DriftingIssuesReadyView
+          viewModel={state.data}
+          onMemberClick={onMemberClick}
+        />
       )}
     </section>
   );

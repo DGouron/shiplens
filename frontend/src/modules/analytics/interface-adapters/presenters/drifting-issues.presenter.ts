@@ -3,6 +3,7 @@ import {
   type DriftingIssueResponse,
   type DriftingIssuesResponse,
 } from '../../entities/drifting-issues/drifting-issues.response.ts';
+import { memberHealthTrendsHref } from '../url-contracts/member-health-trends.url-contract.ts';
 import { type DriftingIssuesTranslations } from './drifting-issues.translations.ts';
 import {
   type DriftingIssueRowViewModel,
@@ -13,10 +14,14 @@ import { formatDurationHours } from './format-duration-hours.ts';
 export class DriftingIssuesPresenter
   implements Presenter<DriftingIssuesResponse, DriftingIssuesViewModel>
 {
-  constructor(private readonly translations: DriftingIssuesTranslations) {}
+  constructor(
+    private readonly translations: DriftingIssuesTranslations,
+    private readonly selectedMemberName: string | null = null,
+  ) {}
 
   present(input: DriftingIssuesResponse): DriftingIssuesViewModel {
-    if (input.length === 0) {
+    const filtered = input.filter((issue) => this.matchesMember(issue));
+    if (filtered.length === 0) {
       return {
         rows: [],
         emptyMessage: this.translations.emptyMessage,
@@ -25,14 +30,27 @@ export class DriftingIssuesPresenter
       };
     }
     return {
-      rows: input.map((issue) => this.toRow(issue)),
+      rows: filtered.map((issue) => this.toRow(issue)),
       emptyMessage: null,
       showList: true,
       showEmptyMessage: false,
     };
   }
 
+  private matchesMember(issue: DriftingIssueResponse): boolean {
+    if (this.selectedMemberName === null) return true;
+    return issue.assigneeName === this.selectedMemberName;
+  }
+
   private toRow(issue: DriftingIssueResponse): DriftingIssueRowViewModel {
+    const assigneeName = issue.assigneeName;
+    const href =
+      assigneeName === null
+        ? null
+        : memberHealthTrendsHref({
+            teamId: issue.teamId,
+            memberName: assigneeName,
+          });
     return {
       id: issue.issueExternalId,
       title: issue.issueTitle,
@@ -42,6 +60,9 @@ export class DriftingIssuesPresenter
       expectedLabel: `${this.translations.expectedPrefix}: ${this.formatExpected(issue.expectedMaxHours)}`,
       pointsLabel: this.formatPoints(issue.points),
       issueUrl: issue.issueUrl,
+      assigneeName,
+      memberHealthTrendsHref: href,
+      showMemberLink: href !== null,
     };
   }
 

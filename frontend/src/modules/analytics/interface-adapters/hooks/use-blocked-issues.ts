@@ -10,6 +10,7 @@ import { type BlockedIssuesViewModel } from '../presenters/blocked-issues.view-m
 
 export interface UseBlockedIssuesParams {
   teamId: string | null;
+  selectedMemberName?: string | null;
 }
 
 export type BlockedIssuesState = AsyncState<BlockedIssuesViewModel>;
@@ -23,6 +24,7 @@ export function useBlockedIssues(
 ): UseBlockedIssuesResult {
   const locale = useLocale();
   const { teamId } = params;
+  const selectedMemberName = params.selectedMemberName ?? null;
   const isEnabled = teamId !== null;
 
   const query = useQuery({
@@ -35,8 +37,12 @@ export function useBlockedIssues(
     () =>
       teamId === null
         ? null
-        : new BlockedIssuesPresenter(blockedIssuesTranslations[locale], teamId),
-    [locale, teamId],
+        : new BlockedIssuesPresenter(
+            blockedIssuesTranslations[locale],
+            teamId,
+            selectedMemberName,
+          ),
+    [locale, teamId, selectedMemberName],
   );
 
   const state: BlockedIssuesState = (() => {

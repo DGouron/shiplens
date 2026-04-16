@@ -10,6 +10,7 @@ import { type DriftingIssuesViewModel } from '../presenters/drifting-issues.view
 
 export interface UseDriftingIssuesParams {
   teamId: string | null;
+  selectedMemberName?: string | null;
 }
 
 export type DriftingIssuesState = AsyncState<DriftingIssuesViewModel>;
@@ -23,6 +24,7 @@ export function useDriftingIssues(
 ): UseDriftingIssuesResult {
   const locale = useLocale();
   const { teamId } = params;
+  const selectedMemberName = params.selectedMemberName ?? null;
   const isEnabled = teamId !== null;
 
   const query = useQuery({
@@ -39,8 +41,12 @@ export function useDriftingIssues(
   });
 
   const presenter = useMemo(
-    () => new DriftingIssuesPresenter(driftingIssuesTranslations[locale]),
-    [locale],
+    () =>
+      new DriftingIssuesPresenter(
+        driftingIssuesTranslations[locale],
+        selectedMemberName,
+      ),
+    [locale, selectedMemberName],
   );
 
   const state: DriftingIssuesState = (() => {

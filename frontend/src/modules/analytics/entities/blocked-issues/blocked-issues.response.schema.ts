@@ -10,6 +10,7 @@ export const blockedIssueAlertResponseSchema = z.object({
   durationHours: z.number(),
   issueUrl: z.string(),
   detectedAt: z.string(),
+  assigneeName: z.nullable(z.string()),
 });
 
 export const blockedIssuesResponseSchema = z.array(

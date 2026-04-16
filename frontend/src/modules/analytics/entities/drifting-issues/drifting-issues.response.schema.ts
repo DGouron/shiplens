@@ -10,6 +10,7 @@ export const driftingIssueResponseSchema = z.object({
   elapsedBusinessHours: z.number(),
   expectedMaxHours: z.nullable(z.number()),
   issueUrl: z.string(),
+  assigneeName: z.nullable(z.string()),
 });
 
 export const driftingIssuesResponseSchema = z.array(
