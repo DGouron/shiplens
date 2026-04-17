@@ -6,7 +6,7 @@ import { driftGridResponseGuard } from './drift-grid.response.guard.ts';
 export class DriftGridInHttpGateway extends DriftGridGateway {
   async getEntries(): Promise<DriftGridResponse> {
     const response = await fetch(
-      '/api/analytics/drifting-issues/drift-grid/entries',
+      '/analytics/drifting-issues/drift-grid/entries',
     );
     if (!response.ok) {
       throw new GatewayError(
