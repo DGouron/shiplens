@@ -10,10 +10,11 @@ export interface UseDashboardPageResult {
   syncState: SyncState;
   startResync: () => Promise<void>;
   retrySync: () => Promise<void>;
+  onSelectTeam: (teamId: string) => void;
 }
 
 export function useDashboardPage(): UseDashboardPageResult {
-  const { state: dashboardState, reload } = useDashboard();
+  const { state: dashboardState, reload, onSelectTeam } = useDashboard();
   const sync = useSyncOrchestrator({ onSuccess: reload });
 
   const shouldAutoSync =
@@ -32,5 +33,6 @@ export function useDashboardPage(): UseDashboardPageResult {
     syncState: sync.state,
     startResync: sync.startResync,
     retrySync: sync.retry,
+    onSelectTeam,
   };
 }

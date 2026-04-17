@@ -20,6 +20,7 @@ export const activeTeamCardViewModelSchema = z.object({
   blockedIssuesCount: z.number(),
   blockedAlert: z.boolean(),
   reportLink: z.nullable(z.string()),
+  isSelected: z.boolean(),
 });
 
 export const idleTeamCardViewModelSchema = z.object({
@@ -27,6 +28,7 @@ export const idleTeamCardViewModelSchema = z.object({
   teamId: z.string(),
   teamName: z.string(),
   noActiveCycleMessage: z.string(),
+  isSelected: z.boolean(),
 });
 
 export const teamCardViewModelSchema = z.discriminatedUnion('kind', [
@@ -44,6 +46,9 @@ export const syncStatusViewModelSchema = z.object({
 export const dashboardViewModelSchema = z.object({
   teams: z.array(teamCardViewModelSchema),
   synchronization: syncStatusViewModelSchema,
+  selectedTeamId: z.nullable(z.string()),
+  showEmptyTeamsMessage: z.boolean(),
+  emptyTeamsMessage: z.nullable(z.string()),
 });
 
 export type HealthTier = z.infer<typeof healthTierSchema>;

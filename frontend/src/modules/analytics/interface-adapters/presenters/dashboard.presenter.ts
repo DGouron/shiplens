@@ -15,6 +15,10 @@ import {
   type TeamCardViewModel,
 } from './dashboard.view-model.schema.ts';
 
+export interface DashboardPresenterContext {
+  persistedTeamId: string | null;
+}
+
 export class DashboardPresenter
   implements Presenter<WorkspaceDashboardDataResponse, DashboardViewModel>
 {
@@ -23,14 +27,52 @@ export class DashboardPresenter
     private readonly translations: DashboardTranslations,
   ) {}
 
-  present(input: WorkspaceDashboardDataResponse): DashboardViewModel {
+  present(
+    input: WorkspaceDashboardDataResponse,
+    context: DashboardPresenterContext = { persistedTeamId: null },
+  ): DashboardViewModel {
+    const selectedTeamId = this.resolveSelectedTeamId(
+      input.teams,
+      context.persistedTeamId,
+    );
+    const showEmptyTeamsMessage = input.teams.length === 0;
+
     return {
-      teams: input.teams.map((team) => this.presentTeam(team)),
+      teams: input.teams.map((team) => this.presentTeam(team, selectedTeamId)),
       synchronization: this.presentSynchronization(input.synchronization),
+      selectedTeamId,
+      showEmptyTeamsMessage,
+      emptyTeamsMessage: showEmptyTeamsMessage
+        ? this.translations.emptyTeamsMessage
+        : null,
     };
   }
 
-  private presentTeam(team: TeamDashboardResponse): TeamCardViewModel {
+  private resolveSelectedTeamId(
+    teams: TeamDashboardResponse[],
+    persistedTeamId: string | null,
+  ): string | null {
+    if (teams.length === 0) {
+      return null;
+    }
+    if (
+      persistedTeamId !== null &&
+      teams.some((team) => team.teamId === persistedTeamId)
+    ) {
+      return persistedTeamId;
+    }
+    const alphabetical = [...teams].sort((leftTeam, rightTeam) =>
+      leftTeam.teamName.localeCompare(rightTeam.teamName, this.locale),
+    );
+    return alphabetical[0].teamId;
+  }
+
+  private presentTeam(
+    team: TeamDashboardResponse,
+    selectedTeamId: string | null,
+  ): TeamCardViewModel {
+    const isSelected = team.teamId === selectedTeamId;
+
     if (!team.hasActiveCycle) {
       return {
         kind: 'idle',
@@ -38,6 +80,7 @@ export class DashboardPresenter
         teamName: team.teamName,
         noActiveCycleMessage:
           team.noActiveCycleMessage ?? this.translations.noActiveCycle,
+        isSelected,
       };
     }
 
@@ -62,6 +105,7 @@ export class DashboardPresenter
       blockedIssuesCount: team.blockedIssuesCount,
       blockedAlert: team.blockedAlert,
       reportLink: team.reportLink,
+      isSelected,
     };
   }
 

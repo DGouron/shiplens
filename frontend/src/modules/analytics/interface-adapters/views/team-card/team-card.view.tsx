@@ -1,21 +1,46 @@
+import { type KeyboardEvent } from 'react';
 import { Link } from 'react-router';
-import { type DashboardTranslations } from '../presenters/dashboard.translations.ts';
-import { type ActiveTeamCardViewModel } from '../presenters/dashboard.view-model.schema.ts';
-import { CompletionRingView } from './completion-ring.view.tsx';
+import { type DashboardTranslations } from '../../presenters/dashboard.translations.ts';
+import { type ActiveTeamCardViewModel } from '../../presenters/dashboard.view-model.schema.ts';
+import { CompletionRingView } from '../completion-ring.view.tsx';
+import { TeamSelectionCheckmarkView } from './team-selection-checkmark.view.tsx';
 
 interface TeamCardViewProps {
   team: ActiveTeamCardViewModel;
   translations: DashboardTranslations;
+  onSelect: () => void;
 }
 
-export function TeamCardView({ team, translations }: TeamCardViewProps) {
-  const healthClass = `team-card--${team.healthTier}`;
+export function TeamCardView({
+  team,
+  translations,
+  onSelect,
+}: TeamCardViewProps) {
+  const selectedClass = team.isSelected ? ' team-card--selected' : '';
+  const className = `team-card team-card--${team.healthTier}${selectedClass}`;
   const blockedValueClass = team.blockedAlert
     ? 'kpi-value alert-text'
     : 'kpi-value';
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelect();
+    }
+  };
+
   return (
-    <div className={`team-card ${healthClass}`}>
+    // biome-ignore lint/a11y/useSemanticElements: the card contains a <Link> so a <button> would produce invalid nested interactive elements
+    <div
+      className={className}
+      role="button"
+      tabIndex={0}
+      aria-pressed={team.isSelected}
+      aria-label={team.teamName}
+      onClick={onSelect}
+      onKeyDown={handleKeyDown}
+    >
+      {team.isSelected && <TeamSelectionCheckmarkView />}
       <div className="card-header">
         <CompletionRingView
           completionPercentage={team.completionPercentage}

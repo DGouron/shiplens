@@ -1,6 +1,30 @@
 # Select team on dashboard
 
-## Status: ready
+## Status: implemented
+
+## Implementation
+
+### Bounded Context
+Analytics
+
+### Artifacts
+- **Gateway port**: `TeamSelectionStorageGateway` — abstract class with `read(workspaceId)` / `write(workspaceId, teamId)`
+- **Gateway impl**: `TeamSelectionInLocalStorageGateway` — `window.localStorage` wrapper, keyed by `shiplens.selectedTeamId:${workspaceId}`, throws `GatewayError` on I/O failure
+- **Use cases**: `GetPersistedTeamSelectionUsecase`, `PersistTeamSelectionUsecase`
+- **Presenter**: `DashboardPresenter.present(data, { persistedTeamId })` extended with `resolveSelectedTeamId` (alphabetical default / restore / stale fallback) and per-card `isSelected`
+- **ViewModel additions**: `selectedTeamId`, `showEmptyTeamsMessage`, `emptyTeamsMessage` at root; `isSelected` per team card
+- **Hook**: `useDashboard` maintains click-override state and exposes `onSelectTeam(teamId)`; `useDashboardPage` forwards the callback
+- **Views**: `TeamCardView` + `TeamCardIdleView` moved to `views/team-card/` and extended with `isSelected` + `onSelect`; new `TeamSelectionCheckmarkView`; new `DashboardEmptyTeamsView` for the zero-teams branch
+- **Translations**: `emptyTeamsMessage` key added (EN + FR)
+- **Backend touch**: `WorkspaceDashboardPresenter` now forwards `workspaceId` from the Linear connection via `GetWorkspaceDashboardUsecase` (the dashboard DTO now exposes `workspaceId` so the frontend can scope the localStorage key per workspace)
+
+### Architectural Decisions
+- **Storage abstracted as a gateway** — `localStorage` is an I/O boundary; the port enables testable hooks (stub + failing stub) and isolates the key contract
+- **Workspace id sourced from the dashboard payload** (Option A) — avoids a second cross-BC gateway into identity; the dashboard round-trip already carries enough context
+- **Selection logic in the presenter** — resolving the default team (alphabetical / persisted / fallback) is pure presentation logic; views receive only the resolved `isSelected: boolean`
+- **Fire-and-forget persistence** — the hook updates UI state immediately on click and persists asynchronously; selection UX stays responsive even if `localStorage` is disabled
+- **No React context for shared state** — downstream widgets will receive `selectedTeamId` via props through `DashboardView`. YAGNI until a second consumer lands.
+- **Card as `role="button"` (not `<button>`)** — a team card contains a `<Link>` to the report page, so nesting a `<button>` would produce invalid HTML; `biome-ignore useSemanticElements` documented inline
 
 ## Context
 

@@ -4,8 +4,23 @@ import { describe, expect, it } from 'vitest';
 describe('WorkspaceDashboardPresenter', () => {
   const presenter = new WorkspaceDashboardPresenter();
 
+  it('forwards the workspaceId from the usecase result', () => {
+    const result = presenter.present({
+      workspaceId: 'workspace-abc',
+      teamDashboards: [],
+      synchronizationStatus: {
+        lastSyncDate: new Date('2026-03-31T08:00:00Z'),
+        isLate: false,
+        nextSync: 'Synchronisation manuelle',
+      },
+    });
+
+    expect(result.workspaceId).toBe('workspace-abc');
+  });
+
   it('formats completion rate as percentage string', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -31,6 +46,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('formats velocity trend as readable French label', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -56,6 +72,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('formats velocity trend baisse', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -81,6 +98,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('formats velocity trend stable', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -106,6 +124,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('formats velocity trend insuffisant', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -131,6 +150,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('sets blocked alert flag when blocked issues equal total issues', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -156,6 +176,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('does not set blocked alert when some issues are not blocked', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -181,6 +202,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('shows sync late warning when synchronization is late', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [],
       synchronizationStatus: {
         lastSyncDate: new Date('2026-03-29T06:00:00Z'),
@@ -197,6 +219,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('does not show sync late warning when synchronization is recent', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [],
       synchronizationStatus: {
         lastSyncDate: new Date('2026-03-31T08:00:00Z'),
@@ -211,6 +234,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('shows report link for team with active cycle', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',
@@ -236,6 +260,7 @@ describe('WorkspaceDashboardPresenter', () => {
 
   it('shows no report message for team without active cycle', () => {
     const result = presenter.present({
+      workspaceId: 'workspace-1',
       teamDashboards: [
         {
           teamId: 'team-1',

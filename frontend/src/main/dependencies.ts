@@ -8,6 +8,7 @@ import { MemberDigestInHttpGateway } from '@/modules/analytics/interface-adapter
 import { MemberHealthInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/member-health.in-http.gateway.ts';
 import { SprintReportInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/sprint-report.in-http.gateway.ts';
 import { TeamCyclesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-cycles.in-http.gateway.ts';
+import { TeamSelectionInLocalStorageGateway } from '@/modules/analytics/interface-adapters/gateways/team-selection.in-localstorage.gateway.ts';
 import { TeamSettingsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-settings.in-http.gateway.ts';
 import { WorkflowConfigInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workflow-config.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
@@ -19,6 +20,7 @@ import { GetCycleMetricsUsecase } from '@/modules/analytics/usecases/get-cycle-m
 import { GetDriftGridEntriesUsecase } from '@/modules/analytics/usecases/get-drift-grid-entries.usecase.ts';
 import { GetEstimationAccuracyUsecase } from '@/modules/analytics/usecases/get-estimation-accuracy.usecase.ts';
 import { GetMemberHealthUsecase } from '@/modules/analytics/usecases/get-member-health.usecase.ts';
+import { GetPersistedTeamSelectionUsecase } from '@/modules/analytics/usecases/get-persisted-team-selection.usecase.ts';
 import { GetSprintReportDetailUsecase } from '@/modules/analytics/usecases/get-sprint-report-detail.usecase.ts';
 import { GetTeamStatusSettingsUsecase } from '@/modules/analytics/usecases/get-team-status-settings.usecase.ts';
 import { GetTeamTimezoneUsecase } from '@/modules/analytics/usecases/get-team-timezone.usecase.ts';
@@ -30,6 +32,7 @@ import { ListBlockedIssuesUsecase } from '@/modules/analytics/usecases/list-bloc
 import { ListDriftingIssuesUsecase } from '@/modules/analytics/usecases/list-drifting-issues.usecase.ts';
 import { ListSprintReportsUsecase } from '@/modules/analytics/usecases/list-sprint-reports.usecase.ts';
 import { ListTeamCyclesUsecase } from '@/modules/analytics/usecases/list-team-cycles.usecase.ts';
+import { PersistTeamSelectionUsecase } from '@/modules/analytics/usecases/persist-team-selection.usecase.ts';
 import { SetTeamExcludedStatusesUsecase } from '@/modules/analytics/usecases/set-team-excluded-statuses.usecase.ts';
 import { SetTeamTimezoneUsecase } from '@/modules/analytics/usecases/set-team-timezone.usecase.ts';
 import { SetTeamWorkflowConfigUsecase } from '@/modules/analytics/usecases/set-team-workflow-config.usecase.ts';
@@ -56,6 +59,7 @@ const workspaceLanguageGateway = new WorkspaceLanguageInHttpGateway();
 const teamSettingsGateway = new TeamSettingsInHttpGateway();
 const driftGridGateway = new DriftGridInHttpGateway();
 const workflowConfigGateway = new WorkflowConfigInHttpGateway();
+const teamSelectionStorageGateway = new TeamSelectionInLocalStorageGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -100,6 +104,12 @@ export const usecases = {
   ),
   setTeamWorkflowConfig: new SetTeamWorkflowConfigUsecase(
     workflowConfigGateway,
+  ),
+  getPersistedTeamSelection: new GetPersistedTeamSelectionUsecase(
+    teamSelectionStorageGateway,
+  ),
+  persistTeamSelection: new PersistTeamSelectionUsecase(
+    teamSelectionStorageGateway,
   ),
 };
 
@@ -166,5 +176,11 @@ export function resetUsecases(): void {
   );
   usecases.setTeamWorkflowConfig = new SetTeamWorkflowConfigUsecase(
     workflowConfigGateway,
+  );
+  usecases.getPersistedTeamSelection = new GetPersistedTeamSelectionUsecase(
+    teamSelectionStorageGateway,
+  );
+  usecases.persistTeamSelection = new PersistTeamSelectionUsecase(
+    teamSelectionStorageGateway,
   );
 }
