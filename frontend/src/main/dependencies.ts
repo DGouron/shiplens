@@ -1,26 +1,36 @@
 import { BlockedIssuesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/blocked-issues.in-http.gateway.ts';
 import { BottleneckAnalysisInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/bottleneck-analysis.in-http.gateway.ts';
 import { CycleMetricsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/cycle-metrics.in-http.gateway.ts';
+import { DriftGridInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/drift-grid.in-http.gateway.ts';
 import { DriftingIssuesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/drifting-issues.in-http.gateway.ts';
 import { EstimationAccuracyInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/estimation-accuracy.in-http.gateway.ts';
 import { MemberDigestInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/member-digest.in-http.gateway.ts';
 import { MemberHealthInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/member-health.in-http.gateway.ts';
 import { SprintReportInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/sprint-report.in-http.gateway.ts';
 import { TeamCyclesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-cycles.in-http.gateway.ts';
+import { TeamSettingsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-settings.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
+import { WorkspaceLanguageInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-language.in-http.gateway.ts';
 import { GenerateMemberDigestUsecase } from '@/modules/analytics/usecases/generate-member-digest.usecase.ts';
 import { GenerateSprintReportUsecase } from '@/modules/analytics/usecases/generate-sprint-report.usecase.ts';
 import { GetBottleneckAnalysisUsecase } from '@/modules/analytics/usecases/get-bottleneck-analysis.usecase.ts';
 import { GetCycleMetricsUsecase } from '@/modules/analytics/usecases/get-cycle-metrics.usecase.ts';
+import { GetDriftGridEntriesUsecase } from '@/modules/analytics/usecases/get-drift-grid-entries.usecase.ts';
 import { GetEstimationAccuracyUsecase } from '@/modules/analytics/usecases/get-estimation-accuracy.usecase.ts';
 import { GetMemberHealthUsecase } from '@/modules/analytics/usecases/get-member-health.usecase.ts';
 import { GetSprintReportDetailUsecase } from '@/modules/analytics/usecases/get-sprint-report-detail.usecase.ts';
+import { GetTeamStatusSettingsUsecase } from '@/modules/analytics/usecases/get-team-status-settings.usecase.ts';
+import { GetTeamTimezoneUsecase } from '@/modules/analytics/usecases/get-team-timezone.usecase.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
+import { GetWorkspaceLanguageUsecase } from '@/modules/analytics/usecases/get-workspace-language.usecase.ts';
 import { ListAvailableTeamsUsecase } from '@/modules/analytics/usecases/list-available-teams.usecase.ts';
 import { ListBlockedIssuesUsecase } from '@/modules/analytics/usecases/list-blocked-issues.usecase.ts';
 import { ListDriftingIssuesUsecase } from '@/modules/analytics/usecases/list-drifting-issues.usecase.ts';
 import { ListSprintReportsUsecase } from '@/modules/analytics/usecases/list-sprint-reports.usecase.ts';
 import { ListTeamCyclesUsecase } from '@/modules/analytics/usecases/list-team-cycles.usecase.ts';
+import { SetTeamExcludedStatusesUsecase } from '@/modules/analytics/usecases/set-team-excluded-statuses.usecase.ts';
+import { SetTeamTimezoneUsecase } from '@/modules/analytics/usecases/set-team-timezone.usecase.ts';
+import { SetWorkspaceLanguageUsecase } from '@/modules/analytics/usecases/set-workspace-language.usecase.ts';
 import { SyncInHttpGateway } from '@/modules/synchronization/interface-adapters/gateways/sync.in-http.gateway.ts';
 import { DiscoverSyncTeamsUsecase } from '@/modules/synchronization/usecases/discover-sync-teams.usecase.ts';
 import { GetSyncSelectionUsecase } from '@/modules/synchronization/usecases/get-sync-selection.usecase.ts';
@@ -39,6 +49,9 @@ const driftingIssuesGateway = new DriftingIssuesInHttpGateway();
 const sprintReportGateway = new SprintReportInHttpGateway();
 const memberDigestGateway = new MemberDigestInHttpGateway();
 const memberHealthGateway = new MemberHealthInHttpGateway();
+const workspaceLanguageGateway = new WorkspaceLanguageInHttpGateway();
+const teamSettingsGateway = new TeamSettingsInHttpGateway();
+const driftGridGateway = new DriftGridInHttpGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -65,6 +78,19 @@ export const usecases = {
   generateSprintReport: new GenerateSprintReportUsecase(sprintReportGateway),
   generateMemberDigest: new GenerateMemberDigestUsecase(memberDigestGateway),
   getMemberHealth: new GetMemberHealthUsecase(memberHealthGateway),
+  getWorkspaceLanguage: new GetWorkspaceLanguageUsecase(
+    workspaceLanguageGateway,
+  ),
+  setWorkspaceLanguage: new SetWorkspaceLanguageUsecase(
+    workspaceLanguageGateway,
+  ),
+  getTeamTimezone: new GetTeamTimezoneUsecase(teamSettingsGateway),
+  setTeamTimezone: new SetTeamTimezoneUsecase(teamSettingsGateway),
+  getTeamStatusSettings: new GetTeamStatusSettingsUsecase(teamSettingsGateway),
+  setTeamExcludedStatuses: new SetTeamExcludedStatusesUsecase(
+    teamSettingsGateway,
+  ),
+  getDriftGridEntries: new GetDriftGridEntriesUsecase(driftGridGateway),
 };
 
 export function overrideUsecases(overrides: Partial<typeof usecases>): void {
@@ -108,4 +134,21 @@ export function resetUsecases(): void {
     memberDigestGateway,
   );
   usecases.getMemberHealth = new GetMemberHealthUsecase(memberHealthGateway);
+  usecases.getWorkspaceLanguage = new GetWorkspaceLanguageUsecase(
+    workspaceLanguageGateway,
+  );
+  usecases.setWorkspaceLanguage = new SetWorkspaceLanguageUsecase(
+    workspaceLanguageGateway,
+  );
+  usecases.getTeamTimezone = new GetTeamTimezoneUsecase(teamSettingsGateway);
+  usecases.setTeamTimezone = new SetTeamTimezoneUsecase(teamSettingsGateway);
+  usecases.getTeamStatusSettings = new GetTeamStatusSettingsUsecase(
+    teamSettingsGateway,
+  );
+  usecases.setTeamExcludedStatuses = new SetTeamExcludedStatusesUsecase(
+    teamSettingsGateway,
+  );
+  usecases.getDriftGridEntries = new GetDriftGridEntriesUsecase(
+    driftGridGateway,
+  );
 }

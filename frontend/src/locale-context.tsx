@@ -1,14 +1,24 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
-type Locale = 'en' | 'fr';
+export type Locale = 'en' | 'fr';
 
-const LocaleContext = createContext<Locale>('en');
+interface LocaleContextValue {
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
+}
+
+const LocaleContext = createContext<LocaleContextValue>({
+  locale: 'en',
+  setLocale: () => {},
+});
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>('en');
@@ -27,9 +37,22 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       .catch(() => {});
   }, []);
 
-  return <LocaleContext value={locale}>{children}</LocaleContext>;
+  const handleSetLocale = useCallback((newLocale: Locale) => {
+    setLocale(newLocale);
+  }, []);
+
+  const value = useMemo(
+    () => ({ locale, setLocale: handleSetLocale }),
+    [locale, handleSetLocale],
+  );
+
+  return <LocaleContext value={value}>{children}</LocaleContext>;
 }
 
 export function useLocale(): Locale {
-  return useContext(LocaleContext);
+  return useContext(LocaleContext).locale;
+}
+
+export function useSetLocale(): (locale: Locale) => void {
+  return useContext(LocaleContext).setLocale;
 }
