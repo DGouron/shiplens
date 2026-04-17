@@ -22,6 +22,7 @@ export const synchronizationResponseSchema = z.object({
 });
 
 export const workspaceDashboardDataResponseSchema = z.object({
+  workspaceId: z.string(),
   teams: z.array(teamDashboardResponseSchema),
   synchronization: synchronizationResponseSchema,
 });

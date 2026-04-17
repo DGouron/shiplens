@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { type Usecase } from '@shared/foundation/usecase/usecase.js';
+import { LinearWorkspaceConnectionGateway } from '../../identity/entities/linear-workspace-connection/linear-workspace-connection.gateway.js';
 import {
   NoTeamsSynchronizedError,
   WorkspaceNotConnectedError,
@@ -27,6 +28,7 @@ export interface SynchronizationStatus {
 }
 
 export interface WorkspaceDashboardResult {
+  workspaceId: string;
   teamDashboards: TeamDashboard[];
   synchronizationStatus: SynchronizationStatus;
 }
@@ -43,6 +45,7 @@ export class GetWorkspaceDashboardUsecase
 
   constructor(
     private readonly dashboardDataGateway: WorkspaceDashboardDataGateway,
+    private readonly workspaceConnectionGateway: LinearWorkspaceConnectionGateway,
   ) {}
 
   async execute(): Promise<WorkspaceDashboardResult> {
@@ -52,6 +55,12 @@ export class GetWorkspaceDashboardUsecase
     if (!isConnected) {
       throw new WorkspaceNotConnectedError();
     }
+
+    const connection = await this.workspaceConnectionGateway.get();
+    if (connection === null) {
+      throw new WorkspaceNotConnectedError();
+    }
+    const workspaceId = connection.workspaceId;
 
     const teams = await this.dashboardDataGateway.getSynchronizedTeams();
     if (teams.length === 0) {
@@ -133,6 +142,7 @@ export class GetWorkspaceDashboardUsecase
     );
 
     return {
+      workspaceId,
       teamDashboards,
       synchronizationStatus: {
         lastSyncDate: mostRecentSyncDate,

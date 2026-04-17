@@ -1,7 +1,7 @@
 # Event Storming Big Picture — Shiplens
 
 *Created: 2026-04-04*
-*Last updated: 2026-04-04*
+*Last updated: 2026-04-17*
 
 ## Overview
 
@@ -207,8 +207,28 @@ The `shared/domain/` directory is empty. Types currently shared between BCs are 
 - [Audit](event-storming/audit.md)
 - [Notification](event-storming/notification.md)
 
+
+## Addendum 2026-04-17 — Analytics BC
+
+The Analytics BC now spans both workspaces with the same ubiquitous language. New elements worth surfacing in the global picture:
+
+### New client-side domain events
+- `TeamSelected` — user clicks a team card on the dashboard; the selected team becomes the anchor for all future right-side widgets (top projects/epics/assignees/themes).
+- `TeamSelectionRestored` — dashboard mount reads the persisted selection from `localStorage` and applies it (with stale-fallback).
+
+### New cross-BC relationship
+- **Identity → Analytics (backend)** — `GetWorkspaceDashboardUsecase` now depends on `LinearWorkspaceConnectionGateway` to expose `workspaceId` in the dashboard DTO. Customer-Supplier pattern. Needed so the frontend can scope its `localStorage` key per workspace without an extra round-trip.
+
+### New hot spot
+- `useDashboard` carries two parallel selection states (`selectionOverride` + `persistedTeamId`). Works for one consumer; flagged to revisit when the second downstream widget (top cycle projects, etc.) lands.
+
+### Glossary additions
+- `Workspace-scoped persistence`, `Known statuses`, `Workflow status tag`, `Source badge` — see `docs/ddd/ubiquitous-language.md`.
+
+
 ## Session History
 
 | Date | Mode | Scope | Contributor |
 |------|------|-------|-------------|
 | 2026-04-04 | Global audit | 5 BCs (Identity, Synchronization, Analytics, Audit, Notification) | Event Storming Big Picture |
+| 2026-04-17 | Target | Analytics BC re-audit — front + back unified, team-selection feature, workflow-config UI, dashboard `workspaceId` | Event Storming (analytics) |

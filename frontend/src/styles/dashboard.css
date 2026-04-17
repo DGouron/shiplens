@@ -101,6 +101,32 @@
   border-left: 4px solid var(--text-dim);
 }
 
+.team-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.team-card:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+
+.team-card--selected {
+  border-color: var(--accent-2);
+  box-shadow: var(--shadow-hover), inset 0 0 0 1px var(--accent-2);
+}
+
+.team-card-checkmark {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  color: var(--accent-2);
+}
+
+.dashboard-empty-teams {
+  margin-top: 1rem;
+}
+
 .card-header {
   display: flex;
   align-items: center;

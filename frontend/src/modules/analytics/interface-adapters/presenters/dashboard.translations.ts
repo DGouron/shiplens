@@ -26,6 +26,7 @@ export interface DashboardTranslations {
   syncErrorSelectTeams: string;
   syncErrorNoSelection: string;
   syncRetryButton: string;
+  emptyTeamsMessage: string;
 }
 
 export const dashboardTranslations: Record<Locale, DashboardTranslations> = {
@@ -55,6 +56,8 @@ export const dashboardTranslations: Record<Locale, DashboardTranslations> = {
     syncErrorSelectTeams: 'Unable to select teams',
     syncErrorNoSelection: 'No sync selection found',
     syncRetryButton: 'Retry',
+    emptyTeamsMessage:
+      'No teams available. Connect Linear and select teams to sync first.',
   },
   fr: {
     pageTitle: 'Dashboard',
@@ -82,5 +85,7 @@ export const dashboardTranslations: Record<Locale, DashboardTranslations> = {
     syncErrorSelectTeams: 'Impossible de selectionner les equipes',
     syncErrorNoSelection: 'Aucune selection de sync trouvee',
     syncRetryButton: 'Reessayer',
+    emptyTeamsMessage:
+      "Aucune équipe disponible. Connectez Linear et sélectionnez des équipes à synchroniser d'abord.",
   },
 };

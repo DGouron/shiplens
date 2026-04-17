@@ -4,15 +4,34 @@ import {
 } from '@modules/analytics/entities/workspace-dashboard/workspace-dashboard.errors.js';
 import { StubWorkspaceDashboardDataGateway } from '@modules/analytics/testing/good-path/stub.workspace-dashboard-data.gateway.js';
 import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import { LinearWorkspaceConnection } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.js';
+import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { beforeEach, describe, expect, it } from 'vitest';
+
+function buildConnection(workspaceId: string): LinearWorkspaceConnection {
+  return LinearWorkspaceConnection.create({
+    id: 'connection-1',
+    workspaceId,
+    workspaceName: 'Test workspace',
+    encryptedAccessToken: 'encrypted-access',
+    encryptedRefreshToken: 'encrypted-refresh',
+    grantedScopes: ['read'],
+    status: 'connected',
+    connectedAt: new Date('2026-01-01T00:00:00Z'),
+    updatedAt: new Date('2026-01-01T00:00:00Z'),
+  });
+}
 
 describe('GetWorkspaceDashboardUsecase', () => {
   let gateway: StubWorkspaceDashboardDataGateway;
+  let connectionGateway: StubLinearWorkspaceConnectionGateway;
   let usecase: GetWorkspaceDashboardUsecase;
 
   beforeEach(() => {
     gateway = new StubWorkspaceDashboardDataGateway();
-    usecase = new GetWorkspaceDashboardUsecase(gateway);
+    connectionGateway = new StubLinearWorkspaceConnectionGateway();
+    connectionGateway.connection = buildConnection('workspace-1');
+    usecase = new GetWorkspaceDashboardUsecase(gateway, connectionGateway);
   });
 
   it('throws WorkspaceNotConnectedError when workspace is not connected', async () => {

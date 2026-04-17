@@ -102,3 +102,7 @@ Single source of truth for the project's business vocabulary. Enriched by `/prod
 | Theme cache | Analytics | Per-cycle memo of AI-generated themes with a 24-hour TTL during the active cycle |
 | Health signal | Analytics | One of 5 per-member metrics (estimation score, underestimation ratio, average cycle time, drifting tickets, median review time) tracked over cycles with trend direction and severity color |
 | Drifting issue | Analytics | In-progress issue that has exceeded its expected business-hours budget per story point — status can be on-track, drifting, or needs-splitting |
+| Workspace-scoped persistence | Analytics | Browser localStorage entry keyed by workspace identifier so switching workspaces yields a clean slate for the team selection |
+| Known statuses | Analytics | Distinct status names observed in a team's state-transition history — the source list shown in the workflow configuration UI |
+| Workflow status tag | Analytics | UI tag applied to a known status: `started`, `completed`, or `not tracked` — maps to the team's `startedStatuses` / `completedStatuses` lists |
+| Source badge | Analytics | UI badge on the workflow configuration section showing whether the current config is `auto-detected` or `manual` |

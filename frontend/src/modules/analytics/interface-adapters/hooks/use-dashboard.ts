@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocale } from '@/locale-context.tsx';
 import { usecases } from '@/main/dependencies.ts';
 import { type AsyncState } from '@/shared/foundation/async-state/async-state.type.ts';
@@ -21,6 +21,7 @@ export type DashboardState = AsyncState<
 export interface UseDashboardResult {
   state: DashboardState;
   reload: () => Promise<void>;
+  onSelectTeam: (teamId: string) => void;
 }
 
 export function useDashboard(): UseDashboardResult {
@@ -33,6 +34,45 @@ export function useDashboard(): UseDashboardResult {
   const presenter = useMemo(
     () => new DashboardPresenter(locale, dashboardTranslations[locale]),
     [locale],
+  );
+
+  const workspaceId =
+    query.data && 'teams' in query.data ? query.data.workspaceId : null;
+
+  const [selectionOverride, setSelectionOverride] = useState<string | null>(
+    null,
+  );
+  const [persistedTeamId, setPersistedTeamId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSelectionOverride(null);
+    setPersistedTeamId(null);
+    if (workspaceId === null) return;
+    let cancelled = false;
+    usecases.getPersistedTeamSelection
+      .execute({ workspaceId })
+      .then((value) => {
+        if (!cancelled) setPersistedTeamId(value);
+      })
+      .catch(() => {
+        if (!cancelled) setPersistedTeamId(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [workspaceId]);
+
+  const onSelectTeam = useCallback(
+    (teamId: string) => {
+      setSelectionOverride(teamId);
+      if (workspaceId === null) return;
+      void usecases.persistTeamSelection
+        .execute({ workspaceId, teamId })
+        .catch(() => {
+          // Storage failure must not break the UX — override state already applied in memory.
+        });
+    },
+    [workspaceId],
   );
 
   const state: DashboardState = (() => {
@@ -53,7 +93,13 @@ export function useDashboard(): UseDashboardResult {
         empty: { kind: data.status, message: data.message },
       };
     }
-    return { status: 'ready', data: presenter.present(data) };
+    const effectivePersistedTeamId = selectionOverride ?? persistedTeamId;
+    return {
+      status: 'ready',
+      data: presenter.present(data, {
+        persistedTeamId: effectivePersistedTeamId,
+      }),
+    };
   })();
 
   return {
@@ -61,5 +107,6 @@ export function useDashboard(): UseDashboardResult {
     reload: async () => {
       await query.refetch();
     },
+    onSelectTeam,
   };
 }

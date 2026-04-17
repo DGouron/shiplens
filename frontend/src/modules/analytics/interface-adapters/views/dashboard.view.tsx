@@ -7,19 +7,20 @@ import {
   dashboardTranslations,
 } from '../presenters/dashboard.translations.ts';
 import { DashboardEmptyStateView } from './dashboard-empty-state.view.tsx';
+import { DashboardEmptyTeamsView } from './dashboard-empty-teams.view.tsx';
 import { DashboardErrorStateView } from './dashboard-error-state.view.tsx';
 import { DashboardLoadingStateView } from './dashboard-loading-state.view.tsx';
 import {
   type SyncProgressIndicator,
   SyncStatusBarView,
 } from './sync-status-bar.view.tsx';
-import { TeamCardView } from './team-card.view.tsx';
-import { TeamCardIdleView } from './team-card-idle.view.tsx';
+import { TeamCardView } from './team-card/team-card.view.tsx';
+import { TeamCardIdleView } from './team-card/team-card-idle.view.tsx';
 
 export function DashboardView() {
   const locale = useLocale();
   const translations = dashboardTranslations[locale];
-  const { dashboardState, syncState, startResync, retrySync } =
+  const { dashboardState, syncState, startResync, retrySync, onSelectTeam } =
     useDashboardPage();
   const syncProgress = syncProgressFor(syncState, translations);
 
@@ -33,6 +34,7 @@ export function DashboardView() {
         syncProgress,
         startResync,
         retrySync,
+        onSelectTeam,
       })}
     </main>
   );
@@ -45,6 +47,7 @@ interface RenderBodyParams {
   syncProgress: SyncProgressIndicator | null;
   startResync: () => Promise<void>;
   retrySync: () => Promise<void>;
+  onSelectTeam: (teamId: string) => void;
 }
 
 function renderBody({
@@ -54,6 +57,7 @@ function renderBody({
   syncProgress,
   startResync,
   retrySync,
+  onSelectTeam,
 }: RenderBodyParams) {
   if (state.status === 'loading') {
     return <DashboardLoadingStateView translations={translations} />;
@@ -89,19 +93,28 @@ function renderBody({
         onResyncClick={startResync}
         syncProgress={syncProgress}
       />
-      <div className="teams-grid">
-        {state.data.teams.map((team) =>
-          team.kind === 'active' ? (
-            <TeamCardView
-              key={team.teamId}
-              team={team}
-              translations={translations}
-            />
-          ) : (
-            <TeamCardIdleView key={team.teamId} team={team} />
-          ),
-        )}
-      </div>
+      {state.data.showEmptyTeamsMessage && state.data.emptyTeamsMessage ? (
+        <DashboardEmptyTeamsView message={state.data.emptyTeamsMessage} />
+      ) : (
+        <div className="teams-grid">
+          {state.data.teams.map((team) =>
+            team.kind === 'active' ? (
+              <TeamCardView
+                key={team.teamId}
+                team={team}
+                translations={translations}
+                onSelect={() => onSelectTeam(team.teamId)}
+              />
+            ) : (
+              <TeamCardIdleView
+                key={team.teamId}
+                team={team}
+                onSelect={() => onSelectTeam(team.teamId)}
+              />
+            ),
+          )}
+        </div>
+      )}
     </>
   );
 }

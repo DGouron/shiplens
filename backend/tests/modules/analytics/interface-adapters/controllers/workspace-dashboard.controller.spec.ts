@@ -2,6 +2,8 @@ import { WorkspaceDashboardController } from '@modules/analytics/interface-adapt
 import { WorkspaceDashboardPresenter } from '@modules/analytics/interface-adapters/presenters/workspace-dashboard.presenter.js';
 import { StubWorkspaceDashboardDataGateway } from '@modules/analytics/testing/good-path/stub.workspace-dashboard-data.gateway.js';
 import { GetWorkspaceDashboardUsecase } from '@modules/analytics/usecases/get-workspace-dashboard.usecase.js';
+import { LinearWorkspaceConnection } from '@modules/identity/entities/linear-workspace-connection/linear-workspace-connection.js';
+import { StubLinearWorkspaceConnectionGateway } from '@modules/identity/testing/good-path/stub.linear-workspace-connection.gateway.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('WorkspaceDashboardController', () => {
@@ -10,7 +12,22 @@ describe('WorkspaceDashboardController', () => {
 
   beforeEach(() => {
     gateway = new StubWorkspaceDashboardDataGateway();
-    const usecase = new GetWorkspaceDashboardUsecase(gateway);
+    const connectionGateway = new StubLinearWorkspaceConnectionGateway();
+    connectionGateway.connection = LinearWorkspaceConnection.create({
+      id: 'connection-1',
+      workspaceId: 'workspace-1',
+      workspaceName: 'Test workspace',
+      encryptedAccessToken: 'encrypted-access',
+      encryptedRefreshToken: 'encrypted-refresh',
+      grantedScopes: ['read'],
+      status: 'connected',
+      connectedAt: new Date('2026-01-01T00:00:00Z'),
+      updatedAt: new Date('2026-01-01T00:00:00Z'),
+    });
+    const usecase = new GetWorkspaceDashboardUsecase(
+      gateway,
+      connectionGateway,
+    );
     const presenter = new WorkspaceDashboardPresenter();
     controller = new WorkspaceDashboardController(usecase, presenter);
   });

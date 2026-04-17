@@ -6,6 +6,7 @@ interface StubWorkspaceDashboardGatewayOptions {
 }
 
 const defaultResponse: WorkspaceDashboardResponse = {
+  workspaceId: 'workspace-1',
   teams: [
     {
       teamId: 'team-1',

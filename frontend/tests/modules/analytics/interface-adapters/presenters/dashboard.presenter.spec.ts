@@ -37,6 +37,7 @@ describe('DashboardPresenter', () => {
       blockedIssuesCount: 0,
       blockedAlert: false,
       reportLink: '/cycle-report?teamId=team-1',
+      isSelected: true,
     });
   });
 
@@ -122,6 +123,7 @@ describe('DashboardPresenter', () => {
       teamId: 'team-idle',
       teamName: 'Sleepers',
       noActiveCycleMessage: 'Aucun cycle actif',
+      isSelected: true,
     });
   });
 
@@ -220,5 +222,146 @@ describe('DashboardPresenter', () => {
     const viewModel = presenter.present(dto);
 
     expect(viewModel.synchronization.lastSyncLabel).toBe('Jamais synchronise');
+  });
+
+  it('selects the alphabetical first team when no persisted selection is provided', () => {
+    const dto = new WorkspaceDashboardResponseBuilder()
+      .withTeams([
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-bravo')
+          .withTeamName('Bravo')
+          .build(),
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-alpha')
+          .withTeamName('Alpha')
+          .build(),
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-charlie')
+          .withTeamName('Charlie')
+          .build(),
+      ])
+      .build();
+    const presenter = new DashboardPresenter('en', englishTranslations);
+
+    const viewModel = presenter.present(dto, { persistedTeamId: null });
+
+    expect(viewModel.selectedTeamId).toBe('team-alpha');
+  });
+
+  it('restores the persisted selection when the team still exists', () => {
+    const dto = new WorkspaceDashboardResponseBuilder()
+      .withTeams([
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-alpha')
+          .withTeamName('Alpha')
+          .build(),
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-bravo')
+          .withTeamName('Bravo')
+          .build(),
+      ])
+      .build();
+    const presenter = new DashboardPresenter('en', englishTranslations);
+
+    const viewModel = presenter.present(dto, {
+      persistedTeamId: 'team-bravo',
+    });
+
+    expect(viewModel.selectedTeamId).toBe('team-bravo');
+  });
+
+  it('falls back to alphabetical first when the persisted id no longer exists', () => {
+    const dto = new WorkspaceDashboardResponseBuilder()
+      .withTeams([
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-alpha')
+          .withTeamName('Alpha')
+          .build(),
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-bravo')
+          .withTeamName('Bravo')
+          .build(),
+      ])
+      .build();
+    const presenter = new DashboardPresenter('en', englishTranslations);
+
+    const viewModel = presenter.present(dto, {
+      persistedTeamId: 'team-deleted',
+    });
+
+    expect(viewModel.selectedTeamId).toBe('team-alpha');
+  });
+
+  it('has a null selectedTeamId when the workspace has no teams', () => {
+    const dto = new WorkspaceDashboardResponseBuilder().withTeams([]).build();
+    const presenter = new DashboardPresenter('en', englishTranslations);
+
+    const viewModel = presenter.present(dto, { persistedTeamId: null });
+
+    expect(viewModel.selectedTeamId).toBeNull();
+  });
+
+  it('flags exactly one team as selected', () => {
+    const dto = new WorkspaceDashboardResponseBuilder()
+      .withTeams([
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-alpha')
+          .withTeamName('Alpha')
+          .build(),
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-bravo')
+          .withTeamName('Bravo')
+          .build(),
+        new TeamDashboardResponseBuilder()
+          .withTeamId('team-charlie')
+          .withTeamName('Charlie')
+          .build(),
+      ])
+      .build();
+    const presenter = new DashboardPresenter('en', englishTranslations);
+
+    const viewModel = presenter.present(dto, {
+      persistedTeamId: 'team-bravo',
+    });
+
+    const selectedCount = viewModel.teams.filter(
+      (team) => team.isSelected,
+    ).length;
+    expect(selectedCount).toBe(1);
+    const selectedTeam = viewModel.teams.find((team) => team.isSelected);
+    expect(selectedTeam?.teamId).toBe('team-bravo');
+  });
+
+  it('sets showEmptyTeamsMessage true with the English message when teams array is empty', () => {
+    const dto = new WorkspaceDashboardResponseBuilder().withTeams([]).build();
+    const presenter = new DashboardPresenter('en', englishTranslations);
+
+    const viewModel = presenter.present(dto, { persistedTeamId: null });
+
+    expect(viewModel.showEmptyTeamsMessage).toBe(true);
+    expect(viewModel.emptyTeamsMessage).toBe(
+      'No teams available. Connect Linear and select teams to sync first.',
+    );
+  });
+
+  it('sets showEmptyTeamsMessage false with null message when teams are present', () => {
+    const dto = new WorkspaceDashboardResponseBuilder().build();
+    const presenter = new DashboardPresenter('en', englishTranslations);
+
+    const viewModel = presenter.present(dto, { persistedTeamId: null });
+
+    expect(viewModel.showEmptyTeamsMessage).toBe(false);
+    expect(viewModel.emptyTeamsMessage).toBeNull();
+  });
+
+  it('uses the French emptyTeamsMessage when the locale is fr', () => {
+    const dto = new WorkspaceDashboardResponseBuilder().withTeams([]).build();
+    const presenter = new DashboardPresenter('fr', dashboardTranslations.fr);
+
+    const viewModel = presenter.present(dto, { persistedTeamId: null });
+
+    expect(viewModel.emptyTeamsMessage).toBe(
+      "Aucune équipe disponible. Connectez Linear et sélectionnez des équipes à synchroniser d'abord.",
+    );
   });
 });

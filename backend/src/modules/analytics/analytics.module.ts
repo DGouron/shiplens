@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuditModule } from '../audit/audit.module.js';
+import { IdentityModule } from '../identity/identity.module.js';
 import { BlockedIssueAlertGateway } from './entities/blocked-issue-alert/blocked-issue-alert.gateway.js';
 import { BlockedIssueDetectionDataGateway } from './entities/blocked-issue-alert/blocked-issue-detection-data.gateway.js';
 import { BottleneckAnalysisDataGateway } from './entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
@@ -97,7 +98,7 @@ import { SetWorkflowConfigUsecase } from './usecases/set-workflow-config.usecase
 import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.usecase.js';
 
 @Module({
-  imports: [AuditModule],
+  imports: [AuditModule, IdentityModule],
   controllers: [
     CycleMetricsController,
     SprintReportController,

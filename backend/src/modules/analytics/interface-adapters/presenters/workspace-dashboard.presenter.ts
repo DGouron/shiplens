@@ -24,6 +24,7 @@ interface SynchronizationDto {
 }
 
 export interface WorkspaceDashboardDto {
+  workspaceId: string;
   teams: TeamDashboardDto[];
   synchronization: SynchronizationDto;
 }
@@ -41,6 +42,7 @@ export class WorkspaceDashboardPresenter
 {
   present(input: WorkspaceDashboardResult): WorkspaceDashboardDto {
     return {
+      workspaceId: input.workspaceId,
       teams: input.teamDashboards.map((team) => ({
         teamId: team.teamId,
         teamName: team.teamName,

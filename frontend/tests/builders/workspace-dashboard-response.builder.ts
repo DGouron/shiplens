@@ -13,9 +13,15 @@ export class WorkspaceDashboardResponseBuilder extends EntityBuilder<
 > {
   constructor() {
     super({
+      workspaceId: 'workspace-1',
       teams: [new TeamDashboardResponseBuilder().build()],
       synchronization: new SynchronizationResponseBuilder().build(),
     });
+  }
+
+  withWorkspaceId(workspaceId: string): this {
+    this.props.workspaceId = workspaceId;
+    return this;
   }
 
   withTeams(teams: TeamDashboardResponse[]): this {
@@ -30,6 +36,7 @@ export class WorkspaceDashboardResponseBuilder extends EntityBuilder<
 
   build(): WorkspaceDashboardDataResponse {
     return {
+      workspaceId: this.props.workspaceId,
       teams: [...this.props.teams],
       synchronization: { ...this.props.synchronization },
     };
