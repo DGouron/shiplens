@@ -12,12 +12,13 @@ describe('WorkflowConfigPresenter', () => {
       source: 'auto-detected',
     });
 
-    const dto = presenter.present(config);
+    const dto = presenter.present(config, ['Backlog', 'In Progress', 'Done']);
 
     expect(dto).toEqual({
       startedStatuses: ['In Progress'],
       completedStatuses: ['Done'],
       source: 'auto-detected',
+      knownStatuses: ['Backlog', 'In Progress', 'Done'],
     });
   });
 
@@ -28,12 +29,30 @@ describe('WorkflowConfigPresenter', () => {
       source: 'manual',
     });
 
-    const dto = presenter.present(config);
+    const dto = presenter.present(config, ['In Dev', 'Shipped']);
 
     expect(dto).toEqual({
       startedStatuses: ['In Dev'],
       completedStatuses: ['Shipped'],
       source: 'manual',
+      knownStatuses: ['In Dev', 'Shipped'],
+    });
+  });
+
+  it('presents workflow config with empty known statuses', () => {
+    const config = WorkflowConfig.create({
+      startedStatuses: ['In Progress'],
+      completedStatuses: ['Done'],
+      source: 'auto-detected',
+    });
+
+    const dto = presenter.present(config, []);
+
+    expect(dto).toEqual({
+      startedStatuses: ['In Progress'],
+      completedStatuses: ['Done'],
+      source: 'auto-detected',
+      knownStatuses: [],
     });
   });
 });

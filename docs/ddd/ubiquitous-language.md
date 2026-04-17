@@ -92,5 +92,13 @@ Single source of truth for the project's business vocabulary. Enriched by `/prod
 | Started status | Analytics | Status name that marks the beginning of active work on an issue — used as the start point for cycle time |
 | Completed status | Analytics | Status name that marks the end of work on an issue — used as the end point for cycle time |
 | Hybrid resolution | Analytics | Three-tier strategy for determining workflow statuses: manual override > pattern matching > hardcoded fallback |
+| Team selection | Dashboard | Per-workspace state identifying which team's data is currently focused on the dashboard |
+| Epic | Analytics | An issue estimated at 8 or more story points that has at least one child sub-issue — larger than a feature, smaller than a project (which organizes work via milestones) |
+| No project bucket | Analytics | Virtual aggregate for cycle issues whose `project` field is unset, participating in the top-5 ranking like a named project |
+| No epic bucket | Analytics | Virtual aggregate for cycle issues that are not sub-issues of any epic — standalone issues or issues under a non-epic parent |
+| Metric toggle | Analytics | Control on dashboard top-5 widgets switching the ranking metric between count, points, and time |
+| Drill-down drawer | Analytics | Right-side panel (60% viewport) listing the issues behind a clicked ranking row on a dashboard top-5 widget |
+| Cycle theme | Analytics | AI-inferred semantic cluster grouping issues of an active cycle by similarity of title and labels |
+| Theme cache | Analytics | Per-cycle memo of AI-generated themes with a 24-hour TTL during the active cycle |
 | Health signal | Analytics | One of 5 per-member metrics (estimation score, underestimation ratio, average cycle time, drifting tickets, median review time) tracked over cycles with trend direction and severity color |
 | Drifting issue | Analytics | In-progress issue that has exceeded its expected business-hours budget per story point — status can be on-track, drifting, or needs-splitting |

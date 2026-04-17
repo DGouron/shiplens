@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { type DashboardTranslations } from '../presenters/dashboard.translations.ts';
 import { type ActiveTeamCardViewModel } from '../presenters/dashboard.view-model.schema.ts';
 import { CompletionRingView } from './completion-ring.view.tsx';
@@ -35,9 +36,9 @@ export function TeamCardView({ team, translations }: TeamCardViewProps) {
         <span className={blockedValueClass}>{team.blockedIssuesCount}</span>
       </div>
       {team.reportLink ? (
-        <a className="report-link" href={team.reportLink}>
+        <Link className="report-link" to={team.reportLink}>
           {translations.viewReport}
-        </a>
+        </Link>
       ) : (
         <p className="no-cycle-text">{translations.noReportAvailable}</p>
       )}

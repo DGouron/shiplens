@@ -22,9 +22,20 @@ export interface SettingsTranslationKeys {
   driftGridHeaderPoints: string;
   driftGridHeaderDuration: string;
   driftGridNote: string;
+  workflowConfigTitle: string;
+  workflowConfigDescription: string;
+  workflowSourceAutoDetected: string;
+  workflowSourceManual: string;
+  workflowEmptyState: string;
+  workflowSaveLabel: string;
+  workflowTagStarted: string;
+  workflowTagCompleted: string;
+  workflowTagNotTracked: string;
   toastTimezoneSaved: string;
   toastStatusSaved: string;
   toastLanguageSaved: string;
+  toastWorkflowSaved: string;
+  toastWorkflowError: string;
   loading: string;
 }
 
@@ -55,9 +66,22 @@ export const settingsTranslations: Record<Locale, SettingsTranslationKeys> = {
     driftGridHeaderDuration: 'Max expected duration',
     driftGridNote:
       "Tickets estimated at 8 points or more are flagged 'Needs splitting' as soon as they move to in progress.",
+    workflowConfigTitle: 'Workflow statuses',
+    workflowConfigDescription:
+      'Tag each status as started, completed, or not tracked to drive cycle time analytics.',
+    workflowSourceAutoDetected: 'auto-detected',
+    workflowSourceManual: 'manual',
+    workflowEmptyState:
+      'No workflow statuses detected. Sync your team data first.',
+    workflowSaveLabel: 'Save workflow configuration',
+    workflowTagStarted: 'Started',
+    workflowTagCompleted: 'Completed',
+    workflowTagNotTracked: 'Not tracked',
     toastTimezoneSaved: 'Timezone saved',
     toastStatusSaved: 'Settings saved',
     toastLanguageSaved: 'Language saved',
+    toastWorkflowSaved: 'Workflow configuration saved',
+    toastWorkflowError: 'Could not save workflow configuration',
     loading: 'Loading...',
   },
   fr: {
@@ -88,9 +112,23 @@ export const settingsTranslations: Record<Locale, SettingsTranslationKeys> = {
     driftGridHeaderDuration: 'Duree max attendue',
     driftGridNote:
       "Les tickets estimes a 8 points ou plus sont signales 'A redecouper' des qu'ils passent en cours.",
+    workflowConfigTitle: 'Statuts du workflow',
+    workflowConfigDescription:
+      'Etiquetez chaque statut comme demarre, termine ou non suivi pour piloter les analyses de cycle.',
+    workflowSourceAutoDetected: 'auto-detecte',
+    workflowSourceManual: 'manuel',
+    workflowEmptyState:
+      "Aucun statut de workflow detecte. Synchronisez d'abord les donnees de l'equipe.",
+    workflowSaveLabel: 'Enregistrer la configuration du workflow',
+    workflowTagStarted: 'Demarre',
+    workflowTagCompleted: 'Termine',
+    workflowTagNotTracked: 'Non suivi',
     toastTimezoneSaved: 'Fuseau horaire sauvegarde',
     toastStatusSaved: 'Parametres sauvegardes',
     toastLanguageSaved: 'Langue sauvegardee',
+    toastWorkflowSaved: 'Configuration du workflow sauvegardee',
+    toastWorkflowError:
+      'Impossible de sauvegarder la configuration du workflow',
     loading: 'Chargement...',
   },
 };

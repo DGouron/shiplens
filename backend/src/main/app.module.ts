@@ -9,23 +9,31 @@ import { NotificationModule } from '../modules/notification/notification.module.
 import { SynchronizationModule } from '../modules/synchronization/synchronization.module.js';
 import { PrismaModule } from '../shared/infrastructure/prisma/prisma.module.js';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+const productionStaticModules = isProduction
+  ? [
+      ServeStaticModule.forRoot({
+        rootPath: join(process.cwd(), '..', 'frontend', 'dist'),
+        exclude: [
+          '/dashboard/data',
+          '/analytics/*splat',
+          '/api/*splat',
+          '/settings/*splat',
+          '/sync/*splat',
+          '/linear/*splat',
+          '/webhooks/*splat',
+          '/notifications/*splat',
+        ],
+      }),
+    ]
+  : [];
+
 @Module({
   imports: [
     PrismaModule,
     ScheduleModule.forRoot(),
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), '..', 'frontend', 'dist'),
-      exclude: [
-        '/dashboard/data',
-        '/analytics/*splat',
-        '/api/*splat',
-        '/settings/*splat',
-        '/sync/*splat',
-        '/linear/*splat',
-        '/webhooks/*splat',
-        '/notifications/*splat',
-      ],
-    }),
+    ...productionStaticModules,
     IdentityModule,
     SynchronizationModule,
     AnalyticsModule,

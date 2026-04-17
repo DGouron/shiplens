@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { type MemberHealthTrendsViewModel } from '../../presenters/member-health-trends.view-model.schema.ts';
 import { CycleCountSelectorView } from './cycle-count-selector.view.tsx';
 import { HealthSignalCardView } from './health-signal-card.view.tsx';
@@ -16,9 +17,9 @@ export function MemberHealthTrendsReadyView({
       <nav className="breadcrumbs" aria-label="Breadcrumbs">
         {viewModel.breadcrumbs.map((crumb) =>
           crumb.href ? (
-            <a key={crumb.label} href={crumb.href} className="breadcrumb-link">
+            <Link key={crumb.label} to={crumb.href} className="breadcrumb-link">
               {crumb.label}
-            </a>
+            </Link>
           ) : (
             <span key={crumb.label} className="breadcrumb-current">
               {crumb.label}
@@ -30,9 +31,9 @@ export function MemberHealthTrendsReadyView({
       <header className="member-health-header">
         <div className="member-health-title-row">
           <h1>{viewModel.pageTitle}</h1>
-          <a href={viewModel.backToReportHref} className="back-to-report-link">
+          <Link to={viewModel.backToReportHref} className="back-to-report-link">
             {viewModel.backToReportLabel}
-          </a>
+          </Link>
         </div>
 
         <div className="member-health-toolbar">
