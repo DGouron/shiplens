@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { type SettingsViewModel } from '../../presenters/settings.view-model.schema.ts';
 import { SettingsDriftGridSectionView } from './settings-drift-grid-section.view.tsx';
 import { SettingsExcludedStatusesSectionView } from './settings-excluded-statuses-section.view.tsx';
@@ -26,9 +27,9 @@ export function SettingsReadyView({
       <nav className="breadcrumbs">
         {viewModel.breadcrumbs.map((crumb) =>
           crumb.href ? (
-            <a key={crumb.label} href={crumb.href}>
+            <Link key={crumb.label} to={crumb.href}>
               {crumb.label}
-            </a>
+            </Link>
           ) : (
             <span key={crumb.label} className="breadcrumb-active">
               {crumb.label}

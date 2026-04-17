@@ -1,3 +1,4 @@
+import '@/styles/settings.css';
 import { useSettings } from '../../hooks/use-settings.ts';
 import { SettingsReadyView } from './settings-ready.view.tsx';
 

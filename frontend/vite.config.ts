@@ -1,10 +1,20 @@
-import react from '@vitejs/plugin-react';
+import { type IncomingMessage } from 'node:http';
 import { resolve } from 'node:path';
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+
+const bypassPageNavigations = (req: IncomingMessage): string | undefined => {
+  const acceptHeader = req.headers.accept ?? '';
+  if (req.method === 'GET' && acceptHeader.includes('text/html')) {
+    return req.url;
+  }
+  return undefined;
+};
 
 const apiProxy = {
   target: 'http://localhost:3000',
   changeOrigin: true,
+  bypass: bypassPageNavigations,
 };
 
 export default defineConfig({

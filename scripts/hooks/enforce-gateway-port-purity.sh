@@ -16,7 +16,10 @@ FILE_PATH=$(echo "$INPUT" | "$HOOK_DIR/parse-json.sh" tool_input.file_path)
 is_gateway_port() {
   local filename
   filename=$(basename "$FILE_PATH")
-  [[ "$filename" == *.gateway.ts ]] && [[ ! "$filename" =~ ^.+\.in-.+\.gateway\.ts$ ]]
+  [[ "$filename" == *.gateway.ts ]] \
+    && [[ ! "$filename" =~ ^.+\.in-.+\.gateway\.ts$ ]] \
+    && [[ ! "$filename" =~ ^stub\. ]] \
+    && [[ ! "$filename" =~ ^failing\. ]]
 }
 
 if ! is_gateway_port; then

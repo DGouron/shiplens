@@ -8,7 +8,10 @@ import {
   type SettingsPresenterInput,
 } from '../presenters/settings.presenter.ts';
 import { settingsTranslations } from '../presenters/settings.translations.ts';
-import { type SettingsViewModel } from '../presenters/settings.view-model.schema.ts';
+import {
+  type SettingsViewModel,
+  type WorkflowStatusTag,
+} from '../presenters/settings.view-model.schema.ts';
 
 const TOAST_DURATION_MS = 2500;
 
@@ -20,6 +23,8 @@ export interface UseSettingsResult {
   onTeamSelect: (teamId: string) => void;
   onTimezoneChange: (timezone: string) => void;
   onStatusToggle: (statusName: string) => void;
+  onWorkflowTagChange: (statusName: string, tag: WorkflowStatusTag) => void;
+  onWorkflowSave: () => Promise<void>;
 }
 
 export function useSettings(): UseSettingsResult {
@@ -28,6 +33,9 @@ export function useSettings(): UseSettingsResult {
   const queryClient = useQueryClient();
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [pendingWorkflowTags, setPendingWorkflowTags] = useState<
+    Map<string, WorkflowStatusTag>
+  >(new Map());
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const translations = settingsTranslations[locale];
   const presenter = useMemo(() => new SettingsPresenter(), []);
@@ -73,6 +81,12 @@ export function useSettings(): UseSettingsResult {
     queryFn: () => usecases.getDriftGridEntries.execute(),
   });
 
+  const workflowConfigQuery = useQuery({
+    queryKey: ['settings', 'workflow-config', selectedTeamId],
+    queryFn: () => usecases.getTeamWorkflowConfig.execute(selectedTeamId ?? ''),
+    enabled: selectedTeamId !== null,
+  });
+
   const languageMutation = useMutation({
     mutationFn: (language: string) =>
       usecases.setWorkspaceLanguage.execute({ language }),
@@ -116,6 +130,28 @@ export function useSettings(): UseSettingsResult {
     },
   });
 
+  const workflowConfigMutation = useMutation({
+    mutationFn: (input: {
+      startedStatuses: string[];
+      completedStatuses: string[];
+    }) =>
+      usecases.setTeamWorkflowConfig.execute({
+        teamId: selectedTeamId ?? '',
+        startedStatuses: input.startedStatuses,
+        completedStatuses: input.completedStatuses,
+      }),
+    onSuccess: () => {
+      setPendingWorkflowTags(new Map());
+      queryClient.invalidateQueries({
+        queryKey: ['settings', 'workflow-config', selectedTeamId],
+      });
+      showToast(translations.toastWorkflowSaved);
+    },
+    onError: () => {
+      showToast(translations.toastWorkflowError);
+    },
+  });
+
   const onLanguageChange = useCallback(
     (language: string) => {
       languageMutation.mutate(language);
@@ -125,6 +161,7 @@ export function useSettings(): UseSettingsResult {
 
   const onTeamSelect = useCallback((teamId: string) => {
     setSelectedTeamId(teamId);
+    setPendingWorkflowTags(new Map());
   }, []);
 
   const onTimezoneChange = useCallback(
@@ -146,6 +183,55 @@ export function useSettings(): UseSettingsResult {
     [statusSettingsQuery.data, excludedStatusesMutation],
   );
 
+  const onWorkflowTagChange = useCallback(
+    (statusName: string, tag: WorkflowStatusTag) => {
+      setPendingWorkflowTags((previous) => {
+        const next = new Map(previous);
+        next.set(statusName, tag);
+        return next;
+      });
+    },
+    [],
+  );
+
+  const onWorkflowSave = useCallback(async () => {
+    const persisted = workflowConfigQuery.data;
+    if (persisted === undefined) return;
+    const mergedTags = new Map<string, WorkflowStatusTag>();
+    for (const statusName of persisted.knownStatuses) {
+      const pending = pendingWorkflowTags.get(statusName);
+      if (pending !== undefined) {
+        mergedTags.set(statusName, pending);
+        continue;
+      }
+      if (persisted.startedStatuses.includes(statusName)) {
+        mergedTags.set(statusName, 'started');
+        continue;
+      }
+      if (persisted.completedStatuses.includes(statusName)) {
+        mergedTags.set(statusName, 'completed');
+        continue;
+      }
+      mergedTags.set(statusName, 'not_tracked');
+    }
+
+    const startedStatuses: string[] = [];
+    const completedStatuses: string[] = [];
+    for (const [statusName, tag] of mergedTags) {
+      if (tag === 'started') startedStatuses.push(statusName);
+      if (tag === 'completed') completedStatuses.push(statusName);
+    }
+
+    try {
+      await workflowConfigMutation.mutateAsync({
+        startedStatuses,
+        completedStatuses,
+      });
+    } catch {
+      // error toast handled in onError; swallow so hook callers don't crash
+    }
+  }, [workflowConfigQuery.data, pendingWorkflowTags, workflowConfigMutation]);
+
   const isInitialLoading =
     languageQuery.isPending || teamsQuery.isPending || driftGridQuery.isPending;
 
@@ -156,6 +242,8 @@ export function useSettings(): UseSettingsResult {
       onTeamSelect,
       onTimezoneChange,
       onStatusToggle,
+      onWorkflowTagChange,
+      onWorkflowSave,
     };
   }
 
@@ -176,6 +264,8 @@ export function useSettings(): UseSettingsResult {
       onTeamSelect,
       onTimezoneChange,
       onStatusToggle,
+      onWorkflowTagChange,
+      onWorkflowSave,
     };
   }
 
@@ -192,6 +282,9 @@ export function useSettings(): UseSettingsResult {
     availableStatuses: statusSettingsQuery.data?.availableStatuses ?? null,
     excludedStatuses: statusSettingsQuery.data?.excludedStatuses ?? null,
     driftGridEntries: driftGridQuery.data ?? null,
+    workflowConfig: workflowConfigQuery.data ?? null,
+    pendingWorkflowTags:
+      pendingWorkflowTags.size === 0 ? null : pendingWorkflowTags,
     toastMessage,
   };
 
@@ -201,5 +294,7 @@ export function useSettings(): UseSettingsResult {
     onTeamSelect,
     onTimezoneChange,
     onStatusToggle,
+    onWorkflowTagChange,
+    onWorkflowSave,
   };
 }

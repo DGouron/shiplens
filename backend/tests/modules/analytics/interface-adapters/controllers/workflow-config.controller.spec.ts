@@ -29,12 +29,14 @@ describe('WorkflowConfigController', () => {
     controller = new WorkflowConfigController(
       getWorkflowConfig,
       setWorkflowConfig,
+      availableStatusesGateway,
       presenter,
     );
   });
 
-  it('GET returns auto-detected workflow config', async () => {
+  it('GET returns auto-detected workflow config with known statuses from transition history', async () => {
     availableStatusesGateway.transitionStatuses.set('team-1', [
+      'Backlog',
       'In Progress',
       'Done',
     ]);
@@ -45,10 +47,23 @@ describe('WorkflowConfigController', () => {
       startedStatuses: ['In Progress'],
       completedStatuses: ['Done'],
       source: 'auto-detected',
+      knownStatuses: ['Backlog', 'In Progress', 'Done'],
     });
   });
 
-  it('PUT sets manual workflow config and returns it', async () => {
+  it('GET returns empty known statuses when no transition history', async () => {
+    const result = await controller.get('team-1');
+
+    expect(result.knownStatuses).toEqual([]);
+  });
+
+  it('PUT sets manual workflow config and returns it with known statuses', async () => {
+    availableStatusesGateway.transitionStatuses.set('team-1', [
+      'In Dev',
+      'Shipped',
+      'Backlog',
+    ]);
+
     const result = await controller.set('team-1', {
       startedStatuses: ['In Dev'],
       completedStatuses: ['Shipped'],
@@ -58,13 +73,16 @@ describe('WorkflowConfigController', () => {
       startedStatuses: ['In Dev'],
       completedStatuses: ['Shipped'],
       source: 'manual',
+      knownStatuses: ['In Dev', 'Shipped', 'Backlog'],
     });
   });
 
-  it('GET after PUT returns the manual config', async () => {
+  it('GET after PUT returns the manual config with known statuses', async () => {
     availableStatusesGateway.transitionStatuses.set('team-1', [
       'In Progress',
       'Done',
+      'In Dev',
+      'Shipped',
     ]);
 
     await controller.set('team-1', {
@@ -78,6 +96,7 @@ describe('WorkflowConfigController', () => {
       startedStatuses: ['In Dev'],
       completedStatuses: ['Shipped'],
       source: 'manual',
+      knownStatuses: ['In Progress', 'Done', 'In Dev', 'Shipped'],
     });
   });
 });

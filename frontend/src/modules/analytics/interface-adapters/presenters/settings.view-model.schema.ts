@@ -48,6 +48,36 @@ export const excludedStatusesSectionSchema = z.object({
   statusToggles: z.array(statusToggleSchema),
 });
 
+export const workflowStatusTagSchema = z.enum([
+  'started',
+  'completed',
+  'not_tracked',
+]);
+
+export const workflowStatusRowSchema = z.object({
+  statusName: z.string(),
+  tag: workflowStatusTagSchema,
+  startedLabel: z.string(),
+  completedLabel: z.string(),
+  notTrackedLabel: z.string(),
+  isStarted: z.boolean(),
+  isCompleted: z.boolean(),
+  isNotTracked: z.boolean(),
+});
+
+export const workflowConfigSectionSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  sourceBadgeLabel: z.string(),
+  isAutoDetected: z.boolean(),
+  isManual: z.boolean(),
+  showEmptyState: z.boolean(),
+  emptyStateMessage: z.string(),
+  saveLabel: z.string(),
+  canSave: z.boolean(),
+  rows: z.array(workflowStatusRowSchema),
+});
+
 export const driftGridRowSchema = z.object({
   points: z.number(),
   maxDuration: z.string(),
@@ -69,6 +99,7 @@ export const settingsViewModelSchema = z.object({
   teamSelector: teamSelectorSchema,
   timezone: timezoneSectionSchema,
   excludedStatuses: excludedStatusesSectionSchema,
+  workflowConfig: workflowConfigSectionSchema,
   driftGrid: driftGridSectionSchema,
   toastMessage: z.nullable(z.string()),
 });
@@ -84,4 +115,9 @@ export type ExcludedStatusesSectionViewModel = z.infer<
 >;
 export type DriftGridRow = z.infer<typeof driftGridRowSchema>;
 export type DriftGridSectionViewModel = z.infer<typeof driftGridSectionSchema>;
+export type WorkflowStatusTag = z.infer<typeof workflowStatusTagSchema>;
+export type WorkflowStatusRow = z.infer<typeof workflowStatusRowSchema>;
+export type WorkflowConfigSectionViewModel = z.infer<
+  typeof workflowConfigSectionSchema
+>;
 export type SettingsViewModel = z.infer<typeof settingsViewModelSchema>;

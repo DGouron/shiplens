@@ -9,6 +9,7 @@ import { MemberHealthInHttpGateway } from '@/modules/analytics/interface-adapter
 import { SprintReportInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/sprint-report.in-http.gateway.ts';
 import { TeamCyclesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-cycles.in-http.gateway.ts';
 import { TeamSettingsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-settings.in-http.gateway.ts';
+import { WorkflowConfigInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workflow-config.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
 import { WorkspaceLanguageInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-language.in-http.gateway.ts';
 import { GenerateMemberDigestUsecase } from '@/modules/analytics/usecases/generate-member-digest.usecase.ts';
@@ -21,6 +22,7 @@ import { GetMemberHealthUsecase } from '@/modules/analytics/usecases/get-member-
 import { GetSprintReportDetailUsecase } from '@/modules/analytics/usecases/get-sprint-report-detail.usecase.ts';
 import { GetTeamStatusSettingsUsecase } from '@/modules/analytics/usecases/get-team-status-settings.usecase.ts';
 import { GetTeamTimezoneUsecase } from '@/modules/analytics/usecases/get-team-timezone.usecase.ts';
+import { GetTeamWorkflowConfigUsecase } from '@/modules/analytics/usecases/get-team-workflow-config.usecase.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
 import { GetWorkspaceLanguageUsecase } from '@/modules/analytics/usecases/get-workspace-language.usecase.ts';
 import { ListAvailableTeamsUsecase } from '@/modules/analytics/usecases/list-available-teams.usecase.ts';
@@ -30,6 +32,7 @@ import { ListSprintReportsUsecase } from '@/modules/analytics/usecases/list-spri
 import { ListTeamCyclesUsecase } from '@/modules/analytics/usecases/list-team-cycles.usecase.ts';
 import { SetTeamExcludedStatusesUsecase } from '@/modules/analytics/usecases/set-team-excluded-statuses.usecase.ts';
 import { SetTeamTimezoneUsecase } from '@/modules/analytics/usecases/set-team-timezone.usecase.ts';
+import { SetTeamWorkflowConfigUsecase } from '@/modules/analytics/usecases/set-team-workflow-config.usecase.ts';
 import { SetWorkspaceLanguageUsecase } from '@/modules/analytics/usecases/set-workspace-language.usecase.ts';
 import { SyncInHttpGateway } from '@/modules/synchronization/interface-adapters/gateways/sync.in-http.gateway.ts';
 import { DiscoverSyncTeamsUsecase } from '@/modules/synchronization/usecases/discover-sync-teams.usecase.ts';
@@ -52,6 +55,7 @@ const memberHealthGateway = new MemberHealthInHttpGateway();
 const workspaceLanguageGateway = new WorkspaceLanguageInHttpGateway();
 const teamSettingsGateway = new TeamSettingsInHttpGateway();
 const driftGridGateway = new DriftGridInHttpGateway();
+const workflowConfigGateway = new WorkflowConfigInHttpGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -91,6 +95,12 @@ export const usecases = {
     teamSettingsGateway,
   ),
   getDriftGridEntries: new GetDriftGridEntriesUsecase(driftGridGateway),
+  getTeamWorkflowConfig: new GetTeamWorkflowConfigUsecase(
+    workflowConfigGateway,
+  ),
+  setTeamWorkflowConfig: new SetTeamWorkflowConfigUsecase(
+    workflowConfigGateway,
+  ),
 };
 
 export function overrideUsecases(overrides: Partial<typeof usecases>): void {
@@ -150,5 +160,11 @@ export function resetUsecases(): void {
   );
   usecases.getDriftGridEntries = new GetDriftGridEntriesUsecase(
     driftGridGateway,
+  );
+  usecases.getTeamWorkflowConfig = new GetTeamWorkflowConfigUsecase(
+    workflowConfigGateway,
+  );
+  usecases.setTeamWorkflowConfig = new SetTeamWorkflowConfigUsecase(
+    workflowConfigGateway,
   );
 }
