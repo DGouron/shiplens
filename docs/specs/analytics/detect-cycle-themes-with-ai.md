@@ -1,6 +1,33 @@
 # Detect cycle themes with AI
 
-## Status: ready
+## Status: implemented
+
+## Implementation
+
+**Bounded Context**: `analytics`
+
+**Artifacts**:
+- Entity: `backend/src/modules/analytics/entities/cycle-theme-set/` (aggregate `CycleThemeSet` with 1-5 themes invariant and `isCachedWithin(now, ttl)` TTL rule)
+- Ports: `cycle-theme-set-data.gateway.ts` (cycle + issues data), `cycle-theme-set-cache.gateway.ts` (cache abstraction). AI provider reuses existing `AiTextGeneratorGateway`.
+- Use cases: `DetectCycleThemesUsecase` (with `forceRefresh` flag), `GetCycleIssuesForThemeUsecase` (drill-down)
+- Gateways: `cycle-theme-set-data.in-prisma.gateway.ts`, `cycle-theme-set-cache.in-memory.gateway.ts`
+- Presenters: `cycle-themes.presenter.ts`, `cycle-theme-issues.presenter.ts`
+- Controller: `cycle-themes.controller.ts`
+- Migration: none (cache is in-memory only per spec)
+
+**Endpoints**:
+- `GET analytics/cycle-themes/:teamId?provider=&refresh=` — `DetectCycleThemesUsecase`
+- `GET analytics/cycle-themes/:teamId/themes/:themeName/issues` — `GetCycleIssuesForThemeUsecase`
+
+**Architectural decisions**:
+- 24h TTL lives as a domain invariant on `CycleThemeSet.isCachedWithin(now, ttl)` — gateway is a dumb key-value store; swappable without moving the rule.
+- Cache keyed by `cycleId` alone (not `(cycleId, language)`). Language stored on the entity so cached names persist in the previous language until refresh (spec rule).
+- Cycle-end invalidation is passive: the next active cycle has a different `cycleId`, so the old entry becomes unreachable. No active cleanup.
+- `AiProviderUnavailableError` is caught in the usecase and mapped to `{ status: 'ai_unavailable' }` (silent degradation). Distinct from sprint-report, which rethrows — dashboard widget must not take down other widgets.
+- Below-10 guard lives in the usecase (application rule), returns `{ status: 'below_threshold', issueCount }`, does not throw.
+- Single `DetectCycleThemesUsecase` with `forceRefresh` flag (no separate refresh usecase — same intention).
+- New gateway file infix adopted: `.in-memory.` (join `.in-prisma.`, `.in-file.`, `.in-http.`, `.in-crypto.`).
+- Default backend sort: descending `issueCount`. Frontend re-sorts when user toggles metric.
 
 Depends on: `select-team-on-dashboard`, `show-top-cycle-projects` (reuses the right-side column and the shared card / drill-down drawer shells).
 

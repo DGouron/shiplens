@@ -6,6 +6,8 @@ import { BlockedIssueDetectionDataGateway } from './entities/blocked-issue-alert
 import { BottleneckAnalysisDataGateway } from './entities/bottleneck-analysis/bottleneck-analysis-data.gateway.js';
 import { CycleReportPageDataGateway } from './entities/cycle-report-page/cycle-report-page-data.gateway.js';
 import { CycleMetricsDataGateway } from './entities/cycle-snapshot/cycle-metrics-data.gateway.js';
+import { CycleThemeSetCacheGateway } from './entities/cycle-theme-set/cycle-theme-set-cache.gateway.js';
+import { CycleThemeSetDataGateway } from './entities/cycle-theme-set/cycle-theme-set-data.gateway.js';
 import { DriftingIssueDetectionDataGateway } from './entities/drifting-issue/drifting-issue-detection-data.gateway.js';
 import { DurationPredictionDataGateway } from './entities/duration-prediction/duration-prediction-data.gateway.js';
 import { EstimationAccuracyDataGateway } from './entities/estimation-accuracy/estimation-accuracy-data.gateway.js';
@@ -27,6 +29,7 @@ import { BlockedIssuesController } from './interface-adapters/controllers/blocke
 import { BottleneckAnalysisController } from './interface-adapters/controllers/bottleneck-analysis.controller.js';
 import { CycleMetricsController } from './interface-adapters/controllers/cycle-metrics.controller.js';
 import { CycleReportPageController } from './interface-adapters/controllers/cycle-report-page.controller.js';
+import { CycleThemesController } from './interface-adapters/controllers/cycle-themes.controller.js';
 import { DriftingIssuesController } from './interface-adapters/controllers/drifting-issues.controller.js';
 import { DurationPredictionController } from './interface-adapters/controllers/duration-prediction.controller.js';
 import { EstimationAccuracyController } from './interface-adapters/controllers/estimation-accuracy.controller.js';
@@ -48,6 +51,8 @@ import { BlockedIssueDetectionDataInPrismaGateway } from './interface-adapters/g
 import { BottleneckAnalysisDataInPrismaGateway } from './interface-adapters/gateways/bottleneck-analysis-data.in-prisma.gateway.js';
 import { CycleMetricsDataInPrismaGateway } from './interface-adapters/gateways/cycle-metrics-data.in-prisma.gateway.js';
 import { CycleReportPageDataInPrismaGateway } from './interface-adapters/gateways/cycle-report-page-data.in-prisma.gateway.js';
+import { CycleThemeSetCacheInMemoryGateway } from './interface-adapters/gateways/cycle-theme-set-cache.in-memory.gateway.js';
+import { CycleThemeSetDataInPrismaGateway } from './interface-adapters/gateways/cycle-theme-set-data.in-prisma.gateway.js';
 import { DriftingIssueDetectionDataInPrismaGateway } from './interface-adapters/gateways/drifting-issue-detection-data.in-prisma.gateway.js';
 import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
 import { EstimationAccuracyDataInPrismaGateway } from './interface-adapters/gateways/estimation-accuracy-data.in-prisma.gateway.js';
@@ -69,6 +74,8 @@ import { CycleAssigneeIssuesPresenter } from './interface-adapters/presenters/cy
 import { CycleIssuesPresenter } from './interface-adapters/presenters/cycle-issues.presenter.js';
 import { CycleMetricsPresenter } from './interface-adapters/presenters/cycle-metrics.presenter.js';
 import { CycleProjectIssuesPresenter } from './interface-adapters/presenters/cycle-project-issues.presenter.js';
+import { CycleThemeIssuesPresenter } from './interface-adapters/presenters/cycle-theme-issues.presenter.js';
+import { CycleThemesPresenter } from './interface-adapters/presenters/cycle-themes.presenter.js';
 import { DriftingIssuesPresenter } from './interface-adapters/presenters/drifting-issues.presenter.js';
 import { DurationPredictionPresenter } from './interface-adapters/presenters/duration-prediction.presenter.js';
 import { EstimationAccuracyPresenter } from './interface-adapters/presenters/estimation-accuracy.presenter.js';
@@ -85,6 +92,7 @@ import { AnalyzeBottlenecksByStatusUsecase } from './usecases/analyze-bottleneck
 import { CalculateCycleMetricsUsecase } from './usecases/calculate-cycle-metrics.usecase.js';
 import { CalculateEstimationAccuracyUsecase } from './usecases/calculate-estimation-accuracy.usecase.js';
 import { DetectBlockedIssuesUsecase } from './usecases/detect-blocked-issues.usecase.js';
+import { DetectCycleThemesUsecase } from './usecases/detect-cycle-themes.usecase.js';
 import { DetectDriftingIssuesUsecase } from './usecases/detect-drifting-issues.usecase.js';
 import { GenerateMemberDigestUsecase } from './usecases/generate-member-digest.usecase.js';
 import { GenerateSprintReportUsecase } from './usecases/generate-sprint-report.usecase.js';
@@ -93,6 +101,7 @@ import { GetBlockedIssuesUsecase } from './usecases/get-blocked-issues.usecase.j
 import { GetCycleIssuesUsecase } from './usecases/get-cycle-issues.usecase.js';
 import { GetCycleIssuesForAssigneeUsecase } from './usecases/get-cycle-issues-for-assignee.usecase.js';
 import { GetCycleIssuesForProjectUsecase } from './usecases/get-cycle-issues-for-project.usecase.js';
+import { GetCycleIssuesForThemeUsecase } from './usecases/get-cycle-issues-for-theme.usecase.js';
 import { GetEstimationTrendUsecase } from './usecases/get-estimation-trend.usecase.js';
 import { GetMemberHealthUsecase } from './usecases/get-member-health.usecase.js';
 import { GetReportUsecase } from './usecases/get-report.usecase.js';
@@ -131,6 +140,7 @@ import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.u
     WorkspaceLanguageController,
     TopCycleProjectsController,
     TopCycleAssigneesController,
+    CycleThemesController,
   ],
   providers: [
     CalculateCycleMetricsUsecase,
@@ -267,6 +277,18 @@ import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.u
     {
       provide: TopCycleAssigneesDataGateway,
       useClass: TopCycleAssigneesDataInPrismaGateway,
+    },
+    DetectCycleThemesUsecase,
+    GetCycleIssuesForThemeUsecase,
+    CycleThemesPresenter,
+    CycleThemeIssuesPresenter,
+    {
+      provide: CycleThemeSetDataGateway,
+      useClass: CycleThemeSetDataInPrismaGateway,
+    },
+    {
+      provide: CycleThemeSetCacheGateway,
+      useClass: CycleThemeSetCacheInMemoryGateway,
     },
   ],
   exports: [SprintReportGateway],

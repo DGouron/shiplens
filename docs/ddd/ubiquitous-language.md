@@ -99,7 +99,7 @@ Single source of truth for the project's business vocabulary. Enriched by `/prod
 | Metric toggle | Analytics | Control on dashboard top-5 widgets switching the ranking metric between count, points, and time |
 | Drill-down drawer | Analytics | Right-side panel (60% viewport) listing the issues behind a clicked ranking row on a dashboard top-5 widget |
 | Cycle theme | Analytics | AI-inferred semantic cluster grouping issues of an active cycle by similarity of title and labels |
-| Theme cache | Analytics | Per-cycle memo of AI-generated themes with a 24-hour TTL during the active cycle |
+| Theme cache | Analytics | Per-cycle in-memory memo (`CycleThemeSetCacheInMemoryGateway`) of an AI-generated `CycleThemeSet` with a 24-hour TTL from `generatedAt` — process-local, lost on restart, not shared across instances |
 | Health signal | Analytics | One of 5 per-member metrics (estimation score, underestimation ratio, average cycle time, drifting tickets, median review time) tracked over cycles with trend direction and severity color |
 | Drifting issue | Analytics | In-progress issue that has exceeded its expected business-hours budget per story point — status can be on-track, drifting, or needs-splitting |
 | Workspace-scoped persistence | Analytics | Browser localStorage entry keyed by workspace identifier so switching workspaces yields a clean slate for the team selection |
@@ -109,3 +109,8 @@ Single source of truth for the project's business vocabulary. Enriched by `/prod
 | Top cycle projects | Analytics | Ranking of projects by chosen metric (count, points, time) over the selected team's active cycle — first widget of the dashboard right-side column |
 | Right-side column | Analytics | Dashboard area to the right of the team cards hosting per-team insight widgets (top projects, future: top epics, top assignees, cycle themes) |
 | Show more affordance | Analytics | Inline expand control on a top-5 widget revealing rows 6 through 10; label flips between "Show more" and "Show less" — hidden when the cycle has fewer than 6 eligible rows |
+| Manual refresh | Analytics | User-triggered bypass of the theme cache via `?refresh=true` on `GET /analytics/cycle-themes/:teamId` — deletes the cached `CycleThemeSet` before re-running the AI, guaranteeing a fresh generation even within the 24h TTL |
+| Theme aggregate | Analytics | Runtime recomputation combining the AI's `theme → issueExternalIds` mapping with the live cycle-issues snapshot to produce `{ name, issueCount, totalPoints, totalCycleTimeInHours, issueExternalIds }` per theme — points / time stay current between cache refreshes while the clustering stays frozen |
+| Candidate issue (themes) | Analytics | Cycle issue passed to the AI prompt for theme detection (externalId, title, labels, points, status, assignee, cycle time, linear URL) — ALL cycle issues are candidates, no completed-status filter |
+| AI provider unavailable (themes) | Analytics | Discriminated status returned by `DetectCycleThemes` when the AI provider throws — the cache is untouched so the next call retries |
+| Below threshold (themes) | Analytics | Discriminated status returned by `DetectCycleThemes` when the active cycle has fewer than 10 candidate issues — the AI is never invoked |

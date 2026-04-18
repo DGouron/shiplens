@@ -1,7 +1,7 @@
 # Event Storming Big Picture — Shiplens
 
 *Created: 2026-04-04*
-*Last updated: 2026-04-18*
+*Last updated: 2026-04-18 (cycle-themes)*
 
 ## Overview
 
@@ -158,6 +158,12 @@ The `shared/domain/` directory is empty. Types currently shared between BCs are 
 | 34 | TeamAlertChannelConfigured | Notification | Command |
 | 35 | SprintReportSentOnSlack | Notification | Command |
 | 36 | BlockedIssueAlertSentOnSlack | Notification | System |
+| 37 | CycleThemesRequested | Analytics | Command |
+| 38 | CycleThemesServedFromCache | Analytics | System |
+| 39 | CycleThemesRefreshed | Analytics | System |
+| 40 | CycleThemeDetectionBelowThreshold | Analytics | Refusal |
+| 41 | AiProviderUnavailableForThemes | Analytics | Fallback |
+| 42 | CycleThemeDrillDownOpened | Analytics | Command |
 
 ## Business Rules Inventory
 
@@ -186,6 +192,12 @@ The `shared/domain/` directory is empty. Types currently shared between BCs are 
 | 21 | DailyThrottling (1 alert/issue/day) | Notification | anti-noise |
 | 22 | TestMessageOnConfiguration | Notification | verification |
 | 23 | DisabledNotificationSkip | Notification | silent |
+| 24 | CycleThemeMinimumIssueThreshold (10 candidate issues) | Analytics | business |
+| 25 | CycleThemeCacheTtl (24h) | Analytics | performance |
+| 26 | CycleThemeManualRefreshInvalidatesCache | Analytics | business |
+| 27 | CycleThemeLanguageMirrorsWorkspace | Analytics | business |
+| 28 | CycleThemeAggregationScopedToCurrentIssues | Analytics | consistency |
+| 29 | AiUnavailableNeverPoisonsCache (themes) | Analytics | resilience |
 
 ## Global Hot Spots (Pink)
 
@@ -198,6 +210,9 @@ The `shared/domain/` directory is empty. Types currently shared between BCs are 
 | 5 | **Two distinct Slack configs** | Notification | medium | `SlackNotificationConfig` (reports) and `TeamAlertChannel` (alerts) each have their own webhook. Potentially confusing configuration duplication. |
 | 6 | **No automatic session refresh** | Identity | medium | The refresh token is not called automatically. Risk of unexpected `LinearSessionExpiredError`. |
 | 7 | **`shared/domain/` is empty** | Global | low | No shared business concept is explicitly placed in the Shared Kernel. Shared types transit via NestJS module imports. |
+| 8 | **In-memory theme cache** | Analytics | medium | `CycleThemeSetCacheInMemoryGateway` holds themes in a process-local `Map`. Restart-sensitive and not multi-instance safe. Move to Prisma / Redis before horizontal scale. |
+| 9 | **AI errors modeled as `BusinessRuleViolation`** | Analytics | medium | `AiProviderUnavailableError extends BusinessRuleViolation` — so infrastructure unavailability maps to HTTP 422. The themes usecase catches it, but the pattern mis-classifies I/O failures as domain invariants. |
+| 10 | **AI JSON parsing via greedy regex** | Analytics | medium | Both `GenerateSprintReport` and `DetectCycleThemes` parse AI output with `/\{[\s\S]*\}/`. Any wrapping prose with extra braces or nested JSON breaks the parser — throws a plain `Error`, surfaces as HTTP 500. |
 
 ## Detailed Documents per BC
 
@@ -249,6 +264,44 @@ First widget of the dashboard right-side column shipped. It is intentionally a w
 - `Metric toggle`, `Drill-down drawer`, `No project bucket` — already present (seeded by `select-team-on-dashboard` in anticipation).
 
 
+## Addendum 2026-04-18 — Analytics BC (detect-cycle-themes-with-ai)
+
+Backend-only vertical shipped for AI-inferred theme detection on a team's active cycle. Frontend UI pending — when it lands, the widget will drop into the dashboard right-side column alongside `top cycle projects` / `top cycle assignees`.
+
+### What shipped (backend only)
+- `CycleThemeSet` entity with `isCachedWithin(nowIso, ttlMilliseconds)` TTL rule — Zod-validated (1 to 5 themes, name 1-60 chars, each theme with at least one issue external id).
+- `DetectCycleThemesUsecase` orchestrates: active-cycle lookup → cache check (24h TTL) → live candidate-issue fetch → minimum-10-issues gate → workspace-language resolution → AI prompt build → AI call → JSON parse → `CycleThemeSet.create` → cache save → aggregate recomputation against the live snapshot.
+- `GetCycleIssuesForThemeUsecase` for drill-down by theme name.
+- Two presenters (`CycleThemesPresenter`, `CycleThemeIssuesPresenter`) returning discriminated unions that already anticipate the four UI states (`no_active_cycle` / `below_threshold` / `ai_unavailable` / `ready` for the ranking; `no_active_cycle` / `theme_not_found` / `ready` for the drawer).
+- `CycleThemesController` with two endpoints: `GET /analytics/cycle-themes/:teamId?provider=&refresh=` and `GET /analytics/cycle-themes/:teamId/themes/:themeName/issues`.
+- `CycleThemeSetDataInPrismaGateway` (Cycle / Issue / Label / StateTransition reads — per-issue cycle time computed from the `started` + `completed` transitions).
+- `CycleThemeSetCacheInMemoryGateway` — process-local `Map` (intentional YAGNI, flagged in hot spots).
+
+### No new cross-BC edge
+Reuses pre-existing ports: `AiTextGeneratorGateway`, `WorkspaceSettingsGateway`. No new module imports, no new Prisma models, no Synchronization coupling beyond the already-published DB language.
+
+### New domain events (6)
+- `CycleThemesRequested` — controller invokes `DetectCycleThemes`.
+- `CycleThemesServedFromCache` — cached `CycleThemeSet` is fresh (<24h); AI is skipped.
+- `CycleThemesRefreshed` — AI runs; a new `CycleThemeSet` is persisted.
+- `CycleThemeDetectionBelowThreshold` — fewer than 10 candidate issues; AI never called.
+- `AiProviderUnavailableForThemes` — `AiProviderUnavailableError` caught; cache not touched.
+- `CycleThemeDrillDownOpened` — drawer consumer resolves a theme's issues.
+
+### New business rules (6)
+See the inventory above (`CycleThemeMinimumIssueThreshold`, `CycleThemeCacheTtl`, `CycleThemeManualRefreshInvalidatesCache`, `CycleThemeLanguageMirrorsWorkspace`, `CycleThemeAggregationScopedToCurrentIssues`, `AiUnavailableNeverPoisonsCache`).
+
+### Glossary additions
+- `Manual refresh`, `Theme aggregate`, `Candidate issue (themes)`, `AI provider unavailable (themes)`, `Below threshold (themes)` — new in `docs/ddd/ubiquitous-language.md`.
+- `Cycle theme`, `Theme cache` — pre-seeded entries refined to cite the actual implementation (`CycleThemeSetCacheInMemoryGateway`, `generatedAt`).
+
+### Flagged hot spots
+- In-memory cache not multi-instance safe (restart wipes all teams' themes).
+- `AiProviderUnavailableError` as `BusinessRuleViolation` — mis-classifies infrastructure errors as domain invariants.
+- `InsufficientIssuesForThemeDetectionError` declared but never thrown — dead code or inconsistent refusal pattern.
+- Fragile AI JSON parsing shared with `GenerateSprintReport`.
+- Theme NAME is the drill-down URL segment — fragile across renames and non-ASCII.
+
 ## Session History
 
 | Date | Mode | Scope | Contributor |
@@ -256,3 +309,4 @@ First widget of the dashboard right-side column shipped. It is intentionally a w
 | 2026-04-04 | Global audit | 5 BCs (Identity, Synchronization, Analytics, Audit, Notification) | Event Storming Big Picture |
 | 2026-04-17 | Target | Analytics BC re-audit — front + back unified, team-selection feature, workflow-config UI, dashboard `workspaceId` | Event Storming (analytics) |
 | 2026-04-18 | Target | Analytics BC addendum — show-top-cycle-projects walking skeleton (right-side column, shared shells + drawer + `use-dismissable-overlay`), Sync `Issue.projectExternalId` cross-BC edge, 3 new client-side events | Event Storming (analytics) |
+| 2026-04-18 | Target | Analytics BC addendum — detect-cycle-themes-with-ai backend vertical (`CycleThemeSet` + 24h TTL, `DetectCycleThemes` / `GetCycleIssuesForTheme` usecases, two presenters + controller, in-memory cache), 6 new domain events, 6 new rules, no new cross-BC edge, frontend pending | Event Storming (analytics) |
