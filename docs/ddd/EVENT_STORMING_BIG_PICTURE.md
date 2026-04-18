@@ -1,7 +1,7 @@
 # Event Storming Big Picture — Shiplens
 
 *Created: 2026-04-04*
-*Last updated: 2026-04-17*
+*Last updated: 2026-04-18*
 
 ## Overview
 
@@ -226,9 +226,33 @@ The Analytics BC now spans both workspaces with the same ubiquitous language. Ne
 - `Workspace-scoped persistence`, `Known statuses`, `Workflow status tag`, `Source badge` — see `docs/ddd/ubiquitous-language.md`.
 
 
+
+## Addendum 2026-04-18 — Analytics BC (show-top-cycle-projects)
+
+First widget of the dashboard right-side column shipped. It is intentionally a walking skeleton for 3 upcoming widgets (`show-top-cycle-epics`, `show-top-cycle-assignees`, `detect-cycle-themes-with-ai`).
+
+### Walking-skeleton callout
+- Shared shells extracted under `frontend/src/modules/analytics/interface-adapters/views/cycle-insight-shell/` (`cycle-insight-card`, `cycle-insight-metric-toggle`, `cycle-insight-ranking-row`, `cycle-insight-empty-state`) and `views/cycle-insight-drawer/` (`cycle-insight-drawer`, `cycle-insight-drawer-issue-row`).
+- Shared hook `use-dismissable-overlay` placed in `frontend/src/shared/foundation/hooks/` (Escape + click-outside, listeners attached only when open) — reusable by the 3 upcoming widgets.
+- **The shell API surface is now frozen.** Any change to the shared card / ranking-row / metric-toggle / drawer props will cascade to 3 future widgets. Treat it as a Published Language inside the BC.
+
+### New cross-BC edge
+- **Synchronization → Analytics (via DB, Published Language)** — `Issue.projectExternalId` was added (migration `20260417210416_add_issue_project_external_id`). Sync now imports `project { id }` from Linear GraphQL and propagates it through `IssueData` schema + webhook event schema + Prisma upsert. Analytics reads it via `TopCycleProjectsDataInPrismaGateway` to group cycle issues by project and to back the "No project" bucket (`projectExternalId IS NULL`). Still Published Language via DB — no code coupling between modules.
+
+### New client-side domain events
+- `TopCycleProjectsRequested` — widget mount / team switch triggers the ranking query (`useTopCycleProjects` resets `activeMetric`, `selectedProjectId`, `isExpanded` on `teamId` change).
+- `CycleProjectIssuesDrawerOpened` — user clicks a ranking row; `selectedProjectId` flips from `null` and the issues query fires.
+- `CycleProjectIssuesDrawerDismissed` — Escape, click-outside (via `use-dismissable-overlay`), or explicit close button resets `selectedProjectId` to `null`.
+
+### Glossary additions
+- `Top cycle projects`, `Right-side column`, `Show more affordance` — added in `docs/ddd/ubiquitous-language.md`.
+- `Metric toggle`, `Drill-down drawer`, `No project bucket` — already present (seeded by `select-team-on-dashboard` in anticipation).
+
+
 ## Session History
 
 | Date | Mode | Scope | Contributor |
 |------|------|-------|-------------|
 | 2026-04-04 | Global audit | 5 BCs (Identity, Synchronization, Analytics, Audit, Notification) | Event Storming Big Picture |
 | 2026-04-17 | Target | Analytics BC re-audit — front + back unified, team-selection feature, workflow-config UI, dashboard `workspaceId` | Event Storming (analytics) |
+| 2026-04-18 | Target | Analytics BC addendum — show-top-cycle-projects walking skeleton (right-side column, shared shells + drawer + `use-dismissable-overlay`), Sync `Issue.projectExternalId` cross-BC edge, 3 new client-side events | Event Storming (analytics) |

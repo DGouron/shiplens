@@ -106,3 +106,6 @@ Single source of truth for the project's business vocabulary. Enriched by `/prod
 | Known statuses | Analytics | Distinct status names observed in a team's state-transition history — the source list shown in the workflow configuration UI |
 | Workflow status tag | Analytics | UI tag applied to a known status: `started`, `completed`, or `not tracked` — maps to the team's `startedStatuses` / `completedStatuses` lists |
 | Source badge | Analytics | UI badge on the workflow configuration section showing whether the current config is `auto-detected` or `manual` |
+| Top cycle projects | Analytics | Ranking of projects by chosen metric (count, points, time) over the selected team's active cycle — first widget of the dashboard right-side column |
+| Right-side column | Analytics | Dashboard area to the right of the team cards hosting per-team insight widgets (top projects, future: top epics, top assignees, cycle themes) |
+| Show more affordance | Analytics | Inline expand control on a top-5 widget revealing rows 6 through 10; label flips between "Show more" and "Show less" — hidden when the cycle has fewer than 6 eligible rows |

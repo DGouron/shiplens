@@ -9,6 +9,7 @@ export const issueDataSchema = z.object({
   points: z.number().nullable(),
   labelIds: z.string(),
   assigneeName: z.string().nullable(),
+  projectExternalId: z.string().nullable(),
   createdAt: z.string().min(1),
   updatedAt: z.string().min(1),
 });

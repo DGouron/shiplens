@@ -58,6 +58,29 @@ function createCycleIssuePageResponse(
   });
 }
 
+interface GraphqlIssueNode {
+  id: string;
+  title: string;
+  state: { name: string; type: string };
+  estimate: number | null;
+  labels: { nodes: Array<{ id: string }> };
+  assignee: { name: string } | null;
+  project: { id: string } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+function createIssuesPageResponse(issueNodes: GraphqlIssueNode[]) {
+  return createFetchResponse({
+    team: {
+      issues: {
+        nodes: issueNodes,
+        pageInfo: { hasNextPage: false, endCursor: null },
+      },
+    },
+  });
+}
+
 describe('LinearIssueDataInHttpGateway', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -147,6 +170,72 @@ describe('LinearIssueDataInHttpGateway', () => {
       const issueIds: string[] = JSON.parse(cycles[0].issueExternalIds);
       expect(issueIds).toHaveLength(0);
       expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getIssuesPage — project attribution', () => {
+    it('maps project.id to projectExternalId when present', async () => {
+      const gateway = new LinearIssueDataInHttpGateway();
+      const mockFetch = vi.fn().mockResolvedValueOnce(
+        createIssuesPageResponse([
+          {
+            id: 'issue-1',
+            title: 'Issue 1',
+            state: { name: 'Todo', type: 'unstarted' },
+            estimate: null,
+            labels: { nodes: [] },
+            assignee: null,
+            project: { id: 'project-abc' },
+            createdAt: '2026-01-15T10:00:00Z',
+            updatedAt: '2026-01-16T10:00:00Z',
+          },
+        ]),
+      );
+
+      vi.stubGlobal('fetch', mockFetch);
+
+      const page = await gateway.getIssuesPage('test-token', 'team-1', null);
+
+      expect(page.issues[0].projectExternalId).toBe('project-abc');
+    });
+
+    it('maps missing project to null projectExternalId', async () => {
+      const gateway = new LinearIssueDataInHttpGateway();
+      const mockFetch = vi.fn().mockResolvedValueOnce(
+        createIssuesPageResponse([
+          {
+            id: 'issue-2',
+            title: 'Issue 2',
+            state: { name: 'Todo', type: 'unstarted' },
+            estimate: null,
+            labels: { nodes: [] },
+            assignee: null,
+            project: null,
+            createdAt: '2026-01-15T10:00:00Z',
+            updatedAt: '2026-01-16T10:00:00Z',
+          },
+        ]),
+      );
+
+      vi.stubGlobal('fetch', mockFetch);
+
+      const page = await gateway.getIssuesPage('test-token', 'team-1', null);
+
+      expect(page.issues[0].projectExternalId).toBeNull();
+    });
+
+    it('includes project { id } in the GraphQL query', async () => {
+      const gateway = new LinearIssueDataInHttpGateway();
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValueOnce(createIssuesPageResponse([]));
+
+      vi.stubGlobal('fetch', mockFetch);
+
+      await gateway.getIssuesPage('test-token', 'team-1', null);
+
+      const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      expect(requestBody.query).toContain('project { id }');
     });
   });
 });

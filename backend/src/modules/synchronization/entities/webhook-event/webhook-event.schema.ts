@@ -37,6 +37,7 @@ export const webhookIssueDataSchema = z.object({
   points: z.number().nullable(),
   labelIds: z.string(),
   assigneeName: z.string().nullable(),
+  projectExternalId: z.string().nullable().default(null),
   createdAt: z.string().min(1),
   updatedAt: z.string().min(1),
   previousStatusName: z.string().optional(),

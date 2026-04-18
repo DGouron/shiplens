@@ -25,6 +25,7 @@ function generateIssues(teamId: string, count: number): IssueData[] {
     points: index % 3 === 0 ? index + 1 : null,
     labelIds: JSON.stringify(index % 2 === 0 ? ['label-1'] : []),
     assigneeName: index % 2 === 0 ? 'Alice Martin' : null,
+    projectExternalId: index % 2 === 0 ? `project-${teamId}-a` : null,
     createdAt: '2026-01-15T10:00:00Z',
     updatedAt: '2026-01-16T10:00:00Z',
   }));

@@ -6,6 +6,8 @@ origin: debug-workflow fix/sync-data-accuracy-v2
 
 # Sync — Real-time progress feedback
 
+## Status: implemented
+
 ## Context
 
 The Linear sync paginates in batches of 50 issues/cycle. For a cycle with 500 issues, that's ~10 requests. The user has no visual feedback during this time.

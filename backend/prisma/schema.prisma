@@ -83,18 +83,19 @@ model Milestone {
 }
 
 model Issue {
-  id           String  @id @default(uuid())
-  externalId   String
-  teamId       String
-  title        String
-  statusName   String
-  statusType   String  @default("unstarted")
-  points       Int?
-  labelIds     String
-  assigneeName String?
-  createdAt    String
-  updatedAt    String
-  deletedAt    String?
+  id                String  @id @default(uuid())
+  externalId        String
+  teamId            String
+  title             String
+  statusName        String
+  statusType        String  @default("unstarted")
+  points            Int?
+  labelIds          String
+  assigneeName      String?
+  projectExternalId String?
+  createdAt         String
+  updatedAt         String
+  deletedAt         String?
 
   @@unique([externalId, teamId])
 }
