@@ -17,6 +17,7 @@ describe('IssueDataSchema', () => {
       points: 3,
       labelIds: '["label-1","label-2"]',
       assigneeName: 'Alice Martin',
+      projectExternalId: 'project-1',
       createdAt: '2026-01-15T10:00:00Z',
       updatedAt: '2026-01-16T10:00:00Z',
     });
@@ -24,7 +25,7 @@ describe('IssueDataSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts null points and assignee', () => {
+  it('accepts null points, assignee and project', () => {
     const result = issueDataSchema.safeParse({
       externalId: 'issue-1',
       teamId: 'team-1',
@@ -34,6 +35,7 @@ describe('IssueDataSchema', () => {
       points: null,
       labelIds: '[]',
       assigneeName: null,
+      projectExternalId: null,
       createdAt: '2026-01-15T10:00:00Z',
       updatedAt: '2026-01-16T10:00:00Z',
     });
@@ -51,6 +53,7 @@ describe('IssueDataSchema', () => {
       points: null,
       labelIds: '[]',
       assigneeName: null,
+      projectExternalId: null,
       createdAt: '2026-01-15T10:00:00Z',
       updatedAt: '2026-01-16T10:00:00Z',
     });
@@ -134,6 +137,7 @@ describe('PaginatedIssuesSchema', () => {
           points: null,
           labelIds: '[]',
           assigneeName: null,
+          projectExternalId: null,
           createdAt: '2026-01-15T10:00:00Z',
           updatedAt: '2026-01-16T10:00:00Z',
         },

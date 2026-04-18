@@ -16,6 +16,7 @@ import {
 } from './sync-status-bar.view.tsx';
 import { TeamCardView } from './team-card/team-card.view.tsx';
 import { TeamCardIdleView } from './team-card/team-card-idle.view.tsx';
+import { TopCycleProjectsSectionView } from './top-cycle-projects/top-cycle-projects-section.view.tsx';
 
 export function DashboardView() {
   const locale = useLocale();
@@ -96,23 +97,28 @@ function renderBody({
       {state.data.showEmptyTeamsMessage && state.data.emptyTeamsMessage ? (
         <DashboardEmptyTeamsView message={state.data.emptyTeamsMessage} />
       ) : (
-        <div className="teams-grid">
-          {state.data.teams.map((team) =>
-            team.kind === 'active' ? (
-              <TeamCardView
-                key={team.teamId}
-                team={team}
-                translations={translations}
-                onSelect={() => onSelectTeam(team.teamId)}
-              />
-            ) : (
-              <TeamCardIdleView
-                key={team.teamId}
-                team={team}
-                onSelect={() => onSelectTeam(team.teamId)}
-              />
-            ),
-          )}
+        <div className="dashboard-layout">
+          <div className="teams-grid">
+            {state.data.teams.map((team) =>
+              team.kind === 'active' ? (
+                <TeamCardView
+                  key={team.teamId}
+                  team={team}
+                  translations={translations}
+                  onSelect={() => onSelectTeam(team.teamId)}
+                />
+              ) : (
+                <TeamCardIdleView
+                  key={team.teamId}
+                  team={team}
+                  onSelect={() => onSelectTeam(team.teamId)}
+                />
+              ),
+            )}
+          </div>
+          <aside className="dashboard-right-column">
+            <TopCycleProjectsSectionView teamId={state.data.selectedTeamId} />
+          </aside>
         </div>
       )}
     </>

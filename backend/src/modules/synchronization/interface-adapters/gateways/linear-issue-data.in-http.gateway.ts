@@ -14,6 +14,7 @@ interface LinearGraphqlIssue {
   estimate: number | null;
   labels: { nodes: Array<{ id: string }> };
   assignee: { name: string } | null;
+  project: { id: string } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -108,6 +109,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
               estimate
               labels { nodes { id } }
               assignee { name }
+              project { id }
               createdAt updatedAt
             }
             pageInfo { hasNextPage endCursor }
@@ -128,6 +130,7 @@ export class LinearIssueDataInHttpGateway extends LinearIssueDataGateway {
         points: issue.estimate,
         labelIds: JSON.stringify(issue.labels.nodes.map((label) => label.id)),
         assigneeName: issue.assignee?.name ?? null,
+        projectExternalId: issue.project?.id ?? null,
         createdAt: issue.createdAt,
         updatedAt: issue.updatedAt,
       })),

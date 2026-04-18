@@ -1,7 +1,7 @@
 # Event Storming — Analytics
 
-*Date: 2026-04-17*
-*Scope: Sprint metrics, bottleneck analysis, blocked issue detection, duration prediction, AI reports, member health trends, workflow configuration (backend + frontend UI), workspace dashboard (incl. per-workspace team selection), drift grid, settings page orchestration*
+*Date: 2026-04-18*
+*Scope: Sprint metrics, bottleneck analysis, blocked issue detection, duration prediction, AI reports, member health trends, workflow configuration (backend + frontend UI), workspace dashboard (incl. per-workspace team selection + right-side column walking skeleton), top cycle projects widget + drill-down drawer, drift grid, settings page orchestration*
 
 > Analytics spans BOTH workspaces. Backend owns the business logic, persistence, schedulers, controllers, and HTTP contract. Frontend owns the client-side orchestration: HTTP gateways, client usecases, hooks, presenters producing ViewModels, humble views. The two sides share the same ubiquitous language but different layer terminology (Clean Architecture, not tactical DDD).
 
@@ -28,6 +28,9 @@
 | MemberHealthTrendsViewed | GetMemberHealth | `backend/src/modules/analytics/usecases/get-member-health.usecase.ts` |
 | TeamSelected (client-side) | PersistTeamSelection (user clicks a team card) | `frontend/src/modules/analytics/usecases/persist-team-selection.usecase.ts` |
 | TeamSelectionRestored (client-side) | GetPersistedTeamSelection (dashboard load) | `frontend/src/modules/analytics/usecases/get-persisted-team-selection.usecase.ts` |
+| TopCycleProjectsRequested (client-side) | useTopCycleProjects mounts or teamId changes → ranking query fires | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-projects.ts` |
+| CycleProjectIssuesDrawerOpened (client-side) | User clicks a ranking row → `selectedProjectId` flips from `null`, issues query fires | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-projects.ts` |
+| CycleProjectIssuesDrawerDismissed (client-side) | Escape / click-outside / close button → `selectedProjectId` reset to `null` | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-projects.ts` + `frontend/src/shared/foundation/hooks/use-dismissable-overlay.ts` |
 
 > Client-side events are browser-local (no backend round-trip). They model UX state transitions that downstream dashboard widgets will observe.
 
@@ -64,6 +67,8 @@
 | DetectDriftingIssues | user | — (read) | `backend/src/modules/analytics/usecases/detect-drifting-issues.usecase.ts` |
 | GetWorkspaceLanguage | user | — (read) | `backend/src/modules/analytics/usecases/get-workspace-language.usecase.ts` |
 | SetWorkspaceLanguage | user | — (command w/ persistence) | `backend/src/modules/analytics/usecases/set-workspace-language.usecase.ts` |
+| GetTopCycleProjects | user (widget loads) | TopCycleProjectsRequested (server-side read, calls `ResolveWorkflowConfigUsecase`) | `backend/src/modules/analytics/usecases/get-top-cycle-projects.usecase.ts` |
+| GetCycleIssuesForProject | user (opens drawer) | — (read) | `backend/src/modules/analytics/usecases/get-cycle-issues-for-project.usecase.ts` |
 
 ### Frontend (client-side usecases)
 
@@ -93,6 +98,8 @@
 | ListAvailableTeams | user | — (HTTP read, cross-BC to Synchronization) | `frontend/src/modules/analytics/usecases/list-available-teams.usecase.ts` |
 | **PersistTeamSelection** | user (clicks team card) | TeamSelected | `frontend/src/modules/analytics/usecases/persist-team-selection.usecase.ts` |
 | **GetPersistedTeamSelection** | system (dashboard mount) | TeamSelectionRestored | `frontend/src/modules/analytics/usecases/get-persisted-team-selection.usecase.ts` |
+| **GetTopCycleProjects** | user (widget mount / team switch) | TopCycleProjectsRequested | `frontend/src/modules/analytics/usecases/get-top-cycle-projects.usecase.ts` |
+| **ListCycleProjectIssues** | user (clicks ranking row) | CycleProjectIssuesDrawerOpened | `frontend/src/modules/analytics/usecases/list-cycle-project-issues.usecase.ts` |
 
 ---
 
@@ -115,6 +122,7 @@
 | TeamSettings (port + in-file impl) | Per-team excluded statuses for blocked-issue detection. | `backend/src/modules/analytics/entities/team-settings/team-settings.gateway.ts` |
 | WorkspaceSettings | Workspace-scoped language. | `backend/src/modules/analytics/entities/workspace-settings/workspace-settings.gateway.ts` |
 | WorkspaceDashboard (aggregate shape) | Per-team dashboard cards + synchronization status. | `backend/src/modules/analytics/entities/workspace-dashboard/` + `backend/src/modules/analytics/usecases/get-workspace-dashboard.usecase.ts` (`WorkspaceDashboardResult`) |
+| TopCycleProjects (aggregate shape) | Zod schemas for active-cycle locator, per-project aggregate (count / points / cycle time), per-issue drawer detail. Sentinel constants `NO_PROJECT_BUCKET_ID = "__no_project__"` and `NO_PROJECT_BUCKET_NAME = "No project"`. | `backend/src/modules/analytics/entities/top-cycle-projects/top-cycle-projects.schema.ts` + `top-cycle-projects-data.gateway.ts` |
 
 ### Frontend entities (gateway ports + response shapes)
 

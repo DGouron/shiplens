@@ -146,6 +146,7 @@ export class ProcessWebhookEventUsecase
       points: webhookData.points,
       labelIds: webhookData.labelIds,
       assigneeName: webhookData.assigneeName,
+      projectExternalId: webhookData.projectExternalId,
       createdAt: webhookData.createdAt,
       updatedAt: webhookData.updatedAt,
     });

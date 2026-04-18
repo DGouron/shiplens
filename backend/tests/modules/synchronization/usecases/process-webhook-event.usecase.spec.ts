@@ -91,6 +91,7 @@ describe('ProcessWebhookEventUsecase', () => {
           points: null,
           labelIds: '',
           assigneeName: null,
+          projectExternalId: null,
           createdAt: '2026-03-31T00:00:00Z',
           updatedAt: '2026-03-31T00:00:00Z',
         })
@@ -153,6 +154,7 @@ describe('ProcessWebhookEventUsecase', () => {
           points: null,
           labelIds: '',
           assigneeName: null,
+          projectExternalId: null,
           createdAt: '2026-03-31T00:00:00Z',
           updatedAt: '2026-03-31T00:00:00Z',
         })
@@ -187,6 +189,7 @@ describe('ProcessWebhookEventUsecase', () => {
           points: 3,
           labelIds: '',
           assigneeName: 'Alice',
+          projectExternalId: null,
           createdAt: '2026-03-31T00:00:00Z',
           updatedAt: '2026-03-31T01:00:00Z',
           previousStatusName: 'In Progress',
@@ -322,6 +325,7 @@ describe('ProcessWebhookEventUsecase', () => {
           points: null,
           labelIds: '',
           assigneeName: null,
+          projectExternalId: null,
           createdAt: '2026-03-31T00:00:00Z',
           updatedAt: '2026-03-31T00:00:00Z',
         })
@@ -359,6 +363,7 @@ describe('ProcessWebhookEventUsecase', () => {
           points: null,
           labelIds: '',
           assigneeName: null,
+          projectExternalId: null,
           createdAt: '2026-03-31T00:00:00Z',
           updatedAt: '2026-03-31T00:00:00Z',
         })
