@@ -45,5 +45,5 @@ Specs are organized by bounded context under `docs/specs/<bc>/`. Cross-cutting c
 | Selectionner une team sur le dashboard | [select-team-on-dashboard](specs/analytics/select-team-on-dashboard.md) | Analytics | implemented | 2026-04-17 |
 | Afficher le top 5 des projets du cycle | [show-top-cycle-projects](specs/analytics/show-top-cycle-projects.md) | Analytics | implemented | 2026-04-18 |
 | Afficher le top 5 des epics du cycle | [show-top-cycle-epics](specs/analytics/show-top-cycle-epics.md) | Analytics | ready | 2026-04-17 |
-| Afficher le top 5 des assignees du cycle | [show-top-cycle-assignees](specs/analytics/show-top-cycle-assignees.md) | Analytics | ready | 2026-04-17 |
+| Afficher le top 5 des assignees du cycle | [show-top-cycle-assignees](specs/analytics/show-top-cycle-assignees.md) | Analytics | implemented | 2026-04-18 |
 | Detecter les themes du cycle via IA | [detect-cycle-themes-with-ai](specs/analytics/detect-cycle-themes-with-ai.md) | Analytics | ready | 2026-04-17 |
