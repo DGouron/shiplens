@@ -17,6 +17,7 @@ import { SprintReportDataGateway } from './entities/sprint-report/sprint-report-
 import { StatusThresholdGateway } from './entities/status-threshold/status-threshold.gateway.js';
 import { AvailableStatusesGateway } from './entities/team-settings/available-statuses.gateway.js';
 import { TeamSettingsGateway } from './entities/team-settings/team-settings.gateway.js';
+import { TopCycleAssigneesDataGateway } from './entities/top-cycle-assignees/top-cycle-assignees-data.gateway.js';
 import { TopCycleProjectsDataGateway } from './entities/top-cycle-projects/top-cycle-projects-data.gateway.js';
 import { WorkflowConfigGateway } from './entities/workflow-config/workflow-config.gateway.js';
 import { WorkspaceDashboardDataGateway } from './entities/workspace-dashboard/workspace-dashboard-data.gateway.js';
@@ -34,6 +35,7 @@ import { MemberHealthController } from './interface-adapters/controllers/member-
 import { ReportExportController } from './interface-adapters/controllers/report-export.controller.js';
 import { SprintReportController } from './interface-adapters/controllers/sprint-report.controller.js';
 import { TeamSettingsController } from './interface-adapters/controllers/team-settings.controller.js';
+import { TopCycleAssigneesController } from './interface-adapters/controllers/top-cycle-assignees.controller.js';
 import { TopCycleProjectsController } from './interface-adapters/controllers/top-cycle-projects.controller.js';
 import { WorkflowConfigController } from './interface-adapters/controllers/workflow-config.controller.js';
 import { WorkspaceDashboardController } from './interface-adapters/controllers/workspace-dashboard.controller.js';
@@ -55,6 +57,7 @@ import { SprintReportInPrismaGateway } from './interface-adapters/gateways/sprin
 import { SprintReportDataInPrismaGateway } from './interface-adapters/gateways/sprint-report-data.in-prisma.gateway.js';
 import { StatusThresholdInPrismaGateway } from './interface-adapters/gateways/status-threshold.in-prisma.gateway.js';
 import { TeamSettingsInFileGateway } from './interface-adapters/gateways/team-settings.in-file.gateway.js';
+import { TopCycleAssigneesDataInPrismaGateway } from './interface-adapters/gateways/top-cycle-assignees-data.in-prisma.gateway.js';
 import { TopCycleProjectsDataInPrismaGateway } from './interface-adapters/gateways/top-cycle-projects-data.in-prisma.gateway.js';
 import { WorkflowConfigInPrismaGateway } from './interface-adapters/gateways/workflow-config.in-prisma.gateway.js';
 import { WorkspaceDashboardDataInPrismaGateway } from './interface-adapters/gateways/workspace-dashboard-data.in-prisma.gateway.js';
@@ -62,6 +65,7 @@ import { WorkspaceSettingsInFileGateway } from './interface-adapters/gateways/wo
 import { AlertHistoryPresenter } from './interface-adapters/presenters/alert-history.presenter.js';
 import { BlockedIssuesPresenter } from './interface-adapters/presenters/blocked-issues.presenter.js';
 import { BottleneckAnalysisPresenter } from './interface-adapters/presenters/bottleneck-analysis.presenter.js';
+import { CycleAssigneeIssuesPresenter } from './interface-adapters/presenters/cycle-assignee-issues.presenter.js';
 import { CycleIssuesPresenter } from './interface-adapters/presenters/cycle-issues.presenter.js';
 import { CycleMetricsPresenter } from './interface-adapters/presenters/cycle-metrics.presenter.js';
 import { CycleProjectIssuesPresenter } from './interface-adapters/presenters/cycle-project-issues.presenter.js';
@@ -73,6 +77,7 @@ import { ReportDetailPresenter } from './interface-adapters/presenters/report-de
 import { ReportHistoryPresenter } from './interface-adapters/presenters/report-history.presenter.js';
 import { SprintReportPresenter } from './interface-adapters/presenters/sprint-report.presenter.js';
 import { TeamCyclesPresenter } from './interface-adapters/presenters/team-cycles.presenter.js';
+import { TopCycleAssigneesPresenter } from './interface-adapters/presenters/top-cycle-assignees.presenter.js';
 import { TopCycleProjectsPresenter } from './interface-adapters/presenters/top-cycle-projects.presenter.js';
 import { WorkflowConfigPresenter } from './interface-adapters/presenters/workflow-config.presenter.js';
 import { WorkspaceDashboardPresenter } from './interface-adapters/presenters/workspace-dashboard.presenter.js';
@@ -86,11 +91,13 @@ import { GenerateSprintReportUsecase } from './usecases/generate-sprint-report.u
 import { GetAlertHistoryUsecase } from './usecases/get-alert-history.usecase.js';
 import { GetBlockedIssuesUsecase } from './usecases/get-blocked-issues.usecase.js';
 import { GetCycleIssuesUsecase } from './usecases/get-cycle-issues.usecase.js';
+import { GetCycleIssuesForAssigneeUsecase } from './usecases/get-cycle-issues-for-assignee.usecase.js';
 import { GetCycleIssuesForProjectUsecase } from './usecases/get-cycle-issues-for-project.usecase.js';
 import { GetEstimationTrendUsecase } from './usecases/get-estimation-trend.usecase.js';
 import { GetMemberHealthUsecase } from './usecases/get-member-health.usecase.js';
 import { GetReportUsecase } from './usecases/get-report.usecase.js';
 import { GetTeamExcludedStatusesUsecase } from './usecases/get-team-excluded-statuses.usecase.js';
+import { GetTopCycleAssigneesUsecase } from './usecases/get-top-cycle-assignees.usecase.js';
 import { GetTopCycleProjectsUsecase } from './usecases/get-top-cycle-projects.usecase.js';
 import { GetWorkflowConfigUsecase } from './usecases/get-workflow-config.usecase.js';
 import { GetWorkspaceDashboardUsecase } from './usecases/get-workspace-dashboard.usecase.js';
@@ -123,6 +130,7 @@ import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.u
     WorkflowConfigController,
     WorkspaceLanguageController,
     TopCycleProjectsController,
+    TopCycleAssigneesController,
   ],
   providers: [
     CalculateCycleMetricsUsecase,
@@ -251,6 +259,14 @@ import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.u
     {
       provide: TopCycleProjectsDataGateway,
       useClass: TopCycleProjectsDataInPrismaGateway,
+    },
+    GetTopCycleAssigneesUsecase,
+    GetCycleIssuesForAssigneeUsecase,
+    TopCycleAssigneesPresenter,
+    CycleAssigneeIssuesPresenter,
+    {
+      provide: TopCycleAssigneesDataGateway,
+      useClass: TopCycleAssigneesDataInPrismaGateway,
     },
   ],
   exports: [SprintReportGateway],

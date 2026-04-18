@@ -1,7 +1,7 @@
 # Event Storming — Analytics
 
-*Date: 2026-04-18*
-*Scope: Sprint metrics, bottleneck analysis, blocked issue detection, duration prediction, AI reports, member health trends, workflow configuration (backend + frontend UI), workspace dashboard (incl. per-workspace team selection + right-side column walking skeleton), top cycle projects widget + drill-down drawer, drift grid, settings page orchestration*
+*Date: 2026-04-18 (top-cycle-assignees addendum)*
+*Scope: Sprint metrics, bottleneck analysis, blocked issue detection, duration prediction, AI reports, member health trends, workflow configuration (backend + frontend UI), workspace dashboard (incl. per-workspace team selection + right-side column), top cycle projects widget + drill-down drawer, top cycle assignees widget + drill-down drawer, drift grid, settings page orchestration*
 
 > Analytics spans BOTH workspaces. Backend owns the business logic, persistence, schedulers, controllers, and HTTP contract. Frontend owns the client-side orchestration: HTTP gateways, client usecases, hooks, presenters producing ViewModels, humble views. The two sides share the same ubiquitous language but different layer terminology (Clean Architecture, not tactical DDD).
 
@@ -31,6 +31,9 @@
 | TopCycleProjectsRequested (client-side) | useTopCycleProjects mounts or teamId changes → ranking query fires | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-projects.ts` |
 | CycleProjectIssuesDrawerOpened (client-side) | User clicks a ranking row → `selectedProjectId` flips from `null`, issues query fires | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-projects.ts` |
 | CycleProjectIssuesDrawerDismissed (client-side) | Escape / click-outside / close button → `selectedProjectId` reset to `null` | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-projects.ts` + `frontend/src/shared/foundation/hooks/use-dismissable-overlay.ts` |
+| TopCycleAssigneesRequested (client-side) | `useTopCycleAssignees` mounts or `teamId` changes → ranking query fires | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-assignees.ts` |
+| CycleAssigneeIssuesDrawerOpened (client-side) | User clicks a ranking row → `selectedAssigneeName` flips from `null`, issues query fires | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-assignees.ts` |
+| CycleAssigneeIssuesDrawerDismissed (client-side) | Close button / drawer dismissal → `selectedAssigneeName` reset to `null` | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-assignees.ts` |
 
 > Client-side events are browser-local (no backend round-trip). They model UX state transitions that downstream dashboard widgets will observe.
 
@@ -69,6 +72,8 @@
 | SetWorkspaceLanguage | user | — (command w/ persistence) | `backend/src/modules/analytics/usecases/set-workspace-language.usecase.ts` |
 | GetTopCycleProjects | user (widget loads) | TopCycleProjectsRequested (server-side read, calls `ResolveWorkflowConfigUsecase`) | `backend/src/modules/analytics/usecases/get-top-cycle-projects.usecase.ts` |
 | GetCycleIssuesForProject | user (opens drawer) | — (read) | `backend/src/modules/analytics/usecases/get-cycle-issues-for-project.usecase.ts` |
+| GetTopCycleAssignees | user (widget loads) | TopCycleAssigneesRequested (server-side read, calls `ResolveWorkflowConfigUsecase`) | `backend/src/modules/analytics/usecases/get-top-cycle-assignees.usecase.ts` |
+| GetCycleIssuesForAssignee | user (opens drawer) | — (read) | `backend/src/modules/analytics/usecases/get-cycle-issues-for-assignee.usecase.ts` |
 
 ### Frontend (client-side usecases)
 
@@ -100,6 +105,8 @@
 | **GetPersistedTeamSelection** | system (dashboard mount) | TeamSelectionRestored | `frontend/src/modules/analytics/usecases/get-persisted-team-selection.usecase.ts` |
 | **GetTopCycleProjects** | user (widget mount / team switch) | TopCycleProjectsRequested | `frontend/src/modules/analytics/usecases/get-top-cycle-projects.usecase.ts` |
 | **ListCycleProjectIssues** | user (clicks ranking row) | CycleProjectIssuesDrawerOpened | `frontend/src/modules/analytics/usecases/list-cycle-project-issues.usecase.ts` |
+| **GetTopCycleAssignees** | user (widget mount / team switch) | TopCycleAssigneesRequested | `frontend/src/modules/analytics/usecases/get-top-cycle-assignees.usecase.ts` |
+| **ListCycleAssigneeIssues** | user (clicks ranking row) | CycleAssigneeIssuesDrawerOpened | `frontend/src/modules/analytics/usecases/list-cycle-assignee-issues.usecase.ts` |
 
 ---
 
@@ -123,6 +130,7 @@
 | WorkspaceSettings | Workspace-scoped language. | `backend/src/modules/analytics/entities/workspace-settings/workspace-settings.gateway.ts` |
 | WorkspaceDashboard (aggregate shape) | Per-team dashboard cards + synchronization status. | `backend/src/modules/analytics/entities/workspace-dashboard/` + `backend/src/modules/analytics/usecases/get-workspace-dashboard.usecase.ts` (`WorkspaceDashboardResult`) |
 | TopCycleProjects (aggregate shape) | Zod schemas for active-cycle locator, per-project aggregate (count / points / cycle time), per-issue drawer detail. Sentinel constants `NO_PROJECT_BUCKET_ID = "__no_project__"` and `NO_PROJECT_BUCKET_NAME = "No project"`. | `backend/src/modules/analytics/entities/top-cycle-projects/top-cycle-projects.schema.ts` + `top-cycle-projects-data.gateway.ts` |
+| TopCycleAssignees (aggregate shape) | Zod schemas for active-cycle locator, per-assignee aggregate (count / points / total cycle time) computed only on issues in `completedStatuses`, per-issue drawer detail. Three abstract gateway methods: `getActiveCycleLocator`, `getCycleAssigneeAggregates`, `getCycleIssuesForAssignee`. | `backend/src/modules/analytics/entities/top-cycle-assignees/top-cycle-assignees.schema.ts` + `top-cycle-assignees-data.gateway.ts` |
 
 ### Frontend entities (gateway ports + response shapes)
 
@@ -163,6 +171,10 @@
 | WorkflowEmptyConfigAccepted | Saving an empty configuration (no started, no completed) is allowed — analytics display a guidance message instead. | `docs/specs/analytics/configure-workflow-statuses-ui.md` |
 | MemberHealthMinimumHistory | Minimum 3 non-null values across cycles required to compute a trend indicator. | `backend/src/modules/analytics/entities/member-health/health-signal.ts` |
 | MemberHealthIndicatorEscalation | 1 consecutive unfavorable change = orange, 2+ = red, stable/favorable = green. | `backend/src/modules/analytics/entities/member-health/health-signal.ts` |
+| AssigneeRankingCompletedOnly | Aggregates only count issues whose current status is in the team's `completedStatuses`. Issues without assignees are skipped entirely (no synthetic bucket). | `backend/src/modules/analytics/interface-adapters/gateways/top-cycle-assignees-data.in-prisma.gateway.ts` (`getCycleAssigneeAggregates`) |
+| AssigneeRankingSortByCount | Backend presenter sorts aggregates by `issueCount` desc, tiebreaker `assigneeName` alphabetical, then slices to top 5. | `backend/src/modules/analytics/interface-adapters/presenters/top-cycle-assignees.presenter.ts` |
+| AssigneeCycleTimeFromTransitions | Per-issue cycle time computed from state transitions — first `started` (by `toStatusType` OR name in `startedStatuses`) to first `completed` (same dual-lookup). `null` when either boundary is missing or when `completedAt <= startedAt`. Aggregated cycle time is `null` until at least one issue contributes a finite value. | `backend/src/modules/analytics/interface-adapters/gateways/top-cycle-assignees-data.in-prisma.gateway.ts` (`computeCycleTimeInHours` + `accumulateCycleTime`) |
+| NoActiveCycleShortCircuit | Both usecases (`GetTopCycleAssignees`, `GetCycleIssuesForAssignee`) return `{ status: 'no_active_cycle' }` when no cycle has `startsAt <= now < endsAt` — the `ResolveWorkflowConfigUsecase` is never invoked in this branch. | `backend/src/modules/analytics/usecases/get-top-cycle-assignees.usecase.ts`, `backend/src/modules/analytics/usecases/get-cycle-issues-for-assignee.usecase.ts` |
 
 ### Frontend rules (client-side presentation policies)
 
@@ -177,6 +189,11 @@
 | **HealthTierRanking** | Team card health tier: `danger` if any blocked alert OR completion < 30, `warning` if 30 <= completion < 60, `healthy` if completion >= 60, `idle` when no active cycle. | `frontend/src/modules/analytics/interface-adapters/presenters/dashboard.presenter.ts` (`computeHealthTier`) |
 | **DashboardEmptyStateDiscrimination** | The HTTP response carries a discriminated union: either the data payload or `{ status: 'not_connected' | 'no_teams', message }`. The hook branches accordingly before invoking the presenter. | `frontend/src/modules/analytics/entities/workspace-dashboard/workspace-dashboard.response.schema.ts` |
 | **SemanticBooleansOnViewModel** | Views never compare values — presenters expose booleans like `showEmptyTeamsMessage`, `hasSyncHistory`, `isLate`, `isSelected`. | project rule `no-logic-in-views.sh` hook + `dashboard.view-model.schema.ts` |
+| **AssigneeRankingMetricClientSort** | Frontend presenter resorts the response by active metric (`count` / `points` / `time`) before slicing top 5 — the backend's count-based ordering is re-applied if user toggles back to `count`, but `points` and `time` views require a local sort. Alphabetical tiebreaker on assignee name. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-assignees.presenter.ts` (`sortByActiveMetric`) |
+| **AssigneeTimeMetricFallbackZero** | When sorting by `time`, assignees with `totalCycleTimeInHours === null` are coerced to `0` for ordering (ranked last) but rendered with `-` in the drawer. Metric label uses `formatDurationHours` with a `daysSuffix` beyond 72h. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-assignees.presenter.ts` (`metricValue`, `metricValueLabel`) |
+| **AssigneeHookStateResetOnTeamSwitch** | `useTopCycleAssignees` resets `activeMetric` to `'count'` and `selectedAssigneeName` to `null` whenever `teamId` changes — prevents drawer leaking across teams. | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-assignees.ts` (`useEffect([teamId])`) |
+| **AssigneeSectionHiddenWhenNoTeam** | `TopCycleAssigneesSectionView` returns `null` when `teamId` is `null` — the aside column is empty on empty-teams dashboards. | `frontend/src/modules/analytics/interface-adapters/views/top-cycle-assignees/top-cycle-assignees-section.view.tsx` |
+| **AssigneeDrawerRendersCycleTime** | Drawer rows for assignees include `cycleTimeLabel` (always rendered). Distinct from the project drawer, which omits `cycleTimeLabel` entirely because the shared `CycleInsightDrawerIssueRowView` treats it as optional. | `frontend/src/modules/analytics/interface-adapters/presenters/cycle-assignee-issues-drawer.presenter.ts` + `views/cycle-insight-drawer/cycle-insight-drawer-issue-row.view.tsx` |
 
 ---
 
@@ -201,6 +218,8 @@
 | MemberHealthPresenter | 5 health signals per member with indicator color, trend direction, last value | `backend/src/modules/analytics/interface-adapters/presenters/member-health.presenter.ts` |
 | WorkflowConfigPresenter | startedStatuses, completedStatuses, source, **knownStatuses** (distinct transition status names observed in history) | `backend/src/modules/analytics/interface-adapters/presenters/workflow-config.presenter.ts` |
 | DriftingIssuesPresenter | Drifting issues with drift status, elapsed time, budget | `backend/src/modules/analytics/interface-adapters/presenters/drifting-issues.presenter.ts` |
+| TopCycleAssigneesPresenter | Sorts aggregates by `issueCount` desc, tiebreaker alphabetical, slices to top 5 rows (`assigneeName`, `issueCount`, `totalPoints`, `totalCycleTimeInHours`). Returns `no_active_cycle` or `ready` DTO. | `backend/src/modules/analytics/interface-adapters/presenters/top-cycle-assignees.presenter.ts` |
+| CycleAssigneeIssuesPresenter | Maps backend domain issues to drawer DTO rows (externalId, title, points, cycle time in hours, status name). | `backend/src/modules/analytics/interface-adapters/presenters/cycle-assignee-issues.presenter.ts` |
 
 ### Frontend presenters (domain response → ViewModel)
 
@@ -218,6 +237,8 @@
 | MemberHealthTrendsPresenter | 5 health signals per member + trend arrows | `frontend/src/modules/analytics/interface-adapters/presenters/member-health-trends.presenter.ts` |
 | MemberFilterPresenter | Team-member dropdown options | `frontend/src/modules/analytics/interface-adapters/presenters/member-filter.presenter.ts` |
 | CycleReportShellPresenter | Nav chrome (breadcrumbs, tab title, resync link) for the cycle report page | `frontend/src/modules/analytics/interface-adapters/presenters/cycle-report-shell.presenter.ts` |
+| **TopCycleAssigneesPresenter (frontend)** | `TopCycleAssigneesViewModel` for the ranking card — sorts assignees by active metric (`count` / `points` / `time`) with alphabetical tiebreaker, slices top 5, emits semantic booleans (`showRows`, `showEmptyMessage`). Takes `activeMetric` as constructor param so the hook memoizes per-metric. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-assignees.presenter.ts` |
+| **CycleAssigneeIssuesDrawerPresenter** | Four-state discriminated ViewModel for the drill-down drawer (`closed` / `loading` / `error` / `ready`). Produces `CycleAssigneeIssueRowViewModel` rows (title, pointsLabel, cycleTimeLabel, statusName, linearUrl, linearLinkLabel) — cycle time always rendered (distinct from project drawer which omits it). | `frontend/src/modules/analytics/interface-adapters/presenters/cycle-assignee-issues-drawer.presenter.ts` |
 
 ---
 
@@ -281,6 +302,9 @@
 | **Known statuses** | Distinct status names observed in a team's state-transition history; the settings UI tags each one `started`, `completed`, or `not tracked` | new — backend + frontend |
 | **Workflow status tag** | UI tag applied to a known status: `started`, `completed`, or `not tracked` | new — frontend-only |
 | **Source badge** | UI badge on the workflow section showing whether the current config is `auto-detected` or `manual` | new — frontend-only |
+| **Top cycle assignees** | Ranking of the top 5 assignees of the selected team's active cycle by chosen metric (count / points / cycle time) — second widget of the dashboard right-side column | new — backend + frontend |
+| **Completed work** | The subset of cycle issues whose current status is listed in the team's `completedStatuses` — the universe used for the assignee ranking (unlike `top cycle projects` which ranks all cycle issues) | new — backend + frontend |
+| **Unassigned issues** | Cycle issues whose `assigneeName` is `null` — excluded from the assignee ranking (no "No assignee" bucket) | new — backend-only policy |
 
 ---
 
@@ -297,6 +321,9 @@
 | Backend dashboard payload carries `workspaceId` sourced from Identity | low | `GetWorkspaceDashboardUsecase` now depends on `LinearWorkspaceConnectionGateway` purely to expose `workspaceId` to the frontend. Pragmatic shortcut for per-workspace client storage; clean but worth revisiting if a second feature needs the workspace id. |
 | Fire-and-forget persistence hides storage errors | low | Intentional UX choice (UX responsiveness > toast on quota exceeded), but users on restricted browsers will never learn their selection is not persisted. Acceptable for now. |
 | Frontend has no end-to-end browser test for team selection | medium | Only unit tests cover the presenter + hook + gateways. A Playwright scenario would catch regressions around localStorage isolation between workspaces (key already broken once during refactor). |
+| Shared `CycleInsightDrawerIssueRowView` is growing optional props | medium | Already accepts optional `cycleTimeLabel` (assignees need it, projects do not) and optional `assigneeLabel` (projects need it, assignees do not). Two more upcoming widgets (top epics, cycle themes) will push more optional fields. Flag to monitor — when a 4th optional prop appears, split into two row components or introduce a slot-based API. |
+| Frontend presenter re-sorts a backend-sorted list | low | The backend `TopCycleAssigneesPresenter` sorts by `issueCount` desc and slices to top 5. The frontend then re-sorts the same list by the user's active metric (`count`/`points`/`time`). This is correct for `points`/`time` but redundant for `count`. Could become stale if the backend's top-5 cut excludes an assignee that would rank higher on `points` or `time`. Today the cut is 5 so the impact is bounded; worth revisiting if the cut grows or if metrics diverge further. |
+| `useTopCycleAssignees` duplicates hook shape of `useTopCycleProjects` | low | Both hooks follow the same structure: two React Query queries, three `useCallback` handlers, AsyncState derivation, drawer input discriminated union. With a 3rd (epics) and 4th (themes) widget coming, consider extracting a `useInsightWidget<TRanking, TDrawer>` helper. YAGNI until the 3rd widget lands. |
 
 ---
 
@@ -309,6 +336,7 @@
 | `/settings` | `useSettings` | `SettingsPresenter` | `SettingsView` → `SettingsReadyView`, `SettingsLanguageSectionView`, `SettingsTeamSelectorView`, `SettingsTimezoneSectionView`, `SettingsExcludedStatusesSectionView`, `SettingsDriftGridSectionView`, `SettingsStatusToggleView`, `SettingsToastView` (+ workflow section rendered from ViewModel) | `getWorkspaceLanguage`, `setWorkspaceLanguage`, `listAvailableTeams`, `getTeamTimezone`, `setTeamTimezone`, `getTeamStatusSettings`, `setTeamExcludedStatuses`, `getDriftGridEntries`, `getTeamWorkflowConfig`, `setTeamWorkflowConfig` | `frontend/src/modules/analytics/interface-adapters/hooks/use-settings.ts`, `interface-adapters/presenters/settings.presenter.ts`, `views/settings/*.view.tsx` |
 | Member health trends | `useMemberHealthTrends` | `MemberHealthTrendsPresenter` | `views/member-health-trends/*.view.tsx` | `getMemberHealth` | `frontend/src/modules/analytics/interface-adapters/hooks/use-member-health-trends.ts` |
 | Member digest | `useMemberDigest` | `MemberDigestPresenter` + `MemberFilterPresenter` | `views/member-digest/*.view.tsx`, `views/member-filter/*.view.tsx` | `generateMemberDigest` | `frontend/src/modules/analytics/interface-adapters/hooks/use-member-digest.ts` |
+| Dashboard widget: Top cycle assignees (right-side column, below top projects) | `useTopCycleAssignees` | `TopCycleAssigneesPresenter (frontend)` + `CycleAssigneeIssuesDrawerPresenter` | `TopCycleAssigneesSectionView`, `TopCycleAssigneesReadyView`, `TopCycleAssigneesLoadingView`, `TopCycleAssigneesErrorView`, `TopCycleAssigneesDrawerView` + shared shells (`CycleInsightCardView`, `CycleInsightMetricToggleView`, `CycleInsightRankingRowView`, `CycleInsightEmptyStateView`, `CycleInsightDrawerView`, `CycleInsightDrawerIssueRowView`) | `getTopCycleAssignees`, `listCycleAssigneeIssues` | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-assignees.ts`, `interface-adapters/presenters/top-cycle-assignees.presenter.ts`, `presenters/cycle-assignee-issues-drawer.presenter.ts`, `views/top-cycle-assignees/*.view.tsx` |
 
 ---
 
@@ -330,6 +358,7 @@
 | `team-settings.in-http.gateway.ts` | `GET/PUT /analytics/teams/:teamId/timezone`, `GET/PUT /analytics/teams/:teamId/excluded-statuses` | `TeamSettingsResponse` |
 | `drift-grid.in-http.gateway.ts` | `GET /analytics/drift-grid` | `DriftGridResponse` |
 | **`workflow-config.in-http.gateway.ts`** | `GET/PUT /analytics/teams/:teamId/workflow-config` | `WorkflowConfigResponse` (includes `knownStatuses`) |
+| **`top-cycle-assignees.in-http.gateway.ts`** | `GET /analytics/top-cycle-assignees/:teamId`, `GET /analytics/top-cycle-assignees/:teamId/assignees/:assigneeName/issues` | `TopCycleAssigneesResponse` (ranking), `CycleAssigneeIssuesResponse` (drawer) — both discriminated unions (`no_active_cycle` \| `ready`). Parsed via `topCycleAssigneesResponseGuard` / `cycleAssigneeIssuesResponseGuard` (Zod `createGuard`). |
 | **`team-selection.in-localstorage.gateway.ts`** | _none (browser localStorage)_ | `string | null` keyed by `shiplens.selectedTeamId:${workspaceId}` |
 
 ---
@@ -386,3 +415,5 @@ onSelectTeam(teamId)
 |------|-------------|-------|
 | 2026-04-16 | Event Storming agent | Initial BC document — metrics, reporting, alerting, estimation, dashboard, member health, workflow config auto-detection |
 | 2026-04-17 | Event Storming agent | Added frontend projections (dashboard, settings, cycle report, member health); added `TeamSelectionStorage` entity + client usecases + `WorkspaceScopedPersistence` / `TeamSelectionAlphabeticalDefault` / `TeamSelectionRestoreIfStillExists` / `TeamSelectionStaleFallback` rules; added `TeamSelected` / `TeamSelectionRestored` events; extended `WorkspaceDashboardPresenter` with `workspaceId`; added workflow-config UI section (`knownStatuses`, `WorkflowStatusTag`, source badge); documented HTTP contracts; added Identity dependency for dashboard workspaceId |
+| 2026-04-18 | Event Storming agent | Added `show-top-cycle-projects` widget — backend `TopCycleProjects` entity + `GetTopCycleProjects` / `GetCycleIssuesForProject` usecases + presenters; frontend hook + ranking/drawer presenters + 5 views under `views/top-cycle-projects/`; shared cycle-insight shells (card, metric toggle, ranking row, empty state, drawer, drawer-issue-row) + `use-dismissable-overlay` hook; `Issue.projectExternalId` cross-BC edge from Synchronization via DB Published Language; client-side events `TopCycleProjectsRequested` / `CycleProjectIssuesDrawerOpened` / `CycleProjectIssuesDrawerDismissed`. |
+| 2026-04-18 | Event Storming agent | Added `show-top-cycle-assignees` widget — backend `TopCycleAssignees` entity (`top-cycle-assignees.schema.ts`, `top-cycle-assignees-data.gateway.ts`) + `GetTopCycleAssignees` / `GetCycleIssuesForAssignee` usecases + `TopCycleAssigneesController` (two endpoints) + backend presenters (`TopCycleAssigneesPresenter`, `CycleAssigneeIssuesPresenter`) + Prisma gateway; frontend entity (gateway port, response schema, guard), `GetTopCycleAssigneesUsecase` + `ListCycleAssigneeIssuesUsecase`, `TopCycleAssigneesInHttpGateway`, `useTopCycleAssignees` hook, `TopCycleAssigneesPresenter` (ranking ViewModel with metric-dependent sorting) + `CycleAssigneeIssuesDrawerPresenter` (drawer ViewModel), 5 views under `views/top-cycle-assignees/` wired in `DashboardView` aside column under top projects; shared `cycle-insight-drawer-issue-row.view.tsx` extended with optional `cycleTimeLabel` + optional `assigneeLabel`; registry wiring in `frontend/src/main/dependencies.ts` (gateway, both usecases, `resetUsecases` parity). New client-side events `TopCycleAssigneesRequested` / `CycleAssigneeIssuesDrawerOpened` / `CycleAssigneeIssuesDrawerDismissed`. No new cross-BC edge. |
