@@ -122,10 +122,10 @@ export class DetectCycleThemesUsecase
 
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      this.logger.error(
-        `[${locator.cycleId}] No JSON found in AI response: ${generatedText.substring(0, 200)}`,
+      this.logger.warn(
+        `[${locator.cycleId}] AI response contains no parsable JSON — degrading to ai_unavailable: ${generatedText.substring(0, 200)}`,
       );
-      throw new Error('AI response does not contain valid JSON.');
+      return { status: 'ai_unavailable' };
     }
     const parsed = JSON.parse(jsonMatch[0]) as { themes?: unknown };
     const rawThemes = Array.isArray(parsed.themes) ? parsed.themes : [];
