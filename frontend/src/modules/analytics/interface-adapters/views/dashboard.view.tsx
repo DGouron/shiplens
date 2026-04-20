@@ -18,6 +18,7 @@ import { TeamCardView } from './team-card/team-card.view.tsx';
 import { TeamCardIdleView } from './team-card/team-card-idle.view.tsx';
 import { TopCycleAssigneesSectionView } from './top-cycle-assignees/top-cycle-assignees-section.view.tsx';
 import { TopCycleProjectsSectionView } from './top-cycle-projects/top-cycle-projects-section.view.tsx';
+import { TopCycleThemesSectionView } from './top-cycle-themes/top-cycle-themes-section.view.tsx';
 
 export function DashboardView() {
   const locale = useLocale();
@@ -120,6 +121,7 @@ function renderBody({
           <aside className="dashboard-right-column">
             <TopCycleProjectsSectionView teamId={state.data.selectedTeamId} />
             <TopCycleAssigneesSectionView teamId={state.data.selectedTeamId} />
+            <TopCycleThemesSectionView teamId={state.data.selectedTeamId} />
           </aside>
         </div>
       )}

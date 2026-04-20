@@ -8,11 +8,14 @@ import { type WorkspaceDashboardDataResponse } from '@/modules/analytics/entitie
 import { DashboardView } from '@/modules/analytics/interface-adapters/views/dashboard.view.tsx';
 import { StubTeamSelectionStorageGateway } from '@/modules/analytics/testing/good-path/stub.team-selection-storage.in-memory.gateway.ts';
 import { StubTopCycleProjectsGateway } from '@/modules/analytics/testing/good-path/stub.top-cycle-projects.in-memory.gateway.ts';
+import { StubTopCycleThemesGateway } from '@/modules/analytics/testing/good-path/stub.top-cycle-themes.in-memory.gateway.ts';
 import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.in-memory.gateway.ts';
 import { GetPersistedTeamSelectionUsecase } from '@/modules/analytics/usecases/get-persisted-team-selection.usecase.ts';
 import { GetTopCycleProjectsUsecase } from '@/modules/analytics/usecases/get-top-cycle-projects.usecase.ts';
+import { GetTopCycleThemesUsecase } from '@/modules/analytics/usecases/get-top-cycle-themes.usecase.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
 import { ListCycleProjectIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-project-issues.usecase.ts';
+import { ListCycleThemeIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-theme-issues.usecase.ts';
 import { PersistTeamSelectionUsecase } from '@/modules/analytics/usecases/persist-team-selection.usecase.ts';
 import { TeamDashboardResponseBuilder } from '../builders/team-dashboard-response.builder.ts';
 import { WorkspaceDashboardResponseBuilder } from '../builders/workspace-dashboard-response.builder.ts';
@@ -25,6 +28,9 @@ interface WireParams {
 }
 
 function wire({ dashboard, storage, projectsGateway }: WireParams): void {
+  const themesGateway = new StubTopCycleThemesGateway({
+    themes: { status: 'no_active_cycle' },
+  });
   overrideUsecases({
     getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
       new StubWorkspaceDashboardGateway({ response: dashboard }),
@@ -33,6 +39,8 @@ function wire({ dashboard, storage, projectsGateway }: WireParams): void {
     persistTeamSelection: new PersistTeamSelectionUsecase(storage),
     getTopCycleProjects: new GetTopCycleProjectsUsecase(projectsGateway),
     listCycleProjectIssues: new ListCycleProjectIssuesUsecase(projectsGateway),
+    getTopCycleThemes: new GetTopCycleThemesUsecase(themesGateway),
+    listCycleThemeIssues: new ListCycleThemeIssuesUsecase(themesGateway),
   });
 }
 
@@ -696,16 +704,16 @@ describe('Show top cycle projects (acceptance)', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('No active cycle for this team.'),
-      ).toBeInTheDocument();
+        screen.getAllByText('No active cycle for this team.').length,
+      ).toBeGreaterThan(0);
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'switch-to-fr' }));
 
     await waitFor(() => {
       expect(
-        screen.getByText('Pas de cycle actif pour cette equipe.'),
-      ).toBeInTheDocument();
+        screen.getAllByText('Pas de cycle actif pour cette equipe.').length,
+      ).toBeGreaterThan(0);
     });
   });
 });

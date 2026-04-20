@@ -1,7 +1,7 @@
 # Event Storming — Analytics
 
-*Date: 2026-04-18 (cycle-themes addendum)*
-*Scope: Sprint metrics, bottleneck analysis, blocked issue detection, duration prediction, AI reports, member health trends, workflow configuration (backend + frontend UI), workspace dashboard (incl. per-workspace team selection + right-side column), top cycle projects widget + drill-down drawer, top cycle assignees widget + drill-down drawer, AI-powered cycle theme detection (backend only — frontend UI pending), drift grid, settings page orchestration*
+*Date: 2026-04-20 (cycle-themes frontend addendum)*
+*Scope: Sprint metrics, bottleneck analysis, blocked issue detection, duration prediction, AI reports, member health trends, workflow configuration (backend + frontend UI), workspace dashboard (incl. per-workspace team selection + right-side column), top cycle projects widget + drill-down drawer, top cycle assignees widget + drill-down drawer, AI-powered cycle theme detection widget with drill-down drawer + manual refresh (backend + frontend), drift grid, settings page orchestration*
 
 > Analytics spans BOTH workspaces. Backend owns the business logic, persistence, schedulers, controllers, and HTTP contract. Frontend owns the client-side orchestration: HTTP gateways, client usecases, hooks, presenters producing ViewModels, humble views. The two sides share the same ubiquitous language but different layer terminology (Clean Architecture, not tactical DDD).
 
@@ -455,3 +455,97 @@ onSelectTeam(teamId)
 | 2026-04-18 | Event Storming agent | Added `show-top-cycle-projects` widget — backend `TopCycleProjects` entity + `GetTopCycleProjects` / `GetCycleIssuesForProject` usecases + presenters; frontend hook + ranking/drawer presenters + 5 views under `views/top-cycle-projects/`; shared cycle-insight shells (card, metric toggle, ranking row, empty state, drawer, drawer-issue-row) + `use-dismissable-overlay` hook; `Issue.projectExternalId` cross-BC edge from Synchronization via DB Published Language; client-side events `TopCycleProjectsRequested` / `CycleProjectIssuesDrawerOpened` / `CycleProjectIssuesDrawerDismissed`. |
 | 2026-04-18 | Event Storming agent | Added `show-top-cycle-assignees` widget — backend `TopCycleAssignees` entity (`top-cycle-assignees.schema.ts`, `top-cycle-assignees-data.gateway.ts`) + `GetTopCycleAssignees` / `GetCycleIssuesForAssignee` usecases + `TopCycleAssigneesController` (two endpoints) + backend presenters (`TopCycleAssigneesPresenter`, `CycleAssigneeIssuesPresenter`) + Prisma gateway; frontend entity (gateway port, response schema, guard), `GetTopCycleAssigneesUsecase` + `ListCycleAssigneeIssuesUsecase`, `TopCycleAssigneesInHttpGateway`, `useTopCycleAssignees` hook, `TopCycleAssigneesPresenter` (ranking ViewModel with metric-dependent sorting) + `CycleAssigneeIssuesDrawerPresenter` (drawer ViewModel), 5 views under `views/top-cycle-assignees/` wired in `DashboardView` aside column under top projects; shared `cycle-insight-drawer-issue-row.view.tsx` extended with optional `cycleTimeLabel` + optional `assigneeLabel`; registry wiring in `frontend/src/main/dependencies.ts` (gateway, both usecases, `resetUsecases` parity). New client-side events `TopCycleAssigneesRequested` / `CycleAssigneeIssuesDrawerOpened` / `CycleAssigneeIssuesDrawerDismissed`. No new cross-BC edge. |
 | 2026-04-18 | Event Storming agent | Added `detect-cycle-themes-with-ai` backend vertical — `CycleThemeSet` entity with `isCachedWithin` TTL rule + Zod schema (1-5 themes, name 1-60 chars) + guard + `InsufficientIssuesForThemeDetectionError` (dead code); `DetectCycleThemesUsecase` orchestrates active-cycle lookup → cache check (24h TTL) → AI prompt build (language from `WorkspaceSettingsGateway`) → `CycleThemeSet.create` → cache save → aggregate recomputation against live snapshot; `GetCycleIssuesForThemeUsecase` for drill-down; `CycleThemesPresenter` + `CycleThemeIssuesPresenter` (discriminated unions, no slicing); `CycleThemesController` with two endpoints (`GET /analytics/cycle-themes/:teamId`, `GET .../themes/:themeName/issues`); `CycleThemeSetDataInPrismaGateway` (Prisma reads: Cycle, Issue, Label, StateTransition) + `CycleThemeSetCacheInMemoryGateway` (process-local `Map`). Six new domain events (`CycleThemesRequested`, `CycleThemesServedFromCache`, `CycleThemesRefreshed`, `CycleThemeDetectionBelowThreshold`, `AiProviderUnavailableForThemes`, `CycleThemeDrillDownOpened`). No new cross-BC edge — reuses existing `AiTextGeneratorGateway` + `WorkspaceSettingsGateway`. Frontend projection pending. |
+
+---
+
+## Addendum 2026-04-20 — detect-cycle-themes-with-ai (frontend landed)
+
+The `detect-cycle-themes-with-ai` vertical, documented backend-only on 2026-04-18, now has a live frontend widget mounted as the third card of the dashboard right-side column (under `TopCycleAssigneesSectionView`). The entries below supersede the "frontend UI pending" phrasing earlier in this document.
+
+### New client-side domain events
+
+| Event | Trigger | Source File |
+|-------|---------|-------------|
+| TopCycleThemesRequested (client-side) | `useTopCycleThemes` mounts or `teamId` changes → ranking query fires with `forceRefresh=false` | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts` |
+| ManualCycleThemesRefreshInvoked (client-side) | User clicks the header refresh button → `onRefreshClick` removes the cached React Query entry and bumps `forceRefreshToken` → next query round trip sets `refresh=true` on the URL | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts` (`onRefreshClick`) |
+| CycleThemeIssuesDrawerOpened (client-side) | User clicks a ranking row → `selectedThemeName` flips from `null`; the drawer issues query fires | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts` (`onRowClick`) |
+| CycleThemeIssuesDrawerDismissed (client-side) | Close button on the shared drawer → `selectedThemeName` reset to `null` | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts` (`onDrawerClose`) |
+
+> `ManualCycleThemesRefreshInvoked` is the browser-local counterpart of the backend `CycleThemesRefreshed` event — the former is fired before the HTTP call, the latter during the usecase execution.
+
+### New client-side commands
+
+| Command | Actor | Produced Event | Source File |
+|---------|-------|----------------|-------------|
+| **GetTopCycleThemes** | user (widget mount / team switch / manual refresh) | TopCycleThemesRequested (+ ManualCycleThemesRefreshInvoked on refresh) | `frontend/src/modules/analytics/usecases/get-top-cycle-themes.usecase.ts` |
+| **ListCycleThemeIssues** | user (clicks a theme row) | CycleThemeIssuesDrawerOpened | `frontend/src/modules/analytics/usecases/list-cycle-theme-issues.usecase.ts` |
+
+### New frontend entity (gateway port + response shapes)
+
+| Entity | Responsibility | Files |
+|--------|----------------|-------|
+| **TopCycleThemes (response port)** | Frontend abstract gateway `TopCycleThemesGateway` declaring `fetchTopCycleThemes({ teamId, forceRefresh, provider? })` and `fetchCycleThemeIssues({ teamId, themeName })`. Response types are Zod discriminated unions (4 ranking statuses, 3 drawer statuses) mirroring the backend DTOs. | `frontend/src/modules/analytics/entities/top-cycle-themes/top-cycle-themes.gateway.ts`, `top-cycle-themes.response.schema.ts`, `top-cycle-themes.response.ts` |
+
+### New frontend presentation rules (Purple)
+
+| Rule | Description | Source File |
+|------|-------------|-------------|
+| **FourThemeStatusesMapToFiveFlags** | The 4 backend statuses (`no_active_cycle` / `below_threshold` / `ai_unavailable` / `ready`) are projected to 5 semantic booleans on the ViewModel: `showMetricToggle`, `showRows`, `showEmptyMessage`, `showRefreshButton`, plus an `emptyTone` discriminant (`neutral` / `warning`). Only `ai_unavailable` uses `warning` tone and keeps `showRefreshButton = true`; `no_active_cycle` and `below_threshold` hide the refresh button. `ready` always shows both metric toggle and refresh button. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-themes.presenter.ts` |
+| **AiUnavailableCardRemainsVisible** | Decision change vs. the original spec. When the HTTP response is `ai_unavailable`, the card stays mounted with an amber warning message and an active refresh button, instead of being hidden. This lets the user retry without leaving the dashboard. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-themes.presenter.ts` (`emptyTone: 'warning'`, `showRefreshButton: true`) + `emptyAiUnavailable` translation key |
+| **ThemeMetricClientSideSort** | Ranking is re-sorted client-side by the active metric (`count` / `points` / `time`) with alphabetical tiebreaker on `theme.name`. Backend already sorts by `issueCount` desc, so `count` mode is a no-op re-sort. Top 5 slice is applied AFTER the client sort. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-themes.presenter.ts` (`sortByActiveMetric`, `MAX_THEME_ROWS = 5`) |
+| **ThemeTimeMetricFallbackZero** | When sorting by `time`, themes with `totalCycleTimeInHours === null` coerce to `0` for ordering (ranked last) but render as `0` hours in the label — `metricValueLabel` uses `formatDurationHours` with a `daysSuffix` beyond 72h. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-themes.presenter.ts` (`metricValue`, `metricValueLabel`) |
+| **ManualRefreshViaCounterToken** | The hook exposes no direct "invalidate" API to views. Instead, `onRefreshClick` removes the `['analytics','top-cycle-themes', teamId]` queries from the React Query cache and bumps a monotonic `forceRefreshToken` integer. The token is part of the query key, so bumping it forces a refetch. Only when `forceRefreshToken > 0` does the usecase send `refresh=true` on the URL — the initial mount never triggers the backend manual refresh. | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts` (`setForceRefreshToken`, query key, `forceRefresh: forceRefreshToken > 0`) |
+| **ThemesHookStateResetOnTeamSwitch** | `useTopCycleThemes` resets `activeMetric` to `'count'`, `selectedThemeName` to `null`, AND `forceRefreshToken` to `0` whenever `teamId` changes — prevents a stale refresh counter from forcing a needless AI call on the newly selected team. | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts` (`useEffect([teamId])`) |
+| **ThemesSectionHiddenWhenNoTeam** | `TopCycleThemesSectionView` returns `null` when `teamId` is `null` — consistent with the projects and assignees sections for empty-teams dashboards. | `frontend/src/modules/analytics/interface-adapters/views/top-cycle-themes/top-cycle-themes-section.view.tsx` |
+| **CardTitleExposedSeparately** | The hook returns `cardTitle` as a top-level field alongside `state` so the card shell can render the title even during `loading` / `error` / `no_active_cycle` — not only in `ready`. Distinct from the projects/assignees hooks, which keep the title inside the ViewModel. | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts` (`UseTopCycleThemesResult.cardTitle`) + `top-cycle-themes-section.view.tsx` (uses `cardTitle` prop on `CycleInsightCardView`) |
+| **ThemeDrawerFourStateViewModel** | `CycleThemeIssuesDrawerPresenter` maps a 4-variant discriminated input (`closed` / `loading` / `error` / `ready`) into a flat ViewModel with 4 semantic booleans (`showIssues`, `showEmptyMessage`, `showLoading`, `showError`) plus `isOpen`. Same pattern as the assignee/project drawers. `theme_not_found` on the response reuses the `showEmptyMessage` branch (UI: "No issues classified in this theme"). | `frontend/src/modules/analytics/interface-adapters/presenters/cycle-theme-issues-drawer.presenter.ts` |
+
+### New frontend presenter
+
+| Presenter | Exposed Data | File |
+|-----------|--------------|------|
+| **TopCycleThemesPresenter (frontend)** | `TopCycleThemesViewModel` for the ranking card — sorts themes by active metric (`count` / `points` / `time`) with alphabetical tiebreaker, slices top 5, emits semantic booleans (`showMetricToggle`, `showRows`, `showEmptyMessage`, `showRefreshButton`) and `emptyTone` (`neutral` / `warning`). Takes `activeMetric` and `translations` as constructor params so the hook memoizes per-metric + per-locale. | `frontend/src/modules/analytics/interface-adapters/presenters/top-cycle-themes.presenter.ts` |
+| **CycleThemeIssuesDrawerPresenter** | Four-state discriminated ViewModel for the drill-down drawer (`closed` / `loading` / `error` / `ready`). Produces `CycleThemeIssueRowViewModel` rows (externalId, title, assigneeLabel, pointsLabel, statusName, linearUrl, linearLinkLabel, showLinearLink). No `cycleTimeLabel` — distinct from the assignee drawer that always renders it. | `frontend/src/modules/analytics/interface-adapters/presenters/cycle-theme-issues-drawer.presenter.ts` |
+
+### New frontend projection (Client-side)
+
+| Feature / Route | Hook | Presenter | View(s) | Consumes (usecases / entities) | Source files |
+|-----------------|------|-----------|---------|--------------------------------|--------------|
+| Dashboard widget: Top cycle themes (right-side column, below top assignees) | `useTopCycleThemes` | `TopCycleThemesPresenter (frontend)` + `CycleThemeIssuesDrawerPresenter` | `TopCycleThemesSectionView`, `TopCycleThemesReadyView`, `TopCycleThemesLoadingView`, `TopCycleThemesErrorView`, `TopCycleThemesDrawerView`, `TopCycleThemesRefreshButtonView` + shared shells (`CycleInsightCardView`, `CycleInsightMetricToggleView`, `CycleInsightRankingRowView`, `CycleInsightEmptyStateView`, `CycleInsightDrawerView`, `CycleInsightDrawerIssueRowView`) | `getTopCycleThemes`, `listCycleThemeIssues` | `frontend/src/modules/analytics/interface-adapters/hooks/use-top-cycle-themes.ts`, `interface-adapters/presenters/top-cycle-themes.presenter.ts`, `presenters/cycle-theme-issues-drawer.presenter.ts`, `views/top-cycle-themes/*.view.tsx`, mounted in `views/dashboard.view.tsx` l.124 |
+
+### New frontend HTTP dependency
+
+| Frontend gateway | Calls backend endpoint | Produces / expects |
+|------------------|------------------------|--------------------|
+| **`top-cycle-themes.in-http.gateway.ts`** | `GET /analytics/cycle-themes/:teamId` (optional `?refresh=true&provider=...`), `GET /analytics/cycle-themes/:teamId/themes/:themeName/issues` | `TopCycleThemesResponse` (ranking, 4-variant discriminated union), `CycleThemeIssuesResponse` (drawer, 3-variant). Parsed via `topCycleThemesResponseGuard` / `cycleThemeIssuesResponseGuard` (Zod `createGuard`). URL built via `topCycleThemesPaths` in `url-contracts/top-cycle-themes.url-contract.ts` (Published Language). |
+
+### Relations update
+
+| Related BC | Pattern | Direction | Detail |
+|------------|---------|-----------|--------|
+| Analytics front ↔ Analytics back | **Customer-Supplier via Published Language (HTTP)** — now concretized for cycle themes | Backend (Supplier) → Frontend (Customer) | `TopCycleThemesInHttpGateway` parses `topCycleThemesResponseSchema` which mirrors `CycleThemesDto`. The contract is the 4-variant discriminated union + the URL shape (`topCycleThemesPaths` constant in the `url-contracts/` folder — aligned with the project's "URL = Published Language" rule). |
+
+### Resolved hot spots
+
+- **"No frontend projection yet"** (flagged 2026-04-18) — **RESOLVED**. The widget is live under `DashboardView`. Replace its row in the Hot Spots table with the follow-up items below.
+
+### New hot spots
+
+| Problem | Severity | Detail |
+|---------|----------|--------|
+| **Theme name as drill-down URL segment (frontend-exposed)** | medium | Already flagged on backend (theme name is the `:themeName` URL segment). The frontend now calls this endpoint with the AI-generated theme name (`onRowClick(themeName)` → URL via `topCycleThemesPaths.themeIssues`). FR themes with accents or ampersands (e.g. "Sécurité & OAuth") reach the backend via `encodeURIComponent` in the url-contract — safe today, but any server-side or proxy-level normalization (case folding, NFC vs NFD) would break the lookup. A stable theme id on the backend would eliminate the whole class of issue. |
+| **`forceRefreshToken` counter leaks through query key** | low | The React Query cache key is `['analytics','top-cycle-themes', teamId, forceRefreshToken]`. Every refresh creates a NEW cache entry instead of replacing the previous one (the hook calls `removeQueries` manually to garbage-collect). If a future consumer forgets to call the remove step, memory grows monotonically per refresh click. Works today, worth a helper hook when a second widget needs the same pattern. |
+| **`cardTitle` exposed outside the ViewModel** | low | Divergence from the assignee/project widgets (title lives inside the ViewModel). Rationale: the shell renders the title during loading/error/no-active-cycle states, but the ViewModel only exists in `ready`. Consistency debt — either lift the title out for all three widgets, or build an empty-state ViewModel that the shell can consume uniformly. |
+| **Theme drawer omits `cycleTimeLabel`** | low | Shared `CycleInsightDrawerIssueRowView` has optional `cycleTimeLabel` and optional `assigneeLabel`. Project drawer omits cycleTime, assignee drawer omits nothing, theme drawer omits cycleTime. The shared row now serves 3 variants with 2 optional slots — one more widget flavor and the row should split (flagged 2026-04-18, still holds). |
+| **Translation file duplicates pattern of assignees/projects** | low | `top-cycle-themes.translations.ts` is the 3rd copy of the pattern (card title + metric labels + empty states + drawer strings + days suffix). A shared base interface for cycle-insight widget translations could reduce drift between EN/FR, but YAGNI until a 4th widget ships. |
+
+### Glossary additions — see `docs/ddd/ubiquitous-language.md`
+
+- `Manual cycle themes refresh` (client-side) — refined entry clarifying the counter-token mechanism.
+- `Ready-only ViewModel` / `Four-status presenter` — cross-cut observation applying to the themes / assignees / projects trio.
+
+### Session history
+
+| Date | Contributor | Delta |
+|------|-------------|-------|
+| 2026-04-20 | Event Storming agent | Frontend shipped for `detect-cycle-themes-with-ai`: `TopCycleThemes` entity (gateway port + response schema + guard), `GetTopCycleThemes` + `ListCycleThemeIssues` usecases, `TopCycleThemesInHttpGateway` (optional `?refresh=true&provider=...`), `useTopCycleThemes` hook (refresh via counter token in React Query key, `cardTitle` exposed separately), `TopCycleThemesPresenter` (4 backend statuses → 5 semantic booleans + `emptyTone`, client-side metric re-sort, top-5 slice), `CycleThemeIssuesDrawerPresenter` (4-state drawer VM), 6 humble views under `views/top-cycle-themes/`, mounted as third card of the dashboard right-side column (`DashboardView` l.124). Decision change documented: `ai_unavailable` shows an amber warning card with refresh button instead of hiding the widget. New client-side events `TopCycleThemesRequested` / `ManualCycleThemesRefreshInvoked` / `CycleThemeIssuesDrawerOpened` / `CycleThemeIssuesDrawerDismissed`. Resolves the 2026-04-18 "No frontend projection yet" hot spot. No new cross-BC edge. |
