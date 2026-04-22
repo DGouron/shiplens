@@ -51,7 +51,7 @@ import { BlockedIssueDetectionDataInPrismaGateway } from './interface-adapters/g
 import { BottleneckAnalysisDataInPrismaGateway } from './interface-adapters/gateways/bottleneck-analysis-data.in-prisma.gateway.js';
 import { CycleMetricsDataInPrismaGateway } from './interface-adapters/gateways/cycle-metrics-data.in-prisma.gateway.js';
 import { CycleReportPageDataInPrismaGateway } from './interface-adapters/gateways/cycle-report-page-data.in-prisma.gateway.js';
-import { CycleThemeSetCacheInMemoryGateway } from './interface-adapters/gateways/cycle-theme-set-cache.in-memory.gateway.js';
+import { CycleThemeSetCacheInPrismaGateway } from './interface-adapters/gateways/cycle-theme-set-cache.in-prisma.gateway.js';
 import { CycleThemeSetDataInPrismaGateway } from './interface-adapters/gateways/cycle-theme-set-data.in-prisma.gateway.js';
 import { DriftingIssueDetectionDataInPrismaGateway } from './interface-adapters/gateways/drifting-issue-detection-data.in-prisma.gateway.js';
 import { DurationPredictionDataInPrismaGateway } from './interface-adapters/gateways/duration-prediction-data.in-prisma.gateway.js';
@@ -288,7 +288,7 @@ import { SetWorkspaceLanguageUsecase } from './usecases/set-workspace-language.u
     },
     {
       provide: CycleThemeSetCacheGateway,
-      useClass: CycleThemeSetCacheInMemoryGateway,
+      useClass: CycleThemeSetCacheInPrismaGateway,
     },
   ],
   exports: [SprintReportGateway],

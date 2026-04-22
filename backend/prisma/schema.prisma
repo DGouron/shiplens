@@ -223,3 +223,12 @@ model TeamWorkflowConfig {
   completedStatuses String
   source            String
 }
+
+model CycleThemeSet {
+  id          String @id @default(uuid())
+  cycleId     String @unique
+  teamId      String
+  language    String
+  themesJson  String
+  generatedAt String
+}
