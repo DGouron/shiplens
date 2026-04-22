@@ -50,7 +50,7 @@ export class AiTextGeneratorWithClaudeCliGateway extends AiTextGeneratorGateway 
       const args = [
         '--print',
         '--model',
-        'claude-sonnet-4-20250514',
+        'claude-opus-4-7',
         '--setting-sources',
         'user',
         '-p',
