@@ -38,6 +38,26 @@ describe('useTopCycleThemes', () => {
     expect(result.current.state.status).toBe('loading');
   });
 
+  it('exposes the localized loading message and hint so the view can explain the slow AI call', () => {
+    const gateway = new StubTopCycleThemesGateway({
+      themes: { status: 'no_active_cycle' },
+    });
+    overrideUsecases({
+      getTopCycleThemes: new GetTopCycleThemesUsecase(gateway),
+      listCycleThemeIssues: new ListCycleThemeIssuesUsecase(gateway),
+    });
+
+    const { result } = renderHook(
+      () => useTopCycleThemes({ teamId: 'team-1' }),
+      { wrapper },
+    );
+
+    expect(result.current.loadingMessage).toBe(
+      'Detecting cycle themes with AI…',
+    );
+    expect(result.current.loadingHint).toBe('This can take up to 30 seconds.');
+  });
+
   it('transitions to ready with the themes view model for the team', async () => {
     const gateway = new StubTopCycleThemesGateway({
       themes: {

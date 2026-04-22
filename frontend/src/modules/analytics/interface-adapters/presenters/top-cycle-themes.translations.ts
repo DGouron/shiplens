@@ -6,6 +6,8 @@ export interface TopCycleThemesTranslations {
   metricPointsLabel: string;
   metricTimeLabel: string;
   refreshLabel: string;
+  loadingMessage: string;
+  loadingHint: string;
   emptyNoActiveCycle: string;
   emptyBelowThreshold: string;
   emptyAiUnavailable: string;
@@ -28,6 +30,8 @@ export const topCycleThemesTranslations: Record<
     metricPointsLabel: 'Points',
     metricTimeLabel: 'Time',
     refreshLabel: 'Refresh',
+    loadingMessage: 'Detecting cycle themes with AI…',
+    loadingHint: 'This can take up to 30 seconds.',
     emptyNoActiveCycle: 'No active cycle for this team.',
     emptyBelowThreshold: 'Not enough issues for theme detection.',
     emptyAiUnavailable: 'Theme detection is temporarily unavailable.',
@@ -45,6 +49,8 @@ export const topCycleThemesTranslations: Record<
     metricPointsLabel: 'Points',
     metricTimeLabel: 'Temps',
     refreshLabel: 'Rafraichir',
+    loadingMessage: 'Detection des themes par l’IA en cours…',
+    loadingHint: 'Cela peut prendre jusqu’a 30 secondes.',
     emptyNoActiveCycle: 'Pas de cycle actif pour cette equipe.',
     emptyBelowThreshold: 'Pas assez d issues pour la detection des themes.',
     emptyAiUnavailable:
