@@ -90,6 +90,35 @@ describe('DetectCycleThemesUsecase', () => {
     expect(result).toEqual({ status: 'ai_unavailable' });
   });
 
+  it('returns ai_unavailable when AI response contains no parsable JSON block', async () => {
+    dataGateway.setActiveCycle('team-1', {
+      cycleId: 'cycle-1',
+      cycleName: 'Sprint 10',
+    });
+    dataGateway.setThemeCandidateIssues('cycle-1', buildIssues(15));
+    aiGateway.generatedText = 'I cannot help with that request.';
+
+    const result = await usecase.execute({
+      teamId: 'team-1',
+      provider: 'Anthropic',
+    });
+
+    expect(result).toEqual({ status: 'ai_unavailable' });
+  });
+
+  it('does not poison the cache when AI response is unparsable', async () => {
+    dataGateway.setActiveCycle('team-1', {
+      cycleId: 'cycle-1',
+      cycleName: 'Sprint 10',
+    });
+    dataGateway.setThemeCandidateIssues('cycle-1', buildIssues(15));
+    aiGateway.generatedText = 'Sorry, no JSON here.';
+
+    await usecase.execute({ teamId: 'team-1', provider: 'Anthropic' });
+
+    expect(await cacheGateway.get('cycle-1')).toBeNull();
+  });
+
   it('returns ready with fromCache=false after a successful AI call', async () => {
     dataGateway.setActiveCycle('team-1', {
       cycleId: 'cycle-1',
