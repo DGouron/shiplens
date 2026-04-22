@@ -392,6 +392,61 @@
   font-size: 0.85rem;
 }
 
+.top-cycle-themes-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.2rem 0.5rem 0.8rem;
+  text-align: center;
+}
+
+.top-cycle-themes-loading__pulse {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.top-cycle-themes-loading__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  opacity: 0.35;
+  animation: topCycleThemesLoadingDot 1.2s ease-in-out infinite;
+}
+
+.top-cycle-themes-loading__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.top-cycle-themes-loading__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes topCycleThemesLoadingDot {
+  0%, 80%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+
+.top-cycle-themes-loading__message {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.top-cycle-themes-loading__hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
 .top-cycle-themes-refresh-button {
   background: transparent;
   border: 1px solid var(--border);

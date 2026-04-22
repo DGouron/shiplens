@@ -17,6 +17,8 @@ export function TopCycleThemesSectionView({
   const {
     state,
     cardTitle,
+    loadingMessage,
+    loadingHint,
     drawerState,
     onMetricChange,
     onRowClick,
@@ -55,7 +57,12 @@ export function TopCycleThemesSectionView({
         headerAction={headerAction}
         metricToggle={metricToggle}
       >
-        {state.status === 'loading' && <TopCycleThemesLoadingView />}
+        {state.status === 'loading' && (
+          <TopCycleThemesLoadingView
+            message={loadingMessage}
+            hint={loadingHint}
+          />
+        )}
         {state.status === 'error' && (
           <TopCycleThemesErrorView message={state.message} />
         )}

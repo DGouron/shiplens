@@ -25,6 +25,8 @@ export type TopCycleThemesState = AsyncState<TopCycleThemesViewModel>;
 export interface UseTopCycleThemesResult {
   state: TopCycleThemesState;
   cardTitle: string;
+  loadingMessage: string;
+  loadingHint: string;
   drawerState: CycleThemeIssuesDrawerViewModel;
   onMetricChange: (metric: TopCycleThemesMetric) => void;
   onRowClick: (themeName: string) => void;
@@ -144,6 +146,8 @@ export function useTopCycleThemes(
   return {
     state,
     cardTitle: translations.cardTitle,
+    loadingMessage: translations.loadingMessage,
+    loadingHint: translations.loadingHint,
     drawerState,
     onMetricChange,
     onRowClick,
