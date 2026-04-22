@@ -408,7 +408,8 @@
   color: var(--text-primary);
 }
 
-.top-cycle-projects-list {
+.top-cycle-projects-list,
+.top-cycle-assignees-list {
   list-style: none;
   margin: 0;
   padding: 0;
