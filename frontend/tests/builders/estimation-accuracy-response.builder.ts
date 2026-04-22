@@ -4,7 +4,6 @@ import {
   type EstimationClassificationResponse,
   type IssueRatioResponse,
   type LabelScoreResponse,
-  type TeamScoreResponse,
 } from '@/modules/analytics/entities/estimation-accuracy/estimation-accuracy.response.ts';
 import { EntityBuilder } from '@/shared/foundation/testing/entity-builder.ts';
 
@@ -27,13 +26,6 @@ function makeIssue(
   };
 }
 
-const defaultTeamScore: TeamScoreResponse = {
-  issueCount: 5,
-  averageRatio: 1,
-  daysPerPoint: 1.5,
-  classification: 'well-estimated',
-};
-
 export class EstimationAccuracyResponseBuilder extends EntityBuilder<
   EstimationAccuracyResponse,
   EstimationAccuracyResponse
@@ -49,7 +41,6 @@ export class EstimationAccuracyResponseBuilder extends EntityBuilder<
       ],
       developerScores: [],
       labelScores: [],
-      teamScore: { ...defaultTeamScore },
       excludedWithoutEstimation: 0,
       excludedWithoutCycleTime: 0,
     });
@@ -77,11 +68,6 @@ export class EstimationAccuracyResponseBuilder extends EntityBuilder<
     return this;
   }
 
-  withTeamScore(teamScore: TeamScoreResponse): this {
-    this.props.teamScore = { ...teamScore };
-    return this;
-  }
-
   withExcludedWithoutEstimation(count: number): this {
     this.props.excludedWithoutEstimation = count;
     return this;
@@ -99,7 +85,6 @@ export class EstimationAccuracyResponseBuilder extends EntityBuilder<
         ...score,
       })),
       labelScores: this.props.labelScores.map((score) => ({ ...score })),
-      teamScore: { ...this.props.teamScore },
       excludedWithoutEstimation: this.props.excludedWithoutEstimation,
       excludedWithoutCycleTime: this.props.excludedWithoutCycleTime,
     };

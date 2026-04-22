@@ -57,7 +57,6 @@ describe('EstimationAccuracyController', () => {
 
     expect(result.issues).toHaveLength(1);
     expect(result.issues[0].ratio).toBe(1.5);
-    expect(result.teamScore.issueCount).toBe(1);
     expect(result.excludedWithoutEstimation).toBe(1);
   });
 

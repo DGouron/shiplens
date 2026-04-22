@@ -22,12 +22,6 @@ const defaultResponse: EstimationAccuracyResponse = {
   ],
   developerScores: [],
   labelScores: [],
-  teamScore: {
-    issueCount: 1,
-    averageRatio: 1,
-    daysPerPoint: 1.5,
-    classification: 'well-estimated',
-  },
   excludedWithoutEstimation: 0,
   excludedWithoutCycleTime: 0,
 };
@@ -51,7 +45,6 @@ export class StubEstimationAccuracyGateway extends EstimationAccuracyGateway {
         ...score,
       })),
       labelScores: this.response.labelScores.map((score) => ({ ...score })),
-      teamScore: { ...this.response.teamScore },
       excludedWithoutEstimation: this.response.excludedWithoutEstimation,
       excludedWithoutCycleTime: this.response.excludedWithoutCycleTime,
     };

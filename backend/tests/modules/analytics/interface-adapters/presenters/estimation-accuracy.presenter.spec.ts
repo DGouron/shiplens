@@ -36,7 +36,6 @@ describe('EstimationAccuracyPresenter', () => {
     expect(result.issues[0].classification).toBe('well-estimated');
     expect(result.issues[1].ratio).toBe(0.2);
     expect(result.issues[1].classification).toBe('under-estimated');
-    expect(result.teamScore.issueCount).toBe(2);
     expect(result.excludedWithoutEstimation).toBe(3);
     expect(result.excludedWithoutCycleTime).toBe(2);
   });

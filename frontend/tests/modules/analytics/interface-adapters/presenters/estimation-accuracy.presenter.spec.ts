@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { type EstimationClassificationResponse } from '@/modules/analytics/entities/estimation-accuracy/estimation-accuracy.response.ts';
 import { type Locale } from '@/modules/analytics/interface-adapters/presenters/cycle-metrics.translations.ts';
 import { EstimationAccuracyPresenter } from '@/modules/analytics/interface-adapters/presenters/estimation-accuracy.presenter.ts';
 import { estimationAccuracyTranslations } from '@/modules/analytics/interface-adapters/presenters/estimation-accuracy.translations.ts';
@@ -10,16 +11,21 @@ function makePresenter(locale: Locale = 'en') {
   );
 }
 
+function repeat(
+  count: number,
+  classification: EstimationClassificationResponse,
+) {
+  return Array.from({ length: count }, () => ({ classification }));
+}
+
 describe('EstimationAccuracyPresenter', () => {
   it('counts each classification from the issues array', () => {
     const viewModel = makePresenter().present(
       new EstimationAccuracyResponseBuilder()
         .withIssues([
-          { classification: 'well-estimated' },
-          { classification: 'well-estimated' },
-          { classification: 'well-estimated' },
-          { classification: 'over-estimated' },
-          { classification: 'under-estimated' },
+          ...repeat(3, 'well-estimated'),
+          ...repeat(1, 'over-estimated'),
+          ...repeat(1, 'under-estimated'),
         ])
         .build(),
     );
@@ -33,11 +39,9 @@ describe('EstimationAccuracyPresenter', () => {
     const viewModel = makePresenter().present(
       new EstimationAccuracyResponseBuilder()
         .withIssues([
-          { classification: 'well-estimated' },
-          { classification: 'well-estimated' },
-          { classification: 'well-estimated' },
-          { classification: 'over-estimated' },
-          { classification: 'under-estimated' },
+          ...repeat(3, 'well-estimated'),
+          ...repeat(1, 'over-estimated'),
+          ...repeat(1, 'under-estimated'),
         ])
         .build(),
     );
@@ -51,11 +55,9 @@ describe('EstimationAccuracyPresenter', () => {
     const viewModel = makePresenter().present(
       new EstimationAccuracyResponseBuilder()
         .withIssues([
-          { classification: 'well-estimated' },
-          { classification: 'well-estimated' },
-          { classification: 'well-estimated' },
-          { classification: 'over-estimated' },
-          { classification: 'under-estimated' },
+          ...repeat(3, 'well-estimated'),
+          ...repeat(1, 'over-estimated'),
+          ...repeat(1, 'under-estimated'),
         ])
         .build(),
     );
@@ -140,24 +142,6 @@ describe('EstimationAccuracyPresenter', () => {
     expect(viewModel.showExclusionWithoutEstimation).toBe(true);
   });
 
-  it('exposes the team score through the translations', () => {
-    const viewModel = makePresenter().present(
-      new EstimationAccuracyResponseBuilder()
-        .withTeamScore({
-          issueCount: 10,
-          averageRatio: 1.2,
-          daysPerPoint: 1.75,
-          classification: 'over-estimated',
-        })
-        .build(),
-    );
-
-    expect(viewModel.teamScore.classification).toBe('over-estimated');
-    expect(viewModel.teamScore.classificationLabel).toBe('Over-estimated');
-    expect(viewModel.teamScore.daysPerPointLabel).toBe('Days per point: 1.75');
-    expect(viewModel.teamScore.issueCountLabel).toBe('Issues analysed: 10');
-  });
-
   it('exposes the total label on the donut', () => {
     const viewModel = makePresenter().present(
       new EstimationAccuracyResponseBuilder()
@@ -185,5 +169,156 @@ describe('EstimationAccuracyPresenter', () => {
     expect(viewModel.exclusions.withoutEstimation.label).toBe(
       'Exclues (sans estimation) : 1',
     );
+  });
+
+  describe('diagnosis', () => {
+    it('flags health as healthy when at least 70% of tickets are well-estimated', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(7, 'well-estimated'),
+            ...repeat(2, 'under-estimated'),
+            ...repeat(1, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.healthLevel).toBe('healthy');
+      expect(viewModel.diagnosis.healthHeadline).toBe('Reliable estimations');
+    });
+
+    it('flags health as mixed when well-estimated share sits between 50% and 70%', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(6, 'well-estimated'),
+            ...repeat(3, 'under-estimated'),
+            ...repeat(1, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.healthLevel).toBe('mixed');
+      expect(viewModel.diagnosis.healthHeadline).toBe('Mixed signal');
+    });
+
+    it('flags health as needs-calibration when well-estimated share drops below 50%', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(16, 'well-estimated'),
+            ...repeat(14, 'under-estimated'),
+            ...repeat(8, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.healthLevel).toBe('needs-calibration');
+      expect(viewModel.diagnosis.healthHeadline).toBe('Needs calibration');
+    });
+
+    it('renders the accuracy summary with count, total and rounded percentage', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(16, 'well-estimated'),
+            ...repeat(14, 'under-estimated'),
+            ...repeat(8, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.accuracySummary).toBe(
+        '42% of tickets landed on target (16 out of 38)',
+      );
+    });
+
+    it('describes the drift when under-estimated issues dominate', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(16, 'well-estimated'),
+            ...repeat(14, 'under-estimated'),
+            ...repeat(8, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.showDriftSummary).toBe(true);
+      expect(viewModel.diagnosis.driftSummary).toBe(
+        '14 tickets took longer than planned, 8 finished faster',
+      );
+      expect(viewModel.diagnosis.recommendation).toBe(
+        'Most tickets run over. Revisit your estimation ritual and tighten scoping.',
+      );
+    });
+
+    it('describes the drift when over-estimated issues dominate', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(6, 'well-estimated'),
+            ...repeat(1, 'under-estimated'),
+            ...repeat(3, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.showDriftSummary).toBe(true);
+      expect(viewModel.diagnosis.driftSummary).toBe(
+        '3 tickets finished faster than planned, 1 took longer',
+      );
+    });
+
+    it('hides the drift summary when over and under counts are balanced', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(3, 'well-estimated'),
+            ...repeat(3, 'under-estimated'),
+            ...repeat(3, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.showDriftSummary).toBe(false);
+      expect(viewModel.diagnosis.driftSummary).toBe('');
+    });
+
+    it('recommends keeping the ritual when the team is healthy', () => {
+      const viewModel = makePresenter().present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(8, 'well-estimated'),
+            ...repeat(1, 'under-estimated'),
+            ...repeat(1, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.recommendation).toBe(
+        'Keep the current estimation ritual — the team is well calibrated.',
+      );
+    });
+
+    it('uses French labels for the diagnosis under the fr locale', () => {
+      const viewModel = makePresenter('fr').present(
+        new EstimationAccuracyResponseBuilder()
+          .withIssues([
+            ...repeat(16, 'well-estimated'),
+            ...repeat(14, 'under-estimated'),
+            ...repeat(8, 'over-estimated'),
+          ])
+          .build(),
+      );
+
+      expect(viewModel.diagnosis.healthHeadline).toBe('Calibrage a revoir');
+      expect(viewModel.diagnosis.accuracySummary).toBe(
+        '42% des tickets dans la cible (16 sur 38)',
+      );
+      expect(viewModel.diagnosis.driftSummary).toBe(
+        '14 tickets ont depasse leur estimation, 8 ont ete boucles plus vite',
+      );
+    });
   });
 });

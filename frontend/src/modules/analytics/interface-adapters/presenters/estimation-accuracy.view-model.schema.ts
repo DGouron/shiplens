@@ -13,15 +13,13 @@ export const estimationDonutViewModelSchema = z.object({
   totalLabel: z.string(),
 });
 
-export const estimationTeamScoreViewModelSchema = z.object({
-  classification: z.enum([
-    'over-estimated',
-    'under-estimated',
-    'well-estimated',
-  ]),
-  classificationLabel: z.string(),
-  daysPerPointLabel: z.string(),
-  issueCountLabel: z.string(),
+export const estimationDiagnosisViewModelSchema = z.object({
+  healthLevel: z.enum(['healthy', 'mixed', 'needs-calibration']),
+  healthHeadline: z.string(),
+  accuracySummary: z.string(),
+  driftSummary: z.string(),
+  showDriftSummary: z.boolean(),
+  recommendation: z.string(),
 });
 
 export const estimationExclusionViewModelSchema = z.object({
@@ -36,7 +34,7 @@ export const estimationExclusionsViewModelSchema = z.object({
 
 export const estimationAccuracyViewModelSchema = z.object({
   donut: estimationDonutViewModelSchema,
-  teamScore: estimationTeamScoreViewModelSchema,
+  diagnosis: estimationDiagnosisViewModelSchema,
   exclusions: estimationExclusionsViewModelSchema,
   emptyMessage: z.nullable(z.string()),
   showEmptyMessage: z.boolean(),
@@ -51,8 +49,8 @@ export type EstimationBucketViewModel = z.infer<
 export type EstimationDonutViewModel = z.infer<
   typeof estimationDonutViewModelSchema
 >;
-export type EstimationTeamScoreViewModel = z.infer<
-  typeof estimationTeamScoreViewModelSchema
+export type EstimationDiagnosisViewModel = z.infer<
+  typeof estimationDiagnosisViewModelSchema
 >;
 export type EstimationExclusionViewModel = z.infer<
   typeof estimationExclusionViewModelSchema

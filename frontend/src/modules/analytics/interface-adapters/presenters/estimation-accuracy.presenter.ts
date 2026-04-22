@@ -1,15 +1,18 @@
 import { type Presenter } from '@/shared/foundation/presenter/presenter.ts';
+import { type EstimationAccuracyResponse } from '../../entities/estimation-accuracy/estimation-accuracy.response.ts';
 import {
-  type EstimationAccuracyResponse,
-  type EstimationClassificationResponse,
-  type TeamScoreResponse,
-} from '../../entities/estimation-accuracy/estimation-accuracy.response.ts';
-import { type EstimationAccuracyTranslations } from './estimation-accuracy.translations.ts';
+  type EstimationAccuracyTranslations,
+  type EstimationDriftDirection,
+  type EstimationHealthLevel,
+} from './estimation-accuracy.translations.ts';
 import {
   type EstimationAccuracyViewModel,
   type EstimationBucketViewModel,
-  type EstimationTeamScoreViewModel,
+  type EstimationDiagnosisViewModel,
 } from './estimation-accuracy.view-model.schema.ts';
+
+const HEALTHY_WELL_ESTIMATED_THRESHOLD = 0.7;
+const MIXED_WELL_ESTIMATED_THRESHOLD = 0.5;
 
 interface ClassificationCounts {
   wellEstimated: number;
@@ -52,7 +55,7 @@ export class EstimationAccuracyPresenter
 
     return {
       donut,
-      teamScore: this.buildTeamScore(input.teamScore),
+      diagnosis: this.buildDiagnosis(counts, total),
       exclusions: {
         withoutEstimation: {
           count: input.excludedWithoutEstimation,
@@ -106,31 +109,56 @@ export class EstimationAccuracyPresenter
     };
   }
 
-  private buildTeamScore(
-    teamScore: TeamScoreResponse,
-  ): EstimationTeamScoreViewModel {
-    const classificationLabel = this.classificationLabel(
-      teamScore.classification,
+  private buildDiagnosis(
+    counts: ClassificationCounts,
+    total: number,
+  ): EstimationDiagnosisViewModel {
+    const healthLevel = this.computeHealthLevel(counts.wellEstimated, total);
+    const driftDirection = this.computeDriftDirection(
+      counts.overEstimated,
+      counts.underEstimated,
     );
+    const accuracyPercentage =
+      total === 0 ? 0 : Math.round((counts.wellEstimated / total) * 100);
+
     return {
-      classification: teamScore.classification,
-      classificationLabel,
-      daysPerPointLabel: this.translations.teamScoreDaysPerPointLabel(
-        teamScore.daysPerPoint,
+      healthLevel,
+      healthHeadline: this.translations.diagnosisHeadline(healthLevel),
+      accuracySummary: this.translations.diagnosisAccuracySummary(
+        counts.wellEstimated,
+        total,
+        accuracyPercentage,
       ),
-      issueCountLabel: this.translations.teamScoreIssueCountLabel(
-        teamScore.issueCount,
+      driftSummary: this.translations.diagnosisDriftSummary(
+        driftDirection,
+        counts.underEstimated,
+        counts.overEstimated,
+      ),
+      showDriftSummary: driftDirection !== 'balanced',
+      recommendation: this.translations.diagnosisRecommendation(
+        healthLevel,
+        driftDirection,
       ),
     };
   }
 
-  private classificationLabel(
-    classification: EstimationClassificationResponse,
-  ): string {
-    if (classification === 'well-estimated')
-      return this.translations.classificationWellEstimated;
-    if (classification === 'over-estimated')
-      return this.translations.classificationOverEstimated;
-    return this.translations.classificationUnderEstimated;
+  private computeHealthLevel(
+    wellEstimatedCount: number,
+    total: number,
+  ): EstimationHealthLevel {
+    if (total === 0) return 'healthy';
+    const share = wellEstimatedCount / total;
+    if (share >= HEALTHY_WELL_ESTIMATED_THRESHOLD) return 'healthy';
+    if (share >= MIXED_WELL_ESTIMATED_THRESHOLD) return 'mixed';
+    return 'needs-calibration';
+  }
+
+  private computeDriftDirection(
+    overEstimatedCount: number,
+    underEstimatedCount: number,
+  ): EstimationDriftDirection {
+    if (underEstimatedCount > overEstimatedCount) return 'under-dominant';
+    if (overEstimatedCount > underEstimatedCount) return 'over-dominant';
+    return 'balanced';
   }
 }
