@@ -24,10 +24,7 @@ export function EstimationAccuracySectionView({
         <p className="estimation-accuracy-error">{state.message}</p>
       )}
       {state.status === 'ready' && (
-        <EstimationAccuracyReadyView
-          viewModel={state.data}
-          translations={translations}
-        />
+        <EstimationAccuracyReadyView viewModel={state.data} />
       )}
     </section>
   );

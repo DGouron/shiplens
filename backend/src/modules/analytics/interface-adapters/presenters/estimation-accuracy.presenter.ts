@@ -5,14 +5,12 @@ import {
   type EstimationAccuracy,
   type IssueRatio,
   type LabelScore,
-  type TeamScore,
 } from '../../entities/estimation-accuracy/estimation-accuracy.js';
 
 export interface EstimationAccuracyDto {
   issues: IssueRatio[];
   developerScores: DeveloperScore[];
   labelScores: LabelScore[];
-  teamScore: TeamScore;
   excludedWithoutEstimation: number;
   excludedWithoutCycleTime: number;
 }
@@ -26,7 +24,6 @@ export class EstimationAccuracyPresenter
       issues: accuracy.ratioPerIssue(),
       developerScores: accuracy.scoreByDeveloper(),
       labelScores: accuracy.scoreByLabel(),
-      teamScore: accuracy.teamScore(),
       excludedWithoutEstimation: accuracy.excludedWithoutEstimation,
       excludedWithoutCycleTime: accuracy.excludedWithoutCycleTime,
     };

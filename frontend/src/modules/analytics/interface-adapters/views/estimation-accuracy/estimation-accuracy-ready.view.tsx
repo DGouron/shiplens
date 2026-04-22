@@ -1,17 +1,14 @@
-import { type EstimationAccuracyTranslations } from '../../presenters/estimation-accuracy.translations.ts';
 import { type EstimationAccuracyViewModel } from '../../presenters/estimation-accuracy.view-model.schema.ts';
+import { EstimationDiagnosisView } from './estimation-diagnosis.view.tsx';
 import { EstimationDonutView } from './estimation-donut.view.tsx';
 import { EstimationExclusionsView } from './estimation-exclusions.view.tsx';
-import { EstimationTeamScoreView } from './estimation-team-score.view.tsx';
 
 interface EstimationAccuracyReadyViewProps {
   viewModel: EstimationAccuracyViewModel;
-  translations: EstimationAccuracyTranslations;
 }
 
 export function EstimationAccuracyReadyView({
   viewModel,
-  translations,
 }: EstimationAccuracyReadyViewProps) {
   return (
     <div className="estimation-accuracy-content">
@@ -20,13 +17,10 @@ export function EstimationAccuracyReadyView({
           {viewModel.emptyMessage}
         </p>
       )}
-      {viewModel.showContent && <EstimationDonutView donut={viewModel.donut} />}
       {viewModel.showContent && (
-        <EstimationTeamScoreView
-          teamScore={viewModel.teamScore}
-          heading={translations.teamScoreHeading}
-        />
+        <EstimationDiagnosisView diagnosis={viewModel.diagnosis} />
       )}
+      {viewModel.showContent && <EstimationDonutView donut={viewModel.donut} />}
       <EstimationExclusionsView viewModel={viewModel} />
     </div>
   );
