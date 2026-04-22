@@ -21,7 +21,7 @@ const PROVIDER_CONFIGS: Record<AiProvider, ProviderConfig> = {
   },
   Anthropic: {
     url: 'https://api.anthropic.com/v1/messages',
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-opus-4-7',
     authHeader: 'x-api-key',
     authEnvVariable: 'ANTHROPIC_API_KEY',
   },
