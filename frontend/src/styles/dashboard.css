@@ -374,6 +374,40 @@
   padding: 0.5rem 0;
 }
 
+.cycle-insight-empty-state--warning {
+  color: var(--warning);
+}
+
+.top-cycle-themes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.top-cycle-themes-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+.top-cycle-themes-refresh-button {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.6rem;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.top-cycle-themes-refresh-button:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
 .top-cycle-projects-list {
   list-style: none;
   margin: 0;

@@ -12,6 +12,7 @@ import { TeamSelectionInLocalStorageGateway } from '@/modules/analytics/interfac
 import { TeamSettingsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/team-settings.in-http.gateway.ts';
 import { TopCycleAssigneesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/top-cycle-assignees.in-http.gateway.ts';
 import { TopCycleProjectsInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/top-cycle-projects.in-http.gateway.ts';
+import { TopCycleThemesInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/top-cycle-themes.in-http.gateway.ts';
 import { WorkflowConfigInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workflow-config.in-http.gateway.ts';
 import { WorkspaceDashboardInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-dashboard.in-http.gateway.ts';
 import { WorkspaceLanguageInHttpGateway } from '@/modules/analytics/interface-adapters/gateways/workspace-language.in-http.gateway.ts';
@@ -29,12 +30,14 @@ import { GetTeamTimezoneUsecase } from '@/modules/analytics/usecases/get-team-ti
 import { GetTeamWorkflowConfigUsecase } from '@/modules/analytics/usecases/get-team-workflow-config.usecase.ts';
 import { GetTopCycleAssigneesUsecase } from '@/modules/analytics/usecases/get-top-cycle-assignees.usecase.ts';
 import { GetTopCycleProjectsUsecase } from '@/modules/analytics/usecases/get-top-cycle-projects.usecase.ts';
+import { GetTopCycleThemesUsecase } from '@/modules/analytics/usecases/get-top-cycle-themes.usecase.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
 import { GetWorkspaceLanguageUsecase } from '@/modules/analytics/usecases/get-workspace-language.usecase.ts';
 import { ListAvailableTeamsUsecase } from '@/modules/analytics/usecases/list-available-teams.usecase.ts';
 import { ListBlockedIssuesUsecase } from '@/modules/analytics/usecases/list-blocked-issues.usecase.ts';
 import { ListCycleAssigneeIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-assignee-issues.usecase.ts';
 import { ListCycleProjectIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-project-issues.usecase.ts';
+import { ListCycleThemeIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-theme-issues.usecase.ts';
 import { ListDriftingIssuesUsecase } from '@/modules/analytics/usecases/list-drifting-issues.usecase.ts';
 import { ListSprintReportsUsecase } from '@/modules/analytics/usecases/list-sprint-reports.usecase.ts';
 import { ListTeamCyclesUsecase } from '@/modules/analytics/usecases/list-team-cycles.usecase.ts';
@@ -68,6 +71,7 @@ const workflowConfigGateway = new WorkflowConfigInHttpGateway();
 const teamSelectionStorageGateway = new TeamSelectionInLocalStorageGateway();
 const topCycleProjectsGateway = new TopCycleProjectsInHttpGateway();
 const topCycleAssigneesGateway = new TopCycleAssigneesInHttpGateway();
+const topCycleThemesGateway = new TopCycleThemesInHttpGateway();
 
 export const usecases = {
   getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
@@ -129,6 +133,8 @@ export const usecases = {
   listCycleAssigneeIssues: new ListCycleAssigneeIssuesUsecase(
     topCycleAssigneesGateway,
   ),
+  getTopCycleThemes: new GetTopCycleThemesUsecase(topCycleThemesGateway),
+  listCycleThemeIssues: new ListCycleThemeIssuesUsecase(topCycleThemesGateway),
 };
 
 export function overrideUsecases(overrides: Partial<typeof usecases>): void {
@@ -212,5 +218,11 @@ export function resetUsecases(): void {
   );
   usecases.listCycleAssigneeIssues = new ListCycleAssigneeIssuesUsecase(
     topCycleAssigneesGateway,
+  );
+  usecases.getTopCycleThemes = new GetTopCycleThemesUsecase(
+    topCycleThemesGateway,
+  );
+  usecases.listCycleThemeIssues = new ListCycleThemeIssuesUsecase(
+    topCycleThemesGateway,
   );
 }

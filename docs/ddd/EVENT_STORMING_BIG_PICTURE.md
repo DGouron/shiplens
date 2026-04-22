@@ -1,7 +1,7 @@
 # Event Storming Big Picture — Shiplens
 
 *Created: 2026-04-04*
-*Last updated: 2026-04-18 (cycle-themes)*
+*Last updated: 2026-04-20 (cycle-themes frontend)*
 
 ## Overview
 
@@ -310,3 +310,69 @@ See the inventory above (`CycleThemeMinimumIssueThreshold`, `CycleThemeCacheTtl`
 | 2026-04-17 | Target | Analytics BC re-audit — front + back unified, team-selection feature, workflow-config UI, dashboard `workspaceId` | Event Storming (analytics) |
 | 2026-04-18 | Target | Analytics BC addendum — show-top-cycle-projects walking skeleton (right-side column, shared shells + drawer + `use-dismissable-overlay`), Sync `Issue.projectExternalId` cross-BC edge, 3 new client-side events | Event Storming (analytics) |
 | 2026-04-18 | Target | Analytics BC addendum — detect-cycle-themes-with-ai backend vertical (`CycleThemeSet` + 24h TTL, `DetectCycleThemes` / `GetCycleIssuesForTheme` usecases, two presenters + controller, in-memory cache), 6 new domain events, 6 new rules, no new cross-BC edge, frontend pending | Event Storming (analytics) |
+
+## Addendum 2026-04-20 — Analytics BC (detect-cycle-themes-with-ai frontend landed)
+
+The backend vertical shipped on 2026-04-18 now has its frontend counterpart. Previously the global picture carried a pending note ("frontend UI pending") — this addendum closes that loop and records the new client-side events and rules surfaced by the React layer.
+
+### What shipped (frontend only — backend unchanged)
+
+- `TopCycleThemes` gateway port + response schemas mirroring the backend's 4-variant ranking DTO and 3-variant drawer DTO (Zod discriminated unions).
+- `TopCycleThemesInHttpGateway` with optional `?refresh=true&provider=...` query params, URL built via the `top-cycle-themes.url-contract.ts` constant (Published Language rule).
+- `GetTopCycleThemesUsecase` + `ListCycleThemeIssuesUsecase` registered in `frontend/src/main/dependencies.ts`.
+- `TopCycleThemesPresenter` (ranking ViewModel — 4 backend statuses → 5 semantic booleans + `emptyTone` `neutral` / `warning`, client-side metric re-sort, top-5 slice) + `CycleThemeIssuesDrawerPresenter` (4-state drawer VM).
+- `useTopCycleThemes` hook — React Query with a `forceRefreshToken` counter threaded through the query key, `cardTitle` exposed separately, state reset (`activeMetric`, `selectedThemeName`, `forceRefreshToken`) on `teamId` change.
+- 6 humble views under `frontend/src/modules/analytics/interface-adapters/views/top-cycle-themes/` (section, ready, loading, error, drawer, refresh-button).
+- Mounted as the third card of the dashboard right-side column in `DashboardView` (l.124), below `TopCycleAssigneesSectionView`.
+
+### Decision change recorded
+
+- **AI unavailable ≠ card hidden** — the original spec said the card should be hidden when the AI provider is down. The shipped implementation keeps the card visible with an amber warning tone and an active refresh button. The shift is captured in the `AiUnavailableCardRemainsVisible` rule on `analytics.md` and in the new `AI unavailable card` glossary entry. Rationale: one-click retry without leaving the dashboard.
+
+### New client-side domain events (4)
+
+| # | Event | BC | Type |
+|---|-------|----|------|
+| 43 | TopCycleThemesRequested (client-side) | Analytics | UX |
+| 44 | ManualCycleThemesRefreshInvoked (client-side) | Analytics | UX |
+| 45 | CycleThemeIssuesDrawerOpened (client-side) | Analytics | UX |
+| 46 | CycleThemeIssuesDrawerDismissed (client-side) | Analytics | UX |
+
+> `ManualCycleThemesRefreshInvoked` is the browser-local counterpart of the backend `CycleThemesRefreshed` — the former fires before the HTTP call, the latter inside the usecase execution.
+
+### New business/presentation rules (frontend)
+
+| # | Rule | BC | Severity |
+|---|------|----|----------|
+| 30 | FourThemeStatusesMapToFiveFlags | Analytics | presentation |
+| 31 | AiUnavailableCardRemainsVisible | Analytics | UX (decision change vs. spec) |
+| 32 | ThemeMetricClientSideSort | Analytics | presentation |
+| 33 | ManualRefreshViaCounterToken | Analytics | UX |
+| 34 | ThemesHookStateResetOnTeamSwitch | Analytics | UX |
+| 35 | CardTitleExposedSeparately | Analytics | presentation (debt — divergent from assignee/project widgets) |
+
+### No new cross-BC edge
+
+The frontend widget consumes only pre-existing HTTP endpoints (`GET /analytics/cycle-themes/:teamId` + drill-down). No new module imports, no new backend dependency. The relation is the same `Customer-Supplier via Published Language (HTTP)` edge already noted between the two Analytics sides.
+
+### Hot spot resolved
+
+- **"No frontend projection yet"** for cycle themes (flagged on 2026-04-18) — **RESOLVED**.
+
+### New hot spots (frontend)
+
+| # | Problem | BC | Severity | Detail |
+|---|----------|----|----------|--------|
+| 11 | **Theme name as drill-down URL segment (frontend-exposed)** | Analytics | medium | The frontend now calls `GET /analytics/cycle-themes/:teamId/themes/:themeName/issues` with the AI-generated theme name as a path segment. `topCycleThemesPaths.themeIssues` uses `encodeURIComponent` — safe today, but any server-side / proxy-level Unicode normalization (case folding, NFC vs NFD) would break the exact-name lookup. A stable theme id would eliminate the whole class of issue. |
+| 12 | **`forceRefreshToken` counter inflates the React Query key-space** | Analytics | low | Every refresh creates a NEW cache entry (key includes the token). The hook manually calls `removeQueries` to garbage-collect. If a future consumer forgets the remove step, memory grows monotonically per refresh click. |
+| 13 | **`cardTitle` exposed outside the ViewModel** | Analytics | low | Divergent from the assignee/project widgets. Rationale today: the shell renders the title during loading/error/no-active-cycle states, but the ViewModel only exists in `ready`. Consistency debt worth reconciling across the three widgets. |
+
+### Glossary additions
+
+- `Manual cycle themes refresh`, `Top cycle themes`, `Theme ranking row`, `Cycle theme issues drawer`, `AI unavailable card`, `Force refresh token` — see `docs/ddd/ubiquitous-language.md`.
+
+## Session History
+
+| Date | Mode | Scope | Contributor |
+|------|------|-------|-------------|
+| 2026-04-20 | Target | Analytics BC addendum — detect-cycle-themes-with-ai frontend landed (gateway + 2 usecases + 2 presenters + hook + 6 views), mounted as third right-column widget, decision change `ai_unavailable` → amber warning card, 4 new client-side events, 6 new presentation rules, resolves the 2026-04-18 "No frontend projection yet" hot spot, no new cross-BC edge | Event Storming (analytics) |

@@ -9,13 +9,16 @@ import { DashboardView } from '@/modules/analytics/interface-adapters/views/dash
 import { StubTeamSelectionStorageGateway } from '@/modules/analytics/testing/good-path/stub.team-selection-storage.in-memory.gateway.ts';
 import { StubTopCycleAssigneesGateway } from '@/modules/analytics/testing/good-path/stub.top-cycle-assignees.in-memory.gateway.ts';
 import { StubTopCycleProjectsGateway } from '@/modules/analytics/testing/good-path/stub.top-cycle-projects.in-memory.gateway.ts';
+import { StubTopCycleThemesGateway } from '@/modules/analytics/testing/good-path/stub.top-cycle-themes.in-memory.gateway.ts';
 import { StubWorkspaceDashboardGateway } from '@/modules/analytics/testing/good-path/stub.workspace-dashboard.in-memory.gateway.ts';
 import { GetPersistedTeamSelectionUsecase } from '@/modules/analytics/usecases/get-persisted-team-selection.usecase.ts';
 import { GetTopCycleAssigneesUsecase } from '@/modules/analytics/usecases/get-top-cycle-assignees.usecase.ts';
 import { GetTopCycleProjectsUsecase } from '@/modules/analytics/usecases/get-top-cycle-projects.usecase.ts';
+import { GetTopCycleThemesUsecase } from '@/modules/analytics/usecases/get-top-cycle-themes.usecase.ts';
 import { GetWorkspaceDashboardUsecase } from '@/modules/analytics/usecases/get-workspace-dashboard.usecase.ts';
 import { ListCycleAssigneeIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-assignee-issues.usecase.ts';
 import { ListCycleProjectIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-project-issues.usecase.ts';
+import { ListCycleThemeIssuesUsecase } from '@/modules/analytics/usecases/list-cycle-theme-issues.usecase.ts';
 import { PersistTeamSelectionUsecase } from '@/modules/analytics/usecases/persist-team-selection.usecase.ts';
 import { TeamDashboardResponseBuilder } from '../builders/team-dashboard-response.builder.ts';
 import { WorkspaceDashboardResponseBuilder } from '../builders/workspace-dashboard-response.builder.ts';
@@ -31,6 +34,9 @@ function wire({ dashboard, storage, assigneesGateway }: WireParams): void {
   const projectsGateway = new StubTopCycleProjectsGateway({
     ranking: { status: 'no_active_cycle' },
   });
+  const themesGateway = new StubTopCycleThemesGateway({
+    themes: { status: 'no_active_cycle' },
+  });
   overrideUsecases({
     getWorkspaceDashboard: new GetWorkspaceDashboardUsecase(
       new StubWorkspaceDashboardGateway({ response: dashboard }),
@@ -43,6 +49,8 @@ function wire({ dashboard, storage, assigneesGateway }: WireParams): void {
     listCycleAssigneeIssues: new ListCycleAssigneeIssuesUsecase(
       assigneesGateway,
     ),
+    getTopCycleThemes: new GetTopCycleThemesUsecase(themesGateway),
+    listCycleThemeIssues: new ListCycleThemeIssuesUsecase(themesGateway),
   });
 }
 

@@ -6,7 +6,7 @@
 
 **Bounded Context**: `analytics`
 
-**Artifacts**:
+### Backend artifacts
 - Entity: `backend/src/modules/analytics/entities/cycle-theme-set/` (aggregate `CycleThemeSet` with 1-5 themes invariant and `isCachedWithin(now, ttl)` TTL rule)
 - Ports: `cycle-theme-set-data.gateway.ts` (cycle + issues data), `cycle-theme-set-cache.gateway.ts` (cache abstraction). AI provider reuses existing `AiTextGeneratorGateway`.
 - Use cases: `DetectCycleThemesUsecase` (with `forceRefresh` flag), `GetCycleIssuesForThemeUsecase` (drill-down)
@@ -15,7 +15,21 @@
 - Controller: `cycle-themes.controller.ts`
 - Migration: none (cache is in-memory only per spec)
 
-**Endpoints**:
+### Frontend artifacts
+- Entity / response: `frontend/src/modules/analytics/entities/top-cycle-themes/` (Zod discriminated unions matching the backend DTOs: `ready | below_threshold | ai_unavailable | no_active_cycle` for the list, `ready | theme_not_found | no_active_cycle` for the drill-down)
+- Gateway port: `top-cycle-themes.gateway.ts` (abstract class). HTTP impl: `top-cycle-themes.in-http.gateway.ts` with conditional `?refresh=true` and optional `?provider=` query params, Zod validation, `GatewayError` on non-2xx.
+- URL contract: `interface-adapters/url-contracts/top-cycle-themes.url-contract.ts`
+- Use cases: `GetTopCycleThemesUsecase` (`{ teamId, forceRefresh?, provider? }`), `ListCycleThemeIssuesUsecase` (`{ teamId, themeName }`)
+- Presenters: `top-cycle-themes.presenter.ts` (4 backend statuses → semantic booleans `showThemesList | showBelowThreshold | showAiUnavailable | showNoActiveCycle | showRefreshButton`, client-side metric re-sort with name asc tie-breaker, cap at 5 rows), `cycle-theme-issues-drawer.presenter.ts` (closed/loading/error/ready/theme_not_found)
+- Translations: `top-cycle-themes.translations.ts` (EN/FR for card title, metric labels, refresh, 3 empty-state messages, drawer copy)
+- Hook: `use-top-cycle-themes.ts` (React Query bridge; `forceRefresh` via counter token in query key)
+- Views (humble, one component per file under `views/top-cycle-themes/`): `section`, `ready`, `loading`, `error`, `refresh-button`, `drawer`
+- Shared shells reused: `cycle-insight-shell/` (card with `headerAction` slot, metric toggle, ranking row, empty state) and `cycle-insight-drawer/` (drawer + issue row)
+- Test doubles: `stub.top-cycle-themes.in-memory.gateway.ts` (tracks `forceRefresh` / `provider` / `teamId` per call), `failing.top-cycle-themes.in-memory.gateway.ts` (throws `GatewayError`)
+- Builders: `top-cycle-theme-row-response.builder.ts`, `cycle-theme-issue-row-response.builder.ts`
+- Registry wiring: `frontend/src/main/dependencies.ts` registers `getTopCycleThemes` + `listCycleThemeIssues`. Mounted in `dashboard.view.tsx` as the third widget of the right column, under `TopCycleAssigneesSectionView`.
+
+### Endpoints
 - `GET analytics/cycle-themes/:teamId?provider=&refresh=` — `DetectCycleThemesUsecase`
 - `GET analytics/cycle-themes/:teamId/themes/:themeName/issues` — `GetCycleIssuesForThemeUsecase`
 
@@ -28,6 +42,11 @@
 - Single `DetectCycleThemesUsecase` with `forceRefresh` flag (no separate refresh usecase — same intention).
 - New gateway file infix adopted: `.in-memory.` (join `.in-prisma.`, `.in-file.`, `.in-http.`, `.in-crypto.`).
 - Default backend sort: descending `issueCount`. Frontend re-sorts when user toggles metric.
+- Frontend AI-unavailable rendering: card stays in the DOM with an amber warning empty state and a refresh button (overrides the spec rule "only this card is hidden" — see updated rule below). Discovery + retry beats silent disappearance.
+- Refresh button visible only on `ready` and `ai_unavailable` (the two states where a retry has meaning). Hidden on `below_threshold` and `no_active_cycle` — nothing to refresh, the backend won't call AI.
+- Provider query param is optional on the frontend gateway: omitted today (backend defaults to Anthropic), wired through the usecase signature so a future settings UI can inject it without a refactor.
+- AsyncState collapse: the 4 backend statuses are folded into the `ready` discriminant of `AsyncState<TopCycleThemesViewModel>`. The presenter exposes semantic booleans so views never branch on backend enums.
+- Shared `CycleInsightEmptyStateView` extended with a `tone?: 'neutral' | 'warning'` prop instead of duplicating a view per tone.
 
 Depends on: `select-team-on-dashboard`, `show-top-cycle-projects` (reuses the right-side column and the shared card / drill-down drawer shells).
 
@@ -42,7 +61,7 @@ The fourth widget in the dashboard right-side column uses AI to cluster the cycl
 - The AI input consists of each issue's title and labels — the description is excluded (token cost vs quality trade-off)
 - The AI output is exactly 5 themes, each with a short name (1 to 3 words) and the list of issue identifiers classified in that theme
 - When the active cycle has fewer than 10 issues, the card displays "Not enough issues for theme detection." and no AI call is made
-- When the AI provider is unavailable, only this card is hidden — other dashboard widgets remain visible
+- When the AI provider is unavailable, the card displays a localized warning message in an amber tone with a manual refresh button — other dashboard widgets remain visible and unaffected
 - Themes are cached per cycle identifier; a cached result is reused until the cycle ends OR 24 hours have elapsed since the last successful call, whichever comes first
 - A manual refresh button on the card forces a new AI call, bypassing the cache
 - Each row shows the theme name and the metric value aggregated over the issues classified in that theme
@@ -59,7 +78,7 @@ The fourth widget in the dashboard right-side column uses AI to cluster the cycl
 
 - nominal AI themes: {cycle has 25 issues with varied titles and labels} → AI returns 5 themes with short names and counts, displayed sorted by count descending
 - below threshold: {cycle has 7 issues} → no AI call, card shows "Not enough issues for theme detection."
-- AI provider unavailable: {AI provider returns an error} → theme card is hidden, other dashboard widgets unaffected
+- AI provider unavailable: {AI provider returns an error} → theme card stays visible with an amber warning message and a refresh button; other dashboard widgets unaffected
 - cache hit within 24h: {cycle has cached themes from 2 hours ago} → cached themes displayed, no AI call
 - cache expired within active cycle: {cached themes older than 24h, cycle still active} → new AI call triggered on load, cache refreshed
 - cache invalidated at cycle end: {cycle transitions to completed, user navigates to dashboard} → the closed cycle's cache is no longer used (historical cycles are not recomputed)
