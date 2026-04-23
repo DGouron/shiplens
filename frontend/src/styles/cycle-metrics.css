@@ -71,6 +71,38 @@
   background-clip: text;
 }
 
+.cycle-metrics-card__caption {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  order: 3;
+}
+
+.cycle-metrics-card--signal-red {
+  border-color: rgba(239, 68, 68, 0.45);
+  box-shadow: inset 3px 0 0 var(--danger);
+}
+
+.cycle-metrics-card--signal-red .cycle-metrics-card__value {
+  background: linear-gradient(135deg, var(--warning), var(--danger));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cycle-metrics-card--signal-orange {
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow: inset 3px 0 0 var(--warning);
+}
+
+.cycle-metrics-card--signal-green {
+  border-color: rgba(34, 197, 94, 0.35);
+  box-shadow: inset 3px 0 0 var(--success, #22c55e);
+}
+
+.cycle-metrics-card--signal-neutral {
+  /* default look */
+}
+
 .cycle-metrics-error {
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.25);

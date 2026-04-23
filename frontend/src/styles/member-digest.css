@@ -1,5 +1,6 @@
 .member-digest-section {
   border-left: 3px solid var(--accent-2);
+  margin-bottom: 1.25rem;
 }
 
 .member-digest-generate {

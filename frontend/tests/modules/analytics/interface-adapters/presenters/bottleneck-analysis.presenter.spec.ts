@@ -4,9 +4,13 @@ import { bottleneckAnalysisTranslations } from '@/modules/analytics/interface-ad
 import { type Locale } from '@/modules/analytics/interface-adapters/presenters/cycle-metrics.translations.ts';
 import { BottleneckAnalysisResponseBuilder } from '../../../../builders/bottleneck-analysis-response.builder.ts';
 
-function makePresenter(locale: Locale = 'en') {
+function makePresenter(
+  locale: Locale = 'en',
+  selectedMemberName: string | null = null,
+) {
   return new BottleneckAnalysisPresenter(
     bottleneckAnalysisTranslations[locale],
+    selectedMemberName,
   );
 }
 
@@ -85,6 +89,64 @@ describe('BottleneckAnalysisPresenter', () => {
     expect(viewModel.emptyMessage).toBe(
       bottleneckAnalysisTranslations.en.emptyMessage,
     );
+  });
+
+  it('uses the selected member assignee breakdown rather than the team-wide distribution when a member is filtered', () => {
+    const viewModel = makePresenter('en', 'gauthier@mentorgoal.com').present(
+      new BottleneckAnalysisResponseBuilder()
+        .withStatusDistribution([
+          { statusName: 'In Progress', medianHours: 12 },
+          { statusName: 'In Review', medianHours: 30 },
+        ])
+        .withBottleneckStatus('In Review')
+        .withAssigneeBreakdown([
+          {
+            assigneeName: 'gauthier@mentorgoal.com',
+            statusMedians: [
+              { statusName: 'In Progress', medianHours: 40 },
+              { statusName: 'In Review', medianHours: 10 },
+            ],
+          },
+          {
+            assigneeName: 'alice@mentorgoal.com',
+            statusMedians: [
+              { statusName: 'In Progress', medianHours: 5 },
+              { statusName: 'In Review', medianHours: 60 },
+            ],
+          },
+        ])
+        .build(),
+    );
+
+    expect(viewModel.rows.map((row) => row.statusName)).toEqual([
+      'In Progress',
+      'In Review',
+    ]);
+    const inProgressRow = viewModel.rows.find(
+      (row) => row.statusName === 'In Progress',
+    );
+    expect(inProgressRow?.medianHoursLabel).toBe('1.7 days');
+    expect(inProgressRow?.isBottleneck).toBe(true);
+  });
+
+  it('returns an empty view model when the selected member has no assignee breakdown entry', () => {
+    const viewModel = makePresenter('en', 'ghost@mentorgoal.com').present(
+      new BottleneckAnalysisResponseBuilder()
+        .withStatusDistribution([
+          { statusName: 'In Progress', medianHours: 12 },
+        ])
+        .withBottleneckStatus('In Progress')
+        .withAssigneeBreakdown([
+          {
+            assigneeName: 'alice@mentorgoal.com',
+            statusMedians: [{ statusName: 'In Review', medianHours: 60 }],
+          },
+        ])
+        .build(),
+    );
+
+    expect(viewModel.rows).toEqual([]);
+    expect(viewModel.showEmptyMessage).toBe(true);
   });
 
   it('uses French labels under the fr locale', () => {

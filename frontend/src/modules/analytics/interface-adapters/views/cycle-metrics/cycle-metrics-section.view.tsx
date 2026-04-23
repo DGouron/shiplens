@@ -7,18 +7,20 @@ import { CycleMetricsCardsView } from './cycle-metrics-cards.view.tsx';
 interface CycleMetricsSectionViewProps {
   state: CycleMetricsState;
   translations: CycleMetricsTranslations;
+  title: string;
 }
 
 export function CycleMetricsSectionView({
   state,
   translations,
+  title,
 }: CycleMetricsSectionViewProps) {
   return (
     <section
       className="cycle-report-section cycle-metrics-section"
       data-section-id="metrics"
     >
-      <h2>{translations.sectionTitle}</h2>
+      <h2>{title}</h2>
       {state.status === 'loading' && <SkeletonCard />}
       {state.status === 'error' && (
         <p className="cycle-metrics-error">{state.message}</p>

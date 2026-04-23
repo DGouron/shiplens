@@ -9,6 +9,7 @@ export const cycleOptionViewModelSchema = z.object({
   cycleId: z.string(),
   label: z.string(),
   status: z.enum(['in_progress', 'completed']),
+  startsAt: z.string(),
 });
 
 export const sectionPlaceholderViewModelSchema = z.object({
@@ -26,6 +27,7 @@ export const sectionPlaceholderViewModelSchema = z.object({
 
 export const cycleReportShellViewModelSchema = z.object({
   heading: z.string(),
+  isMemberMode: z.boolean(),
   teamSelector: z.object({
     label: z.string(),
     placeholder: z.string(),

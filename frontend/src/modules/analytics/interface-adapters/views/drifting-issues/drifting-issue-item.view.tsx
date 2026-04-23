@@ -37,7 +37,7 @@ export function DriftingIssueItemView({
           href={row.memberHealthTrendsHref ?? '#'}
           onClick={handleMemberClick}
         >
-          {row.assigneeName}
+          {row.assigneeLabel}
         </a>
       )}
     </li>

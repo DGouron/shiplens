@@ -15,6 +15,7 @@ export function CycleReportView() {
   const {
     shellState,
     metricsState,
+    memberMetricsState,
     bottleneckState,
     blockedIssuesState,
     estimationState,
@@ -61,6 +62,7 @@ export function CycleReportView() {
     <CycleReportReadyView
       viewModel={shellState.data}
       metricsState={metricsState}
+      memberMetricsState={memberMetricsState}
       bottleneckState={bottleneckState}
       blockedIssuesState={blockedIssuesState}
       estimationState={estimationState}

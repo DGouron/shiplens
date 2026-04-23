@@ -161,6 +161,29 @@ describe('BlockedIssuesPresenter', () => {
     );
   });
 
+  it('formats the assignee display label as the capitalized local part of the email', () => {
+    const viewModel = makePresenter('team-alpha').present([
+      new BlockedIssueAlertResponseBuilder()
+        .withTeamId('team-alpha')
+        .withAssigneeName('gauthier@mentorgoal.com')
+        .build(),
+    ]);
+
+    expect(viewModel.items[0]?.assigneeLabel).toBe('Gauthier');
+    expect(viewModel.items[0]?.assigneeName).toBe('gauthier@mentorgoal.com');
+  });
+
+  it('emits a null assigneeLabel when the assignee is missing', () => {
+    const viewModel = makePresenter('team-alpha').present([
+      new BlockedIssueAlertResponseBuilder()
+        .withTeamId('team-alpha')
+        .withAssigneeName(null)
+        .build(),
+    ]);
+
+    expect(viewModel.items[0]?.assigneeLabel).toBeNull();
+  });
+
   it('emits a null href and showMemberLink false when the assignee is missing', () => {
     const viewModel = makePresenter('team-alpha').present([
       new BlockedIssueAlertResponseBuilder()

@@ -10,6 +10,8 @@ import {
   type DriftingIssuesViewModel,
 } from './drifting-issues.view-model.schema.ts';
 import { formatDurationHours } from './format-duration-hours.ts';
+import { formatMemberDisplayName } from './format-member-display-name.ts';
+import { isProbableEpic } from './is-probable-epic.ts';
 
 export class DriftingIssuesPresenter
   implements Presenter<DriftingIssuesResponse, DriftingIssuesViewModel>
@@ -20,7 +22,9 @@ export class DriftingIssuesPresenter
   ) {}
 
   present(input: DriftingIssuesResponse): DriftingIssuesViewModel {
-    const filtered = input.filter((issue) => this.matchesMember(issue));
+    const filtered = input.filter(
+      (issue) => !isProbableEpic(issue.points) && this.matchesMember(issue),
+    );
     if (filtered.length === 0) {
       return {
         rows: [],
@@ -61,6 +65,8 @@ export class DriftingIssuesPresenter
       pointsLabel: this.formatPoints(issue.points),
       issueUrl: issue.issueUrl,
       assigneeName,
+      assigneeLabel:
+        assigneeName === null ? null : formatMemberDisplayName(assigneeName),
       memberHealthTrendsHref: href,
       showMemberLink: href !== null,
     };

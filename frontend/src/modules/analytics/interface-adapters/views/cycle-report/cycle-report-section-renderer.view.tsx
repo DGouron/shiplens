@@ -4,6 +4,7 @@ import { type BottleneckAnalysisState } from '../../hooks/use-bottleneck-analysi
 import { type CycleMetricsState } from '../../hooks/use-cycle-metrics.ts';
 import { type DriftingIssuesState } from '../../hooks/use-drifting-issues.ts';
 import { type EstimationAccuracyState } from '../../hooks/use-estimation-accuracy.ts';
+import { type MemberMetricsState } from '../../hooks/use-member-metrics.ts';
 import { type AiReportTranslations } from '../../presenters/ai-report.translations.ts';
 import { type BlockedIssuesTranslations } from '../../presenters/blocked-issues.translations.ts';
 import { type BottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';
@@ -17,11 +18,14 @@ import { BottleneckAnalysisSectionView } from '../bottleneck-analysis/bottleneck
 import { CycleMetricsSectionView } from '../cycle-metrics/cycle-metrics-section.view.tsx';
 import { DriftingIssuesSectionView } from '../drifting-issues/drifting-issues-section.view.tsx';
 import { EstimationAccuracySectionView } from '../estimation-accuracy/estimation-accuracy-section.view.tsx';
+import { MemberMetricsSectionView } from '../member-metrics/member-metrics-section.view.tsx';
 import { CycleReportSectionPlaceholderView } from './cycle-report-section-placeholder.view.tsx';
 
 interface CycleReportSectionRendererViewProps {
   placeholder: SectionPlaceholderViewModel;
+  isMemberMode: boolean;
   metricsState: CycleMetricsState;
+  memberMetricsState: MemberMetricsState;
   bottleneckState: BottleneckAnalysisState;
   blockedIssuesState: BlockedIssuesState;
   estimationState: EstimationAccuracyState;
@@ -41,7 +45,9 @@ interface CycleReportSectionRendererViewProps {
 
 export function CycleReportSectionRendererView({
   placeholder,
+  isMemberMode,
   metricsState,
+  memberMetricsState,
   bottleneckState,
   blockedIssuesState,
   estimationState,
@@ -62,10 +68,19 @@ export function CycleReportSectionRendererView({
     return <CycleReportSectionPlaceholderView placeholder={placeholder} />;
   }
   if (placeholder.id === 'metrics') {
+    if (isMemberMode) {
+      return (
+        <MemberMetricsSectionView
+          state={memberMetricsState}
+          title={placeholder.title}
+        />
+      );
+    }
     return (
       <CycleMetricsSectionView
         state={metricsState}
         translations={metricsTranslations}
+        title={placeholder.title}
       />
     );
   }

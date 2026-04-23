@@ -86,14 +86,6 @@ describe('DriftingIssuesPresenter', () => {
     expect(viewModel.rows[0]?.pointsLabel).toBe('5 points');
   });
 
-  it('falls back to the translated pointsUnavailable label when points is null', () => {
-    const viewModel = makePresenter().present([
-      new DriftingIssueResponseBuilder().withPoints(null).build(),
-    ]);
-
-    expect(viewModel.rows[0]?.pointsLabel).toBe('No estimation');
-  });
-
   it('translates the drifting drift status label', () => {
     const viewModel = makePresenter().present([
       new DriftingIssueResponseBuilder().withDriftStatus('drifting').build(),
@@ -125,14 +117,13 @@ describe('DriftingIssuesPresenter', () => {
       new DriftingIssueResponseBuilder()
         .withElapsedBusinessHours(72)
         .withExpectedMaxHours(null)
-        .withPoints(null)
+        .withPoints(3)
         .withDriftStatus('drifting')
         .build(),
     ]);
 
     expect(viewModel.rows[0]?.elapsedLabel).toBe('Ecoule: 3.0 jours');
     expect(viewModel.rows[0]?.expectedLabel).toBe('Attendu: Non disponible');
-    expect(viewModel.rows[0]?.pointsLabel).toBe('Sans estimation');
     expect(viewModel.rows[0]?.driftLabel).toBe('En derive');
   });
 
@@ -189,5 +180,47 @@ describe('DriftingIssuesPresenter', () => {
     expect(viewModel.rows[0]?.assigneeName).toBeNull();
     expect(viewModel.rows[0]?.showMemberLink).toBe(false);
     expect(viewModel.rows[0]?.memberHealthTrendsHref).toBeNull();
+  });
+
+  it('excludes epic-like issues (null, zero, or 21+ points) from the drift list', () => {
+    const viewModel = makePresenter().present([
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('real-drift')
+        .withPoints(3)
+        .build(),
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('epic-null')
+        .withPoints(null)
+        .build(),
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('epic-zero')
+        .withPoints(0)
+        .build(),
+      new DriftingIssueResponseBuilder()
+        .withIssueExternalId('epic-twenty-one')
+        .withPoints(21)
+        .build(),
+    ]);
+
+    expect(viewModel.rows.map((row) => row.id)).toEqual(['real-drift']);
+  });
+
+  it('formats the assignee display label as the capitalized local part of the email', () => {
+    const viewModel = makePresenter().present([
+      new DriftingIssueResponseBuilder()
+        .withAssigneeName('gauthier@mentorgoal.com')
+        .build(),
+    ]);
+
+    expect(viewModel.rows[0]?.assigneeLabel).toBe('Gauthier');
+    expect(viewModel.rows[0]?.assigneeName).toBe('gauthier@mentorgoal.com');
+  });
+
+  it('emits a null assigneeLabel when the assignee is missing', () => {
+    const viewModel = makePresenter().present([
+      new DriftingIssueResponseBuilder().withAssigneeName(null).build(),
+    ]);
+
+    expect(viewModel.rows[0]?.assigneeLabel).toBeNull();
   });
 });

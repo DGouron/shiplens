@@ -8,6 +8,7 @@ export interface CycleReportShellTranslations {
   cycleSelectorPlaceholder: string;
   emptyPrompt: string;
   sectionMetrics: string;
+  sectionMemberMetrics: (memberDisplayName: string) => string;
   sectionBottlenecks: string;
   sectionBlocked: string;
   sectionEstimation: string;
@@ -26,7 +27,9 @@ export const cycleReportShellTranslations: Record<
     cycleSelectorLabel: 'Cycle',
     cycleSelectorPlaceholder: 'Select a cycle',
     emptyPrompt: 'Select a team to view the cycle report',
-    sectionMetrics: 'Metrics',
+    sectionMetrics: 'Team metrics',
+    sectionMemberMetrics: (memberDisplayName) =>
+      `${memberDisplayName}'s metrics`,
     sectionBottlenecks: 'Bottlenecks',
     sectionBlocked: 'Blocked issues',
     sectionEstimation: 'Estimation accuracy',
@@ -40,7 +43,9 @@ export const cycleReportShellTranslations: Record<
     cycleSelectorLabel: 'Cycle',
     cycleSelectorPlaceholder: 'Selectionner un cycle',
     emptyPrompt: 'Selectionner une equipe pour voir le rapport de cycle',
-    sectionMetrics: 'Metriques',
+    sectionMetrics: 'Metriques d equipe',
+    sectionMemberMetrics: (memberDisplayName) =>
+      `Metriques de ${memberDisplayName}`,
     sectionBottlenecks: 'Goulots d etranglement',
     sectionBlocked: 'Issues bloquees',
     sectionEstimation: 'Precision d estimation',

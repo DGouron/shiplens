@@ -37,10 +37,15 @@ import {
   type MemberDigestState,
   useMemberDigest,
 } from './use-member-digest.ts';
+import {
+  type MemberMetricsState,
+  useMemberMetrics,
+} from './use-member-metrics.ts';
 
 export interface UseCycleReportPageResult {
   shellState: CycleReportShellState;
   metricsState: CycleMetricsState;
+  memberMetricsState: MemberMetricsState;
   bottleneckState: BottleneckAnalysisState;
   blockedIssuesState: BlockedIssuesState;
   estimationState: EstimationAccuracyState;
@@ -73,6 +78,7 @@ export function useCycleReportPage(): UseCycleReportPageResult {
   const { state: bottleneckState } = useBottleneckAnalysis({
     teamId: selectedTeamId,
     cycleId: selectedCycleId,
+    selectedMemberName,
   });
   const { state: blockedIssuesState } = useBlockedIssues({
     teamId: selectedTeamId,
@@ -84,6 +90,11 @@ export function useCycleReportPage(): UseCycleReportPageResult {
   });
   const { state: driftingState } = useDriftingIssues({
     teamId: selectedTeamId,
+    selectedMemberName,
+  });
+  const { state: memberMetricsState } = useMemberMetrics({
+    teamId: selectedTeamId,
+    cycleId: selectedCycleId,
     selectedMemberName,
   });
 
@@ -168,10 +179,16 @@ export function useCycleReportPage(): UseCycleReportPageResult {
     if (shellState.status !== 'ready') return;
     if (shellState.data.cycleSelector === null) return;
     const options = shellState.data.cycleSelector.options;
+    const now = Date.now();
+    const activeCycle = options.find(
+      (option) =>
+        option.status === 'in_progress' &&
+        new Date(option.startsAt).getTime() <= now,
+    );
     const firstCompleted = options.find(
       (option) => option.status === 'completed',
     );
-    const cycleToSelect = firstCompleted ?? options[0];
+    const cycleToSelect = activeCycle ?? firstCompleted ?? options[0];
     if (cycleToSelect === undefined) return;
     selectCycle(cycleToSelect.cycleId);
   }, [selectedCycleId, shellState, selectCycle]);
@@ -179,6 +196,7 @@ export function useCycleReportPage(): UseCycleReportPageResult {
   return {
     shellState,
     metricsState,
+    memberMetricsState,
     bottleneckState,
     blockedIssuesState,
     estimationState,

@@ -6,12 +6,14 @@ import {
   type CycleReportShellViewModel,
   type SectionPlaceholderViewModel,
 } from './cycle-report-shell.view-model.schema.ts';
+import { formatMemberDisplayName } from './format-member-display-name.ts';
 
 export interface CycleReportShellInput {
   availableTeams: SyncAvailableTeamResponse[];
   teamCycles: TeamCyclesResponse | null;
   selectedTeamId: string | null;
   selectedCycleId: string | null;
+  selectedMemberName: string | null;
 }
 
 export class CycleReportShellPresenter
@@ -22,9 +24,11 @@ export class CycleReportShellPresenter
   present(input: CycleReportShellInput): CycleReportShellViewModel {
     const hasSelectedTeam = input.selectedTeamId !== null;
     const hasSelectedCycle = input.selectedCycleId !== null;
+    const isMemberMode = input.selectedMemberName !== null;
 
     return {
       heading: this.translations.pageTitle,
+      isMemberMode,
       teamSelector: {
         label: this.translations.teamSelectorLabel,
         placeholder: this.translations.teamSelectorPlaceholder,
@@ -43,23 +47,34 @@ export class CycleReportShellPresenter
               cycleId: cycle.externalId,
               label: cycle.name,
               status: cycle.status,
+              startsAt: cycle.startsAt,
             })),
           }
         : null,
       emptyPrompt: hasSelectedTeam ? null : this.translations.emptyPrompt,
       sectionPlaceholders: hasSelectedTeam
-        ? this.buildSectionPlaceholders(hasSelectedCycle)
+        ? this.buildSectionPlaceholders(
+            hasSelectedCycle,
+            input.selectedMemberName,
+          )
         : [],
     };
   }
 
   private buildSectionPlaceholders(
     hasSelectedCycle: boolean,
+    selectedMemberName: string | null,
   ): SectionPlaceholderViewModel[] {
-    return [
+    const metricsTitle =
+      selectedMemberName === null
+        ? this.translations.sectionMetrics
+        : this.translations.sectionMemberMetrics(
+            formatMemberDisplayName(selectedMemberName),
+          );
+    const placeholders: SectionPlaceholderViewModel[] = [
       {
         id: 'metrics',
-        title: this.translations.sectionMetrics,
+        title: metricsTitle,
         canRenderContent: hasSelectedCycle,
       },
       {
@@ -72,21 +87,26 @@ export class CycleReportShellPresenter
         title: this.translations.sectionBlocked,
         canRenderContent: true,
       },
-      {
+    ];
+    if (selectedMemberName === null) {
+      placeholders.push({
         id: 'estimation',
         title: this.translations.sectionEstimation,
         canRenderContent: hasSelectedCycle,
-      },
-      {
-        id: 'drifting',
-        title: this.translations.sectionDrifting,
-        canRenderContent: true,
-      },
-      {
+      });
+    }
+    placeholders.push({
+      id: 'drifting',
+      title: this.translations.sectionDrifting,
+      canRenderContent: true,
+    });
+    if (selectedMemberName === null) {
+      placeholders.push({
         id: 'ai-report',
         title: this.translations.sectionAiReport,
         canRenderContent: hasSelectedCycle,
-      },
-    ];
+      });
+    }
+    return placeholders;
   }
 }
