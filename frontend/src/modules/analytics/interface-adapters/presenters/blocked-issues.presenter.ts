@@ -10,6 +10,7 @@ import {
   type BlockedIssuesViewModel,
 } from './blocked-issues.view-model.schema.ts';
 import { formatDurationHours } from './format-duration-hours.ts';
+import { formatMemberDisplayName } from './format-member-display-name.ts';
 
 export class BlockedIssuesPresenter
   implements Presenter<BlockedIssuesResponse, BlockedIssuesViewModel>
@@ -69,6 +70,8 @@ export class BlockedIssuesPresenter
       severityLevel: alert.severity === 'critical' ? 'critical' : 'warning',
       issueUrl: alert.issueUrl,
       assigneeName,
+      assigneeLabel:
+        assigneeName === null ? null : formatMemberDisplayName(assigneeName),
       memberHealthTrendsHref: href,
       showMemberLink: href !== null,
     };

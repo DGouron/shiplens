@@ -19,8 +19,13 @@ export interface UseCycleReportShellResult {
 
 export function useCycleReportShell(): UseCycleReportShellResult {
   const locale = useLocale();
-  const { selectedTeamId, selectedCycleId, selectTeam, selectCycle } =
-    useCycleReportUrlState();
+  const {
+    selectedTeamId,
+    selectedCycleId,
+    selectedMemberName,
+    selectTeam,
+    selectCycle,
+  } = useCycleReportUrlState();
 
   const teamsQuery = useQuery({
     queryKey: ['analytics', 'cycle-report', 'available-teams'],
@@ -61,6 +66,7 @@ export function useCycleReportShell(): UseCycleReportShellResult {
         teamCycles: selectedTeamId === null ? null : (cyclesQuery.data ?? null),
         selectedTeamId,
         selectedCycleId,
+        selectedMemberName,
       }),
     };
   })();

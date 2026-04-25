@@ -15,6 +15,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: null,
       selectedTeamId: null,
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.heading).toBe('Cycle report');
@@ -35,6 +36,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: null,
       selectedTeamId: null,
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.teamSelector.options).toEqual([
@@ -51,6 +53,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: null,
       selectedTeamId: 'team-1',
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.teamSelector.selectedTeamId).toBe('team-1');
@@ -64,6 +67,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: null,
       selectedTeamId: null,
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.cycleSelector).toBeNull();
@@ -88,13 +92,24 @@ describe('CycleReportShellPresenter', () => {
       },
       selectedTeamId: 'team-1',
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.cycleSelector).not.toBeNull();
     if (viewModel.cycleSelector !== null) {
       expect(viewModel.cycleSelector.options).toEqual([
-        { cycleId: 'cycle-1', label: 'Cycle 12', status: 'in_progress' },
-        { cycleId: 'cycle-2', label: 'Cycle 11', status: 'in_progress' },
+        {
+          cycleId: 'cycle-1',
+          label: 'Cycle 12',
+          status: 'in_progress',
+          startsAt: '2026-04-01T00:00:00.000Z',
+        },
+        {
+          cycleId: 'cycle-2',
+          label: 'Cycle 11',
+          status: 'in_progress',
+          startsAt: '2026-04-01T00:00:00.000Z',
+        },
       ]);
     }
   });
@@ -105,6 +120,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: null,
       selectedTeamId: null,
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.emptyPrompt).toBe(
@@ -120,6 +136,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: { cycles: [] },
       selectedTeamId: 'team-1',
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.emptyPrompt).toBeNull();
@@ -133,6 +150,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: { cycles: [] },
       selectedTeamId: 'team-1',
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(
@@ -148,13 +166,34 @@ describe('CycleReportShellPresenter', () => {
     expect(
       viewModel.sectionPlaceholders.map((placeholder) => placeholder.title),
     ).toEqual([
-      'Metrics',
+      'Team metrics',
       'Bottlenecks',
       'Blocked issues',
       'Estimation accuracy',
       'Drifting issues',
       'AI report',
     ]);
+  });
+
+  it('switches the metrics title and drops team-only sections when a member is selected', () => {
+    const viewModel = makePresenter().present({
+      availableTeams: [
+        new SyncAvailableTeamResponseBuilder().withTeamId('team-1').build(),
+      ],
+      teamCycles: { cycles: [] },
+      selectedTeamId: 'team-1',
+      selectedCycleId: 'cycle-1',
+      selectedMemberName: 'gauthier@mentorgoal.com',
+    });
+
+    expect(viewModel.isMemberMode).toBe(true);
+    expect(
+      viewModel.sectionPlaceholders.map((placeholder) => placeholder.id),
+    ).toEqual(['metrics', 'bottlenecks', 'blocked', 'drifting']);
+    const metricsPlaceholder = viewModel.sectionPlaceholders.find(
+      (placeholder) => placeholder.id === 'metrics',
+    );
+    expect(metricsPlaceholder?.title).toBe("Gauthier's metrics");
   });
 
   it('flags only team-scoped sections as renderable when no cycle is selected', () => {
@@ -165,6 +204,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: { cycles: [] },
       selectedTeamId: 'team-1',
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     const renderableIds = viewModel.sectionPlaceholders
@@ -181,6 +221,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: { cycles: [] },
       selectedTeamId: 'team-1',
       selectedCycleId: 'cycle-1',
+      selectedMemberName: null,
     });
 
     const notRenderable = viewModel.sectionPlaceholders.filter(
@@ -195,6 +236,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: null,
       selectedTeamId: null,
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.sectionPlaceholders).toEqual([]);
@@ -206,6 +248,7 @@ describe('CycleReportShellPresenter', () => {
       teamCycles: null,
       selectedTeamId: null,
       selectedCycleId: null,
+      selectedMemberName: null,
     });
 
     expect(viewModel.heading).toBe('Rapport de cycle');

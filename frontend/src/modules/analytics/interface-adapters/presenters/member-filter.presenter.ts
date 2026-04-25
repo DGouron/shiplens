@@ -1,6 +1,7 @@
 import { type Presenter } from '@/shared/foundation/presenter/presenter.ts';
 import { type BlockedIssuesResponse } from '../../entities/blocked-issues/blocked-issues.response.ts';
 import { type DriftingIssuesResponse } from '../../entities/drifting-issues/drifting-issues.response.ts';
+import { formatMemberDisplayName } from './format-member-display-name.ts';
 import { type MemberFilterTranslations } from './member-filter.translations.ts';
 import {
   type MemberFilterOptionViewModel,
@@ -31,7 +32,7 @@ export class MemberFilterPresenter
     const memberOptions: MemberFilterOptionViewModel[] = memberNames.map(
       (name) => ({
         value: name,
-        label: name,
+        label: formatMemberDisplayName(name),
         isSelected: name === this.selectedMemberName,
         isWholeTeam: false,
       }),

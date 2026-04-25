@@ -144,6 +144,23 @@ describe('MemberFilterPresenter', () => {
     expect(viewModel.options[0]?.isSelected).toBe(true);
   });
 
+  it('formats email member names into capitalized display labels while keeping the raw email as the option value', () => {
+    const viewModel = makePresenter('gauthier@mentorgoal.com').present({
+      blockedIssues: [
+        new BlockedIssueAlertResponseBuilder()
+          .withAssigneeName('gauthier@mentorgoal.com')
+          .build(),
+      ],
+      driftingIssues: [],
+    });
+
+    const memberOption = viewModel.options.find(
+      (option) => option.value === 'gauthier@mentorgoal.com',
+    );
+    expect(memberOption?.label).toBe('Gauthier');
+    expect(memberOption?.value).toBe('gauthier@mentorgoal.com');
+  });
+
   it('uses French labels under the fr locale', () => {
     const viewModel = makePresenter(null, 'fr').present({
       blockedIssues: [],

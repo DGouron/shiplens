@@ -37,7 +37,7 @@ export function BlockedIssueItemView({
           href={item.memberHealthTrendsHref ?? '#'}
           onClick={handleMemberClick}
         >
-          {item.assigneeName}
+          {item.assigneeLabel}
         </a>
       )}
     </li>

@@ -52,7 +52,50 @@ describe('useCycleReportPage', () => {
     expect(typeof result.current.selectCycle).toBe('function');
   });
 
-  it('auto-selects the first completed cycle rather than the most recent in-progress one', async () => {
+  it('skips future in-progress cycles and auto-selects the one that has already started', async () => {
+    const now = new Date();
+    const oneDay = 24 * 60 * 60 * 1000;
+    overrideUsecases({
+      listAvailableTeams: new ListAvailableTeamsUsecase(new StubSyncGateway()),
+      listTeamCycles: new ListTeamCyclesUsecase(
+        new StubTeamCyclesGateway({
+          response: {
+            cycles: [
+              {
+                externalId: 'cycle-future',
+                name: 'Cycle 12',
+                startsAt: new Date(now.getTime() + 30 * oneDay).toISOString(),
+                endsAt: new Date(now.getTime() + 45 * oneDay).toISOString(),
+                issueCount: 0,
+                status: 'in_progress',
+              },
+              {
+                externalId: 'cycle-active',
+                name: 'Cycle 6',
+                startsAt: new Date(now.getTime() - 3 * oneDay).toISOString(),
+                endsAt: new Date(now.getTime() + 11 * oneDay).toISOString(),
+                issueCount: 42,
+                status: 'in_progress',
+              },
+            ],
+          },
+        }),
+      ),
+    });
+
+    const { result } = renderHook(() => useCycleReportPageWithLocation(), {
+      wrapper: wrapperFor('/cycle-report?teamId=team-1'),
+    });
+
+    await waitFor(() => {
+      expect(result.current.locationSearch).toContain('cycleId=cycle-active');
+    });
+    expect(result.current.locationSearch).not.toContain('cycleId=cycle-future');
+  });
+
+  it('auto-selects the in-progress cycle rather than a completed one', async () => {
+    const now = new Date();
+    const oneDay = 24 * 60 * 60 * 1000;
     overrideUsecases({
       listAvailableTeams: new ListAvailableTeamsUsecase(new StubSyncGateway()),
       listTeamCycles: new ListTeamCyclesUsecase(
@@ -62,8 +105,8 @@ describe('useCycleReportPage', () => {
               {
                 externalId: 'cycle-in-progress',
                 name: 'Cycle 12',
-                startsAt: '2026-07-01T00:00:00.000Z',
-                endsAt: '2026-07-14T00:00:00.000Z',
+                startsAt: new Date(now.getTime() - 3 * oneDay).toISOString(),
+                endsAt: new Date(now.getTime() + 10 * oneDay).toISOString(),
                 issueCount: 0,
                 status: 'in_progress',
               },
@@ -87,15 +130,15 @@ describe('useCycleReportPage', () => {
 
     await waitFor(() => {
       expect(result.current.locationSearch).toContain(
-        'cycleId=cycle-completed',
+        'cycleId=cycle-in-progress',
       );
     });
     expect(result.current.locationSearch).not.toContain(
-      'cycleId=cycle-in-progress',
+      'cycleId=cycle-completed',
     );
   });
 
-  it('falls back to the first cycle when no cycle is completed', async () => {
+  it('falls back to the first completed cycle when no cycle is in progress', async () => {
     overrideUsecases({
       listAvailableTeams: new ListAvailableTeamsUsecase(new StubSyncGateway()),
       listTeamCycles: new ListTeamCyclesUsecase(
@@ -103,20 +146,20 @@ describe('useCycleReportPage', () => {
           response: {
             cycles: [
               {
-                externalId: 'cycle-a',
+                externalId: 'cycle-recent',
                 name: 'Cycle 12',
                 startsAt: '2026-07-01T00:00:00.000Z',
                 endsAt: '2026-07-14T00:00:00.000Z',
                 issueCount: 0,
-                status: 'in_progress',
+                status: 'completed',
               },
               {
-                externalId: 'cycle-b',
-                name: 'Cycle 11',
-                startsAt: '2026-06-01T00:00:00.000Z',
-                endsAt: '2026-06-14T00:00:00.000Z',
-                issueCount: 0,
-                status: 'in_progress',
+                externalId: 'cycle-older',
+                name: 'Cycle 5',
+                startsAt: '2026-03-01T00:00:00.000Z',
+                endsAt: '2026-03-14T00:00:00.000Z',
+                issueCount: 50,
+                status: 'completed',
               },
             ],
           },
@@ -129,7 +172,7 @@ describe('useCycleReportPage', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.locationSearch).toContain('cycleId=cycle-a');
+      expect(result.current.locationSearch).toContain('cycleId=cycle-recent');
     });
   });
 });

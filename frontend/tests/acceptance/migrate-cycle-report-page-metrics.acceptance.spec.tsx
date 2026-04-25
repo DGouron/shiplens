@@ -270,7 +270,7 @@ describe('Migrate cycle report page metrics (acceptance)', () => {
     renderAtPath('/cycle-report?teamId=team-1');
 
     await waitFor(() => {
-      expect(screen.getByText('Metrics')).toBeInTheDocument();
+      expect(screen.getByText('Team metrics')).toBeInTheDocument();
     });
     expect(metricsGateway.calls).toEqual([]);
   });

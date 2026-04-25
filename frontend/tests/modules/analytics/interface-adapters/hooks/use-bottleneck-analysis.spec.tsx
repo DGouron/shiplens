@@ -29,7 +29,12 @@ describe('useBottleneckAnalysis', () => {
     });
 
     const { result } = renderHook(
-      () => useBottleneckAnalysis({ teamId: 'team-1', cycleId: 'cycle-1' }),
+      () =>
+        useBottleneckAnalysis({
+          teamId: 'team-1',
+          cycleId: 'cycle-1',
+          selectedMemberName: null,
+        }),
       { wrapper },
     );
 
@@ -52,7 +57,12 @@ describe('useBottleneckAnalysis', () => {
     });
 
     const { result } = renderHook(
-      () => useBottleneckAnalysis({ teamId: 'team-1', cycleId: 'cycle-1' }),
+      () =>
+        useBottleneckAnalysis({
+          teamId: 'team-1',
+          cycleId: 'cycle-1',
+          selectedMemberName: null,
+        }),
       { wrapper },
     );
 
@@ -73,7 +83,12 @@ describe('useBottleneckAnalysis', () => {
     });
 
     const { result } = renderHook(
-      () => useBottleneckAnalysis({ teamId: 'team-1', cycleId: 'cycle-1' }),
+      () =>
+        useBottleneckAnalysis({
+          teamId: 'team-1',
+          cycleId: 'cycle-1',
+          selectedMemberName: null,
+        }),
       { wrapper },
     );
 
@@ -94,7 +109,12 @@ describe('useBottleneckAnalysis', () => {
     });
 
     const { result } = renderHook(
-      () => useBottleneckAnalysis({ teamId: null, cycleId: 'cycle-1' }),
+      () =>
+        useBottleneckAnalysis({
+          teamId: null,
+          cycleId: 'cycle-1',
+          selectedMemberName: null,
+        }),
       { wrapper },
     );
 
@@ -109,7 +129,12 @@ describe('useBottleneckAnalysis', () => {
     });
 
     const { result } = renderHook(
-      () => useBottleneckAnalysis({ teamId: 'team-1', cycleId: null }),
+      () =>
+        useBottleneckAnalysis({
+          teamId: 'team-1',
+          cycleId: null,
+          selectedMemberName: null,
+        }),
       { wrapper },
     );
 

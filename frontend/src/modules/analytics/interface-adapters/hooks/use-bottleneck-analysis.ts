@@ -11,6 +11,7 @@ import { type BottleneckAnalysisViewModel } from '../presenters/bottleneck-analy
 export interface UseBottleneckAnalysisParams {
   teamId: string | null;
   cycleId: string | null;
+  selectedMemberName: string | null;
 }
 
 export type BottleneckAnalysisState = AsyncState<BottleneckAnalysisViewModel>;
@@ -23,7 +24,7 @@ export function useBottleneckAnalysis(
   params: UseBottleneckAnalysisParams,
 ): UseBottleneckAnalysisResult {
   const locale = useLocale();
-  const { teamId, cycleId } = params;
+  const { teamId, cycleId, selectedMemberName } = params;
   const isEnabled = teamId !== null && cycleId !== null;
 
   const query = useQuery({
@@ -41,8 +42,11 @@ export function useBottleneckAnalysis(
 
   const presenter = useMemo(
     () =>
-      new BottleneckAnalysisPresenter(bottleneckAnalysisTranslations[locale]),
-    [locale],
+      new BottleneckAnalysisPresenter(
+        bottleneckAnalysisTranslations[locale],
+        selectedMemberName,
+      ),
+    [locale, selectedMemberName],
   );
 
   const state: BottleneckAnalysisState = (() => {

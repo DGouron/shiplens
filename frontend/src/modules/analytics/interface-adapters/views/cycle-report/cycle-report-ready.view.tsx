@@ -5,6 +5,7 @@ import { type CycleMetricsState } from '../../hooks/use-cycle-metrics.ts';
 import { type DriftingIssuesState } from '../../hooks/use-drifting-issues.ts';
 import { type EstimationAccuracyState } from '../../hooks/use-estimation-accuracy.ts';
 import { type MemberDigestState } from '../../hooks/use-member-digest.ts';
+import { type MemberMetricsState } from '../../hooks/use-member-metrics.ts';
 import { type AiReportTranslations } from '../../presenters/ai-report.translations.ts';
 import { type BlockedIssuesTranslations } from '../../presenters/blocked-issues.translations.ts';
 import { type BottleneckAnalysisTranslations } from '../../presenters/bottleneck-analysis.translations.ts';
@@ -24,6 +25,7 @@ import { CycleReportTeamSelectorView } from './cycle-report-team-selector.view.t
 interface CycleReportReadyViewProps {
   viewModel: CycleReportShellViewModel;
   metricsState: CycleMetricsState;
+  memberMetricsState: MemberMetricsState;
   bottleneckState: BottleneckAnalysisState;
   blockedIssuesState: BlockedIssuesState;
   estimationState: EstimationAccuracyState;
@@ -53,6 +55,7 @@ interface CycleReportReadyViewProps {
 export function CycleReportReadyView({
   viewModel,
   metricsState,
+  memberMetricsState,
   bottleneckState,
   blockedIssuesState,
   estimationState,
@@ -119,7 +122,9 @@ export function CycleReportReadyView({
           <CycleReportSectionRendererView
             key={placeholder.id}
             placeholder={placeholder}
+            isMemberMode={viewModel.isMemberMode}
             metricsState={metricsState}
+            memberMetricsState={memberMetricsState}
             bottleneckState={bottleneckState}
             blockedIssuesState={blockedIssuesState}
             estimationState={estimationState}

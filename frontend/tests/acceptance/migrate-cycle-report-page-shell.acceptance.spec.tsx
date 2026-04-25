@@ -122,7 +122,7 @@ describe('Migrate cycle report page shell (acceptance)', () => {
     renderAtPath('/cycle-report?teamId=team-1');
 
     await waitFor(() => {
-      expect(screen.getByText('Metrics')).toBeInTheDocument();
+      expect(screen.getByText('Team metrics')).toBeInTheDocument();
     });
     expect(screen.getByText('Bottlenecks')).toBeInTheDocument();
     expect(screen.getByText('Blocked issues')).toBeInTheDocument();
@@ -190,7 +190,7 @@ describe('Migrate cycle report page shell (acceptance)', () => {
     fireEvent.change(teamSelect, { target: { value: 'team-1' } });
 
     await waitFor(() => {
-      expect(screen.getByText('Metrics')).toBeInTheDocument();
+      expect(screen.getByText('Team metrics')).toBeInTheDocument();
     });
   });
 
@@ -253,7 +253,7 @@ describe('Migrate cycle report page shell (acceptance)', () => {
     renderAtPath('/cycle-report?teamId=team-1');
 
     await waitFor(() => {
-      expect(screen.getByText('Metrics')).toBeInTheDocument();
+      expect(screen.getByText('Team metrics')).toBeInTheDocument();
     });
   });
 });
