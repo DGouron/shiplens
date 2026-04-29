@@ -1,3 +1,5 @@
+import { CyclePhase } from '@shared/domain/cycle-phase/cycle-phase.js';
+import { type Verdict } from '@shared/domain/cycle-phase/cycle-phase.schema.js';
 import { NoCycleIssuesError } from './cycle-snapshot.errors.js';
 import { cycleSnapshotGuard } from './cycle-snapshot.guard.js';
 import {
@@ -134,5 +136,27 @@ export class CycleSnapshot {
     );
 
     return totalDays / issuesWithLeadTime.length;
+  }
+
+  getCyclePhase(now: Date): CyclePhase {
+    return CyclePhase.from({
+      startsAt: new Date(this.props.startsAt),
+      endsAt: new Date(this.props.endsAt),
+      now,
+    });
+  }
+
+  getCompletionVerdict(now: Date): Verdict {
+    const phase = this.getCyclePhase(now);
+    return phase.verdict(this.completionRate, phase.expectedCompletionRate());
+  }
+
+  getVelocityVerdict(now: Date): Verdict {
+    if (this.plannedPoints === 0) {
+      return 'not-applicable';
+    }
+    const phase = this.getCyclePhase(now);
+    const actualPercentage = (this.completedPoints / this.plannedPoints) * 100;
+    return phase.verdict(actualPercentage, phase.expectedCompletionRate());
   }
 }

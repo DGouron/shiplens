@@ -1,5 +1,6 @@
 import { NoCycleIssuesError } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.errors.js';
 import { CycleSnapshot } from '@modules/analytics/entities/cycle-snapshot/cycle-snapshot.js';
+import { CyclePhase } from '@shared/domain/cycle-phase/cycle-phase.js';
 import { describe, expect, it } from 'vitest';
 
 describe('CycleSnapshot', () => {
@@ -307,6 +308,199 @@ describe('CycleSnapshot', () => {
       });
 
       expect(snapshot.averageLeadTimeInDays).toBeNull();
+    });
+  });
+
+  describe('cycle phase awareness', () => {
+    const fourteenDayCycleProps = {
+      cycleId: 'cycle-1',
+      teamId: 'team-1',
+      cycleName: 'Sprint 10',
+      startsAt: '2026-01-01T00:00:00Z',
+      endsAt: '2026-01-15T00:00:00Z',
+      issues: [
+        {
+          externalId: 'issue-1',
+          title: 'Issue 1',
+          statusName: 'Done',
+          points: 5,
+          createdAt: '2026-01-01T00:00:00Z',
+          completedAt: '2026-01-05T00:00:00Z',
+          startedAt: '2026-01-02T00:00:00Z',
+        },
+        {
+          externalId: 'issue-2',
+          title: 'Issue 2',
+          statusName: 'In Progress',
+          points: 5,
+          createdAt: '2026-01-01T00:00:00Z',
+          completedAt: null,
+          startedAt: '2026-01-02T00:00:00Z',
+        },
+      ],
+    };
+
+    it('returns a CyclePhase from getCyclePhase using snapshot start and end dates', () => {
+      const snapshot = CycleSnapshot.create(fourteenDayCycleProps);
+
+      const phase = snapshot.getCyclePhase(new Date('2026-01-08T00:00:00Z'));
+
+      expect(phase).toBeInstanceOf(CyclePhase);
+      expect(phase.label).toBe('mid');
+      expect(phase.expectedCompletionRate()).toBe(50);
+    });
+
+    it('returns on-track completion verdict when actual completion rate matches phase expectation', () => {
+      const snapshot = CycleSnapshot.create(fourteenDayCycleProps);
+
+      const verdict = snapshot.getCompletionVerdict(
+        new Date('2026-01-08T00:00:00Z'),
+      );
+
+      expect(verdict).toBe('on-track');
+    });
+
+    it('returns behind completion verdict when actual completion rate trails expected by more than tolerance', () => {
+      const snapshot = CycleSnapshot.create({
+        ...fourteenDayCycleProps,
+        issues: [
+          {
+            externalId: 'issue-1',
+            title: 'Issue 1',
+            statusName: 'Done',
+            points: 1,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: '2026-01-05T00:00:00Z',
+            startedAt: '2026-01-02T00:00:00Z',
+          },
+          {
+            externalId: 'issue-2',
+            title: 'Issue 2',
+            statusName: 'In Progress',
+            points: 1,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: null,
+            startedAt: null,
+          },
+          {
+            externalId: 'issue-3',
+            title: 'Issue 3',
+            statusName: 'In Progress',
+            points: 1,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: null,
+            startedAt: null,
+          },
+          {
+            externalId: 'issue-4',
+            title: 'Issue 4',
+            statusName: 'In Progress',
+            points: 1,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: null,
+            startedAt: null,
+          },
+          {
+            externalId: 'issue-5',
+            title: 'Issue 5',
+            statusName: 'In Progress',
+            points: 1,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: null,
+            startedAt: null,
+          },
+        ],
+      });
+
+      const verdict = snapshot.getCompletionVerdict(
+        new Date('2026-01-08T00:00:00Z'),
+      );
+
+      expect(verdict).toBe('behind');
+    });
+
+    it('returns not-applicable completion verdict when consulted before cycle start', () => {
+      const snapshot = CycleSnapshot.create(fourteenDayCycleProps);
+
+      const verdict = snapshot.getCompletionVerdict(
+        new Date('2025-12-15T00:00:00Z'),
+      );
+
+      expect(verdict).toBe('not-applicable');
+    });
+
+    it('returns on-track velocity verdict when delivered points match elapsed ratio', () => {
+      const snapshot = CycleSnapshot.create(fourteenDayCycleProps);
+
+      const verdict = snapshot.getVelocityVerdict(
+        new Date('2026-01-08T00:00:00Z'),
+      );
+
+      expect(verdict).toBe('on-track');
+    });
+
+    it('returns behind velocity verdict when delivered points trail expected', () => {
+      const snapshot = CycleSnapshot.create({
+        ...fourteenDayCycleProps,
+        issues: [
+          {
+            externalId: 'issue-1',
+            title: 'Issue 1',
+            statusName: 'Done',
+            points: 1,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: '2026-01-05T00:00:00Z',
+            startedAt: '2026-01-02T00:00:00Z',
+          },
+          {
+            externalId: 'issue-2',
+            title: 'Issue 2',
+            statusName: 'In Progress',
+            points: 9,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: null,
+            startedAt: null,
+          },
+        ],
+      });
+
+      const verdict = snapshot.getVelocityVerdict(
+        new Date('2026-01-08T00:00:00Z'),
+      );
+
+      expect(verdict).toBe('behind');
+    });
+
+    it('returns not-applicable velocity verdict when planned points is zero', () => {
+      const snapshot = CycleSnapshot.create({
+        ...fourteenDayCycleProps,
+        issues: [
+          {
+            externalId: 'issue-1',
+            title: 'Issue 1',
+            statusName: 'Done',
+            points: null,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: '2026-01-05T00:00:00Z',
+            startedAt: '2026-01-02T00:00:00Z',
+          },
+          {
+            externalId: 'issue-2',
+            title: 'Issue 2',
+            statusName: 'In Progress',
+            points: null,
+            createdAt: '2026-01-01T00:00:00Z',
+            completedAt: null,
+            startedAt: null,
+          },
+        ],
+      });
+
+      const verdict = snapshot.getVelocityVerdict(
+        new Date('2026-01-08T00:00:00Z'),
+      );
+
+      expect(verdict).toBe('not-applicable');
     });
   });
 });
