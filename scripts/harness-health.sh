@@ -354,9 +354,8 @@ check_tracker() {
     return
   fi
 
-  # Accept multiple SDD status vocabularies (solife: ready/planned/implementing/done,
-  # shiplens: implemented/drafted/planned). Position-agnostic — we just want at least
-  # one valid status token between pipes anywhere in the row.
+  # Accept multiple SDD status vocabularies. Position-agnostic — we just want at
+  # least one valid status token between pipes anywhere in the row.
   local valid_statuses="ready|planned|implementing|done|blocked|on-hold|implemented|drafted|shipped"
   local entry_count=0
   local invalid_count=0
@@ -390,7 +389,7 @@ check_tracker() {
     local spec_link
     spec_link=$(echo "$line" | grep -oE '\(([^)]+\.md)\)' | tr -d '()' | head -1 || true)
     if [[ -n "$spec_link" ]]; then
-      # Try both: relative to SPECS_DIR (solife format) and relative to FEATURE_TRACKER's dir (shiplens format)
+      # Try both: relative to SPECS_DIR and relative to FEATURE_TRACKER's dir
       local spec_path_a="$SPECS_DIR/$spec_link"
       local tracker_dir
       tracker_dir=$(dirname "$FEATURE_TRACKER")
