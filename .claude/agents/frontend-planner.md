@@ -1,9 +1,9 @@
 ---
 name: frontend-planner
 description: Use this agent to plan frontend feature implementation by analyzing specs and mapping them to Clean Architecture + MVVM + Humble Object layers. Reads existing frontend modules as reference, produces a structured implementation plan with file paths, ordering, and architectural decisions.
-tools: Read, Glob, Grep, LS
+tools: Read, Glob, Grep, LS, Write, Edit
 model: opus
-maxTurns: 30
+maxTurns: 40
 permissionMode: default
 skills:
   - architecture-frontend
@@ -24,6 +24,14 @@ Read `.claude/CLAUDE.md` and `.claude/rules/coding-standards.md` BEFORE any anal
 - Test runner: `pnpm --filter @shiplens/frontend test` (or `pnpm test` from root)
 - All rules in `.claude/rules/coding-standards.md` apply
 - Bounded contexts are shared with the backend (same names: `analytics`, `audit`, `identity`, `notification`, `synchronization`)
+
+## Execution protocol (mandatory)
+
+**Your very first action after reading the spec MUST be `Write` of the plan skeleton** to `docs/plans/<feature-name>.plan.md` (header + empty sections matching the Output format below).
+
+Only then read codebase files, then use `Edit` to fill each section incrementally. Updating `docs/feature-tracker.md` also uses `Edit`.
+
+**Why**: secures the deliverable upfront. If you exhaust your turn budget during exploration, the skeleton already exists and can be enriched in a follow-up call. Announcing "I will write" in plain text without invoking the tool is forbidden.
 
 ## Mission
 

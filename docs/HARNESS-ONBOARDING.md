@@ -79,23 +79,8 @@ pnpm test --run
 
 ---
 
-## Différences avec solife-v2 (le harness original)
+## Portabilité
 
-shiplens et solife-v2 partagent le même pattern de harness Claude. Les différences notables :
+`harness-health.sh` est piloté par variables d'environnement (`HARNESS_ROOT`, `CLAUDE_DIR`, `HOOKS_DIR`, `DOCS_DIR`, `ADR_DIR`, `SPECS_DIR`, `FEATURE_TRACKER`, `SETTINGS_FILE`, `HOOKS_TEST_FILE`). Le wrapper `scripts/harness-health-shiplens.sh` définit les chemins shiplens puis exec le script principal.
 
-| Aspect | shiplens | solife-v2 |
-|---|---|---|
-| Package manager | pnpm | yarn |
-| Tracker path | `docs/feature-tracker.md` | `documents/specs/feature-tracker.md` |
-| Specs | `docs/specs/<bc>/` | `documents/specs/<bc>/` |
-| ADRs | (pas en place) | `documents/adr/` (6 ADRs) |
-| Status valides | `implemented`, `drafted`, `planned` | `ready`, `planned`, `implementing`, `done`, `blocked`, `on-hold` |
-| Module split | backend + frontend (2 splits) | mono Next.js |
-
-Le `harness-health.sh` est portable — voir `scripts/harness-health-shiplens.sh` (wrapper avec env vars shiplens).
-
----
-
-## Last update
-
-2026-04-25 — port depuis solife-v2 (Phase 5.2 portabilité framework).
+Le tracker et le check ADR acceptent plusieurs vocabulaires de statuts pour rester compatibles avec différentes conventions SDD.
