@@ -330,7 +330,7 @@ check_adrs() {
     status_line=$(grep -m1 -E '^\s*-?\s*\*\*Status\*\*\s*:' "$adr_file" || true)
     if [[ -z "$status_line" ]]; then
       warn "ADR-$num has no '**Status**:' line: $adr_file"
-    elif ! echo "$status_line" | grep -qE '(accepted|proposed|superseded by ADR-)'; then
+    elif ! echo "$status_line" | grep -qiE '(accepted|proposed|superseded by ADR-|deprecated|rejected)'; then
       warn "ADR-$num status not recognized (expected: accepted/proposed/superseded by ADR-NNNN): $status_line"
     fi
   done <<< "$adr_files"
